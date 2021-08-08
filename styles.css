@@ -1,0 +1,133 @@
+:root {
+  --vertical-bar: 60%;
+  --background-color: #8686868c;
+}
+
+html,
+body {
+	font-family: system-ui;
+	font-size: 12pt;
+	margin: 0px;
+	overscroll-behavior: none; /*this stops the back swipe*/
+/*	overflow: hidden;*/
+}
+
+input {
+	font-size: 11pt;
+}
+
+.no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+/* ///////////////////////////////////////////////////// */
+/* GENERAL SET-UP */
+/* ///////////////////////////////////////////////////// */
+
+#root {
+  display: grid;
+  width: 100vw;
+  height: 100vh;
+  grid-template:
+    ". ." 100%
+    / var(--vertical-bar) 1fr;
+}
+
+#code-editor {
+	background: #f4e6d0;
+	overflow: scroll;
+}
+
+#viewer {
+    width: 100%;
+    height: 100%;
+/*    transform: scale(1, -1);*/
+}
+
+.buttons {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+}
+
+.canvas-container {
+	display: grid;
+	place-items: center;
+	overflow: scroll;
+	width: 100%;
+	height: 100%;
+}
+
+#gl-canvas {
+	border: 2px solid black
+}
+
+#vertical-bar {
+  position: absolute;
+  left: calc( var(--vertical-bar) - 5px);
+  top: 0px;
+  background: black;
+  width: 10px;
+  height: 100%;
+  z-index: 10;
+}
+
+#vertical-bar:hover {
+  cursor: col-resize;
+  background: grey;
+}
+
+.CodeMirror {
+	height: 100% !important;
+	background: #f4e6d0 !important; /* #ebd5b3 */
+	z-index: 0;
+}
+
+.ͼb {
+  border: solid 1px rgb(0, 0, 0, 0);
+}
+
+.ͼb:hover {
+  background: #e4e0e0;
+  border: solid 1px grey;
+  box-sizing: border-box;
+  cursor: col-resize;
+}
+
+.selectBox {
+  fill: blue;
+  opacity: .2;
+}
+
+/*.menu {
+  position: absolute;
+}*/
+
+/*.console {
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	width: 100%;
+	height: 0px;
+	box-sizing: border-box;
+	z-index: 10;
+}
+
+.console-show {
+	background: lightgreen;
+	height: 80px;
+	padding: 10px;
+}
+
+.console-erred {
+	background: #d83030c4;
+}*/
+
+
+
