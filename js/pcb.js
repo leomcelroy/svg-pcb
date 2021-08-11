@@ -13,8 +13,8 @@ export class PCB {
     const transform = { 
       translate: ops.translate || [0, 0], 
       rotate: ops.rotate || 0, 
-      padLabelSize: ops.padLabelSize || 0.0002,
-      componentLabelSize: ops.componentLabelSize || 0.0003,
+      padLabelSize: ops.padLabelSize || 0.0003,
+      componentLabelSize: ops.componentLabelSize || 0.0004,
     };
 
     

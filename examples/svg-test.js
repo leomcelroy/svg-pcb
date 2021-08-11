@@ -164,7 +164,7 @@ let VIA = {
 let board = new PCB();
 
 // add parts
-d11c = board.add(SOIC14, {translate: [x+0.49, y+0.72], name: "D11C"})
+d11c = board.add(SOIC14, {translate: [x+0.43, y+0.72], name: "D11C"})
 swd = board.add(SWD_4_05, {translate: [d11c.posX, d11c.padY("7")-0.12], name: "SWD"})
 usb = board.add(USB_A_PCB, {translate: [d11c.posX, y+height-0.175], rotate: -90, name: "USB"})
 vreg = board.add(SOT23, {translate: [d11c.posX-0.33, d11c.padY("1")-0.06], name: "VREG"})
@@ -293,19 +293,36 @@ board.wire([v3.pad("1"),
 // const circle = (cx, cy, r) => `M ${cx} ${cy} m ${-r}, 0 a ${r},${r} 0 1,0 ${r*2},0 a ${r},${r} 0 1,0 ${-2*r},0`
 // tc = `${circle(0.8, 1.5, 0.1)} ${circle(0.8, 1.9, 0.1)}`;
 
-// board.addShape("F.Cu", new Turtle()
-//   .goto(vreg.pad("3"), false)
-//   .setangle(180)
-//   .forward(0.03)
-//   .offset(w)
-// )
+
+let background = new Turtle().rectangle(10, 10).getPath();
+// board.addFrep("interior", frep.rectangle(usb.posX-0.24,
+//                                          usb.posX+0.24,
+//                                          usb.posY-0.14,
+//                                          usb.posY+0.21));
+
+// board.addFrep("interior", frep.rectangle(d11c.posX-0.42,
+//                                          d11c.posX+0.37,
+//                                          uart.posY-0.2,
+//                                          usb.posY-0.14));
+
+let interior = new Turtle()
+  .rectangle(.48, .35)
+  .translate([usb.posX, usb.posY+0.03])
+  .group(
+    new Turtle()
+    .rectangle(0.84, 1.04)
+    .translate([usb.posX - 0.023, usb.posY - 0.64])
+  )
+  .getPath()
 
 return {
   shapes: [
-    { d: board.getLayer("F.Cu"), color:[1,0,0,0.2] },
-    { d: board.getLayer("padLabels"), color:[0,0.7,1,1.3] },
-    { d: board.getLayer("componentLabels"), color:[1,0,1,1.3] },
-    // { d: tc, color: [1,0,0,1] },
+    // { d: background, color:[0, 0, 0, 1] },
+    { d: interior, color: [ 0.3, 0.4, 0.5, 0.5 ] },
+    { d: board.getLayer("F.Cu"), color: [ 0, 0.2, 1, 0.5 ] },
+    { d: board.getLayer("B.Cu"), color: [ 0, 0.7, 0.4, 0.5 ] },
+    { d: board.getLayer("padLabels"), color: [ 1, 0.73, 0, 0.8 ] },
+    { d: board.getLayer("componentLabels"), color: [ 1.6, 0.63, 0.47, 1 ] },
   ],
   limits: {
     x: [x-border, x+width+border],
