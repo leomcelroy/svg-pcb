@@ -85,7 +85,7 @@ function makeComponent(comp, options = {}) {
   for (const pad in comp) {
     let { pos, shape, layers } = comp[pad];
 
-    shape = typeof shape === "string" ? new Turtle().bezier(shape) : shape;
+    shape = typeof shape === "string" ? new Turtle().bezier(shape) : shape.copy();
 
     let pad_pos = vector_add(vector_rotate(pos, rad), translate);
     pads[pad] = pad_pos;
