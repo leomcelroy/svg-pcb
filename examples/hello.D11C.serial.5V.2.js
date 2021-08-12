@@ -290,20 +290,7 @@ board.wire([v3.pad("1"),
             [v4.padX("1"), uart.padY("TX")-0.16],
             v4.pad("1")], w, "B.Cu");
 
-// const circle = (cx, cy, r) => `M ${cx} ${cy} m ${-r}, 0 a ${r},${r} 0 1,0 ${r*2},0 a ${r},${r} 0 1,0 ${-2*r},0`
-// tc = `${circle(0.8, 1.5, 0.1)} ${circle(0.8, 1.9, 0.1)}`;
-
-
 let background = new Turtle().rectangle(10, 10).getPath();
-// board.addFrep("interior", frep.rectangle(usb.posX-0.24,
-//                                          usb.posX+0.24,
-//                                          usb.posY-0.14,
-//                                          usb.posY+0.21));
-
-// board.addFrep("interior", frep.rectangle(d11c.posX-0.42,
-//                                          d11c.posX+0.37,
-//                                          uart.posY-0.2,
-//                                          usb.posY-0.14));
 
 let interior = new Turtle()
   .rectangle(.48, .35)
@@ -317,10 +304,10 @@ let interior = new Turtle()
 
 return {
   shapes: [
-    // { d: background, color:[0, 0, 0, 1] },
     { d: interior, color: [0, 0, 0, 1] },
     { d: board.getLayer("B.Cu"), color: [0.0, 1.0, 0.5, .5] },
     { d: board.getLayer("F.Cu"), color: [0.7, .5, 0.29, .7] },
+    { d: board.getLayer("drill"), color: [0.3, 0.7, 1, 0.9]},
     { d: board.getLayer("padLabels"), color: [1, 0.27, 0.07, .8] },
     { d: board.getLayer("componentLabels"), color: [0.1, 1, 0.1, .7] },
   ],
