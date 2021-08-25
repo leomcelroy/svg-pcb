@@ -8,6 +8,8 @@ import { PCB } from "./pcb.js";
 import { kicadToObj } from "./ki_cad_parser.js"
 import { Turtle } from "./Turtle.js";
 
+import { parse2 } from "./parser.js";
+
 const included = {
 	kicadToObj,
 	PCB,
@@ -85,6 +87,7 @@ const ACTIONS = {
 	RUN({ download }, state) {
 		const string = state.codemirror.view.state.doc.toString();
 		// const result = JSON.parse(string); // if json
+		// parse2(string);
 
 		const f = new Function(...Object.keys(included), string)
 		const result = f(...Object.values(included));

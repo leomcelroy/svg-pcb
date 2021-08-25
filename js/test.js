@@ -14,7 +14,7 @@ let test = new Turtle()
   .getPath();
 
 return {
-  paths: [
+  shapes: [
     {
       d: test,
       color: [1, 0, 0, .5]
