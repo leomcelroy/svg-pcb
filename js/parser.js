@@ -1,118 +1,29 @@
 const tokenRules = {
-  // num: /\d+\.\d+|\d+\.|\.\d+|\d+/,
-  string: /".*"/, // how to have start, middle, end
+  num: /\d+\.\d+|\d+\.|\.\d+|\d+/,
+  string: /".*"/,
+  // keywords: ["and", "or"],
+  // string: { start: `"`, full: /".*"/ }, // how to have start, middle, end
   // string2: [`"`, /.*/, `"`], // try first, when that stops move to second, if all fit then take
   // should be this not [`"`, /.*/, `"`] because middle won't stop
   // op: ch => ["+", "-", "/", "*", "**"].some(x => x.startsWith(ch)), // what about **
   // symbol: /[a-zA-Z][a-zA-Z\d]*/,
-  // ws: /\s+/,
+  ws: /\s+/,
   // literals: ch => ["{", "}", "[", "]", ":", ","].includes(ch)
 }
 
 const skip = ["ws"];
 const literals = ["{", "}", "[", "]", ":", ","]; // makes the type the value
 
-const regExFunc = (regex) => string => { 
+const regExFunc = regex => string => { 
   const match = string.match(regex); 
   return match && match[0] === string;
 }
 
-class Test {
-  constructor(testArr = []) {
-    this.testArr = testArr;
-    this.index = 0;
-  }
-
-  setTest(rule) {
-    this.index = 0;
-
-    this.testArr = 
-        rule instanceof RegExp ? [ regExFunc(rule) ] 
-      : typeof rule === "string" ? [ x => rule.startsWith(x) ]
-      : !Array.isArray(rule) ? [ rule ] 
-      : rule.map(clause => // is array
-          clause instanceof RegExp ? regExFunc(clause) 
-          : typeof clause === "string" ? x => clause.startsWith(x)
-          : clause // is function
-        )
-
-  }
-
-  startMatch(char) {
-    return this.testArr[0](char);
-  }
-
-  match(word) {
-    // if all testArr match then it's good to go
-    let wordIndex = 0;
-    let subWord = word[wordIndex];
-
-    while (this.index < this.testArr.length && wordIndex < word.length) {
-      if (this.testArr[this.index](subWord)) {
-        if (wordIndex === word.length - 1) break;
-        wordIndex++;
-        subWord += word[wordIndex];
-      } else {
-        this.index++;
-        subWord = word.slice(wordIndex);
-      }
-    }
-
-
-
-    const result = this.index < this.testArr.length;
-    // if (this.index === 2) console.log(this.testArr);
-    this.index = 0;
-    return result;
-  }
-
-  currentTest(word) {
-    return this.testArr[this.index] ? this.testArr[this.index](word) : false;
-  }
-
-  match2(peek, next) {
-    // let value = next(); // take first char
-    // console.log(this.testArr);
-    let fragments = [next()]
-    let value = () => fragments[fragments.length - 1];
-    while (this.index < this.testArr.length) {
-      while (this.currentTest(value()) && peek() !== undefined) {
-        console.log(value(), peek(), this.currentTest(value() + peek()), this.index);
-        if (this.currentTest(value() + peek())) fragments[fragments.length - 1] += next();
-        else {
-          console.log("trying next test");
-          break;
-        }
-      }
-      this.index++;
-      fragments.push("");
-      console.log("trying next test", fragments, this.index);
-    }
-
-
-    const fullMatch = this.index === this.testArr.length;
-    console.log(this.index, fullMatch);
-    // console.log(
-    //   value(), 
-    //   fullMatch, 
-    //   this.currentTest(value()), 
-    // );
-    this.index = 0
-
-    return [ fragments.join(""), fullMatch ];
-  }
-
-  clear() {
-    this.testArr = [];
-    this.index = 0;
-  }
-
-  empty() {
-    return this.testArr.length === 0;
-  }
-
-
-}
+const makeTest = (rule, start = false) => 
+  rule instanceof RegExp ? regExFunc(rule)
+  : typeof rule === "string" ? x => rule.startsWith(x)
+  : Array.isArray(rule) ? x => rule.map(makeTest).some(f => f(x))
+  : rule; // is function
 
 const makeTokenizer = (rules, { skip = [] , literals = [] } = { }) => string => { 
   let index = 0;
@@ -120,34 +31,28 @@ const makeTokenizer = (rules, { skip = [] , literals = [] } = { }) => string => 
   const next = () => string[index++];
   const tokens = [];
 
-  const test = new Test();
   while (index < string.length) {
-    let type;
+    let type, test, value;
 
     for (const key in rules) {
       type = key;
-      const rule = rules[key];
+      test = rules[key];
 
-      test.setTest(rule);
 
-      if (test.startMatch(peek())) break;
+      value = string.slice(index).match(rule);
+      console.log(value);
+      if (value !== null) {
+        value = value[0];
+        console.log(value);
+        index += value.length;
+        break;
+      }
     }
 
-    if (test.empty()) throw `Unknown character: ${peek()}`
-  
-    // let value = next(); // take first char
-    // while (test.match(value) && peek() !== undefined) {
-    //   if (test.match(value + peek())) value += next();
-    //   else break;
-    // }
-
-    let [value, fullMatch] = test.match2(peek, next);
-    if (!fullMatch) throw `Imcomplete match at: ${index}`
+    if (value === null) throw `Unknown character: ${peek()}`
 
     if (literals.includes(value)) type = value;
     if (!skip.includes(type)) tokens.push({ type, value, index });
-
-    test.clear();
   }
 
   return tokens;
@@ -332,7 +237,7 @@ const p = s => or([
 
 const parse = x => and(["{", many(entry), "}"])(x)[0];
 
-const test = `" house " + 3`
+const test = `and"`
 const tokens = tokenize(test);
 console.log(tokens);
 const ast = convert("string2")(tokens);
