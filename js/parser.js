@@ -1,6 +1,6 @@
 const tokenRules = {
   num: /\d+\.\d+|\d+\.|\.\d+|\d+/,
-  string: /".*"/,
+  string: /".*?"/,
   // keywords: ["and", "or"],
   // string: { start: `"`, full: /".*"/ }, // how to have start, middle, end
   // string2: [`"`, /.*/, `"`], // try first, when that stops move to second, if all fit then take
@@ -28,31 +28,28 @@ const makeTest = (rule, start = false) =>
 const makeTokenizer = (rules, { skip = [] , literals = [] } = { }) => string => { 
   let index = 0;
   const peek = () => string[index];
-  const next = () => string[index++];
+  // const next = () => string[index++];
   const tokens = [];
 
-  while (index < string.length) {
-    let type, test, value;
+  while (index < string.length && count < 100) {
+    let type, value;
 
     for (const key in rules) {
       type = key;
-      test = rules[key];
-
-
+      let rule = rules[key];
       value = string.slice(index).match(rule);
-      console.log(value);
-      if (value !== null) {
-        value = value[0];
-        console.log(value);
-        index += value.length;
+      if (value !== null && value.index === 0) {
+        value = value[0];        
         break;
       }
     }
 
-    if (value === null) throw `Unknown character: ${peek()}`
+    if (value === undefined || value === null) throw `Unknown character: ${peek()}`
 
     if (literals.includes(value)) type = value;
     if (!skip.includes(type)) tokens.push({ type, value, index });
+    index += value.length;
+
   }
 
   return tokens;
@@ -237,7 +234,7 @@ const p = s => or([
 
 const parse = x => and(["{", many(entry), "}"])(x)[0];
 
-const test = `and"`
+const test = `"and" 32`
 const tokens = tokenize(test);
 console.log(tokens);
 const ast = convert("string2")(tokens);
