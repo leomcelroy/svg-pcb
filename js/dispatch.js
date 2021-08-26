@@ -87,7 +87,7 @@ const ACTIONS = {
 	RUN({ download }, state) {
 		const string = state.codemirror.view.state.doc.toString();
 		// const result = JSON.parse(string); // if json
-		parse2(string);
+		// parse2(string);
 
 		const f = new Function(...Object.keys(included), string)
 		const result = f(...Object.values(included));
