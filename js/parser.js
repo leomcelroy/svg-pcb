@@ -222,8 +222,8 @@ const tokenize = makeTokenizer(tokenRules, { skip, literals });
 const number = and(["number"], x => ({ type: "number", value: Number(x[0].value) }))
 
 const entry = s => or([
-  and(["symbol", ":", p, ","], x => ({ type: "entry", key: x[0], value: x[2] })),
-  and(["symbol", ":", p], x => ({ type: "entry", key: x[0], value: x[2] }))
+  and(["symbol", ":", p, ","], x => ({ key: x[0].value, value: x[2] })),
+  and(["symbol", ":", p], x => ({ key: x[0].value, value: x[2] }))
 ])(s);
 
 const e = s => or([
