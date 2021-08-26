@@ -1,14 +1,14 @@
+
+const oneOf = item => w => w.startsWith(item);
+const anyOf = arr => w => arr.some(oneOf(w));
+
 const tokenRules = {
-  num: /\d+\.\d+|\d+\.|\.\d+|\d+/,
-  string: /".*?"/,
-  // keywords: ["and", "or"],
-  // string: { start: `"`, full: /".*"/ }, // how to have start, middle, end
-  // string2: [`"`, /.*/, `"`], // try first, when that stops move to second, if all fit then take
-  // should be this not [`"`, /.*/, `"`] because middle won't stop
-  // op: ch => ["+", "-", "/", "*", "**"].some(x => x.startsWith(ch)), // what about **
-  // symbol: /[a-zA-Z][a-zA-Z\d]*/,
+  number: /\d+\.\d+|\d+\.|\.\d+|\d+/,
+  string: /".*?"/, // non-greedy
+  op: anyOf(["+", "-", "/", "*"]),
+  symbol: /[a-zA-Z][a-zA-Z\d]*/,
   ws: /\s+/,
-  // literals: ch => ["{", "}", "[", "]", ":", ","].includes(ch)
+  literals: anyOf(["{", "}", "[", "]", ":", ","])
 }
 
 const skip = ["ws"];
@@ -31,16 +31,29 @@ const makeTokenizer = (rules, { skip = [] , literals = [] } = { }) => string => 
   // const next = () => string[index++];
   const tokens = [];
 
-  while (index < string.length && count < 100) {
+  while (index < string.length) {
     let type, value;
 
     for (const key in rules) {
       type = key;
       let rule = rules[key];
-      value = string.slice(index).match(rule);
-      if (value !== null && value.index === 0) {
-        value = value[0];        
-        break;
+      if (rule instanceof RegExp) {
+        value = string.slice(index).match(rule);
+
+        if (value !== null && value.index === 0) {
+          value = value[0];        
+          break;
+        }
+      } else if (typeof rule === "function") {
+        if (rule(peek())) {
+          let i = index;
+          value = string[i]
+          while (rule(value)) {
+            if(rule(value + string[i + 1])) value += string[++i];
+            else break;
+          }
+          break;
+        }
       }
     }
 
@@ -141,7 +154,7 @@ const ops = {
 
 const types = {
   symbol: (value, args) => turtle[value](...args),
-  num: (value) => Number(value),   
+  number: (value) => Number(value),   
   op: (value, x, y) => ops[token.value](x, y)
 };
 
@@ -206,12 +219,7 @@ const tokenize = makeTokenizer(tokenRules, { skip, literals });
 
 // need optional and match anything
 
-const string = and(
-  ["\"", "symbol", "\""],
-  x => ({ type: "string", value: x[1].value })
-);
-
-const number = and(["num"], x => ({ type: "number", value: Number(x[0].value) }))
+const number = and(["number"], x => ({ type: "number", value: Number(x[0].value) }))
 
 const entry = s => or([
   and(["symbol", ":", p, ","], x => ({ type: "entry", key: x[0], value: x[2] })),
@@ -229,15 +237,15 @@ const p = s => or([
     and(["(", e, ")"], x => ({ type: "parens", value: x[1] }) ),
     and(["[", many(e), "]"], x => x[1]), // what about ,
   ]), 
-  or([number, string, "symbol", ","])
+  or([number, "string", "symbol", ","])
 ])(s)
 
-const parse = x => and(["{", many(entry), "}"])(x)[0];
+const parse = x => and(["{", many(entry), "}"], x => x[1])(x)[0];
 
-const test = `"and" 32`
+const test = `{ translate: [3, 3], name: 3 }`
 const tokens = tokenize(test);
 console.log(tokens);
-const ast = convert("string2")(tokens);
+const ast = parse(tokens);
 console.log(ast);
 
 const parse2 = (string) => {
