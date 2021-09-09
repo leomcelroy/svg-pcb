@@ -1,3 +1,20 @@
+# TODO
+
+- switch to full javascript parser
+	- esprima
+	- acorn
+	- https://github.com/meriyah/meriyah
+	- cherow
+- recompile ast to javascript
+- manipulation handles for other transformations
+- add component menu
+- python scraper for neil's components
+- converter from python to js board
+- update skypack dependency or bundle
+
+
+# Older
+
 - Should I use multiple strokes in path?
 	- M 0 0 L 80 80 M 0 0 L 78 5
 - Booleans on beziers?
