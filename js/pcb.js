@@ -53,9 +53,9 @@ export class PCB {
     return this.layers[layer];
   }
 
-  getLayer(layer) {
+  getLayer(layer, flatten = false) {
     const paths = layer.includes("Labels");
-    const flatten = !layer.includes("Labels");
+    // const flatten = false; // !layer.includes("Labels");
 
     return this.layers[layer] 
       ? flatten 

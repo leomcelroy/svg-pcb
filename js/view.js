@@ -1,6 +1,18 @@
 import { html, svg } from "https://cdn.skypack.dev/lit-html";
 import "https://leomcelroy.com/widgets/code-mirror.js";
 
+export function view(state) {
+	return html`
+		<code-mirror id="code-editor"></code-mirror>
+		${svgViewer(state)}
+		<div class="buttons">
+			<button class="download-button">download</button>
+			<button class="center-button">center</button>
+		</div>
+		<div id="vertical-bar"></div>
+	`
+}
+
 const mapColors = arr => arr.length === 4
 	? `rgba(${arr.map((n,i) => i < 3 ? Math.round(n*255) : n).join(",")})`
 	: arr.length === 3 ? `hsl(${arr[0]}, ${arr[1]}%, ${arr[2]}%)`
@@ -42,21 +54,45 @@ const svgViewer = (state) => {
 					vector-effect="non-scaling-stroke"
 					transform="translate(${state.limits.x[0]}, ${state.limits.y[0]})"/>
 				<circle class="no-download" cx="0" cy="0" r="0.1" vector-effect="non-scaling-stroke"/>
+				${state.storedPCB ? drawHandles(state.storedPCB) : ""}
 			</g>
 		
 		</svg>
 	`
 }
 
-export function view(state) {
-	return html`
-		<code-mirror id="code-editor"></code-mirror>
-		${svgViewer(state)}
 
-		<div class="buttons">
-			<button class="download-button">download</button>
-			<button class="center-button">center</button>
-		</div>
-		<div id="vertical-bar"></div>
-	`
-}
+const drawHandles = (pcb) => pcb.components.map((comp, i) => svg`
+	<circle 
+		class="no-download translate-handle" 
+		cx="${comp.posX}" 
+		cy="${comp.posY}" 
+		data-index=${i}
+		r="0.02" 
+		vector-effect="non-scaling-stroke"
+		/>
+`)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

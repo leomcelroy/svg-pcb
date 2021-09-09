@@ -129,5 +129,9 @@ input {
 	background: #d83030c4;
 }*/
 
+.translate-handle:hover {
+	filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(330deg);
+}
+
 
 

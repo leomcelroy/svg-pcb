@@ -4,28 +4,17 @@ import { render } from "https://cdn.skypack.dev/lit-html";
 import { addEvents } from "./events.js";
 import { test } from "./test.js";
 
-import { PCB } from "./pcb.js";
+import { PCB as real_PCB } from "./pcb.js";
 import { kicadToObj } from "./ki_cad_parser.js"
 import { Turtle } from "./Turtle.js";
 
 import { parse2 } from "./parser.js";
 
-// const PCB_STORE = () => {
-// 	let PCBS = [];
-// 	let newPCB = new PCB();
-// 	PCBS.push(newPCB);
-	
-// 	return newPCB;
-// }
-
-const included = {
-	kicadToObj,
-	PCB,
-	Turtle
-}
 
 const STATE = {
 	codemirror: undefined,
+	storedPCB: undefined,
+	transforming: false,
 	selectBox: {},
 	shapes: [],
 	limits: {
@@ -33,6 +22,19 @@ const STATE = {
 		y: [0, 1]
 	},
 	mm_per_unit: 25.4
+}
+
+class PCB extends real_PCB {
+	constructor() {
+		super();
+		STATE.storedPCB = this;
+	}
+}
+
+const included = {
+	kicadToObj,
+	PCB,
+	Turtle
 }
 
 async function urlToCode(file_url, state) {
@@ -92,10 +94,9 @@ const ACTIONS = {
 
 	    }
 	},
-	RUN({ download }, state) {
+	RUN(args, state) {
 		const string = state.codemirror.view.state.doc.toString();
 		// const result = JSON.parse(string); // if json
-		// parse2(string);
 
 		const f = new Function(...Object.keys(included), string)
 		const result = f(...Object.values(included));
@@ -105,6 +106,7 @@ const ACTIONS = {
 		state.shapes = shapes;
 		state.limits = limits;
 		state.mm_per_unit = mm_per_unit;
+		// console.log(state.storedPCB);
 	},
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");
@@ -114,6 +116,35 @@ const ACTIONS = {
 		});
 
 		state.codemirror.foldRange(0, text.length);
+	},
+	TRANSLATE({ x, y, index }, state) {
+		// console.log(x, y, index);
+		const string = state.codemirror.view.state.doc.toString();
+		// console.time()
+		const asts = parse2(string);
+		// console.timeEnd()
+
+		const { index: startI, ast } = asts[index];
+
+		// find translate
+		const translateTerm = ast.filter(line => line[0].value === "translate")[0];
+		// console.log(translateTerm);
+		const firstBrack = translateTerm[2][0].index + startI + 1;
+		const secondBrack = translateTerm[2][2].index + startI;
+		const from = translateTerm[2][0].index + startI;
+		const comp = state.storedPCB.components[index];
+		const insert = `${x + comp.posX}, ${y + comp.posY}`;
+		const to = from + insert.length;
+		// console.log(string.slice(firstBrack, secondBrack));
+
+
+		state.codemirror.view.dispatch({
+			changes: { from: firstBrack, to: secondBrack, insert }
+		});
+
+		console.time();
+		dispatch("RUN");
+		console.timeEnd();
 	},
 	RENDER() {
 		console.log("rendered")

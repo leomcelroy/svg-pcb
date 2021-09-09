@@ -1,3 +1,5 @@
+import { addTranslateHandle } from "./addTranslateHandle.js";
+
 function pauseEvent(e) {
     if(e.stopPropagation) e.stopPropagation();
     if(e.preventDefault) e.preventDefault();
@@ -45,7 +47,7 @@ const createListener = (target) => (eventName, selectorString, event) => { // fo
 	})
 }
 
-function addImgPanZoom(listen) {
+function addImgPanZoom(state, listen) {
   let mousedown = false;
 
   let scale = 1;
@@ -79,6 +81,7 @@ function addImgPanZoom(listen) {
 
   listen("mousemove", "", (e) => {
     if (!mousedown) return;
+    if (state.transforming) return;
 
     pointX = (e.offsetX - start.x);
     pointY = (e.offsetY - start.y);
@@ -331,8 +334,9 @@ function addNumberDragging(state, bodyListener) {
 export function addEvents(state) {
 	const svg = document.querySelector("svg");
 	const listenSVG = createListener(svg);
-	svg.panZoomParams = addImgPanZoom(listenSVG);
+	svg.panZoomParams = addImgPanZoom(state, listenSVG);
 	addSelectBox(state, listenSVG);
+  addTranslateHandle(state, listenSVG);
 	// addPathSelect(state, listenSVG);
 
 	const body = document.querySelector("body");
