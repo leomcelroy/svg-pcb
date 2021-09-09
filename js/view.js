@@ -1,11 +1,16 @@
 import { html, svg } from "https://cdn.skypack.dev/lit-html";
 import "https://leomcelroy.com/widgets/code-mirror.js";
 
+const mapColors = arr => arr.length === 4
+	? `rgba(${arr.map((n,i) => i < 3 ? Math.round(n*255) : n).join(",")})`
+	: arr.length === 3 ? `hsl(${arr[0]}, ${arr[1]}%, ${arr[2]}%)`
+	: "rgba(255, 255, 255, 1)"
+
 const drawPath = (d, color) => svg`
 	<path 
 		d="${d}" 
 		fill-rule="nonzero"
-		fill="rgb(${color.map((n,i) => i < 3 ? n*255 : n).join(",")})"/>
+		fill="${mapColors(color)}"/>
 `
 
 const svgViewer = (state) => {

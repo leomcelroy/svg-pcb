@@ -10,6 +10,14 @@ import { Turtle } from "./Turtle.js";
 
 import { parse2 } from "./parser.js";
 
+// const PCB_STORE = () => {
+// 	let PCBS = [];
+// 	let newPCB = new PCB();
+// 	PCBS.push(newPCB);
+	
+// 	return newPCB;
+// }
+
 const included = {
 	kicadToObj,
 	PCB,
