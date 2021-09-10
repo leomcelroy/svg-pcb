@@ -133,7 +133,8 @@ const ACTIONS = {
 		const secondBrack = translateTerm[2][2].index + startI;
 		const from = translateTerm[2][0].index + startI;
 		const comp = state.storedPCB.components[index];
-		const insert = `${x + comp.posX}, ${y + comp.posY}`;
+		const round = num => Math.round(num*10000)/10000;
+		const insert = `${round(x + comp.posX)}, ${round(y + comp.posY)}`;
 		const to = from + insert.length;
 		// console.log(string.slice(firstBrack, secondBrack));
 
@@ -142,9 +143,7 @@ const ACTIONS = {
 			changes: { from: firstBrack, to: secondBrack, insert }
 		});
 
-		console.time();
 		dispatch("RUN");
-		console.timeEnd();
 	},
 	RENDER() {
 		console.log("rendered")

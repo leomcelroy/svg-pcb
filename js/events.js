@@ -1,4 +1,6 @@
-import { addTranslateHandle } from "./addTranslateHandle.js";
+import { addTranslateHandle } from "./events/addTranslateHandle.js";
+import { addVerticalBarDrag } from "./events/addVerticalBarDrag.js";
+import { download } from "./events/download.js"
 
 function pauseEvent(e) {
     if(e.stopPropagation) e.stopPropagation();
@@ -8,34 +10,7 @@ function pauseEvent(e) {
     return false;
 }
 
-function addVerticalBarDrag(state, listenBody) {
-	let moveVerticalBar = false;
-
-	listenBody("mousedown", "#vertical-bar", e => {
-		moveVerticalBar = true;
-	})
-
-	listenBody("mousemove", "", (e) => {
-		if (!moveVerticalBar) return;
-
-		let x = e.clientX/window.innerWidth * 100;
-		if (x === 0) return;
-
-		const minX = 1;
-		const maxX = 99;
-
-		if (x < minX) x = minX;
-		if (x > maxX) x = maxX;
-
-		document.documentElement.style.setProperty("--vertical-bar", `${x}%`);
-
-		pauseEvent(e);
-	})
-
-	listenBody("mouseup", "", e => {
-		moveVerticalBar = false;
-	})
-}
+window.pauseEvent = pauseEvent;
 
 const trigger = e => e.composedPath()[0];
 const matchesTrigger = (e, selectorString) => trigger(e).matches(selectorString);
@@ -347,52 +322,17 @@ export function addEvents(state) {
 
 	listenBody("keydown", "", (e) => {
 		let code = event.code;
-		// console.log(code, event);
 		if (code === "Enter" && event.shiftKey) {
 		  event.preventDefault();
 		  dispatch("RUN");
-		}
+		} else if (code === "KeyT" && event.shiftKey) {
+      console.time()
+      dispatch("RENDER")
+      console.timeEnd()
+    }
 	})
 
-  listenBody("mousedown", ".download-button", () => {
-
-    const serializer = new XMLSerializer();
-    const svg = document.querySelector("svg").cloneNode(true);
-    const toRemove = svg.querySelectorAll(".no-download");
-    for (const item of toRemove) {
-      item.remove();
-    }
-
-    const tg = svg.querySelector(".transform-group");
-    tg.style.transformOrigin = "";
-    tg.style.transform = "";
-    // tg.style.transformOrigin = `${0}px ${0}px`;
-    // tg.style.transform = "translate(" + 0 + "px, " + 0 + "px) scale(" + 1 + ")";
-
-    const width = (state.limits.x[1] - state.limits.x[0]);
-    const height = (state.limits.y[1] - state.limits.y[0]);
-    svg.setAttribute("width", `${width*state.mm_per_unit}mm`);
-    svg.setAttribute("height", `${height*state.mm_per_unit}mm`);
-    svg.setAttribute("viewBox", `${state.limits.x[0]} ${state.limits.y[0]} ${width} ${height}`);
-    svg.setAttributeNS(
-      "http://www.w3.org/2000/xmlns/",
-      "xmlns:xlink",
-      "http://www.w3.org/1999/xlink"
-    );
-
-    const source = serializer.serializeToString(svg);
-    const svgUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
-
-    // make download link
-    const downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    downloadLink.download = `download.svg`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-
-    // clean up
-    document.body.removeChild(downloadLink);
-  })
+  listenBody("mousedown", ".download-button", () => download(state));
 
   listenBody("click", ".center-button", () => {
     const svg = document.querySelector("svg");

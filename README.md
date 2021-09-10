@@ -5,6 +5,8 @@
 	- acorn
 	- https://github.com/meriyah/meriyah
 	- cherow
+	- https://github.com/davidbonnet/astring
+	
 - recompile ast to javascript
 - manipulation handles for other transformations
 - add component menu
