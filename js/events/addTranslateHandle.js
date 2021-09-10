@@ -103,6 +103,7 @@ export function addTranslateHandle(state, svgListener) {
           }
         })  
 
+        if (newString === "") return;
         state.codemirror.view.dispatch({
           changes: { from: 0, to: currentString.length, insert: newString }
         });

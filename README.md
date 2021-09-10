@@ -8,7 +8,7 @@
 	- https://github.com/davidbonnet/astring
 	
 - [x] recompile ast to javascript
-- optimize js parsing and recompilation
+- [x] optimize js parsing and recompilation
 - manipulation handles for other transformations
 - add component menu
 - python scraper for neil's components
