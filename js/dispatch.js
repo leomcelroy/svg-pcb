@@ -152,7 +152,7 @@ const ACTIONS = {
 		})
 		// sort by first range
 		const sortedAdds = adds.sort((a, b) => a.range[0] - b.range[0])
-		const round = num => Math.round(num*10000)/10000;
+		const round = num => Math.round(num*1000)/1000;
 		const comp = state.storedPCB.components[index];
 		try {
 			sortedAdds[index].properties.forEach( prop => {
@@ -161,6 +161,21 @@ const ACTIONS = {
 					{type: 'Literal', value: round(x + comp.posX), raw: `${round(x + comp.posX)}`},
 					{type: 'Literal', value: round(y + comp.posY), raw: `${round(y + comp.posY)}`}
 				]
+
+				// const [ xNode, yNode ] = prop.value.elements;
+				// walk(xNode, node => {
+				// 	if (node.type === "Literal") {
+				// 		node.value = round(x + node.value);
+				// 		node.raw = `${round(x + node.value)}`;
+				// 	}
+				// })
+
+				// walk(yNode, node => {
+				// 	if (node.type === "Literal") {
+				// 		node.value = round(y + node.value);
+				// 		node.raw = `${round(y + node.value)}`;
+				// 	}
+				// })
 			})
 		} catch (err) {}
 
