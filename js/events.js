@@ -49,15 +49,20 @@ export function addEvents(state) {
 		if (code === "Enter" && event.shiftKey) {
 		  event.preventDefault();
 		  dispatch("RUN");
-
+		} else if (code === "KeyT" && event.shiftKey) {
+      
       const string = state.codemirror.view.state.doc.toString();
       const stringToParse = `()=>{${string}}`; // remember to subtract 5 from indices
+
       const esprimaAST = esprima.parseScript(stringToParse, { range: true });
       // console.log("esprimaAST:", esprimaAST);
+
       const mainBody = esprimaAST.body[0].expression.body.body;
       // console.log(mainBody);
-      const newScript = { type: 'Program', body: mainBody, sourceType: 'script' };
+
+      // const newScript = { type: 'Program', body: mainBody, sourceType: 'script' };
       // console.log(generate(newScript));
+
       let adds = [];
       walk(esprimaAST, node => {
         try {
@@ -67,17 +72,21 @@ export function addEvents(state) {
 
       // sort by first range
       const sortedAdds = adds.sort((a, b) => a.range[0] - b.range[0])
+      console.log(sortedAdds);
 
       // modify values here
+      // find adjustable parameter
+      // should be first number in expression
+      // replace value with new value
 
       // generate
-      console.log(generate(sortedAdds[0]));
+      console.log(generate(sortedAdds[1]));
 
       // reinsert
-		} else if (code === "KeyT" && event.shiftKey) {
-      console.time()
-      dispatch("RENDER")
-      console.timeEnd()
+      state.codemirror.view.dispatch({
+        changes: { from: sortedAdds[1].range[0] - 5, to: sortedAdds[1].range[1] - 5, insert: generate(sortedAdds[1]) }
+      });
+
     }
 	})
 
