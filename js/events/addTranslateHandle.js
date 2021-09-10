@@ -22,16 +22,16 @@ export function addTranslateHandle(state, svgListener) {
   })
 
   svgListener("mousemove", "", e => {
-    if (clicked) {
-      const svgPoint = svg.panZoomParams.svgPoint;
-      const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
-      const x = currentPoint.x - clickedPoint.x;
-      const y = currentPoint.y - clickedPoint.y;
-      dispatch("TRANSLATE", { x: x - lastX, y: y - lastY, index });
-      // dispatch("TRANSLATE", { x, y, index });
-      lastX = x;
-      lastY = y;
-    }
+    if (!clicked) return;
+
+    const svgPoint = svg.panZoomParams.svgPoint;
+    const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
+    const x = currentPoint.x - clickedPoint.x;
+    const y = currentPoint.y - clickedPoint.y;
+    dispatch("TRANSLATE", { x: x - lastX, y: y - lastY, index });
+    // dispatch("TRANSLATE", { x, y, index });
+    lastX = x;
+    lastY = y;
     // pauseEvent(e);
   })
 

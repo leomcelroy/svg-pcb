@@ -9,6 +9,8 @@ import { kicadToObj } from "./ki_cad_parser.js"
 import { Turtle } from "./Turtle.js";
 
 import { parse2 } from "./parser.js";
+import esprima from 'https://cdn.skypack.dev/esprima';
+import acorn from 'https://cdn.skypack.dev/acorn';
 
 
 const STATE = {
@@ -91,7 +93,6 @@ const ACTIONS = {
 			  changes: {from: 0, insert: test}
 			});
 			dispatch("RUN");
-
 	    }
 	},
 	RUN(args, state) {
@@ -107,6 +108,7 @@ const ACTIONS = {
 		state.limits = limits;
 		state.mm_per_unit = mm_per_unit;
 		// console.log(state.storedPCB);
+		dispatch("RENDER");
 	},
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");
@@ -116,10 +118,19 @@ const ACTIONS = {
 		});
 
 		state.codemirror.foldRange(0, text.length);
+		dispatch("RENDER");
 	},
 	TRANSLATE({ x, y, index }, state) {
 		// console.log(x, y, index);
 		const string = state.codemirror.view.state.doc.toString();
+
+		// const stringToParse = `()=>{${string}}`;
+		// const esprimaAST = esprima.parseScript(stringToParse);
+		// console.log(acorn);
+		// const acornAST = acorn.parse(stringToParse, {ecmaVersion: 2020})
+		// console.log("asprimaAST:", esprimaAST);
+		// console.log("acornAST:", acornAST);
+
 		// console.time()
 		const asts = parse2(string);
 		// console.timeEnd()
@@ -146,16 +157,12 @@ const ACTIONS = {
 		dispatch("RUN");
 	},
 	RENDER() {
-		console.log("rendered")
+		render(view(STATE), document.getElementById("root"));
 	}
 }
 
-export function dispatch(action, args = {}, rerender = true) {
+export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];
 	if (trigger) trigger(args, STATE);
 	else console.log("Action not recongnized:", action);
-
-	if (rerender) {
-		render(view(STATE), document.getElementById("root"));
-	}
 }
