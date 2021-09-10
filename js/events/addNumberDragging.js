@@ -47,7 +47,6 @@ export function addNumberDragging(state, bodyListener) {
 		}
 
 		const newValue = `${num}`;
-
 		cm.view.dispatch({
 			changes: {from: pos_start, to: pos_start + selectedText.length, insert: newValue}
 		});

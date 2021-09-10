@@ -1,13 +1,14 @@
 # TODO
 
-- switch to full javascript parser
+- [x] switch to full javascript parser
 	- esprima
 	- acorn
 	- https://github.com/meriyah/meriyah
 	- cherow
 	- https://github.com/davidbonnet/astring
 	
-- recompile ast to javascript
+- [x] recompile ast to javascript
+- optimize js parsing and recompilation
 - manipulation handles for other transformations
 - add component menu
 - python scraper for neil's components
