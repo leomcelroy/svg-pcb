@@ -73,3 +73,5 @@ const insert = generate(sortedAdds[index]);
 state.codemirror.view.dispatch({
 	changes: { from: sortedAdds[index].range[0] - 5, to: sortedAdds[index].range[1] - 5, insert }
 });
+
+

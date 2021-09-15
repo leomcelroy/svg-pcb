@@ -3,6 +3,25 @@ import acorn from 'https://cdn.skypack.dev/acorn';
 import { generate } from 'https://cdn.skypack.dev/astring';
 import { walk } from 'https://cdn.skypack.dev/esprima-walk';
 
+function foldImports(state) {
+  const anotherComp = l => l.includes("return kicadToObj(");
+
+  const doc = state.codemirror.view.state.doc;
+  const lines = doc.toString().split("\n");
+  let i = 0;
+  let count = 0;
+  while (true) {
+    const line = lines[i];
+    if (!line) break;
+    count += line.length;
+    if (i > lines.length) break;
+    if (lines[i] === "`)})()" && !anotherComp(lines[i+1])) break;
+    i++;
+  };
+
+  state.codemirror.foldRange(0, count+i);
+}
+
 export function addTranslateHandle(state, svgListener) {
   const svg = document.querySelector("svg");
 
@@ -25,8 +44,11 @@ export function addTranslateHandle(state, svgListener) {
 
     const string = state.codemirror.view.state.doc.toString();
     const stringToParse = `()=>{${string}}`; // remember to subtract 5 from indices
-    const esprimaAST = esprima.parseScript(stringToParse, { range: true });
+    const esprimaAST = esprima.parseScript(stringToParse, { range: true, comment: true });
+    console.log(esprimaAST);
     const mainBody = esprimaAST.body[0].expression.body.body;
+
+    console.log(mainBody);
     let adds = [];
     walk(esprimaAST, node => {
       try {
@@ -42,34 +64,11 @@ export function addTranslateHandle(state, svgListener) {
     const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
     const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 
-    const update = (node, val) => {
-      const currentString = state.codemirror.view.state.doc.toString();
-      walk(node, n => {
-        if (n.type === "Literal") {
-          let newNum = n.value + val;
-          let numString = `${round(newNum, sigFigs(n.raw))}`;
-
-          // const from = n.range[0] - 5;
-          // let to = n.range[0] - 5;
-          // if (currentString[to] === "-") to++;
-          // while (isDigit(currentString[to])) to++;
-
-          const newString = string.slice(0, n.range[0] - 5) + numString + string.slice(n.range[1] - 5);
-
-          state.codemirror.view.dispatch({
-            changes: { from: 0, to: currentString.length, insert: newString }
-          });
-
-          state.codemirror.foldRange(0, newString.length/2);
-
-          // xEnd = to;
-        }
-      })  
-    }
-
-    const comp = state.storedPCB.components[index];
+    // const comp = state.storedPCB.components[index];
 
     state.transformUpdate = (x, y) => {
+
+      const changes = [];
 
       sortedAdds[index].properties.forEach( prop => {
         if (prop.key.name !== "translate") return;
@@ -79,53 +78,55 @@ export function addTranslateHandle(state, svgListener) {
         // ]
 
         const [ xNode, yNode ] = prop.value.elements;
-        const currentString = state.codemirror.view.state.doc.toString();
-        let newString = "";
-        let xOffset = 0;
-        walk(xNode, n => {
-          if (n.type === "Literal") {
-            let newNum = n.value + x;
-            let numString = `${round(newNum, sigFigs(n.raw))}`;
 
-            newString = string.slice(0, n.range[0] - 5) + numString + string.slice(n.range[1] - 5);
-            xOffset = numString.length - (n.range[1] - n.range[0]);
+        let xChanged = false;
+        walk(xNode, n => {
+          if (xChanged) return;
+          if (n.type === "Literal" && typeof n.value === "number") {
+            if (!n.ogValue) n.ogValue = n.value;
+            if (!n.ogRaw) n.ogRaw = n.raw;
+
+            let newNum = n.ogValue + x;
+
+            changes.push({ 
+              from: n.range[0] - 5, 
+              to: n.range[1] - 5,
+              insert: `${round(newNum, sigFigs(n.ogRaw))}` 
+            });
+
+            xChanged = true;
           }
         })
 
+        let yChanged = false;
         walk(yNode, n => {
-          if (n.type === "Literal") {
-            let newNum = n.value + y;
-            let numString = `${round(newNum, sigFigs(n.raw))}`;
+          if (yChanged) return;
+          if (n.type === "Literal" && typeof n.value === "number") {
+            if (!n.ogValue) n.ogValue = n.value;
+            if (!n.ogRaw) n.ogRaw = n.raw;
 
-            newString = newString.slice(0, n.range[0] - 5 + xOffset) 
-              + numString 
-              + newString.slice(n.range[1] - 5 + xOffset);
+            let newNum = n.ogValue + y;
+
+            changes.push({ 
+              from: n.range[0] - 5, 
+              to: n.range[1] - 5,
+              insert: `${round(newNum, sigFigs(n.ogRaw))}` 
+            });
+            yChanged = true;
           }
-        })  
+        })
 
-        if (newString === "") return;
+        const currentString = state.codemirror.view.state.doc.toString();
+
         state.codemirror.view.dispatch({
-          changes: { from: 0, to: currentString.length, insert: newString }
+          changes: { from: 0, to: currentString.length, insert: string }
         });
 
-        // state.codemirror.foldRange(0, newString.length/2); // just want to do the imports and not return this is a bit hacky
-        const anotherComp = l => l.includes("return kicadToObj(");
-
-        const doc = state.codemirror.view.state.doc;
-        const lines = doc.toString().split("\n");
-        let i = 0;
-        let count = 0;
-        while (true) {
-          const line = lines[i];
-          if (!line) break;
-          count += line.length;
-          if (i > lines.length) break;
-          if (lines[i] === "`)})()" && !anotherComp(lines[i+1])) break;
-          i++;
-        };
-
-        state.codemirror.foldRange(0, count+i);
+        state.codemirror.view.dispatch({ changes });
       })
+
+      foldImports(state);
+
     }
 
     // pauseEvent(e);
