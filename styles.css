@@ -9,7 +9,7 @@ body {
 	font-size: 12pt;
 	margin: 0px;
 	overscroll-behavior: none; /*this stops the back swipe*/
-/*	overflow: hidden;*/
+	overflow: hidden;
 }
 
 input {
@@ -35,25 +35,75 @@ input {
   width: 100vw;
   height: 100vh;
   grid-template:
-    ". ." 100%
+ 	  "top-menu top-menu" 30px
+    "editor view" 1fr
     / var(--vertical-bar) 1fr;
 }
 
 #code-editor {
+	grid-area: editor;
 	background: #f4e6d0;
 	overflow: scroll;
 }
 
 #viewer {
+		grid-area: view;
     width: 100%;
     height: 100%;
 /*    transform: scale(1, -1);*/
 }
 
-.buttons {
+.top-menu {
+	grid-area: top-menu;
+	display: flex;
+	place-items: center;
+	width: 100%;
+	height: 100%;
+	background: lightgrey;
+}
+
+.left {
+	margin-left: 20px;
+}
+
+.right {
+	margin-left: auto;
+	margin-right: 20px;
+}
+
+.dropdown-container {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+
+.dropdown-content {
+	visibility: hidden;
+	display: flex;
+	flex-direction: column;
 	position: absolute;
-	right: 10px;
-	bottom: 10px;
+	z-index: 10;
+	left: 0px;
+	top: 100%;
+	background: lightgrey;
+	width: max-content;
+	min-width: 100%;
+
+	/*border-radius: 15px;*/
+
+	max-height: 50vh;
+	overflow: scroll;
+	padding: 5px;
+}
+
+.dropdown-container:hover .dropdown-content {
+	visibility: visible;
+}
+
+.import-item:hover {
+	background: blue;
+	color: white;
 }
 
 .canvas-container {
@@ -71,7 +121,7 @@ input {
 #vertical-bar {
   position: absolute;
   left: calc( var(--vertical-bar) - 5px);
-  top: 0px;
+  top: 30px;
   background: black;
   width: 10px;
   height: 100%;

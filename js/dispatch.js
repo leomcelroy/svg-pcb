@@ -123,6 +123,14 @@ const ACTIONS = {
 		state.codemirror.foldRange(0, text.length);
 		dispatch("RENDER");
 	},
+	ADD_IMPORT({ text, name }, state) {
+		text = `const ${name} = ${text}\n`
+		state.codemirror.view.dispatch({
+		  changes: {from: 0, insert: text}
+		});
+
+		dispatch("RENDER");
+	},
 	TRANSLATE({ x, y, index }, state) {
 		state.transformUpdate(x, y);
 		dispatch("RUN");

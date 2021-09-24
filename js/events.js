@@ -92,6 +92,8 @@ export function addEvents(state) {
 
   listenBody("mousedown", ".download-button", () => download(state));
 
+  // listenBody("mousedown", ".import-button", () => download(state));
+
   listenBody("click", ".center-button", () => {
     const svg = document.querySelector("svg");
     svg.panZoomParams.setScaleXY(state.limits);

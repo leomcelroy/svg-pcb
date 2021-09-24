@@ -1,17 +1,38 @@
 import { html, svg } from "https://cdn.skypack.dev/lit-html";
 import "https://leomcelroy.com/widgets/code-mirror.js";
+import { files } from "./neil-components-names.js";
 
 export function view(state) {
 	return html`
+		<div class="top-menu">
+			<div class="left">
+				 <div class="dropdown-container">
+				 	import
+				 	<div class="dropdown-content">
+				 		${ files.map(x => x.slice(10)).map( x => html`
+								<div class="import-item" @mousedown=${async (e) => {
+						 			const res = await fetch(`/neil-components/${x}`);
+						 			const text = await res.text();
+						 			dispatch("ADD_IMPORT", { text, name: e.target.innerText.split("/")[1].split(".")[0] });
+						 		}}>${x}</div>
+				 			`)
+				 		}
+				 		
+				 	</div>
+				 </div>
+			</div>
+			<div class="right">
+				<button class="download-button">download</button>
+				<button class="center-button">center</button>
+			</div>
+		</div>
 		<code-mirror id="code-editor"></code-mirror>
 		${svgViewer(state)}
-		<div class="buttons">
-			<button class="download-button">download</button>
-			<button class="center-button">center</button>
-		</div>
 		<div id="vertical-bar"></div>
 	`
 }
+
+// neil-components/connectors/ESC.json
 
 const mapColors = arr => arr.length === 4
 	? `rgba(${arr.map((n,i) => i < 3 ? Math.round(n*255) : n).join(",")})`

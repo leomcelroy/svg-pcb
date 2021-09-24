@@ -9,11 +9,14 @@
 	
 - [x] recompile ast to javascript
 - [x] optimize js parsing and recompilation
+- 
 - manipulation handles for other transformations
 - add component menu
 - python scraper for neil's components
 - converter from python to js board
 - update skypack dependency or bundle
+
+https://gitlab.cba.mit.edu/classes/865.21/projects/frep-editor/-/blob/main/extras/PCB_py2js.py
 
 
 # Older
