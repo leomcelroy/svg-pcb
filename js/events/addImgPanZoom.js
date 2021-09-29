@@ -9,6 +9,7 @@ export function addImgPanZoom(state, listen) {
   function setTransform(el) {
     el.style.transformOrigin = `${0}px ${0}px`;
     el.style.transform = "translate(" + pointX + "px, " + pointY + "px) scale(" + scale + ")";
+    if (state.gridSize > 0) dispatch("RENDER");
   }
 
   function svgPoint({ x, y }) {
@@ -95,10 +96,28 @@ export function addImgPanZoom(state, listen) {
     }
   }
 
+  function corners() {
+    const svg = document.querySelector("svg"); // what if there were other svgs?
+    if (svg === null) return null;
+    const { left, right, bottom, top, width, height} = svg.getBoundingClientRect();
+    // need rt, lt, rb, lb
+    const rt = svgPoint({ x: width, y: height });
+    // rt.y = -rt.y
+    const lt = svgPoint({ x: 0, y: height });
+    // lt.y = -lt.y
+    const rb = svgPoint({ x: width, y: 0 });
+    // rb.y = -rb.y
+    const lb = svgPoint({ x: 0, y: 0 });
+    // lb.y = -lb.y
+
+    return { rt, lt, rb, lb }
+  }
+
   return { 
   	scale: () => scale,
   	x: () => pointX,
   	y: () => pointY,
+    corners,
     svgPoint,
     setScaleXY
   }

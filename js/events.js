@@ -34,7 +34,10 @@ const createListener = (target) => (eventName, selectorString, event) => { // fo
 export function addEvents(state) {
 	const svg = document.querySelector("svg");
 	const listenSVG = createListener(svg);
+  
 	svg.panZoomParams = addImgPanZoom(state, listenSVG);
+  state.panZoomParams = svg.panZoomParams;
+
 	addSelectBox(state, listenSVG);
   addTranslateHandle(state, listenSVG);
 

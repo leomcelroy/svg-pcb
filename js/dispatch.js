@@ -26,7 +26,10 @@ const STATE = {
 		x: [0, 1],
 		y: [0, 1]
 	},
-	mm_per_unit: 25.4
+	mm_per_unit: 25.4,
+	gridSize: 0.05,
+	viewHandles: true,
+	panZoomParams: undefined,
 }
 
 class PCB extends real_PCB {

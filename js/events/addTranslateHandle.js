@@ -61,6 +61,7 @@ export function addTranslateHandle(state, svgListener) {
       ? num.split(".")[1].length
       : num.length;
 
+    const step = (num, stepSize) => Math.round(num/stepSize)*stepSize;
     const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
     const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 
@@ -91,7 +92,8 @@ export function addTranslateHandle(state, svgListener) {
             changes.push({ 
               from: n.range[0] - 5, 
               to: n.range[1] - 5,
-              insert: `${round(newNum, sigFigs(n.ogRaw))}` 
+              // insert: `${round(newNum, sigFigs(n.ogRaw))}`,
+              insert: `${round(step(newNum, state.gridSize), 8)}` 
             });
 
             xChanged = true;
@@ -110,7 +112,8 @@ export function addTranslateHandle(state, svgListener) {
             changes.push({ 
               from: n.range[0] - 5, 
               to: n.range[1] - 5,
-              insert: `${round(newNum, sigFigs(n.ogRaw))}` 
+              // insert: `${round(newNum, sigFigs(n.ogRaw))}`,
+              insert: `${round(step(newNum, state.gridSize), 8)}`  
             });
             yChanged = true;
           }
