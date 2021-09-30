@@ -219,23 +219,23 @@ const tokenize = makeTokenizer(tokenRules, { skip, literals });
 
 // need optional and match anything
 
-const number = and(["number"], x => ({ type: "number", value: Number(x[0].value) }))
+const number = and(["number"])
 
 const entry = s => or([
-  and(["symbol", ":", p, ","], x => ({ key: x[0].value, value: x[2] })),
-  and(["symbol", ":", p], x => ({ key: x[0].value, value: x[2] }))
+  and(["symbol", ":", p, ","]),
+  and(["symbol", ":", p])
 ])(s);
 
 const e = s => or([
-  and([p, "op", e], x => ({ type: "binary", value: x })),
+  and([p, "op", e]),
   p
 ])(s)
   
 const p = s => or([
-  and(["op", p], x => ({ type: "unary", value: x })),
+  and(["op", p]),
   or([ 
-    and(["(", e, ")"], x => ({ type: "parens", value: x[1] }) ),
-    and(["[", many(e), "]"], x => x[1]), // what about ,
+    and(["(", e, ")"]),
+    and(["[", many(e), "]"]), // what about ,
   ]), 
   or([number, "string", "symbol", ","])
 ])(s)
@@ -244,21 +244,22 @@ const parse = x => and(["{", many(entry), "}"], x => x[1])(x)[0];
 
 const test = `{ translate: [3, 3], name: 3 }`
 const tokens = tokenize(test);
-console.log(tokens);
+// console.log(tokens);
 const ast = parse(tokens);
-console.log(ast);
+// console.log(ast);
 
 const parse2 = (string) => {
-  const regex = /\.add\(\w+(,)?(.*)\)/g
+  const regex = /(\.add\(\w+,?)(.*)\)/g
   const results = string.matchAll(regex);
+  const asts = [];
   for (const result of results) {
-    console.log(result.index);
     const toParse = result[2];
     const tokens = tokenize(toParse);
-    console.log(toParse);
     const ast = parse(tokens);
-    console.log(ast);
+    asts.push({ index: result.index + result[1].length, ast });
   }
+
+  return asts;
 }
 
 export { parse2 }

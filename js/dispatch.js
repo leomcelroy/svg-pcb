@@ -4,35 +4,45 @@ import { render } from "https://cdn.skypack.dev/lit-html";
 import { addEvents } from "./events.js";
 import { test } from "./test.js";
 
-import { PCB } from "./pcb.js";
+import { PCB as real_PCB } from "./pcb.js";
 import { kicadToObj } from "./ki_cad_parser.js"
 import { Turtle } from "./Turtle.js";
 
 import { parse2 } from "./parser.js";
+import esprima from 'https://cdn.skypack.dev/esprima';
+import acorn from 'https://cdn.skypack.dev/acorn';
+import { generate } from 'https://cdn.skypack.dev/astring';
+import { walk } from 'https://cdn.skypack.dev/esprima-walk';
 
-// const PCB_STORE = () => {
-// 	let PCBS = [];
-// 	let newPCB = new PCB();
-// 	PCBS.push(newPCB);
-	
-// 	return newPCB;
-// }
-
-const included = {
-	kicadToObj,
-	PCB,
-	Turtle
-}
 
 const STATE = {
 	codemirror: undefined,
+	storedPCB: undefined,
+	transforming: false,
+	transformUpdate: () => {},
 	selectBox: {},
 	shapes: [],
 	limits: {
 		x: [0, 1],
 		y: [0, 1]
 	},
-	mm_per_unit: 25.4
+	mm_per_unit: 25.4,
+	gridSize: 0.05,
+	viewHandles: true,
+	panZoomParams: undefined,
+}
+
+class PCB extends real_PCB {
+	constructor() {
+		super();
+		STATE.storedPCB = this;
+	}
+}
+
+const included = {
+	kicadToObj,
+	PCB,
+	Turtle
 }
 
 async function urlToCode(file_url, state) {
@@ -89,13 +99,11 @@ const ACTIONS = {
 			  changes: {from: 0, insert: test}
 			});
 			dispatch("RUN");
-
 	    }
 	},
-	RUN({ download }, state) {
+	RUN(args, state) {
 		const string = state.codemirror.view.state.doc.toString();
 		// const result = JSON.parse(string); // if json
-		// parse2(string);
 
 		const f = new Function(...Object.keys(included), string)
 		const result = f(...Object.values(included));
@@ -105,6 +113,8 @@ const ACTIONS = {
 		state.shapes = shapes;
 		state.limits = limits;
 		state.mm_per_unit = mm_per_unit;
+		// console.log(state.storedPCB);
+		dispatch("RENDER");
 	},
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");
@@ -114,18 +124,27 @@ const ACTIONS = {
 		});
 
 		state.codemirror.foldRange(0, text.length);
+		dispatch("RENDER");
+	},
+	ADD_IMPORT({ text, name }, state) {
+		text = `const ${name} = ${text}\n`
+		state.codemirror.view.dispatch({
+		  changes: {from: 0, insert: text}
+		});
+
+		dispatch("RENDER");
+	},
+	TRANSLATE({ x, y, index }, state) {
+		state.transformUpdate(x, y);
+		dispatch("RUN");
 	},
 	RENDER() {
-		console.log("rendered")
+		render(view(STATE), document.getElementById("root"));
 	}
 }
 
-export function dispatch(action, args = {}, rerender = true) {
+export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];
 	if (trigger) trigger(args, STATE);
 	else console.log("Action not recongnized:", action);
-
-	if (rerender) {
-		render(view(STATE), document.getElementById("root"));
-	}
 }
