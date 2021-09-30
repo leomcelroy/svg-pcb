@@ -11,7 +11,7 @@ export function view(state) {
 				 	<div class="dropdown-content">
 				 		${ files.map(x => x.slice(10)).map( x => html`
 								<div class="import-item" @mousedown=${async (e) => {
-						 			const res = await fetch(`/neil-components/${x}`);
+						 			const res = await fetch(`../neil-components/${x}`);
 						 			const text = await res.text();
 						 			dispatch("ADD_IMPORT", { text, name: e.target.innerText.split("/")[1].split(".")[0] });
 						 		}}>${x}</div>
