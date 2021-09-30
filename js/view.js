@@ -22,28 +22,38 @@ export function view(state) {
 				 </div>
 			</div>
 			<div class="right">
-				<button class="download-button">download</button>
-				<button class="center-button">center</button>
-				<input 
-					type="checkbox" 
-					checked=${state.viewHandles}
-					@change=${(e) => { 
-						state.viewHandles = e.target.checked; 
-						dispatch("RENDER"); 
-					}}
-					class="handles-checkbox">handles
-				</input>
-				<span>grid size:</span>
-				<input 
-					type="number" 
-					step="0.005" 
-					min="0"
-					value=${state.gridSize}
-					@change=${e => {
-						state.gridSize = Number(e.target.value);
-						dispatch("RENDER");
-					}}>
-				</input>
+				<div class="dropdown-container">
+					drawing
+					<div class="dropdown-content dropdown-content-right">
+						<button class="download-button">download</button>
+						<button class="center-button">center</button>
+						<div>
+							<span>handles</span>
+							<input 
+								type="checkbox" 
+								checked=${state.viewHandles}
+								@change=${(e) => { 
+									state.viewHandles = e.target.checked; 
+									dispatch("RENDER"); 
+								}}
+								class="handles-checkbox">
+							</input>
+						</div>
+						<div>
+							<span>grid size:</span>
+							<input 
+								type="number" 
+								step="0.005" 
+								min="0"
+								value=${state.gridSize}
+								@change=${e => {
+									state.gridSize = Number(e.target.value);
+									dispatch("RENDER");
+								}}>
+							</input>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<code-mirror id="code-editor"></code-mirror>

@@ -64,11 +64,17 @@ input {
 
 .left {
 	margin-left: 20px;
+  height: 100%;
+  display: grid;
+  place-content: center;
 }
 
 .right {
 	margin-left: auto;
 	margin-right: 20px;
+	height: 100%;
+  display: grid;
+  place-content: center;
 }
 
 .dropdown-container {
@@ -76,6 +82,7 @@ input {
 	width: 100%;
 	height: 100%;
 	cursor: pointer;
+	z-index: 100;
 }
 
 .dropdown-content {
@@ -89,13 +96,18 @@ input {
 	background: lightgrey;
 	width: max-content;
 	min-width: 100%;
-
-	/*border-radius: 15px;*/
-
+	border-top: 5px solid lightgrey;
 	max-height: 50vh;
 	overflow: scroll;
 	padding: 5px;
+	box-sizing: border-box;
 }
+
+.dropdown-content-right {
+	left: revert;
+	right: 0px;
+}
+
 
 .dropdown-container:hover .dropdown-content {
 	visibility: visible;
