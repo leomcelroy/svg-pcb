@@ -60,8 +60,8 @@ export class PCB {
 
     return this.layers[layer] 
       ? flatten 
-        ? this.layers[layer].flatten().getPath(paths) 
-        : this.layers[layer].getPath(paths) 
+        ? this.layers[layer].flatten().getPathData(paths) 
+        : this.layers[layer].getPathData(paths) 
       : "";
   }
 
