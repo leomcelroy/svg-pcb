@@ -26,7 +26,7 @@ board.wire([[0, 0.2], ftdi.pos], 0.02)
 
 return {
   shapes: [
-    { d: board.getLayer("F.Cu").getPath(false), color: [1,0,0,1] },
+    { d: board.getLayer("F.Cu").getPathData(false), color: [1,0,0,1] },
   ],
   limits: {},
   mm_per_unit: 25.4

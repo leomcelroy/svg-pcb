@@ -123,7 +123,7 @@ const w = 0.01      // wire width
 const mask = .004   // solder mask size
 
 // additional footprints
-const pad_header = new Turtle().rectangle(2*.043,2*.015).getPath();
+const pad_header = new Turtle().rectangle(2*.043,2*.015).getPathData();
 
 let SWD_4_05 = {
   "CLK": {
@@ -151,12 +151,12 @@ let SWD_4_05 = {
 let VIA = {
   "1": {
     "pos": [0, 0],
-    "shape": new Turtle().circle(rp).getPath(),
+    "shape": new Turtle().circle(rp).getPathData(),
     "layers": ["F.Cu", "B.Cu"]
   },
   "1_drill": {
     "pos": [0, 0],
-    "shape": new Turtle().circle(rv).getPath(),
+    "shape": new Turtle().circle(rv).getPathData(),
     "layers": ["drill"]
   },
 }
@@ -294,7 +294,7 @@ board.wire([v3.pad("1"),
 // tc = `${circle(0.8, 1.5, 0.1)} ${circle(0.8, 1.9, 0.1)}`;
 
 
-let background = new Turtle().rectangle(10, 10).getPath();
+let background = new Turtle().rectangle(10, 10).getPathData();
 // board.addFrep("interior", frep.rectangle(usb.posX-0.24,
 //                                          usb.posX+0.24,
 //                                          usb.posY-0.14,
@@ -313,7 +313,7 @@ let interior = new Turtle()
     .rectangle(0.84, 1.04)
     .translate([usb.posX - 0.023, usb.posY - 0.64])
   )
-  .getPath()
+  .getPathData()
 
 return {
   shapes: [

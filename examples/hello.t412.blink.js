@@ -117,7 +117,7 @@ const w = 0.01;
 const mask = .004;
 
 // additional footprints
-const pad_header = new Turtle().rectangle(2*.043,2*.015).getPath();
+const pad_header = new Turtle().rectangle(2*.043,2*.015).getPathData();
 
 let board = new PCB();
 
@@ -176,7 +176,7 @@ board.wire([r2.pad("2"),
             j1.pad("TX")], w)
 
 
-let interior = new Turtle().rectangle(width, height).translate([x+width/2, y+height/2]).getPath();
+let interior = new Turtle().rectangle(width, height).translate([x+width/2, y+height/2]).getPathData();
 
 return {
   shapes: [

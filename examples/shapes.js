@@ -9,7 +9,7 @@
 let test = new Turtle()
   .rectangle(4.41, 3.01)
   .translate([1.29, 0.34])
-  .getPath();
+  .getPathData();
 
 return {
   shapes: [
