@@ -1,7 +1,6 @@
-import esprima from 'https://cdn.skypack.dev/esprima';
-import acorn from 'https://cdn.skypack.dev/acorn';
-import { generate } from 'https://cdn.skypack.dev/astring';
-import { walk } from 'https://cdn.skypack.dev/esprima-walk';
+import esprima from 'esprima';
+import { generate } from 'astring';
+import { walk } from "esprima-walk";
 
 function foldImports(state) {
   const anotherComp = l => l.includes("return kicadToObj(");

@@ -2,7 +2,6 @@ import { view } from "./view.js";
 import { render } from "lit-html";
 
 import { addEvents } from "./events.js";
-import { test } from "./test.js";
 
 import { PCB as real_PCB } from "./pcb.js";
 import { kicadToObj } from "./ki_cad_parser.js"
@@ -90,9 +89,8 @@ const ACTIONS = {
           urlToCode(file_url, state);
 	    } else {
 		    state.codemirror.view.dispatch({
-			  changes: {from: 0, insert: test}
+			  changes: {from: 0, insert: ""}
 			});
-			dispatch("RUN");
 	    }
 	},
 	RUN(args, state) {
