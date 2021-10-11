@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "start": "snowpack dev",
-    "build": "snowpack build"
+    "build": "snowpack build",
+    "postbuild": "cp -r ./neil-components ./build"
   },
   "devDependencies": {
     "snowpack": "^3.8.8"
