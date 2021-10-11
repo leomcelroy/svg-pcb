@@ -1,5 +1,5 @@
 import { view } from "./view.js";
-import { render } from "https://cdn.skypack.dev/lit-html";
+import { render } from "lit-html";
 
 import { addEvents } from "./events.js";
 import { test } from "./test.js";
@@ -7,12 +7,6 @@ import { test } from "./test.js";
 import { PCB as real_PCB } from "./pcb.js";
 import { kicadToObj } from "./ki_cad_parser.js"
 import { Turtle } from "./Turtle.js";
-
-import { parse2 } from "./parser.js";
-import esprima from 'https://cdn.skypack.dev/esprima';
-import acorn from 'https://cdn.skypack.dev/acorn';
-import { generate } from 'https://cdn.skypack.dev/astring';
-import { walk } from 'https://cdn.skypack.dev/esprima-walk';
 
 
 const STATE = {
