@@ -1,12 +1,11 @@
 {
-  "name": "vite-project",
+  "name": "SVG-PCB",
   "version": "0.0.0",
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build"
   },
   "devDependencies": {
-    "snowpack": "^3.8.8",
-    "vite": "^2.6.4"
+    "snowpack": "^3.8.8"
   }
 }
