@@ -23,6 +23,12 @@ https://gitlab.cba.mit.edu/classes/865.21/projects/frep-editor/-/blob/main/extra
 - make turtorial
 - draw wire
 
+# Bugs
+
+- fix fontBoundingBoxAscent
+	- render text with opentype.js
+- anti-aliasing in firefox
+
 
 # Older
 
