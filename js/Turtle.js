@@ -1,4 +1,4 @@
-import { Turtle } from "../libs/gram-js.js";
+import { Turtle } from "gram-js";
 
 function getPath(merge = true) {
 	let result = [];

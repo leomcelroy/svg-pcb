@@ -1,5 +1,5 @@
-import { html, svg } from "https://cdn.skypack.dev/lit-html";
-import "https://leomcelroy.com/widgets/code-mirror.js";
+import { html, svg } from "lit-html";
+import "code-mirror";
 import { files } from "./neil-components-names.js";
 
 export function view(state) {
