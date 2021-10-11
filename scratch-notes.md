@@ -1,5 +1,10 @@
 # TODO
 
+- [] add error messages
+- [] fix minus bug
+- [] fix text rendering in gram-js
+- [] firefox rendering bug
+
 - [x] switch to full javascript parser
 	- esprima
 	- acorn
@@ -13,14 +18,14 @@
 - [x] add component menu
 - [x] python scraper for neil's components
 - converter from python to js board
-- update skypack dependency or bundle
+- [x] update skypack dependency or bundle
 
 https://gitlab.cba.mit.edu/classes/865.21/projects/frep-editor/-/blob/main/extras/PCB_py2js.py
 
 - render as board
-- clean up menu
+- [x] clean up menu
 - convert whole boards
-- make turtorial
+- make tutorial
 - draw wire
 
 # Bugs
