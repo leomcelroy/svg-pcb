@@ -1,5 +1,5 @@
 let count = 0;
-function readFile(file) {
+function readFileUploadComp(file) {
   var reader = new FileReader();
   reader.readAsText(file);
 
@@ -10,19 +10,34 @@ function readFile(file) {
   };
 }
 
+function readFileJS(file) {
+  var reader = new FileReader();
+  reader.readAsText(file);
+
+  reader.onloadend = event => {
+    let text = reader.result;
+    dispatch("UPLOAD_JS", { text });
+  };
+}
+
 function upload(files, extensions = []) {
   let file = files[0];
   let fileName = file.name.split(".");
   let name = fileName[0];
   const extension = fileName[fileName.length - 1];
 
-  if (extensions.length > 0 && !extensions.includes(extension)) throw "Extension not recongized: " + fileName;
+  // if (extensions.length > 0 && !extensions.includes(extension)) throw "Extension not recongized: " + fileName;
   
   // TODO: if js then drop and run
   // TODO: if kicad mod readFile as is
-  readFile(file);
-  // if (["json"].includes(extension)) readFile(file);
-  // else console.log("Unknown extension:", extension);
+  if (extension === "kicad_mod") {
+    readFileUploadComp(file);
+  } else if (extension === "js") {
+    readFileJS(file);
+  } else {
+    throw Error("Unknown extension:", extension);
+  }
+
 };
 
 export function addDropUpload(state, bodyListener) {

@@ -126,6 +126,15 @@ const ACTIONS = {
 		state.codemirror.foldRange(0, text.length);
 		dispatch("RENDER");
 	},
+	UPLOAD_JS({ text }, state) {
+		const end = state.codemirror.view.state.doc.toString().length;
+		state.codemirror.view.dispatch({
+		  changes: {from: 0, to: end, insert: text}
+		});
+
+		dispatch("RUN");
+		document.querySelector(".center-button").click()
+	},
 	ADD_IMPORT({ text, name }, state) {
 		text = `const ${name} = ${text}\n`
 		state.codemirror.view.dispatch({
