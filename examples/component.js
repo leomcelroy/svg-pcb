@@ -27,7 +27,7 @@ const test_footprint = {
 // mac: Command + Option + j
 // Windows/Linux: Shift + CTRL + j
 
-// included: Turtle, PCB, pcb
+// included: Turtle, PCB, kicadToObj
 
 let board = new PCB();
 
