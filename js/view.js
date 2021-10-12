@@ -17,7 +17,7 @@ export function view(state) {
 			<div class="left">
 				<button 
 					@click=${() => dispatch("RUN", { save: true })}>
-					run
+					run (shift + enter)
 				</button>
 				<div class="seperator"></div>
 				<div class="dropdown-container">
@@ -29,7 +29,7 @@ export function view(state) {
 				 <div class="seperator"></div>
 				 <div class="dropdown-container">
 					download
-					<div class="dropdown-content dropdown-content-right">
+					<div class="dropdown-content dropdown-content">
 						<button 
 							@click=${() => downloadSVG(state)}>
 							svg
@@ -40,11 +40,10 @@ export function view(state) {
 						</button>
 					</div>
 				</div>
-			</div>
-			<div class="right">
+				<div class="seperator"></div>
 				<div class="dropdown-container">
 					drawing
-					<div class="dropdown-content dropdown-content-right">
+					<div class="dropdown-content dropdown-content">
 						<button 
 							class="center-button"
 							@click=${() => {
@@ -98,7 +97,7 @@ const drawPath = (d, color) => svg`
 	<path 
 		d="${d}" 
 		fill-rule="nonzero"
-		fill="${mapColors(color)}"/>
+		fill="${typeof color === "string" ? color : mapColors(color)}"/>
 `
 
 const ptsToD = pts => pts.reduce((acc, cur, i) => `${acc} ${i === 0 ? "M" : "L"} ${cur.join(",")}`, "");
