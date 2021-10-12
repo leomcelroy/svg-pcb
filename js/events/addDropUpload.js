@@ -17,7 +17,9 @@ function upload(files, extensions = []) {
   const extension = fileName[fileName.length - 1];
 
   if (extensions.length > 0 && !extensions.includes(extension)) throw "Extension not recongized: " + fileName;
-
+  
+  // TODO: if js then drop and run
+  // TODO: if kicad mod readFile as is
   readFile(file);
   // if (["json"].includes(extension)) readFile(file);
   // else console.log("Unknown extension:", extension);

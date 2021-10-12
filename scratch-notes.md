@@ -4,6 +4,13 @@
 - [] fix minus bug
 - [] fix text rendering in gram-js
 - [] firefox rendering bug
+- [x] save
+- [] upload
+	- [x] kicad module
+	- [] js
+- [] share site
+- [] converter from python to js board
+- [] improve gram-js docs
 
 - [x] switch to full javascript parser
 	- esprima
@@ -17,7 +24,6 @@
 - manipulation handles for other transformations
 - [x] add component menu
 - [x] python scraper for neil's components
-- converter from python to js board
 - [x] update skypack dependency or bundle
 
 https://gitlab.cba.mit.edu/classes/865.21/projects/frep-editor/-/blob/main/extras/PCB_py2js.py

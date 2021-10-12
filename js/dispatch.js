@@ -88,12 +88,16 @@ const ACTIONS = {
 
           urlToCode(file_url, state);
 	    } else {
+	    	const saved = window.localStorage.getItem("svg-pcb")
 		    state.codemirror.view.dispatch({
-			  changes: {from: 0, insert: ""}
+			  changes: {from: 0, insert: saved ?? ""}
 			});
+
+			dispatch("RUN");
+			document.querySelector(".center-button").click();
 	    }
 	},
-	RUN(args, state) {
+	RUN({ save = false }, state) {
 		const string = state.codemirror.view.state.doc.toString();
 		// const result = JSON.parse(string); // if json
 
@@ -105,7 +109,11 @@ const ACTIONS = {
 		state.shapes = shapes;
 		state.limits = limits;
 		state.mm_per_unit = mm_per_unit;
-		// console.log(state.storedPCB);
+
+		if (save) {
+			window.localStorage.setItem("svg-pcb", string)
+		}
+		
 		dispatch("RENDER");
 	},
 	UPLOAD_COMP({ text, name }, state) {

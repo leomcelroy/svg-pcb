@@ -4,7 +4,7 @@ import { addImgPanZoom } from "./events/addImgPanZoom.js";
 import { addDropUpload } from "./events/addDropUpload.js";
 import { addSelectBox } from "./events/addSelectBox.js";
 import { addNumberDragging } from "./events/addNumberDragging.js";
-import { download } from "./events/download.js"
+// import { download } from "./events/download.js"
 
 function pauseEvent(e) {
     if(e.stopPropagation) e.stopPropagation();
@@ -46,20 +46,18 @@ export function addEvents(state) {
 		let code = event.code;
 		if (code === "Enter" && event.shiftKey) {
 		  event.preventDefault();
-		  dispatch("RUN");
+		  dispatch("RUN", { save: true });
 		} else if (code === "KeyT" && event.shiftKey) { // test something
       
     }
 	})
 
-  listenBody("mousedown", ".download-button", () => download(state));
+  // listenBody("mousedown", ".download-button", () => download(state));
 
-  // listenBody("mousedown", ".import-button", () => download(state));
-
-  listenBody("click", ".center-button", () => {
-    const svg = document.querySelector("svg");
-    svg.panZoomParams.setScaleXY(state.limits);
-  })
+  // listenBody("click", ".center-button", () => {
+  //   const svg = document.querySelector("svg");
+  //   svg.panZoomParams.setScaleXY(state.limits);
+  // })
 }
 
 

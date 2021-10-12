@@ -1,32 +1,57 @@
 import { html, svg } from "lit-html";
 import "code-mirror";
 import { files } from "./neil-components-names.js";
+import { downloadSVG, downloadText } from "./events/download.js"
+
+const drawImportItems = (files) => files.map(x => x.slice(10)).map( x => html`
+	<div class="import-item" @mousedown=${async (e) => {
+		const res = await fetch(`neil-components/${x}`);
+		const text = await res.text();
+		dispatch("ADD_IMPORT", { text, name: e.target.innerText.split("/")[1].split(".")[0] });
+	}}>${x}</div>
+`)
 
 export function view(state) {
 	return html`
 		<div class="top-menu">
 			<div class="left">
-				 <div class="dropdown-container">
+				<button 
+					@click=${() => dispatch("RUN", { save: true })}>
+					run
+				</button>
+				<div class="seperator"></div>
+				<div class="dropdown-container">
 				 	import
 				 	<div class="dropdown-content">
-				 		${ files.map(x => x.slice(10)).map( x => html`
-								<div class="import-item" @mousedown=${async (e) => {
-						 			const res = await fetch(`neil-components/${x}`);
-						 			const text = await res.text();
-						 			dispatch("ADD_IMPORT", { text, name: e.target.innerText.split("/")[1].split(".")[0] });
-						 		}}>${x}</div>
-				 			`)
-				 		}
-				 		
+				 		${drawImportItems(files)}		
 				 	</div>
 				 </div>
+				 <div class="seperator"></div>
+				 <div class="dropdown-container">
+					download
+					<div class="dropdown-content dropdown-content-right">
+						<button 
+							@click=${() => downloadSVG(state)}>
+							svg
+						</button>
+						<button 
+							@click=${() => downloadText("anon.js", state.codemirror.view.state.doc.toString())}>
+							js
+						</button>
+					</div>
+				</div>
 			</div>
 			<div class="right">
 				<div class="dropdown-container">
 					drawing
 					<div class="dropdown-content dropdown-content-right">
-						<button class="download-button">download</button>
-						<button class="center-button">center</button>
+						<button 
+							class="center-button"
+							@click=${() => {
+    							state.panZoomParams.setScaleXY(state.limits);
+							}}>
+							center
+						</button>
 						<div>
 							<span>handles</span>
 							<input 

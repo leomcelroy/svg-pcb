@@ -63,10 +63,10 @@ input {
 }
 
 .left {
-	margin-left: 20px;
+  margin-left: 20px;
   height: 100%;
-  display: grid;
-  place-content: center;
+  display: flex;
+  align-items: center;
 }
 
 .right {
@@ -77,10 +77,12 @@ input {
   place-content: center;
 }
 
+.seperator {
+	margin: 5px;
+}
+
 .dropdown-container {
 	position: relative;
-	width: 100%;
-	height: 100%;
 	cursor: pointer;
 	z-index: 100;
 }
