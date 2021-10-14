@@ -6,6 +6,7 @@ const overlap = (p1, p2) => length(p1, p2) < 0.000001;
 const wire = (pts, thickness) => {
   let lastPt = pts[0];
   let result = new Turtle();
+  result.booleanScale = 2000;
   result.goto(lastPt, false);
   for (const pt of pts.slice(1)) {
     if (overlap(pt, lastPt)) continue;
@@ -81,7 +82,7 @@ function makeComponent(comp, options = {}) {
   const pads = {}; // name: pos
   const padsLabels = [];
   let results = {};
-   
+
   for (const pad in comp) {
     let { pos, shape, layers } = comp[pad];
 
@@ -90,19 +91,16 @@ function makeComponent(comp, options = {}) {
     let pad_pos = vector_add(vector_rotate(pos, rad), translate);
     pads[pad] = pad_pos;
 
+    shape.translate(pad_pos).rotate(rotate, pad_pos);
+
     if (!pad.includes("_drill")) {
       let text = new Turtle()
         .text(pad)
         .scale(padLabelSize)
         .originate()
         .translate(pad_pos);
-
       padsLabels.push( text );
     }
-
-
-    shape.rotate(rotate);
-    shape.translate(pad_pos);
 
     layers.forEach(l => {
       if (l in results) results[l] = results[l].group(shape);

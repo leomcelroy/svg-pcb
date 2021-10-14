@@ -15,7 +15,7 @@ export function view(state) {
 	return html`
 		<div class="top-menu">
 			<div class="left">
-				<button 
+				<button
 					@click=${() => dispatch("RUN", { save: true })}>
 					run (shift + enter)
 				</button>
@@ -23,18 +23,18 @@ export function view(state) {
 				<div class="dropdown-container">
 				 	import
 				 	<div class="dropdown-content">
-				 		${drawImportItems(files)}		
+				 		${drawImportItems(files)}
 				 	</div>
 				 </div>
 				 <div class="seperator"></div>
 				 <div class="dropdown-container">
 					download
 					<div class="dropdown-content dropdown-content">
-						<button 
+						<button
 							@click=${() => downloadSVG(state)}>
 							svg
 						</button>
-						<button 
+						<button
 							@click=${() => downloadText("anon.js", state.codemirror.view.state.doc.toString())}>
 							js
 						</button>
@@ -44,7 +44,7 @@ export function view(state) {
 				<div class="dropdown-container">
 					drawing
 					<div class="dropdown-content dropdown-content">
-						<button 
+						<button
 							class="center-button"
 							@click=${() => {
     							state.panZoomParams.setScaleXY(state.limits);
@@ -53,21 +53,21 @@ export function view(state) {
 						</button>
 						<div>
 							<span>handles</span>
-							<input 
-								type="checkbox" 
+							<input
+								type="checkbox"
 								checked=${state.viewHandles}
-								@change=${(e) => { 
-									state.viewHandles = e.target.checked; 
-									dispatch("RENDER"); 
+								@change=${(e) => {
+									state.viewHandles = e.target.checked;
+									dispatch("RENDER");
 								}}
 								class="handles-checkbox">
 							</input>
 						</div>
 						<div>
 							<span>grid size:</span>
-							<input 
-								type="number" 
-								step="0.005" 
+							<input
+								type="number"
+								step="0.005"
 								min="0"
 								value=${state.gridSize}
 								@change=${e => {
@@ -94,8 +94,8 @@ const mapColors = arr => arr.length === 4
 	: "rgba(255, 255, 255, 1)"
 
 const drawPath = (d, color) => svg`
-	<path 
-		d="${d}" 
+	<path
+		d="${d}"
 		fill-rule="nonzero"
 		fill="${typeof color === "string" ? color : mapColors(color)}"/>
 `
@@ -104,7 +104,7 @@ const ptsToD = pts => pts.reduce((acc, cur, i) => `${acc} ${i === 0 ? "M" : "L"}
 
 
 const drawGrid = (corners, gridSize) => {
-	
+
 	const middX = [
 		[corners.lt.x, (corners.lt.y + corners.lb.y)/2],
 		[corners.rt.x, (corners.rt.y + corners.rb.y)/2],
@@ -123,7 +123,7 @@ const drawGrid = (corners, gridSize) => {
 	const originY = [
 		[0, corners.lt.y],
 		[0, corners.lb.y],
-	] 
+	]
 
 	const xLimits = [corners.lt.x, corners.rt.x];
 	const xRange = Math.abs(xLimits[1] - xLimits[0]);
@@ -145,7 +145,7 @@ const drawGrid = (corners, gridSize) => {
 			current = current + stepSize;
 			marks.push(current);
 		}
-		
+
 		return marks
 	}
 
@@ -177,8 +177,8 @@ const drawGrid = (corners, gridSize) => {
 }
 
 const svgViewer = (state) => {
-	const shapes = state.shapes.map(p => Array.isArray(p.d) 
-		? p.d.map(d => drawPath(d, p.color)) 
+	const shapes = state.shapes.map(p => Array.isArray(p.d)
+		? p.d.map(d => drawPath(d, p.color))
 		: drawPath(p.d, p.color)
 	).flat();
 
@@ -189,20 +189,20 @@ const svgViewer = (state) => {
 		<svg id="viewer" style="transform: scale(1, -1);">
 			<g class="transform-group">
 			      ${ state.selectBox.start && state.selectBox.end ? svg`
-			      	<path 
+			      	<path
 				        class="selectBox"
 				        d="
-				          M ${state.selectBox.start.x} ${state.selectBox.start.y} 
-				          L ${state.selectBox.end.x} ${state.selectBox.start.y} 
-				          L ${state.selectBox.end.x} ${state.selectBox.end.y}     
+				          M ${state.selectBox.start.x} ${state.selectBox.start.y}
+				          L ${state.selectBox.end.x} ${state.selectBox.start.y}
+				          L ${state.selectBox.end.x} ${state.selectBox.end.y}
 				          L ${state.selectBox.start.x} ${state.selectBox.end.y}
 				        "
 			      	/>` : ""
 			      }
 				${shapes}
 				${state.panZoomParams && state.gridSize > 0 ? drawGrid(state.panZoomParams.corners(), state.gridSize) : ""}
-				<rect 
-					class="limits no-download" 
+				<rect
+					class="limits no-download"
 					width="${state.limits.x[1] - state.limits.x[0]}"
 					height="${state.limits.y[1] - state.limits.y[0]}"
 					stroke="black" fill="transparent" stroke-width="1"
@@ -210,7 +210,7 @@ const svgViewer = (state) => {
 					transform="translate(${state.limits.x[0]}, ${state.limits.y[0]})"/>
 				${state.storedPCB && state.viewHandles ? drawHandles(state.storedPCB) : ""}
 			</g>
-		
+
 		</svg>
 	`
 }
@@ -218,36 +218,11 @@ const svgViewer = (state) => {
 // <circle class="no-download" cx="0" cy="0" r="0.1" vector-effect="non-scaling-stroke"/>
 
 const drawHandles = (pcb) => pcb.components.map((comp, i) => svg`
-	<circle 
-		class="no-download translate-handle" 
-		cx="${comp.posX}" 
-		cy="${comp.posY}" 
+	<circle
+		class="no-download translate-handle"
+		cx="${comp.posX}"
+		cy="${comp.posY}"
 		data-index=${i}
-		r="0.02" 
-		vector-effect="non-scaling-stroke"
+		r="0.015"
 		/>
 `)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
