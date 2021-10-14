@@ -2838,6 +2838,11 @@ yargs-parser@^20.0.0:
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.9.tgz#2eb7dc3b0289718fc295f362753845c41a0c94ee"
   integrity sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==
 
+yarn@^1.22.15:
+  version "1.22.15"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.22.15.tgz#3431d5f134d3c752a57a9dd7f5e1167627ca3cc3"
+  integrity sha512-AzoEDxj256BOS/jqDXA3pjyhmi4FRBBUMgYoTHI4EIt2EhREkvH0soPVEtnD+DQIJfU5R9bKhcZ1H9l8zPWeoA==
+
 yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
