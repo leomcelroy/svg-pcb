@@ -9,8 +9,8 @@
 	- [x] kicad module
 	- [] js
 - [] share site
-- [] converter from python to js board
-- [] improve gram-js docs
+- [x] converter from python to js board
+- [x] improve gram-js docs
 
 - [x] switch to full javascript parser
 	- esprima
