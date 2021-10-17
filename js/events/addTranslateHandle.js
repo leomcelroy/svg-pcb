@@ -30,7 +30,7 @@ export function addTranslateHandle(state, svgListener) {
   let lastY = 0;
   let index;
 
-  svgListener("mousedown", ".translate-handle", e => {
+  svgListener("mousedown", ".translate-handle-trigger", e => {
     clicked = true;
     state.transforming = true;
     lastX = 0;
@@ -92,7 +92,7 @@ export function addTranslateHandle(state, svgListener) {
               from: n.range[0] - 5, 
               to: n.range[1] - 5,
               // insert: `${round(newNum, sigFigs(n.ogRaw))}`,
-              insert: `${round(step(newNum, state.gridSize), 8)}` 
+              insert: `${state.gridSize === 0 ? round(newNum, sigFigs(n.ogRaw)) : round(step(newNum, state.gridSize), 8)}` 
             });
 
             xChanged = true;
@@ -112,7 +112,7 @@ export function addTranslateHandle(state, svgListener) {
               from: n.range[0] - 5, 
               to: n.range[1] - 5,
               // insert: `${round(newNum, sigFigs(n.ogRaw))}`,
-              insert: `${round(step(newNum, state.gridSize), 8)}`  
+              insert: `${state.gridSize === 0 ? round(newNum, sigFigs(n.ogRaw)) : round(step(newNum, state.gridSize), 8)}`  
             });
             yChanged = true;
           }

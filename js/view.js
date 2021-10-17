@@ -1,4 +1,5 @@
 import { html, svg } from "lit-html";
+import { Turtle } from "gram-js";
 import "code-mirror";
 import { files } from "./neil-components-names.js";
 import { downloadSVG, downloadText } from "./events/download.js"
@@ -64,6 +65,18 @@ export function view(state) {
 							</input>
 						</div>
 						<div>
+							<span>grid</span>
+							<input
+								type="checkbox"
+								checked=${state.grid}
+								@change=${(e) => {
+									state.grid = e.target.checked;
+									dispatch("RENDER");
+								}}
+								>
+							</input>
+						</div>
+						<div>
 							<span>grid size:</span>
 							<input
 								type="number"
@@ -90,7 +103,6 @@ export function view(state) {
 
 const mapColors = arr => arr.length === 4
 	? `rgba(${arr.map((n,i) => i < 3 ? Math.round(n*255) : n).join(",")})`
-	: arr.length === 3 ? `hsl(${arr[0]}, ${arr[1]}%, ${arr[2]}%)`
 	: "rgba(255, 255, 255, 1)"
 
 const drawPath = (d, color) => svg`
@@ -200,7 +212,7 @@ const svgViewer = (state) => {
 			      	/>` : ""
 			      }
 				${shapes}
-				${state.panZoomParams && state.gridSize > 0 ? drawGrid(state.panZoomParams.corners(), state.gridSize) : ""}
+				${state.panZoomParams && state.gridSize > 0 && state.grid ? drawGrid(state.panZoomParams.corners(), state.gridSize) : ""}
 				<rect
 					class="limits no-download"
 					width="${state.limits.x[1] - state.limits.x[0]}"
@@ -217,12 +229,31 @@ const svgViewer = (state) => {
 
 // <circle class="no-download" cx="0" cy="0" r="0.1" vector-effect="non-scaling-stroke"/>
 
+	// <circle
+	// 	class="no-download translate-handle"
+	// 	cx="${comp.posX}"
+	// 	cy="${comp.posY}"
+	// 	data-index=${i}
+	// 	r="0.015"
+	// 	/>
+const translateHandleSize = 0.02;
 const drawHandles = (pcb) => pcb.components.map((comp, i) => svg`
-	<circle
-		class="no-download translate-handle"
-		cx="${comp.posX}"
-		cy="${comp.posY}"
-		data-index=${i}
-		r="0.015"
-		/>
+	<g class="no-download translate-handle">
+		<path
+	        d="${new Turtle()
+	        	.arc(361, translateHandleSize)
+	        	.translate([comp.posX, comp.posY-translateHandleSize])
+	        	.offset(0.003)
+	        	.getPathData()}"
+	  	/>
+	  	<circle
+	  		class="translate-handle-trigger" 
+			data-index=${i}
+	  		stroke="none"
+	  		fill="#00000000"
+		 	cx="${comp.posX}"
+		 	cy="${comp.posY}"
+		 	r="${translateHandleSize}"
+		 	/>
+	</g>
 `)
