@@ -211,7 +211,7 @@ const svgViewer = (state) => {
 				        "
 			      	/>` : ""
 			      }
-				${shapes}
+			    <g class="pcb-shapes">${shapes}</g>
 				${state.panZoomParams && state.gridSize > 0 && state.grid ? drawGrid(state.panZoomParams.corners(), state.gridSize) : ""}
 				<rect
 					class="limits no-download"
