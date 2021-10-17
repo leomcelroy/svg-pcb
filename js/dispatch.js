@@ -4,6 +4,7 @@ import { render } from "lit-html";
 import { addEvents } from "./events.js";
 
 import { PCB as real_PCB } from "./pcb.js";
+import { via } from "./pcb_helpers.js";
 import { kicadToObj } from "./ki_cad_parser.js"
 import { Turtle } from "./Turtle.js";
 
@@ -36,12 +37,13 @@ class PCB extends real_PCB {
 const included = {
 	kicadToObj,
 	PCB,
-	Turtle
+	via,
+	Turtle,
 }
 
 async function urlToCode(file_url, state) {
 	const file = await fetch(file_url,  {mode: 'cors'});
-	const txt = await file.text();      
+	const txt = await file.text();
 
     state.codemirror.view.dispatch({
 	  changes: {from: 0, insert: txt}
@@ -114,7 +116,7 @@ const ACTIONS = {
 		if (save) {
 			window.localStorage.setItem("svg-pcb", string)
 		}
-		
+
 		dispatch("RENDER");
 	},
 	UPLOAD_COMP({ text, name }, state) {

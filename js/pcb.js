@@ -40,30 +40,6 @@ export class PCB {
     return newComp;
   }
 
-  via(pos, rv, rp, name) {
-    let VIA = {
-      "1": {
-        "pos": [0, 0],
-        "shape": new Turtle().circle(rp).getPathData(),
-        "layers": ["F.Cu"],
-        "index": 1
-      },
-      "2": {
-        "pos": [0, 0],
-        "shape": new Turtle().circle(rp).getPathData(),
-        "layers": ["B.Cu"],
-        "index": 2
-      },
-      "drill": {
-        "pos": [0, 0],
-        "shape": new Turtle().circle(rv).getPathData(),
-        "layers": ["drill"]
-      },
-    }
-
-    return this.add(VIA, {translate: pos, name: name});
-  }
-
   addShape(layer, shape) {
     if (!(shape instanceof Turtle)) return console.error("Shape isn't Turtle.");
 
@@ -103,5 +79,4 @@ export class PCB {
   wire(pts, thickness, layer = "F.Cu") {
     this.addShape(layer, wire(pts, thickness));
   }
-
 }

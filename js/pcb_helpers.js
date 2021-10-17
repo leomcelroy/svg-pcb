@@ -3,6 +3,28 @@ import { Turtle } from "./Turtle.js";
 const length = ([x1, y1], [x2, y2]) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
 const overlap = (p1, p2) => length(p1, p2) < 0.000001;
 
+const via = (rv, rp) => {
+  return {
+    "F": {
+      "pos": [0, 0],
+      "shape": new Turtle().circle(rp).getPathData(),
+      "layers": ["F.Cu"],
+      "index": 1
+    },
+    "B": {
+      "pos": [0, 0],
+      "shape": new Turtle().circle(rp).getPathData(),
+      "layers": ["B.Cu"],
+      "index": 2
+    },
+    "drill": {
+      "pos": [0, 0],
+      "shape": new Turtle().circle(rv).getPathData(),
+      "layers": ["drill"]
+    }
+  };
+}
+
 const wire = (pts, thickness) => {
   let lastPt = pts[0];
   let result = new Turtle();
@@ -121,4 +143,5 @@ function makeComponent(comp, options = {}) {
 export {
   wire,
   makeComponent,
+  via
 }
