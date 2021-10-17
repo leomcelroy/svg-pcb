@@ -97,7 +97,7 @@ import{html as O,svg as P}from"https://cdn.skypack.dev/lit-html";import{Turtle a
 				          L ${e.selectBox.start.x} ${e.selectBox.end.y}
 				        "
 			      	/>`:""}
-			    <g class="pcb-shapes">${r}</g>
+			    <g class="shapes">${r}</g>
 				${e.panZoomParams&&e.gridSize>0&&e.grid?he(e.panZoomParams.corners(),e.gridSize):""}
 				<rect
 					class="limits no-download"
