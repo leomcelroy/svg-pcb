@@ -229,13 +229,7 @@ const svgViewer = (state) => {
 
 // <circle class="no-download" cx="0" cy="0" r="0.1" vector-effect="non-scaling-stroke"/>
 
-	// <circle
-	// 	class="no-download translate-handle"
-	// 	cx="${comp.posX}"
-	// 	cy="${comp.posY}"
-	// 	data-index=${i}
-	// 	r="0.015"
-	// 	/>
+
 const translateHandleSize = 0.02;
 const drawHandles = (pcb) => pcb.components.map((comp, i) => svg`
 	<g class="no-download translate-handle">
