@@ -31,10 +31,10 @@ export function addEvents(state) {
 	const listenSVG = createListener(svg);
   
 	svg.panZoomParams = addImgPanZoom(state, listenSVG);
-  state.panZoomParams = svg.panZoomParams;
+  	state.panZoomParams = svg.panZoomParams;
 
 	addSelectBox(state, listenSVG);
-  addTranslateHandle(state, listenSVG);
+  	addTranslateHandle(state, listenSVG);
 
 	const body = document.querySelector("body");
 	const listenBody = createListener(body);
@@ -49,7 +49,7 @@ export function addEvents(state) {
 		  dispatch("RUN", { save: true });
 		} else if (code === "KeyT" && event.shiftKey) { // test something
       
-    }
+    	}
 	})
 
   // listenBody("mousedown", ".download-button", () => download(state));

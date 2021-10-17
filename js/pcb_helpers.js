@@ -14,7 +14,7 @@ const wire = (pts, thickness) => {
     lastPt = pt;
   }
 
-  return result.offset(thickness);
+  return result.offset(thickness/2);
 }
 
 const vector_add = ([x, y], [dx, dy]) => [x + dx, y + dy];
