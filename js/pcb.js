@@ -1,4 +1,4 @@
-import { makeComponent, wire } from "./pcb_helpers.js";
+import { makeComponent, makeText, wire } from "./pcb_helpers.js";
 import { Turtle } from "./Turtle.js";
 
 export class PCB {
@@ -13,8 +13,8 @@ export class PCB {
     const transform = {
       translate: ops.translate || [0, 0],
       rotate: ops.rotate || 0,
-      padLabelSize: ops.padLabelSize || 0.0003,
-      componentLabelSize: ops.componentLabelSize || 0.0004,
+      padLabelSize: ops.padLabelSize || 0.03,
+      componentLabelSize: ops.componentLabelSize || 0.04,
     };
 
     const newComp = makeComponent(footprint, transform);
@@ -23,14 +23,8 @@ export class PCB {
       this.addShape(layer, newComp.layers[layer]);
     }
 
-    if (name !== "" && !name.includes("_drill")) {
-      let componentLabels = new Turtle()
-        .text(name)
-        .scale(transform.componentLabelSize)
-        .originate()
-        .translate(transform.translate);
-
-      // let componentLabels = ["text", name];
+    if (name !== "" && !name.includes("drill")) {
+      let componentLabels = makeText(name, transform.componentLabelSize, transform.translate);
 
       this.addShape("componentLabels", componentLabels);
     }
