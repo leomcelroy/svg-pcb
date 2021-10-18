@@ -13,7 +13,7 @@ const LED_1206 = {"A":{"shape":"M -0.03699999999999999 0.03400000000000001L 0.02
 
 
 // constants
-const width = .76 // board width
+const width = .99 // board width
 const height = 1.14 // board height
 const x = 1 // x origin
 const y = 1 // y origin
@@ -32,14 +32,17 @@ board.addShape("interior", interior);
 
 
 // add parts
-let IC1 = board.add(SAMD11C, {translate: [x+.47, y+.55], name: 'IC1\nD11'});
+let IC1 = board.add(SAMD11C, {translate: [x+.62, y+.55], name: 'IC1\nD11'});
 let J1 = board.add(header_SWD, {translate: [IC1.posX, IC1.padY("CLK")-.2], rotate: 90, name: 'J1 SWD'});
 let J2 = board.add(USB_A_plug, {translate: [IC1.posX, y+height-.29], rotate: 90, name: 'J2\nUSB'});
-let IC2 = board.add(regulator_SOT23, {translate: [IC1.padX("A05")-.27, IC1.padY("CLK")-.06], rotate: -90, name: 'IC2\n3.3V'});
+let IC2 = board.add(regulator_SOT23, {translate: [IC1.padX("A05")-.42, IC1.padY("CLK")], rotate: -90, name: 'IC2\n3.3V'});
 let C1 = board.add(C_1206, {translate: [IC2.posX, IC2.posY-.2], rotate: 90, name: 'C1\n1uF'});
 let R1 = board.add(R_1206, {translate: [J1.padX("VCC")+.07, J1.posY], rotate: 90, name: 'R1\n0'});
-let R2 = board.add(R_1206, {translate: [IC1.padX("A08")-.1, IC1.padY("A08")-.03], rotate: 90, name: 'R2\n1k'});
+let R2 = board.add(R_1206, {translate: [IC1.padX("A08")-.15, IC1.padY("A08")-.03], rotate: 90, name: 'R2\n1k'});
 let LED1 = board.add(LED_1206, {translate: [R2.posX-.1, R2.posY], rotate: 90, name: 'LED1'});
+let R3 = board.add(R_1206, {translate: [J1.posX-.23, J1.posY], name: 'R3 10k'});
+let R4 = board.add(R_1206, {translate: [R3.padX("1"), R3.posY+.15], rotate: 90, name: 'R4\n10k'});
+let C2 = board.add(C_1206, {translate: [R4.posX-.12, R4.posY], rotate: 90, name: 'C2\n.1uF'});
 
 board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, 5.12+J2.posY]).rotate(90.00000001, J2.pos));
 board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, -5.12+J2.posY]).rotate(90.00000001, J2.pos));
@@ -49,21 +52,10 @@ board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.
 board.wire([J1.pad("GND1"),
             J1.pad("GND2")], w)
 
-board.wire([J1.pad("CLK"),
-            [J1.padX("CLK"), J1.posY],
-            [IC1.padX("CLK")-.05, J1.posY],
-            [IC1.padX("CLK")-.05, IC1.padY("CLK")],
-            IC1.pad("CLK")], w)
-
 board.wire([J1.pad("GND2"),
             [J1.padX("GND2"), J1.padY("GND2")+.08],
             [J1.padX("GND3"), J1.padY("GND2")+.08],
             J1.pad("GND3")], w)
-
-board.wire([J1.pad("RST"),
-            [IC1.padX("RST")-.08, J1.padY("RST")],
-            [IC1.padX("RST")-.08, IC1.padY("RST")],
-            IC1.pad("RST")], w)
 
 board.wire([J2.pad("D-"),
             [IC1.posX-.015, J2.padY("D-")-.08],
@@ -93,11 +85,6 @@ board.wire([IC2.pad("gnd"),
             [J1.padX("GND2"), IC1.padY("CLK")],
             J1.pad("GND2")], w)
 
-board.wire([C1.pad("1"),
-            [C1.posX+.06, C1.padY("1")],
-            [C1.posX+.06, IC2.padY("in")],
-            IC2.pad("out")], w)
-
 board.wire([C1.pad("2"),
             IC2.pad("gnd")], w)
 
@@ -123,13 +110,6 @@ board.wire([C1.pad("2"),
             [J2.padX("GND"), J2.padY("GND")-.11],
             J2.pad("GND")], w)
 
-board.wire([C1.pad("1"),
-            [C1.posX+.06, C1.padY("1")],
-            [C1.posX+.06, J1.padY("DIO")-.07],
-            [R1.posX+.06, J1.padY("DIO")-.07],
-            [R1.posX+.06, IC1.padY("VDD")],
-            IC1.pad("VDD")], w)
-
 board.wire([R2.pad("2"),
             [R2.posX, IC1.padY("A05")],
             IC1.pad("A05")], w)
@@ -141,16 +121,57 @@ board.wire([LED1.pad("C"),
             [IC2.posX, LED1.padY("C")],
             IC2.pad("gnd")], w)
 
+board.wire([J1.pad("CLK"),
+            [J1.padX("CLK"), J1.posY],
+            R3.pad("2")], w)
+
+board.wire([IC1.pad("CLK"),
+            [R3.padX("2"), IC1.padY("CLK")],
+            R3.pad("2")], w)
+
+board.wire([J1.pad("RST"),
+            [R3.posX, J1.padY("RST")],
+            [R3.posX, IC1.padY("RST")],
+            IC1.pad("RST")], w)
+
+board.wire([R4.pad("2"),
+            [R3.posX, R4.padY("2")]], w)
+
+board.wire([C1.pad("2"),
+            [C2.posX, C1.padY("2")]], w)
+
+board.wire([C2.pad("2"),
+            R4.pad("2")], w)
+
+board.wire([C1.pad("1"),
+            [(C2.posX+R4.posX)/2, C1.padY("1")],
+            [(C2.posX+R4.posX)/2, C2.posY],
+            [IC2.padX("out"), C2.posY],
+            IC2.pad("out")], w)
+
+board.wire([C1.pad("1"),
+            [(C2.posX+R4.posX)/2, C1.padY("1")],
+            [(C2.posX+R4.posX)/2, J1.padY("DIO")-.07],
+            [R1.posX+.06, J1.padY("DIO")-.07],
+            [R1.posX+.06, IC1.padY("VDD")],
+            IC1.pad("VDD")], w)
+
+board.wire([R3.pad("1"),
+            [(C2.posX+R4.posX)/2, R3.posY]], w)
+
+board.wire([R4.pad("1"),
+            [(C2.posX+R4.posX)/2, R4.padY("1")]], w)
+
 
 // rendering
 return {
   shapes: [
-    { d: board.getLayer("interior"), color: [0, 0.18, 0, 1] },
-    { d: board.getLayer("B.Cu"), color: [1, 0.3, 0.0, .5] },
-    { d: board.getLayer("F.Cu"), color: [1, 0.55, 0.0, .8] },
-    { d: board.getLayer("drill"), color: [1, 0.2, 0, 0.9]},
-    { d: board.getLayer("padLabels"), color: [1, 1, 0.6, 0.9] },
-    { d: board.getLayer("componentLabels"), color: [0.1, 1, 0.3, 0.9] },
+    { d: board.getLayer("interior"), color: [0, 0, 0, 1] },
+    { d: board.getLayer("B.Cu"), color: [0.0, 1.0, 0.5, .5] },
+    { d: board.getLayer("F.Cu"), color: [0.7, .5, 0.29, .7] },
+    { d: board.getLayer("drill"), color: [0.3, 0.7, 1, 0.9]},
+    { d: board.getLayer("padLabels"), color: [1, 0.27, 0.07, .8] },
+    { d: board.getLayer("componentLabels"), color: [0.1, 1, 0.1, .7] },
   ],
   limits: {
     x: [x-border, x+width+border],
