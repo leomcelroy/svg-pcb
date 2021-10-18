@@ -82,6 +82,11 @@ const ACTIONS = {
 	    const search = window.location.search;
 	    const code = new URLSearchParams(search).get("code");
 	    const file = new URLSearchParams(search).get("file");
+	    const handlesOff = new URLSearchParams(search).get("handles") === "false";
+	    const gridOff = new URLSearchParams(search).get("grid") === "false";
+
+	    if (handlesOff) state.viewHandles = false;
+	    if (gridOff) state.grid = false;
 
 	    if (code) {
 
@@ -99,6 +104,8 @@ const ACTIONS = {
 			dispatch("RUN");
 			document.querySelector(".center-button").click();
 	    }
+
+	    dispatch("RENDER");
 	},
 	RUN({ save = false }, state) {
 		const string = state.codemirror.view.state.doc.toString();
