@@ -4,7 +4,6 @@ const USB_A_plug = {"5V":{"shape":"M -0.04999999999999999 0.020000000000000018L 
 const regulator_SOT23 = {"out":{"shape":"M -0.02 0.012000000000000002L 0.02 0.012000000000000002L 0.02 -0.011999999999999999L -0.02 -0.012000000000000002L -0.02 0.011999999999999999","pos":[-0.045,0.0375],"layers":["F.Cu"],"index":1},"in":{"shape":"M -0.02 0.012000000000000002L 0.02 0.012000000000000002L 0.02 -0.011999999999999999L -0.02 -0.012000000000000002L -0.02 0.011999999999999999","pos":[-0.045,-0.0375],"layers":["F.Cu"],"index":2},"gnd":{"shape":"M -0.02 0.012000000000000002L 0.02 0.012000000000000002L 0.02 -0.011999999999999999L -0.02 -0.012000000000000002L -0.02 0.011999999999999999","pos":[0.045,0],"layers":["F.Cu"],"index":3}};
 const C_1206 = {"1":{"shape":"M -0.031999999999999994 0.03400000000000001L 0.03200000000000001 0.03400000000000001L 0.03200000000000001 -0.033999999999999996L -0.031999999999999994 -0.03400000000000001L -0.03200000000000001 0.033999999999999996","pos":[-0.06,0],"layers":["F.Cu"],"index":1},"2":{"shape":"M -0.031999999999999994 0.03400000000000001L 0.03200000000000001 0.03400000000000001L 0.03200000000000001 -0.033999999999999996L -0.031999999999999994 -0.03400000000000001L -0.03200000000000001 0.033999999999999996","pos":[0.06,0],"layers":["F.Cu"],"index":2}};
 const R_1206 = {"1":{"shape":"M -0.031999999999999994 0.03400000000000001L 0.03200000000000001 0.03400000000000001L 0.03200000000000001 -0.033999999999999996L -0.031999999999999994 -0.03400000000000001L -0.03200000000000001 0.033999999999999996","pos":[-0.06,0],"layers":["F.Cu"],"index":1},"2":{"shape":"M -0.031999999999999994 0.03400000000000001L 0.03200000000000001 0.03400000000000001L 0.03200000000000001 -0.033999999999999996L -0.031999999999999994 -0.03400000000000001L -0.03200000000000001 0.033999999999999996","pos":[0.06,0],"layers":["F.Cu"],"index":2}};
-const LED_1206 = {"A":{"shape":"M -0.03699999999999999 0.03400000000000001L 0.027000000000000007 0.03400000000000001L 0.027000000000000007 -0.033999999999999996L -0.03699999999999999 -0.03400000000000001L -0.037000000000000005 0.033999999999999996","pos":[-0.055,0],"layers":["F.Cu"],"index":1},"C":{"shape":"M -0.026999999999999993 0.03400000000000001L 0.037000000000000005 0.03400000000000001L 0.037000000000000005 -0.033999999999999996L -0.026999999999999993 -0.03400000000000001L -0.027000000000000007 0.033999999999999996","pos":[0.055,0],"layers":["F.Cu"],"index":2}};
 
 
 // commands:
@@ -13,7 +12,7 @@ const LED_1206 = {"A":{"shape":"M -0.03699999999999999 0.03400000000000001L 0.02
 
 
 // constants
-const width = .76 // board width
+const width = .86 // board width
 const height = 1.14 // board height
 const x = 1 // x origin
 const y = 1 // y origin
@@ -32,14 +31,13 @@ board.addShape("interior", interior);
 
 
 // add parts
-let IC1 = board.add(SAMD11C, {translate: [x+.47, y+.55], name: 'IC1\nD11'});
+let IC1 = board.add(SAMD11C, {translate: [x+.58, y+.55], name: 'IC1\nD11'});
 let J1 = board.add(header_SWD, {translate: [IC1.posX, IC1.padY("CLK")-.2], rotate: 90, name: 'J1 SWD'});
 let J2 = board.add(USB_A_plug, {translate: [IC1.posX, y+height-.29], rotate: 90, name: 'J2\nUSB'});
-let IC2 = board.add(regulator_SOT23, {translate: [IC1.padX("A05")-.27, IC1.padY("CLK")-.06], rotate: -90, name: 'IC2\n3.3V'});
+let IC2 = board.add(regulator_SOT23, {translate: [IC1.padX("A05")-.39, IC1.padY("CLK")-.06], rotate: -90, name: 'IC2\n3.3V'});
 let C1 = board.add(C_1206, {translate: [IC2.posX, IC2.posY-.2], rotate: 90, name: 'C1\n1uF'});
 let R1 = board.add(R_1206, {translate: [J1.padX("VCC")+.07, J1.posY], rotate: 90, name: 'R1\n0'});
-let R2 = board.add(R_1206, {translate: [IC1.padX("A08")-.1, IC1.padY("A08")-.03], rotate: 90, name: 'R2\n1k'});
-let LED1 = board.add(LED_1206, {translate: [R2.posX-.1, R2.posY], rotate: 90, name: 'LED1'});
+let J3 = board.add(header_SWD, {translate: [IC1.posX-.33, IC1.padY("A09")], rotate: 180, name: 'J3\ntarget'});
 
 board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, 5.12+J2.posY]).rotate(90.00000001, J2.pos));
 board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, -5.12+J2.posY]).rotate(90.00000001, J2.pos));
@@ -130,27 +128,39 @@ board.wire([C1.pad("1"),
             [R1.posX+.06, IC1.padY("VDD")],
             IC1.pad("VDD")], w)
 
-board.wire([R2.pad("2"),
-            [R2.posX, IC1.padY("A05")],
+board.wire([J3.pad("GND1"),
+            [IC2.padX("gnd"), J3.padY("GND1")],
+            IC2.pad("gnd")], w)
+
+board.wire([J3.pad("GND2"),
+            [IC2.padX("gnd"), J3.padY("GND2")],
+            IC2.pad("gnd")], w)
+
+board.wire([J3.pad("GND3"),
+            [IC2.padX("gnd"), J3.padY("GND3")],
+            IC2.pad("gnd")], w)
+
+board.wire([J3.pad("DIO"),
             IC1.pad("A05")], w)
 
-board.wire([LED1.pad("A"),
-            R2.pad("1")], w)
+board.wire([J3.pad("CLK"),
+            IC1.pad("A08")], w)
 
-board.wire([LED1.pad("C"),
-            [IC2.posX, LED1.padY("C")],
-            IC2.pad("gnd")], w)
+board.wire([J3.pad("RST"),
+            [J3.padX("RST")+.08, J3.padY("RST")],
+            [J3.padX("RST")+.08, IC1.padY("A09")],
+            IC1.pad("A09")], w)
 
 
 // rendering
 return {
   shapes: [
-    { d: board.getLayer("interior"), color: [0, 0.18, 0, 1] },
-    { d: board.getLayer("B.Cu"), color: [1, 0.3, 0.0, .5] },
-    { d: board.getLayer("F.Cu"), color: [1, 0.55, 0.0, .8] },
-    { d: board.getLayer("drill"), color: [1, 0.2, 0, 0.9]},
-    { d: board.getLayer("padLabels"), color: [1, 1, 0.6, 0.9] },
-    { d: board.getLayer("componentLabels"), color: [0.1, 1, 0.3, 0.9] },
+    { d: board.getLayer("interior"), color: [0, 0, 0, 1] },
+    { d: board.getLayer("B.Cu"), color: [0.0, 1.0, 0.5, .5] },
+    { d: board.getLayer("F.Cu"), color: [0.7, .5, 0.29, .7] },
+    { d: board.getLayer("drill"), color: [0.3, 0.7, 1, 0.9]},
+    { d: board.getLayer("padLabels"), color: [1, 0.27, 0.07, .8] },
+    { d: board.getLayer("componentLabels"), color: [0.1, 1, 0.1, .7] },
   ],
   limits: {
     x: [x-border, x+width+border],

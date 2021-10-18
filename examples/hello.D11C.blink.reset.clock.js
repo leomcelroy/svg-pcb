@@ -44,8 +44,8 @@ let R3 = board.add(R_1206, {translate: [J1.posX-.23, J1.posY], name: 'R3 10k'});
 let R4 = board.add(R_1206, {translate: [R3.padX("1"), R3.posY+.15], rotate: 90, name: 'R4\n10k'});
 let C2 = board.add(C_1206, {translate: [R4.posX-.12, R4.posY], rotate: 90, name: 'C2\n.1uF'});
 
-board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, 5.12+J2.posY]).rotate(90, J2.pos));
-board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, -5.12+J2.posY]).rotate(90, J2.pos));
+board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, 5.12+J2.posY]).rotate(90.00000001, J2.pos));
+board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, -5.12+J2.posY]).rotate(90.00000001, J2.pos));
 
 
 // add wires
@@ -166,12 +166,12 @@ board.wire([R4.pad("1"),
 // rendering
 return {
   shapes: [
-    { d: board.getLayer("interior"), color: [0, 0, 0, 1] },
-    { d: board.getLayer("B.Cu"), color: [0.0, 1.0, 0.5, .5] },
-    { d: board.getLayer("F.Cu"), color: [0.7, .5, 0.29, .7] },
-    { d: board.getLayer("drill"), color: [0.3, 0.7, 1, 0.9]},
-    { d: board.getLayer("padLabels"), color: [1, 0.27, 0.07, .8] },
-    { d: board.getLayer("componentLabels"), color: [0.1, 1, 0.1, .7] },
+    { d: board.getLayer("interior"), color: [0, 0.18, 0, 1] },
+    { d: board.getLayer("B.Cu"), color: [1, 0.3, 0.0, .5] },
+    { d: board.getLayer("F.Cu"), color: [1, 0.55, 0.0, .8] },
+    { d: board.getLayer("drill"), color: [1, 0.2, 0, 0.9]},
+    { d: board.getLayer("padLabels"), color: [1, 1, 0.6, 0.9] },
+    { d: board.getLayer("componentLabels"), color: [0.1, 1, 0.3, 0.9] },
   ],
   limits: {
     x: [x-border, x+width+border],
