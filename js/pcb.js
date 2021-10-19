@@ -24,7 +24,7 @@ export class PCB {
     }
 
     if (name !== "" && !name.includes("drill")) {
-      let componentLabels = makeText(name, transform.componentLabelSize, transform.translate);
+      let componentLabels = makeText(name, transform.componentLabelSize, transform.translate, 0);
 
       this.addShape("componentLabels", componentLabels);
     }

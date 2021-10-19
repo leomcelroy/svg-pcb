@@ -82,7 +82,7 @@ return {
     { d: board.getLayer("F.Cu"), color: [1, 0.55, 0.0, .8] },
     { d: board.getLayer("drill"), color: [1, 0.2, 0, 0.9]},
     { d: board.getLayer("padLabels"), color: [1, 1, 0.6, 0.9] },
-    { d: board.getLayer("componentLabels"), color: [0.1, 1, 0.3, 0.9] },
+    { d: board.getLayer("componentLabels"), color: [0, 0.9, 0.9, 0.9] },
   ],
   limits: {
     x: [x-border, x+width+border],

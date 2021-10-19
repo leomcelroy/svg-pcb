@@ -91,16 +91,20 @@ class Component {
 //   }
 // }
 
-function makeText(text, height, pos) {
+function makeText(text, height, pos, rotate) {
   let lines = text.split('\n');
   let t = new Turtle();
 
   for (let [i, txt] of lines.entries()) {
+    if (txt.length == 0) {
+      continue;
+    }
     let t2 = new Turtle().text(txt).scale(0.01*height).originate().translate([0, i*height*1.5]);
     t.group(t2);
   }
 
-  return t.originate().translate(pos);
+  // return t.originate().translate(pos);
+  return t.originate().translate(pos).rotate(rotate, pos);
 }
 
 function makeComponent(comp, options = {}) {
@@ -127,7 +131,7 @@ function makeComponent(comp, options = {}) {
     shape.translate(pad_pos).rotate(rotate, pad_pos);
 
     if (!pad.includes("drill")) {
-      let text = makeText(pad, padLabelSize, pad_pos);
+      let text = makeText(pad, padLabelSize, pad_pos, rotate);
       padsLabels.push( text );
     }
 
