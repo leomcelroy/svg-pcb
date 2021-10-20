@@ -41,8 +41,8 @@ let IC3 = board.add(Hall_SOT23, {translate: [IC2.posX-.13, IC2.posY], rotate: -9
 let R1 = board.add(R_1206, {translate: [C1.posX, C1.posY-.1], name: 'R1 4.99k'});
 let R2 = board.add(R_1206, {translate: [R1.posX, R1.posY-.1], name: 'R2 10k'});
 
-board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, 5.12+J2.posY]).rotate(90.00000001, J2.pos));
-board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, -5.12+J2.posY]).rotate(90.00000001, J2.pos));
+board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, 5.12+J2.posY]).rotate(90.0001, J2.pos));
+board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, -5.12+J2.posY]).rotate(90.0001, J2.pos));
 
 
 // add wires
