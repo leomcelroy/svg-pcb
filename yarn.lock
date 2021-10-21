@@ -293,10 +293,20 @@
   dependencies:
     "@types/node" "*"
 
+"@types/trusted-types@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.2.tgz#fc25ad9943bcac11cceb8168db4f275e0e72e756"
+  integrity sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
+
+acorn@^8.5.0:
+  version "8.5.0"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.5.0.tgz#4512ccb99b3698c752591e9bb4472e38ad43cee2"
+  integrity sha512-yXbYeFy+jUuYd3/CDcg2NkIYE991XYX/bje7LmjJigUciaeO1JR4XxXgCIV1/Zc/dRuFEyw1L0pbA+qynJkW5Q==
 
 address@^1.0.1:
   version "1.1.2"
@@ -404,6 +414,11 @@ assert@^1.4.1:
   dependencies:
     object-assign "^4.1.1"
     util "0.10.3"
+
+astring@^1.7.5:
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/astring/-/astring-1.7.5.tgz#a7d47fceaf32b052d33a3d07c511efeec67447ca"
+  integrity sha512-lobf6RWXb8c4uZ7Mdq0U12efYmpD1UFnyOWVJPTa3ukqZrMopav+2hdNu0hgBF0JIBFK9QgrBDfwYvh3DFJDAA==
 
 asynckit@^0.4.0:
   version "0.4.0"
@@ -956,6 +971,16 @@ esinstall@^1.0.0, esinstall@^1.1.7:
     slash "~3.0.0"
     validate-npm-package-name "^3.0.0"
     vm2 "^3.9.2"
+
+esprima-walk@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/esprima-walk/-/esprima-walk-0.1.0.tgz#953aab23d5b962822cf41dd82e58879334ba86fa"
+  integrity sha1-lTqrI9W5YoIs9B3YLliHkzS6hvo=
+
+esprima@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.1.tgz#13b04cdb3e6c5d19df91ab6987a8695619b0aa71"
+  integrity sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A==
 
 estree-walker@^1.0.1:
   version "1.0.1"
@@ -1561,6 +1586,13 @@ lines-and-columns@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
+
+lit-html@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-2.0.1.tgz#63241015efa07bc9259b6f96f04abd052d2a1f95"
+  integrity sha512-KF5znvFdXbxTYM/GjpdOOnMsjgRcFGusTnB54ixnCTya5zUR0XqrDRj29ybuLS+jLXv1jji6Y8+g4W7WP8uL4w==
+  dependencies:
+    "@types/trusted-types" "^2.0.2"
 
 loader-utils@^1.1.0:
   version "1.4.0"
@@ -2837,6 +2869,11 @@ yargs-parser@^20.0.0:
   version "20.2.9"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.9.tgz#2eb7dc3b0289718fc295f362753845c41a0c94ee"
   integrity sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==
+
+yarn@^1.22.15:
+  version "1.22.17"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.22.17.tgz#bf910747d22497b573131f7341c0e1d15c74036c"
+  integrity sha512-H0p241BXaH0UN9IeH//RT82tl5PfNraVpSpEoW+ET7lmopNC61eZ+A+IDvU8FM6Go5vx162SncDL8J1ZjRBriQ==
 
 yocto-queue@^0.1.0:
   version "0.1.0"
