@@ -41,7 +41,7 @@ export function addNumberDragging(state, bodyListener) {
 			let newNum = rounded + e.movementX;
 			newNum = Math.round(newNum)/(10**sigFigs);
 
-			num = newNum;    
+			num = newNum;
 		} else {
 			num += e.movementX;
 		}

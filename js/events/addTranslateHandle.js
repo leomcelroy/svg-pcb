@@ -113,6 +113,10 @@ export function addTranslateHandle(state, svgListener) {
 
             let n_from = n.range[0] - offs;
 
+            if (n.parent.operator === "/") {
+              return;
+            }
+
             if (n.parent.operator === "-") {
               is_neg = true;
             }
