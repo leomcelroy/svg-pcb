@@ -1,4 +1,5 @@
-const isDigit = (ch, left = false) => /[0-9]/i.test(ch) || ch === "." || (left && ch === "-");
+const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
+const isLeftTerminator = ch => ["(", "[", "=", ",", "}", ":", "{"].includes(ch);
 
 export function addNumberDragging(state, bodyListener) {
   let dragged = false;
@@ -15,7 +16,11 @@ export function addNumberDragging(state, bodyListener) {
     let { from, to, text} = doc.lineAt(pos)
     let start = pos, end = pos;
     // console.log("start", start, text[start - from - 1], "end", end, text[end - from]);
-    while (start > from && isDigit(text[start - from - 1], true)) start--
+    let sawPlus = false;
+    while (start > from && !isLeftTerminator(text[start - from - 1])) {
+      start--
+      if (text[start - from - 1] === "+") sawPlus = true;
+    }
     while (end < to && isDigit(text[end - from])) end++
 
 
