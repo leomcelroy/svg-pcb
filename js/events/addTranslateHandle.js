@@ -1,6 +1,6 @@
 import esprima from 'esprima';
 import { generate } from 'astring';
-import { walk } from "esprima-walk";
+// import { walk, walkAddParent } from "esprima-walk";
 
 function foldImports(state) {
   const anotherComp = l => l.includes("return kicadToObj(");
@@ -19,6 +19,33 @@ function foldImports(state) {
   };
 
   state.codemirror.foldRange(0, count+i);
+}
+
+function walk( ast, fn ) {
+	var stack = [ ast ], i, j, key, len, node, child, subchild
+	for ( i = 0; i < stack.length; i += 1 ) {
+		node = stack[ i ]
+    if (typeof node == 'number')
+      continue
+		fn( node )
+		for ( key in node ) {
+			if ( key !== 'parent' ) {
+				child = node[ key ]
+				if ( child instanceof Array ) {
+					for ( j = 0, len = child.length; j < len; j += 1 ) {
+						subchild = child[ j ]
+						if( subchild instanceof Object ) {
+							subchild.parent = node
+						}
+						stack.push( subchild )
+					}
+				} else if ( child != void 0 && typeof child.type === 'string' ) {
+					child.parent = node
+					stack.push( child )
+				}
+			}
+		}
+	}
 }
 
 export function addTranslateHandle(state, svgListener) {
@@ -44,10 +71,8 @@ export function addTranslateHandle(state, svgListener) {
     const string = state.codemirror.view.state.doc.toString();
     const stringToParse = `()=>{${string}}`; // remember to subtract 5 from indices
     const esprimaAST = esprima.parseScript(stringToParse, { range: true, comment: true });
-    console.log(esprimaAST);
     const mainBody = esprimaAST.body[0].expression.body.body;
 
-    console.log(mainBody);
     let adds = [];
     walk(esprimaAST, node => {
       try {
@@ -72,51 +97,77 @@ export function addTranslateHandle(state, svgListener) {
 
       sortedAdds[index].properties.forEach( prop => {
         if (prop.key.name !== "translate") return;
-        // prop.value.elements = [
-        //   {type: 'Literal', value: round(x + comp.posX), raw: `${round(x + comp.posX)}`},
-        //   {type: 'Literal', value: round(y + comp.posY), raw: `${round(y + comp.posY)}`}
-        // ]
 
         const [ xNode, yNode ] = prop.value.elements;
 
-        let xChanged = false;
-        walk(xNode, n => {
-          if (xChanged) return;
+        let offs = 5;
+
+        let is_sum = false;
+        let is_neg = false;
+        let changed = false;
+
+        let change_x_or_y = function(n, delta) {
+          if (changed) return;
+
           if (n.type === "Literal" && typeof n.value === "number") {
+
+            let n_from = n.range[0] - offs;
+
+            if (n.parent.operator === "-") {
+              is_neg = true;
+            }
+
+            if (n.parent.type === "BinaryExpression" && (n.parent.operator === "+" || n.parent.operator === "-") && n.parent.right == n) {
+              is_sum = true;
+              n_from = n.parent.left.range[1] - offs;
+            }
+
+            if (n.parent.type === "UnaryExpression" && n.parent.operator === "-") {
+              n_from = n.parent.range[0] - offs;
+            }
+
+            console.log(n.range, n.parent.range);
+
             if (!n.ogValue) n.ogValue = n.value;
             if (!n.ogRaw) n.ogRaw = n.raw;
 
-            let newNum = n.ogValue + x;
+            let newNum;
+            if (is_neg) {
+              newNum = -n.ogValue + delta;
+            } else {
+              newNum = n.ogValue + delta;
+            }
 
-            changes.push({ 
-              from: n.range[0] - 5, 
-              to: n.range[1] - 5,
-              // insert: `${round(newNum, sigFigs(n.ogRaw))}`,
-              insert: `${state.gridSize === 0 ? round(newNum, sigFigs(n.ogRaw)) : round(step(newNum, state.gridSize), 8)}` 
+            let n_val = state.gridSize === 0 ? round(newNum, sigFigs(n.ogRaw)) : round(step(newNum, state.gridSize), 8);
+
+            let is_neg_new = n_val < 0;
+
+            let n_insert;
+            if (is_neg_new) {
+              n_insert = `-${Math.abs(n_val)}`
+            } else if (is_sum) {
+              n_insert = `+${n_val}`
+            } else {
+              n_insert = `${n_val}`
+            }
+
+            changes.push({
+              from: n_from,
+              to: n.range[1] - offs,
+              insert: n_insert
             });
 
-            xChanged = true;
+            changed = true;
           }
-        })
+        }
 
-        let yChanged = false;
-        walk(yNode, n => {
-          if (yChanged) return;
-          if (n.type === "Literal" && typeof n.value === "number") {
-            if (!n.ogValue) n.ogValue = n.value;
-            if (!n.ogRaw) n.ogRaw = n.raw;
+        walk(xNode, n => change_x_or_y(n, x));
 
-            let newNum = n.ogValue + y;
+        is_sum = false;
+        is_neg = false;
+        changed = false;
 
-            changes.push({ 
-              from: n.range[0] - 5, 
-              to: n.range[1] - 5,
-              // insert: `${round(newNum, sigFigs(n.ogRaw))}`,
-              insert: `${state.gridSize === 0 ? round(newNum, sigFigs(n.ogRaw)) : round(step(newNum, state.gridSize), 8)}`  
-            });
-            yChanged = true;
-          }
-        })
+        walk(yNode, n => change_x_or_y(n, y));
 
         const currentString = state.codemirror.view.state.doc.toString();
 
