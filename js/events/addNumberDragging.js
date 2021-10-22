@@ -64,6 +64,10 @@ export function addNumberDragging(state, bodyListener) {
     if (!dragged) return;
     const cm = document.querySelector("code-mirror");
 
+        let newValue;
+
+        let textLength = selectedText.length;
+
 		const sign = 0 > e.movementX ? 1 : -1;
 		// console.log(sign, e.movementX);
 		if (usePrecision) {
@@ -72,20 +76,18 @@ export function addNumberDragging(state, bodyListener) {
 			newNum = Math.round(newNum)/(10**sigFigs);
 
 			num = newNum;
+            newValue = `${Math.abs(num).toFixed(sigFigs)}`;
 		} else {
 			num += e.movementX;
+            newValue = `${Math.abs(num)}`;
 		}
-
-        let newValue;
 
         if (is_sum) {
             if (pos_sign == null) {
-                newValue = `${num < 0 ? "-" : "+"}${Math.abs(num)}`;
-            } else {
-                newValue = `${Math.abs(num)}`;
+                newValue = (num < 0 ? "-" : "+") + newValue;
             }
             cm.view.dispatch({
-                changes: {from: pos_start, to: pos_start + selectedText.length, insert: newValue}
+                changes: {from: pos_start, to: pos_start + textLength, insert: newValue}
             });
             if (pos_sign != null) {
                 cm.view.dispatch({
@@ -93,23 +95,30 @@ export function addNumberDragging(state, bodyListener) {
                 });
             }
         } else {
-            newValue = `${num < 0 ? "-" : ""}${Math.abs(num)}`;
-            if (pos_sign == null) {
-                cm.view.dispatch({
-                    changes: {from: pos_start, to: pos_start + selectedText.length, insert: newValue}
-                });
+            if (pos_sign != null) {
+                if (num < 0) {
+                    cm.view.dispatch({
+                        changes: {from: pos_start, to: pos_start + textLength, insert: newValue}
+                    });
+                    cm.view.dispatch({
+                        changes: {from: pos_sign, to: pos_sign+1, insert: "-"}
+                    });
+                } else {
+                    cm.view.dispatch({
+                        changes: {from: pos_sign, to: pos_start + textLength, insert: newValue}
+                    });
+                    pos_start = pos_sign;
+                    pos_sign = null;
+                }
             } else {
-                pos_start = pos_sign;
+                if (num < 0) {
+                    newValue = "-"+newValue;
+                }
                 cm.view.dispatch({
-                    changes: {from: pos_sign, to: pos_start + selectedText.length, insert: newValue}
+                    changes: {from: pos_start, to: pos_start + textLength, insert: newValue}
                 });
             }
         }
-
-        // if (pos_)
-        // cm.view.dispatch({
-        //     changes: {from: pos_start, to: pos_start + selectedText.length, insert: newValue}
-        // });
 
 		selectedText = newValue;
 
