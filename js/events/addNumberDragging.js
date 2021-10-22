@@ -1,8 +1,12 @@
-const isDigit = (ch, left = false) => /[0-9]/i.test(ch) || ch === "." || (left && ch === "-");
+const isDigit = ch => /[0-9]/i.test(ch) || ch === ".";
 
 export function addNumberDragging(state, bodyListener) {
   let dragged = false;
   let num, pos_start, pos_end, sigFigs, usePrecision, selectedText;
+
+  let pos_sign = null;
+  let is_sum = false;
+  let is_neg = false;
 
   bodyListener("mousedown", ".ͼb", e => {
     const cm = document.querySelector("code-mirror");
@@ -18,10 +22,37 @@ export function addNumberDragging(state, bodyListener) {
     while (start > from && isDigit(text[start - from - 1], true)) start--
     while (end < to && isDigit(text[end - from])) end++
 
+    let ch;
+    if (start > from) {
+        let start_sign = start;
+        while (start_sign > from) {
+            start_sign--;
+            ch = text[start_sign - from];
+            if (ch === " ") {
+                continue;
+            } else if (ch === "+") {
+                pos_sign = start_sign;
+            } else if (ch === "-") {
+                pos_sign = start_sign;
+                is_neg = true;
+            } else if (["(", "[", ",", "/", "*", ";", "{", "=", ":"].includes(ch)) {
+                break;
+            } else {
+                is_sum = true;
+                break;
+            }
+        }
+    }
+
+    console.log(is_sum, is_neg, pos_sign);
 
     selectedText = text.slice(start-from, end-from);
 
     num = Number(selectedText);
+
+    if (is_neg) {
+        num = -num;
+    }
     dragged = true;
     pos_start = start;
     pos_end = end;
@@ -35,7 +66,6 @@ export function addNumberDragging(state, bodyListener) {
 
 		const sign = 0 > e.movementX ? 1 : -1;
 		// console.log(sign, e.movementX);
-		const oldValue = `${num}`;
 		if (usePrecision) {
 			let rounded = Math.round(num*10**sigFigs);
 			let newNum = rounded + e.movementX;
@@ -46,10 +76,40 @@ export function addNumberDragging(state, bodyListener) {
 			num += e.movementX;
 		}
 
-		const newValue = `${num}`;
-		cm.view.dispatch({
-			changes: {from: pos_start, to: pos_start + selectedText.length, insert: newValue}
-		});
+        let newValue;
+
+        if (is_sum) {
+            if (pos_sign == null) {
+                newValue = `${num < 0 ? "-" : "+"}${Math.abs(num)}`;
+            } else {
+                newValue = `${Math.abs(num)}`;
+            }
+            cm.view.dispatch({
+                changes: {from: pos_start, to: pos_start + selectedText.length, insert: newValue}
+            });
+            if (pos_sign != null) {
+                cm.view.dispatch({
+                    changes: {from: pos_sign, to: pos_sign+1, insert: num < 0 ? "-" : "+"}
+                });
+            }
+        } else {
+            newValue = `${num < 0 ? "-" : ""}${Math.abs(num)}`;
+            if (pos_sign == null) {
+                cm.view.dispatch({
+                    changes: {from: pos_start, to: pos_start + selectedText.length, insert: newValue}
+                });
+            } else {
+                pos_start = pos_sign;
+                cm.view.dispatch({
+                    changes: {from: pos_sign, to: pos_start + selectedText.length, insert: newValue}
+                });
+            }
+        }
+
+        // if (pos_)
+        // cm.view.dispatch({
+        //     changes: {from: pos_start, to: pos_start + selectedText.length, insert: newValue}
+        // });
 
 		selectedText = newValue;
 
@@ -59,5 +119,8 @@ export function addNumberDragging(state, bodyListener) {
 
   bodyListener("mouseup", "", e => {
     dragged = false;
+    pos_sign = null;
+    is_sum = false;
+    is_neg = false;
   })
 }
