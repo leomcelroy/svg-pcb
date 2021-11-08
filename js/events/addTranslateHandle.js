@@ -1,6 +1,5 @@
 import esprima from 'esprima';
 import { generate } from 'astring';
-// import { walk, walkAddParent } from "esprima-walk";
 
 function foldImports(state) {
   const anotherComp = l => l.includes("return kicadToObj(");

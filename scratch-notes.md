@@ -1,7 +1,12 @@
 # TODO
 
+- [] add drag n drop component
+- [] add wire direct manipulation
+- [] gerber
+- [] render function
+- [] change return to function call
 - [] add error messages
-- [] fix minus bug
+- [x] fix minus bug
 - [] fix text rendering in gram-js
 - [] firefox rendering bug
 - [x] save
@@ -34,6 +39,8 @@ https://gitlab.cba.mit.edu/classes/865.21/projects/frep-editor/-/blob/main/extra
 - make tutorial
 - draw wire
 
+https://css-tricks.com/converting-color-spaces-in-javascript/
+
 # Bugs
 
 - fix fontBoundingBoxAscent
@@ -63,3 +70,12 @@ https://gitlab.cba.mit.edu/classes/865.21/projects/frep-editor/-/blob/main/extra
 		- rectangle
 		- path
 		- text
+
+
+
+{
+   "imports": {
+        "gram-js": "https://leomcelroy.com/gram-js/exports.js",
+        "code-mirror": "https://leomcelroy.com/widgets/code-mirror.js"
+   }
+}

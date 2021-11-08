@@ -1,6 +1,0 @@
-{
-   "imports": {
-        "gram-js": "https://leomcelroy.com/gram-js/exports.js",
-        "code-mirror": "https://leomcelroy.com/widgets/code-mirror.js"
-   }
-}

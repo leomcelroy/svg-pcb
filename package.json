@@ -9,10 +9,8 @@
     "snowpack": "^3.8.8"
   },
   "dependencies": {
-    "acorn": "^8.5.0",
     "astring": "^1.7.5",
     "esprima": "^4.0.1",
-    "esprima-walk": "^0.1.0",
     "lit-html": "^2.0.1",
     "yarn": "^1.22.15"
   }

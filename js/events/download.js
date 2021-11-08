@@ -38,6 +38,37 @@ export function downloadSVG(state) {
     document.body.removeChild(downloadLink);
   }
 
+ function format(x) {
+   var s = x.toFixed(6)
+   s = s.substr(0,s.length-7)+s.substr(-6,6)
+   return s
+ }
+
+export function downloadGerber(state) {
+  const layers = state.storedPCB.layers;
+
+  // console.log(layers);
+  let str = ''
+  str += "%MOIN*%\n" // inch units
+  str += "%LPD*%\n" // layer dark
+  str += "%FSLAX66Y66*%\n" // format absolute 6.6
+  str += "G01*\n" // linear interpolation
+
+
+  const front_copper = layers["F.Cu"];
+  const strs = front_copper.polylines().map( (x) => {
+    const { pts } = x;
+    let ptsString = pts.reduce((acc, cur, i) => `${acc}X${format(cur.x)}Y${format(cur.y)}D0${i === 0 ? 2 : 1}*\n`, "G36*\n")
+    ptsString += "G37*\n";
+
+    return ptsString;
+  });
+
+  str += strs.join("") + "M02*";
+
+  downloadText("anon.gerber", str);
+}
+
 export function downloadText(filename, text) {
   const blob = new Blob([text], { type: "text/plain" });
 
@@ -47,3 +78,10 @@ export function downloadText(filename, text) {
   link.click();
   URL.revokeObjectURL(link);
 }
+
+
+
+
+
+
+
