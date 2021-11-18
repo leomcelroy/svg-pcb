@@ -28,11 +28,11 @@ const via = (rv, rp) => {
 const wire = (pts, thickness) => {
   let lastPt = pts[0];
   let result = new Turtle();
-  result.booleanScale = 2000;
-  result.goto(lastPt, false);
+  // result.booleanScale = 2000;
+  result.goTo(lastPt, false);
   for (const pt of pts.slice(1)) {
     if (overlap(pt, lastPt)) continue;
-    result.goto(pt);
+    result.goTo(pt);
     lastPt = pt;
   }
 
