@@ -2,7 +2,7 @@ import { html, svg } from "lit-html";
 import { Turtle } from "gram-js";
 import "code-mirror";
 import { files } from "./neil-components-names.js";
-import { downloadSVG, downloadText, downloadGerber } from "./events/download.js"
+import { downloadSVG, downloadText, downloadGerber, downloadUrumbu } from "./events/download.js"
 
 const drawImportItems = (files) => files.map(x => x.slice(10)).map( x => html`
 	<div class="import-item" @mousedown=${async (e) => {
@@ -42,6 +42,10 @@ export function view(state) {
 						<button
 							@click=${() => downloadGerber(state)}>
 							gerber
+						</button>
+						<button
+							@click=${() => downloadUrumbu(state)}>
+							urumbu
 						</button>
 					</div>
 				</div>

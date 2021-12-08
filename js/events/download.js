@@ -79,6 +79,27 @@ export function downloadText(filename, text) {
   URL.revokeObjectURL(link);
 }
 
+export function downloadUrumbu(state) {
+  const layers = state.storedPCB.layers;
+
+  // console.log(layers);
+  let str = ''
+
+  const front_copper = layers["F.Cu"];
+  const strs = front_copper.polylines().forEach( x => {
+    const { pts } = x;
+    pts.forEach( (pt, i) => {
+      str += `${pt.x}, ${pt.y}\n`;
+      if (i === 0) str += `DOWN\n`;
+    })
+    str += "UP\n"
+  });
+
+  console.log(str);
+
+  downloadText("anon.txt", str);
+}
+
 
 
 
