@@ -34,11 +34,80 @@ class PCB extends real_PCB {
 	}
 }
 
+// {
+//   board: board,
+//   layerColors: { // have default colors for default layers
+//     "F.Cu": "red",
+//     "Vias": "rbg(32, 32, 32)",
+//   },
+//   limits: {
+//     x: [0, 1],
+//     y: [0, 1]
+//   },
+//   mm_per_unit: 25.4
+// }
+
+const default_renderPCB_params = {
+	pcb: null,
+	layerColors: { "F.Cu": "copper" },
+	limits: {
+	    x: [0, 1],
+	    y: [0, 1]
+	},
+	mm_per_unit: 25.4,
+}
+
+function renderPCB({ pcb, layerColors, limits, mm_per_unit }) {
+	if (pcb === undefined) console.log("renderPCB must include pcb param");
+
+	if (layerColors === undefined) layerColors = default_renderPCB_params.layerColors;
+	if (limits === undefined) limits = default_renderPCB_params.limits;
+	if (mm_per_unit === undefined) mm_per_unit = default_renderPCB_params.mm_per_unit;
+
+	const shapes = [];
+	for (const layer in layerColors) {
+		shapes.push({ 
+			d: pcb.getLayer(layer), 
+			color: layerColors[layer],
+			groupId: layer
+		});
+	}
+
+	STATE.shapes = shapes; // TODO ??? what should the shape format be { d: path data string, color: hex or valid svg color, classes: []}
+	STATE.limits = limits;
+	STATE.mm_per_unit = mm_per_unit;
+
+	dispatch("RENDER");
+}
+
+const default_renderShapes_params = {
+	shapes: [],
+	limits: {
+	    x: [0, 1],
+	    y: [0, 1]
+	},
+	mm_per_unit: 25.4,
+}
+
+function renderShapes({ shapes, limits, mm_per_unit }) {
+	if (shapes === undefined) shapes = default_renderShapes_params.shapes;
+	if (limits === undefined) limits = default_renderShapes_params.limits;
+	if (mm_per_unit === undefined) mm_per_unit = default_renderShapes_params.mm_per_unit;
+
+	STATE.shapes = shapes;
+	STATE.limits = limits;
+	STATE.mm_per_unit = mm_per_unit;
+
+	dispatch("RENDER");
+}
+
 const included = {
 	kicadToObj,
 	PCB,
 	via,
 	Turtle,
+	renderPCB,
+	renderShapes
 }
 
 async function urlToCode(file_url, state) {
@@ -109,22 +178,13 @@ const ACTIONS = {
 	},
 	RUN({ save = false }, state) {
 		const string = state.codemirror.view.state.doc.toString();
-		// const result = JSON.parse(string); // if json
 
 		const f = new Function(...Object.keys(included), string)
-		const result = f(...Object.values(included));
-
-		let { shapes, limits, mm_per_unit } = typeof result === "string" ? JSON.parse(result) : result;
-
-		state.shapes = shapes;
-		state.limits = limits;
-		state.mm_per_unit = mm_per_unit;
+		f(...Object.values(included));
 
 		if (save) {
 			window.localStorage.setItem("svg-pcb", string)
 		}
-
-		dispatch("RENDER");
 	},
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");

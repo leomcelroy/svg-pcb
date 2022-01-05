@@ -1,10 +1,13 @@
 # TODO
 
+- [] filter shapes with empty paths
+- [] should we accept the color arrays or just color strings
 - [] add drag n drop component
 - [] add wire direct manipulation
+- [] add color editor widget for board render
 - [] gerber
-- [] render function
-- [] change return to function call
+- [x] render function
+- [x] change return to function call
 - [] add error messages
 - [x] fix minus bug
 - [] fix text rendering in gram-js

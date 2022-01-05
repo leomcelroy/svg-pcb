@@ -58,15 +58,14 @@ export class PCB {
     return this.layers[layer];
   }
 
-  getLayer(layer, flatten = false) {
+  getLayer(layer, flatten = false) { // returns array of path data
     const paths = layer.includes("Labels");
-    // flatten = false; // !layer.includes("Labels");
     flatten = !layer.includes("Labels");
 
     return this.layers[layer]
       ? flatten
-        ? this.layers[layer].flatten().getPathData(paths)
-        : this.layers[layer].getPathData(paths)
+        ? this.layers[layer].flatten().getPathData()
+        : this.layers[layer].getPathData()
       : "";
   }
 

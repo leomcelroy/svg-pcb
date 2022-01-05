@@ -30,6 +30,7 @@ input {
 /* GENERAL SET-UP */
 /* ///////////////////////////////////////////////////// */
 
+/*
 #root {
   display: grid;
   width: 100vw;
@@ -39,17 +40,28 @@ input {
     "editor view" 1fr
     / var(--vertical-bar) 1fr;
 }
+*/
+
+#root {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  position: fixed;
+}
 
 #code-editor {
 	grid-area: editor;
 	background: #f4e6d0;
 	overflow: scroll;
+	width: var(--vertical-bar);
 }
 
 #viewer {
 		grid-area: view;
-    width: 100%;
+    width: calc(100% - var(--vertical-bar));
     height: 100%;
+
 /*    transform: scale(1, -1);*/
 }
 
@@ -58,7 +70,9 @@ input {
 	display: flex;
 	place-items: center;
 	width: 100%;
-	height: 100%;
+	height: 30px;
+	max-height: 30px;
+	min-height: 30px;
 	background: lightgrey;
 }
 
