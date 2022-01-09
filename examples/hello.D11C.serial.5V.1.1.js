@@ -14,7 +14,7 @@ const R_1206 = {"1":{"shape":"M -0.031999999999999994 0.03400000000000001L 0.032
 
 // constants
 const width = 0.81 // board width
-const height = 1.45 // board height
+const height = 1.5 // board height
 const x = 1 // x origin
 const y = 1 // y origin
 const zt = 0 // top z
@@ -37,11 +37,12 @@ board.addShape("interior", interior);
 let IC1 = board.add(SAMD11C, {translate: [x+.45, y+height-.59], name: 'IC1\nD11C'});
 let J1 = board.add(header_SWD_4_1, {translate: [IC1.posX+.015, IC1.padY("CLK")-.14], name: 'J1 SWD'});
 let J2 = board.add(USB_A_plug, {translate: [x+width/2, y+height-.29], rotate: 90, name: 'J2\nUSB'});
-let J3 = board.add(header_serial_reverse, {translate: [IC1.posX, y+.23], rotate: -90, name: 'J3 serial\n5V power\n3.3V logic'});
+let J3 = board.add(header_serial_reverse, {translate: [IC1.posX, y+.23], rotate: -90, name: 'J3 serial'});
 let IC2 = board.add(regulator_SOT23, {translate: [IC1.padX("A05")-.21, IC1.padY("A09")], rotate: -90, name: 'IC2\n3.3V'});
 let C1 = board.add(C_1206, {translate: [IC2.posX, IC2.posY-.24], rotate: 90, name: 'C1\n1uF'});
-let R1 = board.add(R_1206, {translate: [J3.padX("Rx")-.02, J1.posY-.19], name: 'R1 0'});
+let R1 = board.add(R_1206, {translate: [J3.padX("Rx")-.02, J1.posY-.2], name: 'R1\n0'});
 let R2 = board.add(R_1206, {translate: [C1.posX-.03, J3.posY+.18], rotate: 90, name: 'R2\n0'});
+let R3 = board.add(R_1206, {translate: [R1.posX-.22, R1.posY], name: 'R3\n4.99k'});
 
 board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, 5.12+J2.posY]).rotate(90.00000001, J2.pos));
 board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, -5.12+J2.posY]).rotate(90.00000001, J2.pos));
@@ -112,26 +113,20 @@ board.wire([C1.pad("2"),
             IC2.pad("gnd")], w)
 
 board.wire([R1.pad("1"),
-            [J3.padX("CTS"), R1.posY],
+            [R1.padX("1"), J3.posY+.12],
+            [J3.padX("CTS"), J3.posY+.12],
             J3.pad("CTS")], w)
-
-board.wire([J3.pad("Rx"),
-            [R1.posX, J3.padY("Rx")],
-            [R1.posX, R1.posY+.06],
-            [IC1.padX("A05")-.12, R1.posY+.06],
-            [IC1.padX("A05")-.12, IC1.padY("A05")],
-            IC1.pad("A05")], w)
 
 board.wire([R1.pad("2"),
             [R1.padX("2"), R1.posY+.09],
             [IC1.padX("A09")-.09, R1.posY+.09],
-            [IC1.padX("A09")-.09, IC1.padY("A09")],
-            IC1.pad("A09")], w)
+            [IC1.padX("A09")-.09, IC1.padY("A14")],
+            IC1.pad("A14")], w)
 
 board.wire([C1.pad("1"),
             [C1.posX+.06, C1.padY("1")],
-            [C1.posX+.06, R1.posY+.03],
-            [J3.padX("GND")+.05, R1.posY+.03],
+            [C1.posX+.06, J3.posY+.12],
+            [J3.padX("GND")+.05, J3.posY+.12],
             [J3.padX("GND")+.05, J3.posY-.1],
             [J3.padX("CTS")+.05, J3.posY-.1],
             [J3.padX("CTS")+.05, J3.posY+.09],
@@ -170,24 +165,36 @@ board.wire([C1.pad("2"),
             [C1.posX-.06, C1.padY("2")],
             [C1.posX-.06, R2.padY("2")+.07],
             [C1.posX+.03, R2.padY("2")+.07],
-            [C1.posX+.03, R2.padY("1")],
-            [J3.padX("GND"), J3.padY("GND")+.06],
+            [C1.posX+.03, R2.padY("1")-.02],
+            [J3.padX("GND"), J3.padY("GND")+.04],
             J3.pad("GND")], w)
+
+board.wire([J3.pad("Rx"),
+            [R1.posX, J3.padY("Rx")],
+            [R1.posX, R1.posY+.06],
+            [R3.padX("2"), R1.posY+.06],
+            R3.pad("2")], w)
+
+board.wire([R3.pad("1"),
+            [IC1.padX("A05")-.12, R3.posY],
+            [IC1.padX("A05")-.12, IC1.padY("A05")],
+            IC1.pad("A05")], w)
 
 
 // rendering
-return {
-  shapes: [
-    { d: board.getLayer("interior"), color: [0, 0.18, 0, 1] },
-    { d: board.getLayer("B.Cu"), color: [1, 0.3, 0.0, .5] },
-    { d: board.getLayer("F.Cu"), color: [1, 0.55, 0.0, .8] },
-    { d: board.getLayer("drill"), color: [1, 0.2, 0, 0.9]},
-    { d: board.getLayer("padLabels"), color: [1, 1, 0.6, 0.9] },
-    { d: board.getLayer("componentLabels"), color: [0, 0.9, 0.9, 0.9] },
-  ],
+renderPCB({
+  pcb: board,
+  layerColors: {
+    "interior": "#002d00ff",
+    "B.Cu": "#ff4c007f",
+    "F.Cu": "#ff8c00cc",
+    "drill": "#ff3300e5",
+    "padLabels": "#ffff99e5",
+    "componentLabels": "#00e5e5e5",
+  },
   limits: {
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
   mm_per_unit: 25.4
-}
+})

@@ -41,8 +41,8 @@ let IC3 = board.add(Hall_SOT23, {translate: [IC2.posX-.13, IC2.posY], rotate: -9
 let R1 = board.add(R_1206, {translate: [C1.posX, C1.posY-.1], name: 'R1 4.99k'});
 let R2 = board.add(R_1206, {translate: [R1.posX, R1.posY-.1], name: 'R2 10k'});
 
-board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, 5.12+J2.posY]).rotate(90.0001, J2.pos));
-board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, -5.12+J2.posY]).rotate(90.0001, J2.pos));
+board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, 5.12+J2.posY]).rotate(90.00000001, J2.pos));
+board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J2.posX, -5.12+J2.posY]).rotate(90.00000001, J2.pos));
 
 
 // add wires
@@ -137,18 +137,19 @@ board.wire([R2.pad("2"),
 
 
 // rendering
-return {
-  shapes: [
-    { d: board.getLayer("interior"), color: [0, 0.18, 0, 1] },
-    { d: board.getLayer("B.Cu"), color: [1, 0.3, 0.0, .5] },
-    { d: board.getLayer("F.Cu"), color: [1, 0.55, 0.0, .8] },
-    { d: board.getLayer("drill"), color: [1, 0.2, 0, 0.9]},
-    { d: board.getLayer("padLabels"), color: [1, 1, 0.6, 0.9] },
-    { d: board.getLayer("componentLabels"), color: [0, 0.9, 0.9, 0.9] },
-  ],
+renderPCB({
+  pcb: board,
+  layerColors: {
+    "interior": "#002d00ff",
+    "B.Cu": "#ff4c007f",
+    "F.Cu": "#ff8c00cc",
+    "drill": "#ff3300e5",
+    "padLabels": "#ffff99e5",
+    "componentLabels": "#00e5e5e5",
+  },
   limits: {
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
   mm_per_unit: 25.4
-}
+})
