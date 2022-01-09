@@ -33,7 +33,7 @@ let board = new PCB();
 
 test_comp1 = board.add(test_footprint, {translate: [0.35, 0.65], name: "COMP1"})
 
-return {
+renderShapes({
   shapes: [
     { d: board.getLayer("interior"), color: [0, 0.18, 0, 1] },
     { d: board.getLayer("B.Cu"), color: [1, 0.3, 0.0, .5] },
@@ -47,4 +47,4 @@ return {
     y: [0, 1]
   },
   mm_per_unit: 25.4
-}
+})

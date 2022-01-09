@@ -52,7 +52,7 @@ board.wire([v2.pos,
             [v2.posX+0.1, test_comp2.padY("D+")],
             test_comp2.pad("D+")], 0.015)
 
-return {
+renderShapes({
   shapes: [
     { d: board.getLayer("interior"), color: [0, 0.18, 0, 1] },
     { d: board.getLayer("B.Cu"), color: [1, 0.3, 0.0, .5] },
@@ -66,4 +66,4 @@ return {
     y: [0, 1]
   },
   mm_per_unit: 25.4
-}
+})
