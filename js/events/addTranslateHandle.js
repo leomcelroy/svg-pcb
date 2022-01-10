@@ -129,8 +129,6 @@ export function addTranslateHandle(state, svgListener) {
               n_from = n.parent.range[0] - offs;
             }
 
-            console.log(n.range, n.parent.range);
-
             if (!n.ogValue) n.ogValue = n.value;
             if (!n.ogRaw) n.ogRaw = n.raw;
 

@@ -111,7 +111,6 @@ export function view(state) {
 }
 
 const drawPath = ({ d, color, groupId = ""}) => {
-	const pathDataStrings = d.split(/(?=M)/g);
 
 	const renderDataString = s => svg`
 		<path
@@ -119,6 +118,13 @@ const drawPath = ({ d, color, groupId = ""}) => {
 				fill-rule="nonzero"
 				fill=${color}/>
 	`
+
+
+	if (["padLabels", "componentLabels"].includes(groupId)) {
+		return svg`<g id=${groupId}>${renderDataString(d)}</g>`
+	}
+	
+	const pathDataStrings = d.split(/(?=M)/g);
 
 	return svg`
 		<g id=${groupId}>
