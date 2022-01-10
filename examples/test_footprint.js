@@ -33,15 +33,17 @@ let board = new PCB();
 
 test_comp1 = board.add(test_footprint, {translate: [0.35, 0.65], name: "COMP1"})
 
-renderShapes({
-  shapes: [
-    { d: board.getLayer("interior"), color: [0, 0.18, 0, 1] },
-    { d: board.getLayer("B.Cu"), color: [1, 0.3, 0.0, .5] },
-    { d: board.getLayer("F.Cu"), color: [1, 0.55, 0.0, .8] },
-    { d: board.getLayer("drill"), color: [1, 0.2, 0, 0.9]},
-    { d: board.getLayer("padLabels"), color: [1, 1, 0.6, 0.9] },
-    { d: board.getLayer("componentLabels"), color: [0, 0.9, 0.9, 0.9] },
-  ],
+// rendering
+renderPCB({
+  pcb: board,
+  layerColors: {
+    "interior": "#002d00ff",
+    "B.Cu": "#ff4c007f",
+    "F.Cu": "#ff8c00cc",
+    "drill": "#ff3300e5",
+    "padLabels": "#ffff99e5",
+    "componentLabels": "#00e5e5e5",
+  },
   limits: {
     x: [0, 1],
     y: [0, 1]
