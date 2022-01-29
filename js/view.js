@@ -1,5 +1,5 @@
 import { html, svg } from "lit-html";
-import { Turtle } from "gram-js";
+import { Turtle } from "../libs/gram-js.js";
 import "code-mirror";
 import { files } from "./neil-components-names.js";
 import { downloadSVG, downloadText, downloadGerber, downloadUrumbu } from "./events/download.js"
@@ -104,9 +104,24 @@ export function view(state) {
 		</div>
 		<div style="display: flex; height: 100%; min-height: 100%; max-height: 100%;">
 			<code-mirror id="code-editor" style="overflow: scroll;"></code-mirror>
-			${svgViewer(state)}
+			<div class="right-side">
+				${svgViewer(state)}
+				<div class="footprint-toolbox">${state.footprints.map(renderFootprint)}</div>
+			</div>
 		</div>
 		<div id="vertical-bar"></div>
+	`
+}
+
+const renderFootprint = ([name, footprint], i) => {
+			// <svg width="30" height="30">
+			// 	<circle cx="15" cy="15" r="10" stroke="grey" stroke-width="4" fill="yellow" />
+			// </svg>
+	return html`
+		<div class="footprint-item">
+			<div class="footprint-item-icon" data-index=${i} ></div>
+			<span>${name}</span>
+		</div>
 	`
 }
 
@@ -139,7 +154,7 @@ const svgViewer = (state) => {
 	const corners = state.panZoomParams?.corners();
 
 	return svg`
-		<svg id="viewer" style="transform: scale(1, -1);">
+		<svg id="viewer" style="width: 100%; height: 100%; transform: scale(1, -1);">
 			<g class="transform-group">
 			      ${ state.selectBox.start && state.selectBox.end ? svg`
 			      	<path

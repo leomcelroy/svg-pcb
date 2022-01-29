@@ -57,12 +57,49 @@ input {
 	width: var(--vertical-bar);
 }
 
-#viewer {
+.right-side {
 		grid-area: view;
     width: calc(100% - var(--vertical-bar));
     height: 100%;
+    position: relative;
+    overflow: hidden;
 
 /*    transform: scale(1, -1);*/
+}
+
+.footprint-toolbox {
+	width: min-content;
+	height: min-content;
+	overflow: scroll;
+	max-height: 200px;
+	background: #f4e6d0aa;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	padding: 5px;
+	display: flex;
+	flex-direction: column;
+}
+
+.footprint-item {
+	display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.footprint-item-icon {
+	width: 20px;
+	height: 20px;
+	border-radius: 50px;
+	background: yellow;
+	border: 5px grey solid;
+	box-sizing: border-box;
+	margin: 5px;
+}
+
+.footprint-item-icon:hover {
+	background: orange;
 }
 
 .top-menu {

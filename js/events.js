@@ -5,6 +5,7 @@ import { addDropUpload } from "./events/addDropUpload.js";
 import { addSelectBox } from "./events/addSelectBox.js";
 import { addNumberDragging } from "./events/addNumberDragging.js";
 // import { download } from "./events/download.js"
+import { addImportDrag } from "./events/addImportDrag.js";
 
 function pauseEvent(e) {
     if(e.stopPropagation) e.stopPropagation();
@@ -38,6 +39,7 @@ export function addEvents(state) {
 
 	const body = document.querySelector("body");
 	const listenBody = createListener(body);
+	addImportDrag(state, listenBody);
 	addDropUpload(state, listenBody);
 	addNumberDragging(state, listenBody);
 	addVerticalBarDrag(state, listenBody);

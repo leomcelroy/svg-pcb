@@ -7,6 +7,7 @@ import { PCB as real_PCB } from "./pcb.js";
 import { via } from "./pcb_helpers.js";
 import { kicadToObj } from "./ki_cad_parser.js"
 import { Turtle } from "./Turtle.js";
+import { getFootprints } from "./getFootprints.js";
 
 
 const STATE = {
@@ -15,6 +16,7 @@ const STATE = {
 	transforming: false,
 	transformUpdate: () => {},
 	selectBox: {},
+	footprints: [],
 	shapes: [],
 	limits: {
 		x: [0, 1],
@@ -107,7 +109,13 @@ const included = {
 	via,
 	Turtle,
 	renderPCB,
-	renderShapes
+	renderShapes,
+	document: null,
+	window: null,
+	localStorage: null,
+	Function: null,
+	eval: null,
+	// "import": null,
 }
 
 async function urlToCode(file_url, state) {
@@ -179,6 +187,22 @@ const ACTIONS = {
 	RUN({ save = false }, state) {
 		const string = state.codemirror.view.state.doc.toString();
 
+		let footprints = [];
+		try {
+			footprints = getFootprints(string);
+		} catch (err) {}
+
+		state.footprints = footprints;
+
+
+		// need to sanitize text
+
+		const BLACK_LISTED_WORDS = ["import"]; // "document", "window", "localStorage"
+		BLACK_LISTED_WORDS.forEach(word => {
+			if (string.includes(word))
+				throw `"${word}" is not permitted due to security concerns.`;
+		});
+
 		const f = new Function(...Object.keys(included), string)
 		f(...Object.values(included));
 
@@ -211,7 +235,7 @@ const ACTIONS = {
 		  changes: {from: 0, insert: text}
 		});
 
-		dispatch("RENDER");
+		dispatch("RUN");
 	},
 	TRANSLATE({ x, y, index }, state) {
 		state.transformUpdate(x, y);

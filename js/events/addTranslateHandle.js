@@ -1,5 +1,4 @@
 import esprima from 'esprima';
-import { generate } from 'astring';
 
 function foldImports(state) {
   const anotherComp = l => l.includes("return kicadToObj(");
@@ -68,9 +67,7 @@ export function addTranslateHandle(state, svgListener) {
     index = e.target.dataset.index;
 
     const string = state.codemirror.view.state.doc.toString();
-    const stringToParse = `()=>{${string}}`; // remember to subtract 5 from indices
-    const esprimaAST = esprima.parseScript(stringToParse, { range: true, comment: true });
-    const mainBody = esprimaAST.body[0].expression.body.body;
+    const esprimaAST = esprima.parseScript(string, { range: true, comment: true });
 
     let adds = [];
     walk(esprimaAST, node => {
@@ -99,8 +96,6 @@ export function addTranslateHandle(state, svgListener) {
 
         const [ xNode, yNode ] = prop.value.elements;
 
-        let offs = 5;
-
         let is_sum = false;
         let is_neg = false;
         let changed = false;
@@ -110,7 +105,7 @@ export function addTranslateHandle(state, svgListener) {
 
           if (n.type === "Literal" && typeof n.value === "number") {
 
-            let n_from = n.range[0] - offs;
+            let n_from = n.range[0];
 
             if (n.parent.operator === "/") {
               return;
@@ -122,11 +117,11 @@ export function addTranslateHandle(state, svgListener) {
 
             if (n.parent.type === "BinaryExpression" && (n.parent.operator === "+" || n.parent.operator === "-") && n.parent.right == n) {
               is_sum = true;
-              n_from = n.parent.left.range[1] - offs;
+              n_from = n.parent.left.range[1];
             }
 
             if (n.parent.type === "UnaryExpression" && n.parent.operator === "-") {
-              n_from = n.parent.range[0] - offs;
+              n_from = n.parent.range[0];
             }
 
             if (!n.ogValue) n.ogValue = n.value;
@@ -154,7 +149,7 @@ export function addTranslateHandle(state, svgListener) {
 
             changes.push({
               from: n_from,
-              to: n.range[1] - offs,
+              to: n.range[1],
               insert: n_insert
             });
 

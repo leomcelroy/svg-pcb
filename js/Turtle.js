@@ -1,4 +1,4 @@
-import { Turtle } from "gram-js";
+import { Turtle } from "../libs/gram-js.js";
 
 function circle(radius) {
   return new Turtle()
