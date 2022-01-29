@@ -24,5 +24,6 @@ export function addVerticalBarDrag(state, listenBody) {
 
 	listenBody("mouseup", "", e => {
 		moveVerticalBar = false;
+		dispatch("RENDER");
 	})
 }
