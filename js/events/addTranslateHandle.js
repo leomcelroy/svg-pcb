@@ -1,7 +1,5 @@
-import esprima from 'https://cdn.skypack.dev/esprima';
-import acorn from 'https://cdn.skypack.dev/acorn';
-import { generate } from 'https://cdn.skypack.dev/astring';
-import { walk } from 'https://cdn.skypack.dev/esprima-walk';
+import esprima from 'esprima';
+
 
 function foldImports(state) {
   const anotherComp = l => l.includes("return kicadToObj(");
@@ -43,12 +41,9 @@ export function addTranslateHandle(state, svgListener) {
     index = e.target.dataset.index;
 
     const string = state.codemirror.view.state.doc.toString();
-    const stringToParse = `()=>{${string}}`; // remember to subtract 5 from indices
-    const esprimaAST = esprima.parseScript(stringToParse, { range: true, comment: true });
-    console.log(esprimaAST);
-    const mainBody = esprimaAST.body[0].expression.body.body;
 
-    console.log(mainBody);
+    const esprimaAST = esprima.parseScript(string, { range: true, comment: true });
+
     let adds = [];
     walk(esprimaAST, node => {
       try {
@@ -80,20 +75,61 @@ export function addTranslateHandle(state, svgListener) {
 
         const [ xNode, yNode ] = prop.value.elements;
 
-        let xChanged = false;
-        walk(xNode, n => {
-          if (xChanged) return;
+        let is_sum = false;
+        let is_neg = false;
+        let changed = false;
+
+        let change_x_or_y = function(n, delta) {
+          if (changed) return;
+
           if (n.type === "Literal" && typeof n.value === "number") {
+
+            let n_from = n.range[0];
+
+            if (n.parent.operator === "/") {
+              return;
+            }
+
+            if (n.parent.operator === "-") {
+              is_neg = true;
+            }
+
+            if (n.parent.type === "BinaryExpression" && (n.parent.operator === "+" || n.parent.operator === "-") && n.parent.right == n) {
+              is_sum = true;
+              n_from = n.parent.left.range[1];
+            }
+
+            if (n.parent.type === "UnaryExpression" && n.parent.operator === "-") {
+              n_from = n.parent.range[0];
+            }
+
             if (!n.ogValue) n.ogValue = n.value;
             if (!n.ogRaw) n.ogRaw = n.raw;
 
-            let newNum = n.ogValue + x;
+            let newNum;
+            if (is_neg) {
+              newNum = -n.ogValue + delta;
+            } else {
+              newNum = n.ogValue + delta;
+            }
 
-            changes.push({ 
-              from: n.range[0] - 5, 
-              to: n.range[1] - 5,
-              // insert: `${round(newNum, sigFigs(n.ogRaw))}`,
-              insert: `${round(step(newNum, state.gridSize), 8)}` 
+            let n_val = state.gridSize === 0 ? round(newNum, sigFigs(n.ogRaw)) : round(step(newNum, state.gridSize), 8);
+
+            let is_neg_new = n_val < 0;
+
+            let n_insert;
+            if (is_neg_new) {
+              n_insert = `-${Math.abs(n_val)}`
+            } else if (is_sum) {
+              n_insert = `+${n_val}`
+            } else {
+              n_insert = `${n_val}`
+            }
+
+            changes.push({
+              from: n_from,
+              to: n.range[1],
+              insert: n_insert
             });
 
             xChanged = true;

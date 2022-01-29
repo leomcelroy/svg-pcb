@@ -5,11 +5,8 @@ import { addDropUpload } from "./events/addDropUpload.js";
 import { addSelectBox } from "./events/addSelectBox.js";
 import { addNumberDragging } from "./events/addNumberDragging.js";
 import { download } from "./events/download.js"
+import { addImportDrag } from "./events/addImportDrag.js";
 
-import esprima from 'https://cdn.skypack.dev/esprima';
-import acorn from 'https://cdn.skypack.dev/acorn';
-import { generate } from 'https://cdn.skypack.dev/astring';
-import { walk } from 'https://cdn.skypack.dev/esprima-walk';
 
 function pauseEvent(e) {
     if(e.stopPropagation) e.stopPropagation();
@@ -43,6 +40,7 @@ export function addEvents(state) {
 
 	const body = document.querySelector("body");
 	const listenBody = createListener(body);
+	addImportDrag(state, listenBody);
 	addDropUpload(state, listenBody);
 	addNumberDragging(state, listenBody);
 	addVerticalBarDrag(state, listenBody);

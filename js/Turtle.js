@@ -1,19 +1,5 @@
 import { Turtle } from "../libs/gram-js.js";
 
-function getPath(merge = true) {
-	let result = [];
-	const pls = this.polylines();
-
-	for (let i = 0; i < pls.length; i++) {
-		for (let j = 0; j < pls[i].pts.length; j++) {
-			let pt = pls[i].pts[j];
-			if (j === 0) result.push(`M ${pt.x} ${pt.y}`);
-			else result[result.length-1] += `L ${pt.x} ${pt.y}`;
-		}
-	}
-
-	return merge ? result.join(" ") : result;
-}
 
 function circle(radius) {
   return new Turtle()

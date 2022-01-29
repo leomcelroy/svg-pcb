@@ -1,0 +1,90 @@
+import esprima from 'esprima';
+
+function foldImports(state) {
+  const anotherComp = l => l.includes("return kicadToObj(");
+
+  const doc = state.codemirror.view.state.doc;
+  const lines = doc.toString().split("\n");
+  let i = 0;
+  let count = 0;
+  while (true) {
+    const line = lines[i];
+    if (!line) break;
+    count += line.length;
+    if (i > lines.length) break;
+    if (lines[i] === "`)})()" && !anotherComp(lines[i+1])) break;
+    i++;
+  };
+
+  state.codemirror.foldRange(0, count+i);
+}
+
+function walk( ast, fn ) {
+  var stack = [ ast ], i, j, key, len, node, child, subchild
+  for ( i = 0; i < stack.length; i += 1 ) {
+    node = stack[ i ]
+    if (typeof node == 'number')
+      continue
+    fn( node )
+    for ( key in node ) {
+      if ( key !== 'parent' ) {
+        child = node[ key ]
+        if ( child instanceof Array ) {
+          for ( j = 0, len = child.length; j < len; j += 1 ) {
+            subchild = child[ j ]
+            if( subchild instanceof Object ) {
+              subchild.parent = node
+            }
+            stack.push( subchild )
+          }
+        } else if ( child != void 0 && typeof child.type === 'string' ) {
+          child.parent = node
+          stack.push( child )
+        }
+      }
+    }
+  }
+}
+
+export function addImportDrag(state, listener) {
+  const svg = document.querySelector("svg");
+
+  let clicked = false;
+  let index, string, ast;
+
+  listener("mousedown", ".footprint-item-icon", e => {
+    clicked = true;
+
+    index = e.target.dataset.index;
+
+    string = state.codemirror.view.state.doc.toString();
+    ast = esprima.parseScript(string, { range: true, comment: true });
+
+    // pauseEvent(e);
+  })
+
+  listener("mousemove", "", e => {
+    if (!clicked) return;
+
+    const svgPoint = svg.panZoomParams.svgPoint;
+    const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
+
+    const overSVG = e.path.some(el => el.matches && el.matches("svg"));
+
+    // want to add footprint with x y currentPoint
+
+    if (overSVG) {
+      console.log(ast, currentPoint);
+    }
+
+
+  })
+
+  listener("mouseup", "", e => {
+    clicked = false;
+  })
+
+  listener("mouseleave", "", e => {
+    clicked = false;
+  })
+}
