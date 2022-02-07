@@ -52,7 +52,7 @@ export function addImportDrag(state, listener) {
   let clicked = false;
   let index, string, ast;
 
-  listener("mousedown", ".footprint-item-icon", e => {
+  listener("mousedown", ".footprint-svg, .path-footprint", e => {
     clicked = true;
 
     index = e.target.dataset.index;
@@ -69,22 +69,32 @@ export function addImportDrag(state, listener) {
     const svgPoint = svg.panZoomParams.svgPoint;
     const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
 
-    const overSVG = e.path.some(el => el.matches && el.matches("svg"));
+    const overSVG = e.path.some(el => el.matches && el.matches("#viewer"));
 
     // want to add footprint with x y currentPoint
 
-    if (overSVG) {
-      console.log(ast, currentPoint);
-    }
+    const rect = document.querySelector("#viewer").getBoundingClientRect();
+
+    // Mouse position
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
 
+    state.previewFootprint = [ 
+      state.footprints[index], 
+      [ x, y ]
+    ];
+
+    dispatch("RENDER");
   })
 
   listener("mouseup", "", e => {
+    state.previewFootprint = null;
     clicked = false;
   })
 
   listener("mouseleave", "", e => {
+    state.previewFootprint = null;
     clicked = false;
   })
 }

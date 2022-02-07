@@ -71,7 +71,7 @@ input {
 	width: min-content;
 	height: min-content;
 	overflow: scroll;
-	max-height: 200px;
+	max-height: 320px;
 	background: #f4e6d0aa;
 	position: absolute;
 	right: 0px;

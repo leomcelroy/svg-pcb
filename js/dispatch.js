@@ -27,6 +27,7 @@ const STATE = {
 	gridSize: 0.05,
 	viewHandles: true,
 	panZoomParams: undefined,
+	previewFootprint: null,
 }
 
 class PCB extends real_PCB {

@@ -1,4 +1,5 @@
 import { html, svg } from "lit-html";
+  import {unsafeHTML} from 'https://unpkg.com/lit-html@latest/directives/unsafe-html.js?module';
 import { Turtle } from "../libs/gram-js.js";
 import "code-mirror";
 import { files } from "./neil-components-names.js";
@@ -107,21 +108,74 @@ export function view(state) {
 			<div class="right-side">
 				${svgViewer(state)}
 				<div class="footprint-toolbox">${state.footprints.map(renderFootprint)}</div>
+				${state.previewFootprint ? renderPreviewFootprint(...state.previewFootprint) : ""}
 			</div>
 		</div>
 		<div id="vertical-bar"></div>
 	`
 }
 
-const renderFootprint = ([name, footprint], i) => {
+const renderFootprint = ([name, footprint, svgView], i) => {
 			// <svg width="30" height="30">
 			// 	<circle cx="15" cy="15" r="10" stroke="grey" stroke-width="4" fill="yellow" />
 			// </svg>
+
+			// <div class="footprint-item-icon" data-index=${i} ></div>
+
 	return html`
+		<style>
+			.path-footprint {
+				fill: black;
+			}
+
+			.footprint-svg:hover .path-footprint {
+				fill: orange;
+			}
+		</style>
 		<div class="footprint-item">
-			<div class="footprint-item-icon" data-index=${i} ></div>
-			<span>${name}</span>
+			<svg 
+				data-index=${i}
+				class="footprint-svg footprint-${i}" 
+				width="50px"
+				height="50px">
+				<path
+						class="path-footprint"
+						data-index=${i} 
+						d="${svgView.getPathData()}"
+						fill-rule="nonzero"
+						/>
+			</svg>
+			<span style="padding-left: 5px;">${name}</span>
 		</div>
+	`
+}
+
+const renderPreviewFootprint = ([name, footprint, svgView], pos) => {
+	// <svg width="30" height="30">
+	// 	<circle cx="15" cy="15" r="10" stroke="grey" stroke-width="4" fill="yellow" />
+	// </svg>
+
+	// <div class="footprint-item-icon" data-index=${i} ></div>
+
+	const [ x, y ] = pos;
+	return html`
+		<style>
+			.path-footprint-dragged {
+				fill: black;
+			}
+		</style>
+
+		<svg 
+			style="position: absolute; left: ${x}; top: ${y}; transform: translate(-50%, -50%);"
+			width="50px"
+			height="50px">
+			<path
+					class="path-footprint-dragged" 
+					d="${svgView.getPathData()}"
+					fill-rule="nonzero"
+					/>
+		</svg>
+
 	`
 }
 
@@ -169,6 +223,7 @@ const svgViewer = (state) => {
 			      }
 			    <g class="shapes">${shapes}</g>
 				${state.panZoomParams && state.gridSize > 0 && state.grid ? drawGrid(state.panZoomParams.corners(), state.gridSize) : ""}
+
 				<rect
 					class="limits no-download"
 					width="${state.limits.x[1] - state.limits.x[0]}"
