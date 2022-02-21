@@ -1,3 +1,5 @@
+import { dispatch } from "../dispatch.js";
+
 export function addVerticalBarDrag(state, listenBody) {
 	let moveVerticalBar = false;
 

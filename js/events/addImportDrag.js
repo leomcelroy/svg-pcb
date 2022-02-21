@@ -1,4 +1,5 @@
 import esprima from 'esprima';
+import { dispatch } from "../dispatch.js";
 
 function foldImports(state) {
   const anotherComp = l => l.includes("return kicadToObj(");

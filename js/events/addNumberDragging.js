@@ -1,3 +1,5 @@
+import { dispatch } from "../dispatch.js";
+
 const isDigit = ch => /[0-9]/i.test(ch) || ch === ".";
 
 export function addNumberDragging(state, bodyListener) {

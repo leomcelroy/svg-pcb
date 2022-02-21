@@ -1,11 +1,14 @@
+import { dispatch } from "../dispatch.js";
+
 let count = 0;
+
 function readFileUploadComp(file) {
   var reader = new FileReader();
   reader.readAsText(file);
 
   reader.onloadend = event => {
     let text = reader.result;
-    dispatch("UPLOAD_COMP", {text, name: `component${count}`});
+    dispatch("UPLOAD_COMP", { text, name: `component${count}` });
     count++;
   };
 }

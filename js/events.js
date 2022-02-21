@@ -7,6 +7,8 @@ import { addNumberDragging } from "./events/addNumberDragging.js";
 // import { download } from "./events/download.js"
 import { addImportDrag } from "./events/addImportDrag.js";
 
+import { dispatch } from "./dispatch.js";
+
 function pauseEvent(e) {
     if(e.stopPropagation) e.stopPropagation();
     if(e.preventDefault) e.preventDefault();
