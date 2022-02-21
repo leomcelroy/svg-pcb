@@ -1,4 +1,5 @@
 import { html, svg } from "lit-html";
+import { Turtle } from "../Turtle.js";
 
 const translateHandleSize = 0.02;
 export const drawHandles = (pcb) => pcb.components.map((comp, i) => svg`

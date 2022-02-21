@@ -173,14 +173,14 @@ const ACTIONS = {
           if (!file.startsWith("http")) file_url = `examples/${file}`;
 
           urlToCode(file_url, state);
-	    } else {
+	    } else { // should check before running this
 	    	const saved = window.localStorage.getItem("svg-pcb")
-		    state.codemirror.view.dispatch({
-			  changes: {from: 0, insert: saved ?? ""}
-			});
+			    state.codemirror.view.dispatch({
+				  changes: {from: 0, insert: saved ?? ""}
+				});
 
-			dispatch("RUN");
-			document.querySelector(".center-button").click();
+				dispatch("RUN");
+				document.querySelector(".center-button").click();
 	    }
 
 	    dispatch("RENDER");
@@ -198,7 +198,7 @@ const ACTIONS = {
 
 		// need to sanitize text
 
-		const BLACK_LISTED_WORDS = ["import"]; // "document", "window", "localStorage"
+		const BLACK_LISTED_WORDS = []; // import, document, window, localStorage
 		BLACK_LISTED_WORDS.forEach(word => {
 			if (string.includes(word))
 				throw `"${word}" is not permitted due to security concerns.`;
