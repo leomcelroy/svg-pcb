@@ -63,22 +63,19 @@ export function wire(cmds, thickness) {
   cmds = mergeHandles(cmds);
 
   let prevPt = getWirePt(cmds[0]);
-  let nextPt = null;
-
   const pts = [ prevPt ];
   
   for (let i = 1; i < cmds.length; i++) {
     const cmd = cmds[i];
 
+    let nextPt = null;
     let j = i + 1;
     let nextCmd = cmds[j];
     while (nextCmd && nextCmd[0] !== "handles") {
       nextPt = getWirePt(nextCmd);
       if (nextPt !== null) break;
-      
       j++;
       nextCmd = cmds[j];
-      
     }
 
     if (typeof cmd[0] !== "string") {
