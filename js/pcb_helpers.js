@@ -1,7 +1,6 @@
 import { Turtle } from "./Turtle.js";
 
 const length = ([x1, y1], [x2, y2]) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
-const overlap = (p1, p2) => length(p1, p2) < 0.000001;
 
 const via = (rv, rp) => {
   return {
@@ -23,20 +22,6 @@ const via = (rv, rp) => {
       "layers": ["drill"]
     }
   };
-}
-
-const wire = (pts, thickness) => {
-  let lastPt = pts[0];
-  let result = new Turtle();
-  // result.booleanScale = 2000;
-  result.goTo(lastPt, false);
-  for (const pt of pts.slice(1)) {
-    if (overlap(pt, lastPt)) continue;
-    result.goTo(pt);
-    lastPt = pt;
-  }
-
-  return result.offset(thickness/2);
 }
 
 const vector_add = ([x, y], [dx, dy]) => [x + dx, y + dy];
@@ -123,7 +108,7 @@ function makeComponent(comp, options = {}) {
   for (const pad in comp) {
     let { pos, shape, layers } = comp[pad];
 
-    shape = typeof shape === "string" ? new Turtle().bezier(shape) : shape.copy();
+    shape = typeof shape === "string" ? new Turtle().pathD(shape) : shape.copy();
 
     let pad_pos = vector_add(vector_rotate(pos, rad), translate);
     pads[pad] = pad_pos;
@@ -152,7 +137,6 @@ function makeComponent(comp, options = {}) {
 }
 
 export {
-  wire,
   makeText,
   makeComponent,
   via

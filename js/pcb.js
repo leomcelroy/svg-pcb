@@ -1,4 +1,5 @@
-import { makeComponent, makeText, wire } from "./pcb_helpers.js";
+import { makeComponent, makeText } from "./pcb_helpers.js";
+import { wire } from "./wire.js";
 import { Turtle } from "./Turtle.js";
 
 export class PCB {

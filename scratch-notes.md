@@ -1,5 +1,12 @@
 # TODO
 
+- [] why is the wire path getting flattened, can't have holes
+- [] prevent auto-import with matching names
+- [] cache recent files (up to five?)
+- [] add color pickers for board layers
+- [] add version system
+- [] fix build system to bundle url dependencies
+	- should have single js file after build
 - [] filter shapes with empty paths
 - [] should we accept the color arrays or just color strings
 - [] add drag n drop component

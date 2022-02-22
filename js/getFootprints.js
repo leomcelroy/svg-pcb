@@ -32,7 +32,7 @@ function makeFootprintTurtle(footprintObj) {
 
     // const [ dx, dy ] = pad.pos;
 
-    t.group(new Turtle().bezier(pad.shape).translate(pad.pos));
+    t.group(new Turtle().pathD(pad.shape).translate(pad.pos));
   }
 
   const w = t.width;
