@@ -151,7 +151,8 @@ export function wire(cmds, thickness) {
           pt[1] + nextNorm[1]*dist,
         ]
 
-        const newPts = [start];
+        const newPts = [];
+        // newPts.push(start);
 
         const midNorm = norm([
           (prevNorm[0] + nextNorm[0]),
@@ -194,7 +195,7 @@ export function wire(cmds, thickness) {
         }
 
 
-        newPts.push(end);
+        // newPts.push(end);
         pts.push(...newPts);
       } else {
         throw "Filleting requires previous and next points."
@@ -205,7 +206,9 @@ export function wire(cmds, thickness) {
       const [ _, ...controlPts ] = cmd;
 
       if (prevPt && nextPt) {
-        pts.push(...bezier([ prevPt, ...controlPts, nextPt ]))
+        let bezierPts = bezier([ prevPt, ...controlPts, nextPt ])
+        bezierPts = bezierPts.slice(1, -1);
+        if (bezierPts.length > 0) pts.push(...bezierPts);
       } else {
         throw "Beziers requires previous and next points."
       } 
@@ -214,6 +217,8 @@ export function wire(cmds, thickness) {
     }
 
   }
+
+  // TODO: remove overlapping
 
   const result = new Turtle();
 
