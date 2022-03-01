@@ -50,10 +50,15 @@ export function addEvents(state) {
 		let code = event.code;
 		if (code === "Enter" && event.shiftKey) {
 		  event.preventDefault();
-		  dispatch("RUN", { save: true });
+		  dispatch("RUN");
 		} else if (code === "KeyT" && event.shiftKey) { // test something
       
     	}
+	})
+
+	window.addEventListener("unload", () => {
+		const string = state.codemirror.view.state.doc.toString();
+		window.localStorage.setItem("svg-pcb", string);
 	})
 
   // listenBody("mousedown", ".download-button", () => download(state));

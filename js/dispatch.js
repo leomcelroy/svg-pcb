@@ -8,7 +8,7 @@ import { via } from "./pcb_helpers.js";
 import { kicadToObj } from "./ki_cad_parser.js"
 import { Turtle } from "./Turtle.js";
 import { getFootprints } from "./getFootprints.js";
-
+import { getFileSection } from "./getFileSection.js"
 
 const STATE = {
 	codemirror: undefined,
@@ -185,7 +185,7 @@ const ACTIONS = {
 
 	    dispatch("RENDER");
 	},
-	RUN({ save = false }, state) {
+	RUN(args, state) {
 		const string = state.codemirror.view.state.doc.toString();
 
 		let footprints = [];
@@ -207,9 +207,6 @@ const ACTIONS = {
 		const f = new Function(...Object.keys(included), string)
 		f(...Object.values(included));
 
-		if (save) {
-			window.localStorage.setItem("svg-pcb", string)
-		}
 	},
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");
@@ -231,9 +228,15 @@ const ACTIONS = {
 		document.querySelector(".center-button").click()
 	},
 	ADD_IMPORT({ text, name }, state) {
+		const alreadyImported = state.footprints.map(x => x[0]);
+		if (alreadyImported.includes(name)) return;
+
+		const string = state.codemirror.view.state.doc.toString();
+		const startIndex = getFileSection("DECLARE_COMPONENTS", string) ?? 0;
+
 		text = `const ${name} = ${text}\n`
 		state.codemirror.view.dispatch({
-		  changes: {from: 0, insert: text}
+		  changes: {from: startIndex, insert: text}
 		});
 
 		dispatch("RUN");

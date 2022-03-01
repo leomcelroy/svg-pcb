@@ -1,7 +1,8 @@
 # TODO
 
+- [] fix gram js text to be faster
 - [] why is the wire path getting flattened, can't have holes
-- [] prevent auto-import with matching names
+- [x] prevent auto-import with matching names
 - [] cache recent files (up to five?)
 - [] add color pickers for board layers
 - [] add version system
@@ -9,7 +10,7 @@
 	- should have single js file after build
 - [] filter shapes with empty paths
 - [] should we accept the color arrays or just color strings
-- [] add drag n drop component
+- [x] add drag n drop component
 - [] add wire direct manipulation
 - [] add color editor widget for board render
 - [] gerber
@@ -89,3 +90,28 @@ https://css-tricks.com/converting-color-spaces-in-javascript/
         "code-mirror": "https://leomcelroy.com/widgets/code-mirror.js"
    }
 }
+
+```
+/* __COMPONENTS__ */
+/* ___COMPONENTS___ */
+/* --COMPONENTS-- */
+/* ---COMPONENTS--- */
+/* -- COMPONENTS -- */
+/* --- COMPONENTS --- */
+/* __components__ */
+/* ___components___ */
+/* --components-- */
+/* ---components--- */
+/* -- components -- */
+/* --- components --- */
+```
+
+
+```
+/* -- DECLARE_COMPONENTS -- */
+/* -- DECLARE_PCB -- */
+/* -- ADD_COMPONENTS -- */
+/* -- ADD_WIRES -- */
+/* -- RENDER_PCB -- */
+
+```

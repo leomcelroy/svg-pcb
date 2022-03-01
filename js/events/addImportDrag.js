@@ -1,5 +1,6 @@
 import esprima from 'esprima';
 import { dispatch } from "../dispatch.js";
+import { getFileSection } from "../getFileSection.js"
 
 function foldImports(state) {
   const anotherComp = l => l.includes("return kicadToObj(");
@@ -90,6 +91,33 @@ export function addImportDrag(state, listener) {
   })
 
   listener("mouseup", "", e => {
+
+    if (state.previewFootprint !== null) {
+
+      const rect = document.querySelector("#viewer").getBoundingClientRect();
+
+      const x = e.clientX - rect.left;
+      const y = rect.bottom - e.clientY;
+
+      const svgPoint = svg.panZoomParams.svgPoint;
+      const pos = svgPoint({ x: x, y: y })
+
+      const string = state.codemirror.view.state.doc.toString();
+      const start = getFileSection("ADD_COMPONENTS", string);
+
+      if (start !== null) {
+        const name = state.previewFootprint[0][0];
+
+        const text = `board.add(${name}, { translate: [${pos.x}, ${pos.y}] })\n`
+
+        state.codemirror.view.dispatch({
+          changes: {from: start, insert: text}
+        });
+
+        dispatch("RUN");
+      };
+    }
+   
     state.previewFootprint = null;
     clicked = false;
   })

@@ -14,7 +14,7 @@ export function view(state) {
 		<div class="top-menu">
 			<div class="left">
 				<button
-					@click=${() => dispatch("RUN", { save: true })}>
+					@click=${() => dispatch("RUN")}>
 					run (shift + enter)
 				</button>
 				<div class="seperator"></div>
