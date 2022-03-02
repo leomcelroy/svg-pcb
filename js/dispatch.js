@@ -185,15 +185,18 @@ const ACTIONS = {
 
 	    dispatch("RENDER");
 	},
-	RUN(args, state) {
+	RUN({ dragging = false } = {}, state) {
 		const string = state.codemirror.view.state.doc.toString();
 
-		let footprints = [];
-		try {
-			footprints = getFootprints(string);
-		} catch (err) {}
+		if (!dragging) {
+			let footprints = [];
+			try {
+				footprints = getFootprints(string);
+			} catch (err) {}
 
-		state.footprints = footprints;
+			state.footprints = footprints;
+		}
+
 
 
 		// need to sanitize text
@@ -243,7 +246,7 @@ const ACTIONS = {
 	},
 	TRANSLATE({ x, y, index }, state) {
 		state.transformUpdate(x, y);
-		dispatch("RUN");
+		dispatch("RUN", { dragging: true });
 	},
 	RENDER() {
 		render(view(STATE), document.getElementById("root"));
@@ -252,6 +255,6 @@ const ACTIONS = {
 
 export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];
-	if (trigger) trigger(args, STATE);
+	if (trigger) return trigger(args, STATE);
 	else console.log("Action not recongnized:", action);
 }

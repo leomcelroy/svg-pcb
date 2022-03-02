@@ -124,7 +124,7 @@ export function addNumberDragging(state, bodyListener) {
 
 		selectedText = newValue;
 
-		dispatch("RUN");
+		dispatch("RUN", { dragging: true });
 		pauseEvent(e);
   })
 

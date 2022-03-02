@@ -59,12 +59,12 @@ export class PCB {
     return this.layers[layer];
   }
 
-  getLayer(layer, flatten = false) { // returns array of path data
-    flatten = !["padLabels", "componentLabels"].includes(layer);
+  getLayer(layer, flatten = null) { // returns array of path data
+    flatten = flatten ?? !["padLabels", "componentLabels"].includes(layer);
 
     return this.layers[layer]
       ? flatten
-        ? this.layers[layer].flatten().getPathData()
+        ? this.layers[layer].flatten().getPathData() // TODO: this flatten is a bottleneck
         : this.layers[layer].getPathData()
       : "";
   }
