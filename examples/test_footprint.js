@@ -1,3 +1,4 @@
+/* -- DECLARE_COMPONENTS -- */
 const test_footprint = {
   "VCC": {
     "shape": "M -0.05 0.025L 0.05 0.025L 0.05 -0.025L -0.05 -0.025L -0.05 0.025",
@@ -29,11 +30,13 @@ const test_footprint = {
 
 // included: Turtle, PCB, pcb
 
+/* -- DECLARE_PCB -- */
 let board = new PCB();
 
+/* -- ADD_COMPONENTS -- */
 test_comp1 = board.add(test_footprint, {translate: [0.35, 0.65], name: "COMP1"})
 
-// rendering
+/* -- RENDER_PCB -- */
 renderPCB({
   pcb: board,
   layerColors: {
