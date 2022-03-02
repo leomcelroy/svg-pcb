@@ -1,3 +1,4 @@
+/* -- DECLARE_COMPONENTS -- */
 const test_footprint = {
   "VCC": {
     "shape": "M -0.05 0.025L 0.05 0.025L 0.05 -0.025L -0.05 -0.025L -0.05 0.025",
@@ -29,17 +30,19 @@ const test_footprint = {
 
 // included: Turtle, PCB, pcb
 
+/* -- DECLARE_PCB -- */
 let board = new PCB();
 
+/* -- ADD_COMPONENTS -- */
 let test_comp1 = board.add(test_footprint, {translate: [0.35, 0.65], name: "COMP1"})
 let test_comp2 = board.add(test_footprint, {translate: [0.7, 0.3], name: "COMP2"})
+let v1 = board.add(via(0.02, 0.035), {translate: [test_comp1.padX("D+"), 0.4]})
+let v2 = board.add(via(0.02, 0.035), {translate: [0.4, v1.posY]})
 
+/* -- ADD_WIRES -- */
 board.wire([test_comp1.pad("GND"),
             [test_comp2.padX("GND"), test_comp1.padY("GND")],
             test_comp2.pad("GND")], 0.015)
-
-let v1 = board.add(via(0.02, 0.035), {translate: [test_comp1.padX("D+"), 0.4]})
-let v2 = board.add(via(0.02, 0.035), {translate: [0.4, v1.posY]})
 
 board.wire([test_comp1.pad("D+"),
             v1.pos], 0.015)
@@ -52,7 +55,7 @@ board.wire([v2.pos,
             [v2.posX+0.1, test_comp2.padY("D+")],
             test_comp2.pad("D+")], 0.015)
 
-// rendering
+/* -- RENDER_PCB -- */
 renderPCB({
   pcb: board,
   layerColors: {

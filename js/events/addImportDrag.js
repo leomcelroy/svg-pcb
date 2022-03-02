@@ -71,7 +71,11 @@ export function addImportDrag(state, listener) {
     const svgPoint = svg.panZoomParams.svgPoint;
     const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
 
-    const overSVG = e.path.some(el => el.matches && el.matches("#viewer"));
+    var path = event.path || (event.composedPath && event.composedPath());
+
+    if (!path) return;
+
+    const overSVG = path.some(el => el.matches && el.matches("#viewer"));
 
     // want to add footprint with x y currentPoint
 
@@ -81,9 +85,8 @@ export function addImportDrag(state, listener) {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-
-    state.previewFootprint = [ 
-      state.footprints[index], 
+    state.previewFootprint = [
+      state.footprints[index],
       [ x, y ]
     ];
 
@@ -117,7 +120,7 @@ export function addImportDrag(state, listener) {
         dispatch("RUN");
       };
     }
-   
+
     state.previewFootprint = null;
     clicked = false;
   })
