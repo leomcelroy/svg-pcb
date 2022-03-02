@@ -52,7 +52,7 @@ class PCB extends real_PCB {
 
 const default_renderPCB_params = {
 	pcb: null,
-	layerColors: { "F.Cu": "copper" },
+	layerColors: { "F.Cu": "#ff8c00cc" },
 	limits: {
 	    x: [0, 1],
 	    y: [0, 1]
@@ -69,8 +69,8 @@ function renderPCB({ pcb, layerColors, limits, mm_per_unit }) {
 
 	const shapes = [];
 	for (const layer in layerColors) {
-		shapes.push({ 
-			d: pcb.getLayer(layer), 
+		shapes.push({
+			d: pcb.getLayer(layer),
 			color: layerColors[layer],
 			groupId: layer
 		});

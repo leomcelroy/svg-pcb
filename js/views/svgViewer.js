@@ -6,7 +6,7 @@ import { drawHandles } from "./drawHandles.js";
 
 export const svgViewer = (state) => {
   const shapes = state.shapes.map(p => drawPath(p))
-  
+
   const corners = state.panZoomParams?.corners();
 
   return svg`
