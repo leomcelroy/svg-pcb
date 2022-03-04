@@ -19,7 +19,7 @@ export function downloadSVG(state) {
     const width = (state.limits.x[1] - state.limits.x[0]);
     const height = (state.limits.y[1] - state.limits.y[0]);
 
-    tg.setAttribute("transform", `scale(1, -1) translate(0, ${-height})`);
+    tg.setAttribute("transform", `scale(1, -1) translate(0, ${-(state.limits.y[0]+state.limits.y[1])})`);
     svg.setAttribute("style", "");
     svg.setAttribute("width", `${width*state.mm_per_unit}mm`);
     svg.setAttribute("height", `${height*state.mm_per_unit}mm`);
