@@ -3,7 +3,7 @@ import { generate } from 'astring';
 import { Turtle } from "./Turtle.js";
 
 function makeSvgFootprint(footprintObj) {
-  
+
   let svg = "";
 
   for (const padName in footprintObj) {
@@ -22,7 +22,7 @@ function makeSvgFootprint(footprintObj) {
 }
 
 function makeFootprintTurtle(footprintObj) {
-  
+
    const t =  new Turtle();
 
   for (const padName in footprintObj) {
@@ -30,9 +30,16 @@ function makeFootprintTurtle(footprintObj) {
 
     if (!pad.layers.includes("F.Cu")) continue;
 
+    let offset = [pad.pos[0], pad.pos[1]];
+
+    if (pad.origin != undefined) {
+      offset[0] = pad.origin[0];
+      offset[1] = pad.origin[1];
+    }
+
     // const [ dx, dy ] = pad.pos;
 
-    t.group(new Turtle().pathD(pad.shape).translate(pad.pos));
+    t.group(new Turtle().pathD(pad.shape).translate(offset));
   }
 
   const w = t.width;
@@ -88,7 +95,7 @@ export function getFootprints(string) {
           const footprintObj = JSON.parse(footprintString);
           footprints.push([ dec.id.name, footprintObj ]);
         } catch (err) {}
-        
+
       };
     })
   })

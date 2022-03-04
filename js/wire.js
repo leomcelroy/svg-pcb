@@ -2,7 +2,7 @@ import { Turtle } from "./Turtle.js";
 
 const overlap = (p1, p2) => length(p1, p2) < 0.000001;
 const length = ([x1, y1], [x2, y2]) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
-const magDiff = (p0, p1) => Math.sqrt( 
+const magDiff = (p0, p1) => Math.sqrt(
   (p1[0] - p0[0])**2 +
   (p1[1] - p0[1])**2
 )
@@ -64,7 +64,7 @@ export function wire(cmds, thickness) {
 
   let prevPt = getWirePt(cmds[0]);
   const pts = [ prevPt ];
-  
+
   for (let i = 1; i < cmds.length; i++) {
     const cmd = cmds[i];
 
@@ -96,15 +96,15 @@ export function wire(cmds, thickness) {
 
         const prevNorm = normDiff(pt, prevPt);
 
-        const newPt0 = [ 
-          pt[0] + prevNorm[0]*dist0, 
+        const newPt0 = [
+          pt[0] + prevNorm[0]*dist0,
           pt[1] + prevNorm[1]*dist0
         ]
 
         const nextNorm = normDiff(pt, nextPt);
 
-        const newPt1 = [ 
-          pt[0] + nextNorm[0]*dist1, 
+        const newPt1 = [
+          pt[0] + nextNorm[0]*dist1,
           pt[1] + nextNorm[1]*dist1
         ]
 
@@ -113,7 +113,7 @@ export function wire(cmds, thickness) {
 
       } else {
         throw "Chamfering requires previous and next points."
-      } 
+      }
 
       prevPt = pts.at(-1);
     } else if (cmd[0] === "fillet") {
@@ -128,7 +128,7 @@ export function wire(cmds, thickness) {
         const nextNorm = normDiff(pt, nextPt);
 
         const angle = Math.acos(
-          (prevNorm[0] * nextNorm[0]) + 
+          (prevNorm[0] * nextNorm[0]) +
           (prevNorm[1] * nextNorm[1])
         )
 
@@ -140,13 +140,13 @@ export function wire(cmds, thickness) {
         dist = Math.min(maxStartDist, maxEndDist, dist);
         radius = Math.min(dist*Math.tan(angle/2), radius);
 
-        const start = [ 
-          pt[0] + prevNorm[0]*dist, 
+        const start = [
+          pt[0] + prevNorm[0]*dist,
           pt[1] + prevNorm[1]*dist
         ]
 
 
-        const end = [ 
+        const end = [
           pt[0] + nextNorm[0]*dist,
           pt[1] + nextNorm[1]*dist,
         ]
@@ -185,7 +185,7 @@ export function wire(cmds, thickness) {
 
         for (let i = 1/20; i < 1; i += 1/20) {
           const [ x, y ] = slerp(i, startMid, endMid, arcAngle)
-          
+
           let pt = [
             midPt[0] + x,
             midPt[1] + y
@@ -199,7 +199,7 @@ export function wire(cmds, thickness) {
         pts.push(...newPts);
       } else {
         throw "Filleting requires previous and next points."
-      } 
+      }
 
       prevPt = pts.at(-1);
     } else if (cmd[0] === "handles") {
@@ -211,7 +211,7 @@ export function wire(cmds, thickness) {
         if (bezierPts.length > 0) pts.push(...bezierPts);
       } else {
         throw "Beziers requires previous and next points."
-      } 
+      }
 
       prevPt = pts.at(-1);
     }
@@ -247,10 +247,10 @@ const deCasteljau = (t, ps) => ps.length > 1
 
 function bezier(ps) {
   const pts = [];
-  for (let t = 0; t <= 1; t += 1/32 ) {
+  for (let t = 0; t <= 1; t += 1/64 ) {
     const pt = deCasteljau(t, ps);
     pts.push(pt);
   }
-  
+
   return pts;
 }

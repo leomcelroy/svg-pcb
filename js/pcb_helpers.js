@@ -110,14 +110,19 @@ function makeComponent(comp, options = {}) {
   let results = {};
 
   for (const pad in comp) {
-    let { pos, shape, layers } = comp[pad];
+    let { pos, shape, layers, origin } = comp[pad];
 
     shape = typeof shape === "string" ? new Turtle().pathD(shape) : shape.copy();
 
+    let offset = [pos[0], pos[1]];
+    if (origin != undefined) {
+      offset[0] = origin[0];
+      offset[1] = origin[1];
+    }
+    shape.translate(offset).translate(translate).rotate(rotate, translate);
+
     let pad_pos = vector_add(vector_rotate(pos, rad), translate);
     pads[pad] = pad_pos;
-
-    shape.translate(pad_pos).rotate(rotate, pad_pos);
 
     if (!pad.includes("drill")) {
       let text = makeText(pad, padLabelSize, pad_pos, rotate);
