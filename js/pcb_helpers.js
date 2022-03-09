@@ -85,6 +85,10 @@ function makeText(text, height, pos, rotate) {
       continue;
     }
 
+    if (txt.localeCompare("A") == 0) {
+        txt = "A ";
+    }
+
     // TODO: render text better
     let t2 = new Turtle().text(txt).scale(0.01*height).originate().translate([0, i*height*1.5]);
     // let t2 = new Turtle();
