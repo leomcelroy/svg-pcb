@@ -76,29 +76,29 @@ class Component {
 //   }
 // }
 
-function makeText(text, height, pos, rotate) {
-  let lines = text.split('\n');
-  let t = new Turtle();
+// function makeText(text, height, pos, rotate) {
+//   let lines = text.split('\n');
+//   let t = new Turtle();
 
-  for (let [i, txt] of lines.entries()) {
-    if (txt.length == 0) {
-      continue;
-    }
+//   for (let [i, txt] of lines.entries()) {
+//     if (txt.length == 0) {
+//       continue;
+//     }
 
-    if (txt.localeCompare("A") == 0) {
-        txt = "A ";
-    }
+//     if (txt.localeCompare("A") == 0) {
+//         txt = "A ";
+//     }
 
-    // TODO: render text better
-    let t2 = new Turtle().text(txt).scale(0.01*height).originate().translate([0, i*height*1.5]);
-    // let t2 = new Turtle();
+//     // TODO: render text better
+//     let t2 = new Turtle().text(txt).scale(0.01*height).originate().translate([0, i*height*1.5]);
+//     // let t2 = new Turtle();
 
-    t.group(t2);
-  }
+//     t.group(t2);
+//   }
 
-  // return t.originate().translate(pos);
-  return t.originate().translate(pos).rotate(rotate, pos);
-}
+//   // return t.originate().translate(pos);
+//   return t.originate().translate(pos).rotate(rotate, pos);
+// }
 
 function makeComponent(comp, options = {}) {
   let translate = options.translate || [0, 0];
@@ -129,19 +129,24 @@ function makeComponent(comp, options = {}) {
     pads[pad] = pad_pos;
 
     if (!pad.includes("drill")) {
-      let text = makeText(pad, padLabelSize, pad_pos, rotate);
-      padsLabels.push( text );
+      // let text = makeText(pad, padLabelSize, pad_pos, rotate);
+      padsLabels.push({ 
+        value: pad,  
+        translate: pad_pos,
+        rotate,
+        size: padLabelSize
+      });
     }
 
     layers.forEach(l => {
-      if (l in results) results[l] = results[l].group(shape);
-      else results[l] = shape;
+      if (l in results) results[l].push(shape);
+      else results[l] = [shape];
     })
   }
 
   pads["center"] = translate;
 
-  results.padLabels = padsLabels.reduce( (acc, cur) => acc.group(cur), new Turtle());
+  results.padLabels = padsLabels;
 
   return new Component({
     pads,
@@ -150,7 +155,7 @@ function makeComponent(comp, options = {}) {
 }
 
 export {
-  makeText,
+  // makeText,
   makeComponent,
   via
 }
