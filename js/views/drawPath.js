@@ -34,7 +34,7 @@ export const drawPath = ({ data, color, groupId = ""}) => {
       y=${-s.translate[1] + s.size*0.352778}
       transform=${`scale(1 -1)`}
       style=${`font: ${s.size}pt sans-serif;`}
-      fill="${color.slice(0, -2)}"
+      fill=${color.slice(0, -2)}
       opacity=${alpha}
       >
       ${s.value}
