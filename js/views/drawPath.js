@@ -16,7 +16,7 @@ function hexToRgb(hex) {
   } : null;
 }
 
-export const drawPath = ({ data, color, groupId = ""}) => {
+export const drawPath = ({ d, color, groupId = ""}) => {
   const alpha = parseInt(color.slice(-2), 16) / 255;
 
   const renderDataString = s => svg`
@@ -27,36 +27,16 @@ export const drawPath = ({ data, color, groupId = ""}) => {
         fill-opacity=${alpha}/>
   `
 
-  const renderText = s => svg`
-    <text 
-      text-anchor="middle" 
-      x=${s.translate[0]} 
-      y=${-s.translate[1] + s.size*0.352778}
-      transform=${`scale(1 -1)`}
-      style=${`font: ${s.size}pt sans-serif;`}
-      fill=${color.slice(0, -2)}
-      opacity=${alpha}
-      >
-      ${s.value}
-    </text>
-  `
 
+  if (["padLabels", "componentLabels"].includes(groupId)) {
+    return svg`<g id=${groupId}>${renderDataString(d)}</g>`
+  }
 
-  const toRender = [];
-
-  data.forEach(d => {
-    if (typeof d === "string") { // pathData
-      d.split(/(?=M)/g).forEach(dstring => {
-        toRender.push(renderDataString(dstring));
-      });
-    } else { // text
-      toRender.push(renderText(d));
-    }
-  })
+  const pathDataStrings = d.split(/(?=M)/g);
 
   return svg`
     <g id=${groupId}>
-      ${toRender}
+      ${pathDataStrings.map(renderDataString)}
     </g>
   `
 }

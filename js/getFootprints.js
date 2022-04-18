@@ -50,7 +50,7 @@ function makeFootprintTurtle(footprintObj) {
 
   return t
     .translate(t.cc, [-25, -25])
-    .scale([40/maxDim, -40/maxDim], t.cc)
+    .scale([40/maxDim, 40/maxDim], t.cc)
     .flatten();
 
 }
