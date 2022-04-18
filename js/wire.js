@@ -33,8 +33,8 @@ function getWirePt(cmd) {
   } else if (cmd[0] === "fillet") {
     const [ _, radius, pt ] = cmd;
     return pt;
-  } else if (cmd[0] === "handles") {
-    throw "Can't begin wire with handles.";
+  } else if (cmd[0] === "bezier") {
+    throw "Can't begin wire with bezier.";
   } else {
     return null;
   }
@@ -45,15 +45,14 @@ function mergeHandles(cmds) {
   let i = 0;
   let lastCmdHandles = false;
   cmds.forEach(cmd => {
-
-    if (cmd[0] === "handles" && lastCmdHandles === true) {
+    if (cmd[0] === "bezier" && lastCmdHandles === true) {
       mergedCmds.at(-1).push(...cmd.slice(1));
     } else {
       mergedCmds.push(cmd);
       lastCmdHandles = false;
     }
 
-    if (cmd[0] === "handles") lastCmdHandles = true;
+    if (cmd[0] === "bezier") lastCmdHandles = true;
   })
 
   return mergedCmds;
@@ -71,7 +70,7 @@ export function wire(cmds, thickness) {
     let nextPt = null;
     let j = i + 1;
     let nextCmd = cmds[j];
-    while (nextCmd && nextCmd[0] !== "handles") {
+    while (nextCmd && nextCmd[0] !== "bezier") {
       nextPt = getWirePt(nextCmd);
       if (nextPt !== null) break;
       j++;
@@ -202,7 +201,7 @@ export function wire(cmds, thickness) {
       }
 
       prevPt = pts.at(-1);
-    } else if (cmd[0] === "handles") {
+    } else if (cmd[0] === "bezier") {
       const [ _, ...controlPts ] = cmd;
 
       if (prevPt && nextPt) {

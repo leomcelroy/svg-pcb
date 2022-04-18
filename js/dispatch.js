@@ -8,6 +8,7 @@ import { via } from "./pcb_helpers.js";
 import { kicadToObj } from "./ki_cad_parser.js"
 import { Turtle } from "./Turtle.js";
 import { getFootprints } from "./getFootprints.js";
+import { getWires } from "./getWires.js";
 import { getFileSection } from "./getFileSection.js"
 
 const STATE = {
@@ -17,6 +18,7 @@ const STATE = {
 	transformUpdate: () => {},
 	selectBox: {},
 	footprints: [],
+	wires: [],
 	shapes: [],
 	limits: {
 		x: [0, 1],
@@ -160,7 +162,7 @@ const ACTIONS = {
 	    const search = window.location.search;
 	    const code = new URLSearchParams(search).get("code");
 	    const file = new URLSearchParams(search).get("file");
-	    const handlesOff = new URLSearchParams(search).get("handles") === "false";
+	    const handlesOff = new URLSearchParams(search).get("bezier") === "false";
 	    const gridOff = new URLSearchParams(search).get("grid") === "false";
 
 	    if (handlesOff) state.viewHandles = false;
@@ -195,6 +197,16 @@ const ACTIONS = {
 			} catch (err) {}
 
 			state.footprints = footprints;
+		}
+
+		if (!dragging) {
+			let wires = [];
+			try {
+				wires = getWires(string);
+				console.log(wires);
+			} catch (err) {}
+
+			state.wires = wires;
 		}
 
 

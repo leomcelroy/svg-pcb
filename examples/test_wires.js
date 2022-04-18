@@ -35,7 +35,7 @@ let board = new PCB();
 
 /* -- ADD_COMPONENTS -- */
 let test_comp1 = board.add(test_footprint, {translate: [0.3, 0.7], name: "COMP1"})
-let test_comp2 = board.add(test_footprint, {translate: [0.8, 0.3], name: "COMP2"})
+let test_comp2 = board.add(test_footprint, {translate: [0.75, 0.3], name: "COMP2"})
 let v1 = board.add(via(0.02, 0.035), {translate: [test_comp1.padX("D+"), 0.4]})
 let v2 = board.add(via(0.02, 0.035), {translate: [0.4, v1.posY]})
 
@@ -60,10 +60,19 @@ board.wire([test_comp1.pad("GND"),
 board.wire([test_comp1.pad("VCC"),
             ["chamfer", 0.03, [test_comp1.padX("VCC")+0.1, test_comp1.padY("VCC")]],
             [test_comp1.padX("VCC")+0.1, test_comp1.padY("D+")-0.05],
-            ["handles", [test_comp1.padX("VCC")+0.1, test_comp1.padY("D+")-0.2],
+            ["bezier", [test_comp1.padX("VCC")+0.1, test_comp1.padY("D+")-0.2],
                         [test_comp2.padX("VCC"), test_comp2.padY("VCC")+0.3]],
             test_comp2.pad("VCC")], 0.015)
 
+board.wire([
+  [0.3, 0.4],
+  ["chamfer", 0.06,  [0.39, -0.06]],
+  // [0.57, -0.05],
+  ["fillet", 0.10, [0.84, 0.13]],
+  [0.66, -0.26],
+  ["bezier", [0.3, -0.35], [-0.09, -0.14]],
+  [0.24, 0.00],
+], 0.015)
 
 /* -- RENDER_PCB -- */
 renderPCB({
