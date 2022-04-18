@@ -72,9 +72,7 @@ export function addTranslateHandle(state, svgListener) {
 
     let adds = [];
     walk(esprimaAST, node => {
-      try {
-          if (node.callee.type === "MemberExpression" && node.callee.property.name === "add") adds.push(node.arguments[1]);
-      } catch (err) { }
+      if (node?.callee?.type === "MemberExpression" && node?.callee?.property?.name === "add") adds.push(node.arguments[1]);
     })
     // sort by first range
     const sortedAdds = adds.sort((a, b) => a.range[0] - b.range[0])

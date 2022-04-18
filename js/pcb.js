@@ -1,4 +1,4 @@
-import { makeComponent, makeText } from "./pcb_helpers.js";
+import { makeComponent } from "./pcb_helpers.js";
 import { wire } from "./wire.js";
 import { Turtle } from "./Turtle.js";
 
@@ -21,13 +21,20 @@ export class PCB {
     const newComp = makeComponent(footprint, transform);
 
     for ( const layer in newComp.layers) {
-      this.addShape(layer, newComp.layers[layer]);
+      newComp.layers[layer].forEach( shapeOrText => {
+        this.addShape(layer, shapeOrText);
+      })
     }
 
     if (name !== "" && !name.includes("drill")) {
-      let componentLabels = makeText(name, transform.componentLabelSize, transform.translate, 0);
+      // let componentLabels = makeText(name, transform.componentLabelSize, transform.translate, 0);
 
-      this.addShape("componentLabels", componentLabels);
+      this.addShape("componentLabels", { 
+        value: name,  
+        translate: transform.translate,
+        rotate: 0,
+        size: transform.componentLabelSize
+      });
     }
 
     this.components.push(newComp);
@@ -35,38 +42,38 @@ export class PCB {
     return newComp;
   }
 
-  addShape(layer, shape) {
-    if (!(shape instanceof Turtle)) return console.error("Shape isn't Turtle.");
+  addShape(layer, shapeOrText) {
+    // if (!(shape instanceof Turtle)) return console.error("Shape isn't Turtle.");
 
     if (layer in this.layers) {
-      this.layers[layer] = this.layers[layer].group(shape);
+      this.layers[layer].push(shapeOrText);
     } else {
-      this.layers[layer] = shape;
+      this.layers[layer] = [shapeOrText];
     }
 
     return this.layers[layer];
   }
 
-  subtractShape(layer, shape) {
-    if (!(shape instanceof Turtle)) return console.error("Shape isn't Turtle.");
-
-    if (layer in this.layers) {
-      this.layers[layer] = this.layers[layer].difference(shape);
-    } else {
-      this.layers[layer] = new Turtle();
+  getLayer(layer, flatten = true) { // returns array of path data
+    if (!(layer in this.layers)) {
+      // console.error(`No layer with name: ${layer}`);
+      return [];
     }
 
-    return this.layers[layer];
-  }
+    const turtle = new Turtle();
+    const texts = [];
 
-  getLayer(layer, flatten = null) { // returns array of path data
-    flatten = flatten ?? !["padLabels", "componentLabels"].includes(layer);
+    this.layers[layer].forEach( x => {
+      if (x instanceof Turtle) turtle.group(x);
+      else texts.push(x);
+    })
 
-    return this.layers[layer]
-      ? flatten
-        ? this.layers[layer].flatten().getPathData() // TODO: this flatten is a bottleneck
-        : this.layers[layer].getPathData()
-      : "";
+    return [
+      flatten 
+        ? turtle.flatten().getPathData()
+        : turtle.getPathData(), 
+      ...texts
+    ]
   }
 
   wire(pts, thickness, layer = "F.Cu") {

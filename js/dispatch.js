@@ -70,7 +70,7 @@ function renderPCB({ pcb, layerColors, limits, mm_per_unit }) {
 	const shapes = [];
 	for (const layer in layerColors) {
 		shapes.push({
-			d: pcb.getLayer(layer),
+			data: pcb.getLayer(layer), // could be pathData or text
 			color: layerColors[layer],
 			groupId: layer
 		});
