@@ -1,5 +1,8 @@
 # TODO
 
+- [] create function to generate callback for manipulating points
+- [] fix gerber export
+- [] convert kicad to json on import
 - [] fix gram js text to be faster
 - [] why is the wire path getting flattened, can't have holes
 - [x] prevent auto-import with matching names
