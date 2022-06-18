@@ -53,10 +53,11 @@ or
 - [] trim
 - [x] pathD(pathData: string): polyline
 - [x] getPathData
-- [] bezier
+- [x] bezier
 - [] fillet
 - [] roundCorners
 - [] arc
+- [] chamfer
 
 - [x] lastAngle
 - [x] extrema
@@ -90,3 +91,7 @@ or
      |     |     |      
     lb -- cb -- rb 
 ``` 
+
+
+create a way of adding metadata to shapes which is preserved on transformations
+should transformations mutate data?

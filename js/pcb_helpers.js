@@ -1,16 +1,5 @@
 import { Turtle } from "./Turtle.js";
-import { pathD, translate as trans, rotate as rot } from "/geogram/index.js";
-
-const rectangle = (w, h) => {
-  const p0 = { x: -w/2, y: h/2 };
-  const p1 = { x: w/2, y: h/2 };
-  const p2 = { x: w/2, y: -h/2 };
-  const p3 = { x: -w/2, y: -h/2 };
-
-  return [
-    [ p0, p1, p2, p3, p0 ]
-  ]
-}
+import { pathD, circle, rectangle, translate as trans, rotate as rot } from "/geogram/index.js";
 
 const length = ([x1, y1], [x2, y2]) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
 
@@ -18,19 +7,19 @@ const via = (rv, rp) => {
   return {
     "F": {
       "pos": [0, 0],
-      "shape": getPathData(rectangle(rp, rp)),
+      "shape": getPathData(circle(rp)),
       "layers": ["F.Cu"],
       "index": 1
     },
     "B": {
       "pos": [0, 0],
-      "shape": getPathData(rectangle(rp, rp)),
+      "shape": getPathData(circle(rp)),
       "layers": ["B.Cu"],
       "index": 2
     },
     "drill": {
       "pos": [0, 0],
-      "shape": getPathData(rectangle(rv, rv)),
+      "shape": getPathData(circle(rv)),
       "layers": ["drill"]
     }
   };
@@ -145,6 +134,7 @@ function makeComponent(comp, options = {}) {
     if (!pad.includes("drill")) {
       // let text = makeText(pad, padLabelSize, pad_pos, rotate);
       padsLabels.push({ 
+        type: "text",
         value: pad,  
         translate: pad_pos,
         rotate,

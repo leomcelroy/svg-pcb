@@ -1,110 +1,4 @@
-<script type="module" defer>
-  import { addPanZoom } from "./addPanZoom.js";
-  // import { gramify } from "./gram.js";
-
-  // const svg = document.querySelector("svg");
-  // const { setScaleXY } = addPanZoom(svg);
-
-  // let s = [
-  //   [ 
-  //     { x: 0, y: 0 },
-  //     { x: 100, y: 100 },
-  //     { x: 40, y: 200 }  
-  //   ],
-  // ]
-
-  // let s1 = [
-  //   [ 
-  //     { x: 0, y: 0 },
-  //     { x: 100, y: 100 },
-  //     { x: 40, y: 200 }  
-  //   ],
-  // ]
-
-  // translate(s1, [100, 300])
-  // close(s1);
-  // thicken(s1, 10)
-  // // offset(s1, 1.2)
-  // // offset(s1, 10)
-
-
-
-  // // const mat = {
-  // //   dx: 100,
-  // //   dy: 200,
-  // //   sx: 1,
-  // //   sy: 1,
-  // //   rotate: 0,
-  // //   skew: 0,
-  // // }
-
-  // // transform(testShape, mat);
-
-
-  // turnForward(s, 90, 40);
-  // vec(s, [100, 100]);
-  // close(s);
-  // translate(s, [ 200, 100 ]);
-  // rotate(s, 90);
-  // const cc = getPoint(s, "cc")
-  // scale(s, [-1.4, 3], cc);
-  // scale(s, 1.2, cc);
-  // offset(s, 10);
-  // copyPaste(s1, 3, s => translate(s, [100, 22]))
-
-  // s = [...s, ...s1]
-  // outline(s);
-
-  // const arcing = [[{x: 0, y: 0 }]];
-  // arc(arcing, 180, 100);
-  // arc(arcing, 90, 100)
-  // translate(arcing, [90, 100])
-  // turnForward(arcing, 90, 100)
-  // turnForward(arcing, -90, 100)
-  // // turnForward(arcing, 90, 100)
-  // // close(arcing)
-  // thicken(arcing, 10)
-
-
-  // s = arcing
-  // // outline(s);
-
-
-  // // const preserveMeta = metashape => { }
-
-  // // gramify(s)
-  // //   .translate([-340, 32]);
-
-  // const pathString = shape => {
-  //   let pathD = "";
-  //   shape.forEach(pl => {
-  //     const { x, y } = pl[0];
-  //     pathD += `M ${x},${-y}`
-  //     pl.slice(1).forEach(pt => {
-  //       const { x, y } = pt;
-  //       pathD += `L ${x},${-y}`
-  //     })
-  //   })
-
-  //   return `
-  //     <path 
-  //       fill="none" 
-  //       vector-effect="non-scaling-stroke"
-  //       stroke-width="3" 
-  //       stroke="black" d="${pathD}"/>
-  //   `
-  // }
-
-  // const allPathStrings = pathString(s); // + pathString(s1);
-  // const target = document.querySelector(".target");
-  // target.innerHTML = allPathStrings;
-
-  // setScaleXY({
-  //   x: [-90, 600],
-  //   y: [-600, 200]
-  // })
-
-</script>
+<script type="module" src="./test.js" defer></script>
 
 <style>
   html, body {
@@ -122,6 +16,10 @@
     position: absolute;
     left: 0;
     top: 0;
+  }
+
+  svg .target {
+    transform: scale(1, -1);
   }
 </style>
 

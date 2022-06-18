@@ -42,6 +42,16 @@ export const drawPath = ({ data, color, groupId = ""}) => {
     </text>
   `
 
+  const renderWire = ({ data, thickness }) => svg`
+    <path
+      d=${data}
+      stroke-width=${thickness}
+      fill-rule="nonzero"
+      stroke="${color.slice(0, -2)}"
+      fill="none"
+      stroke-opacity=${alpha}/>
+  `
+
 
   const toRender = [];
 
@@ -50,8 +60,10 @@ export const drawPath = ({ data, color, groupId = ""}) => {
       d.split(/(?=M)/g).forEach(dstring => {
         toRender.push(renderDataString(dstring));
       });
-    } else { // text
+    } else if (d.type === "text") { // text
       toRender.push(renderText(d));
+    } else if (d.type === "wire") { // text
+      toRender.push(renderWire(d));
     }
   })
 

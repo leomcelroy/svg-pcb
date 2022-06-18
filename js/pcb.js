@@ -1,6 +1,5 @@
 import { makeComponent } from "./pcb_helpers.js";
-import { wire } from "./wire.js";
-import { getPathData, scale, outline, union } from "/geogram/index.js";
+import { getPathData, scale, outline, union, path } from "/geogram/index.js";
 
 export class PCB {
   constructor() {
@@ -21,15 +20,16 @@ export class PCB {
     const newComp = makeComponent(footprint, transform);
 
     for ( const layer in newComp.layers) {
-      newComp.layers[layer].forEach( shapeOrText => {
-        this.addShape(layer, shapeOrText);
+      newComp.layers[layer].forEach( data => {
+        this.addShape(layer, data);
       })
     }
 
     if (name !== "" && !name.includes("drill")) {
       // let componentLabels = makeText(name, transform.componentLabelSize, transform.translate, 0);
 
-      this.addShape("componentLabels", { 
+      this.addShape("componentLabels", {
+        type: "text", 
         value: name,  
         translate: transform.translate,
         rotate: 0,
@@ -61,24 +61,36 @@ export class PCB {
 
     const shapes = [];
     const texts = [];
-    // const wires = [];
+    const wires = [];
 
     this.layers[layer].forEach( x => {
       if (Array.isArray(x)) {
         if (flatten) union(shapes, x);
         else shapes.push(...x);
-      } else texts.push(x);
+      } 
+      else if (x.type === "text") texts.push(x);
+      else if (x.type === "wire") wires.push({
+        type: "wire",
+        data: getPathData(x.shape),
+        thickness: x.thickness,
+      });
     })
 
     // if (shapes.length > 0) scale(shapes, [1, -1]);
 
     return [
-      getPathData(shapes), 
-      ...texts
+      getPathData(shapes),
+      ...texts,
+      ...wires
     ]
   }
 
   wire(pts, thickness, layer = "F.Cu") {
-    this.addShape(layer, wire(pts, thickness));
+    const newWire = {
+      type: "wire",
+      shape: path(pts),
+      thickness: thickness
+    }
+    this.addShape(layer, newWire);
   }
 }

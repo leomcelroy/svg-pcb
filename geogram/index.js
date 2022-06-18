@@ -5,32 +5,21 @@ import { intersect } from "./intersect.js";
 import { difference } from "./difference.js";
 import { xor } from "./xor.js";
 import { flattenPath } from "./libs/path-to-points.js";
+import { bezier } from "./bezier.js";
+import { arc } from "./arc.js";
+import { translate } from "./translate.js";
+import { rotate } from "./rotate.js";
+import { scale } from "./scale.js";
+import { getPoint } from "./getPoint.js";
+import { extrema } from "./extrema.js";
+import { turnForward } from "./turnForward.js";
+import { path } from "./path.js";
 
-
-
-// helpers below
-
-const isEmpty = shape => {
-  if (shape.length === 0) throw new Error(`Shape must have at least one pt.`);
-}
-
-function getLastPl(shape) {
-  isEmpty(shape);
-  return shape.at(-1);
-}
-
-function getLastPt(shape) {
-  isEmpty(shape);
-  return shape.at(-1).at(-1);
-}
-
-function getPt(shape, i) {
-  isEmpty(shape);
-  return shape.flat().at(i);
-}
 
 function getAngle(shape) {
-  const pl = getLastPl(shape);
+  if (shape.length === 0) throw new Error(`Shape must have at least one pt.`);
+
+  const pl = shape.at(-1);
   if (pl.length < 2) return 0;
 
   const lastPoint = pl.at(-1);
@@ -42,73 +31,19 @@ function getAngle(shape) {
   return Math.atan2(y, x) * 180 / Math.PI;
 }
 
-const degreesToRad = deg => (deg / 180) * Math.PI;
-
-const addPt = (shape, pt) => {
-  shape.at(-1).push(pt);
-  return shape;
-}
-
-const applyFn = (shape, fn) => {
-  shape.forEach((pl, i) => {
-    shape[i] = pl.map(fn);
-  })
-
-  return shape;
-}
-
-const pointConversion = (point) => {
-  if (Array.isArray(point)) return { x: point[0], y: point[1] };
-  else return point;
-}
-
-// helpers above
-
-const turnForward = (shape, theta, distance) => {
-  // guard statement
-  // if distance is zero then we just get stacked points so let's just not
-  if (distance === 0) return shape;
-
-  const lastPoint = getLastPt(shape);
-  const angle = getAngle(shape)+theta;
-  const xCos = Math.cos(degreesToRad(angle));
-  const ySin = Math.sin(degreesToRad(angle));
-  const x = lastPoint.x + distance * xCos;
-  const y = lastPoint.y + distance * ySin;
-
-  shape.at(-1).push({ x, y });
-
-  return shape;
-}
-
 const vec = (shape, [dx, dy] ) => {
-  const { x, y } = getLastPt(shape);
+  if (shape.length === 0) shape.push([ {x:0, y:0} ]);
+  const { x, y } = shape.at(-1).at(-1);
   shape.at(-1).push({ x: x+dx, y: y+dy });
   return shape;
 }
 
 const close = (shape, ) => {
-  isEmpty(shape);
+  if (shape.length === 0) throw new Error(`Shape must have at least one pt.`);
+
   const { x, y } = shape[0][0];
   shape.at(-1).push({ x, y });
   return shape;
-}
-
-const translate = (shape, toPoint, fromPoint = { x: 0, y: 0 } ) => {
-  toPoint = pointConversion(toPoint);
-  fromPoint = pointConversion(fromPoint);
-
-  const {x: x0, y: y0 } = fromPoint;
-  const {x: x1, y: y1 } = toPoint;
-  const x = x1 - x0;
-  const y = y1 - y0;
-
-  const fn = point => ({
-    x: point.x + x,
-    y: point.y + y
-  })
-  
-  return applyFn(shape, fn);
 }
 
 const centroid = shape => { // BUG: vec messes up centroid calculation
@@ -136,72 +71,7 @@ const centroid = shape => { // BUG: vec messes up centroid calculation
    return { x:x/f, y:y/f };
 }
 
-const rotate = (shape, angle, point) => {
-  if (!point) point = getPoint(shape, "cc");
-  point = pointConversion(point);
-  
-  const fn = p => {
-
-    let delta = angle / 180 * Math.PI;
-
-    let hereX = p.x - point.x;
-    let hereY = p.y - point.y;
-
-    let newPoint = {
-      x: hereX * Math.cos(delta) - hereY * Math.sin(delta) + point.x,
-      y: hereY * Math.cos(delta) + hereX * Math.sin(delta) + point.y
-    };
-
-    return newPoint;
-  }
-
-
-  return applyFn(shape, fn);
-}
-
-const scale = (shape, scaleXY, point) => {
-  if (!point) point = getPoint(shape, "cc");
-  const { x, y } = pointConversion(point);
-
-  if (typeof scaleXY === "number") scaleXY = [ scaleXY, scaleXY ];
-
-  const [ xScale, yScale ] = scaleXY;
-
-  const fn = p => {
-
-    const newPoint = {
-      x: ((p.x-x) * xScale) + x,
-      y: ((p.y-y) * yScale) + y
-    };
-
-    return newPoint;
-  };
-
-  return applyFn(shape, fn);
-}
-
 const copy = (shape, ) => JSON.parse(JSON.stringify(shape));
-
-const extrema = (shape) => () => {
-  let xMin = Number.POSITIVE_INFINITY;
-  let xMax = Number.NEGATIVE_INFINITY;
-  let yMin = Number.POSITIVE_INFINITY;
-  let yMax = Number.NEGATIVE_INFINITY;
-
-  shape.flat().forEach(p => {
-    if (xMin > p.x) xMin = p.x;
-    if (xMax < p.x) xMax = p.x;
-    if (yMin > p.y) yMin = p.y;
-    if (yMax < p.y) yMax = p.y;
-  });
-
-  return {
-    xMin,
-    xMax,
-    yMin,
-    yMax
-  };
-}
 
 const width = (shape, ) => {
   const { xMin, xMax } = extrema(shape)();
@@ -213,53 +83,6 @@ const height = (shape, ) => {
   const { yMin, yMax } = extrema(shape)();
 
   return yMax - yMin;
-}
-
-const getPoint = (shape, target) => {
-  isEmpty(shape);
-  if (target === "start") return shape[0][0];
-  else if (target === "end") return shape.at(-1).at(-1);
-
-  let {
-    xMax,
-    xMin,
-    yMax,
-    yMin
-  } = extrema(shape)();
-
-  let middX = (xMax + xMin) / 2;
-  let middY = (yMax + yMin) / 2;
-
-  if (target === "cc") return { x: middX, y: middY };
-  else if (target === "lb") return { x: xMin, y: yMin };
-  else if (target === "rt") return { x: xMax, y: yMax };
-  else if (target === "lc") return {
-    x: xMin,
-    y: middY
-  };
-  else if (target === "lt") return {
-    x: xMin,
-    y: yMax
-  };
-  else if (target === "cb") return {
-    x: middX,
-    y: yMin
-  };
-  else if (target === "ct") return {
-    x: middX,
-    y: yMax
-  };
-  else if (target === "rb") return {
-    x: xMax,
-    y: yMin
-  };
-  else if (target === "rc") return {
-    x: xMax,
-    y: middY
-  };
-
-  // interesting that "origin" is the url
-  else throw "\"" + target + "\"" + ` is not an origin point. "right" or "left" come first then "bottom" or "top"`
 }
 
 const originate = (shape) => {
@@ -282,7 +105,7 @@ const thicken = (shape, distance) => {
   const overlap = (p0, p1) => 0.00000001 > Math.abs(p0.x - p1.x) + Math.abs(p0.y - p1.y);
   const start = shape[0][0];
   const end = shape.at(-1).at(-1);
-  console.log(start, end);
+  console.log("thicken", start, end, overlap(start, end));
   // should do this for each path
   const endType = overlap(start, end) ? "etClosedLine" : "etOpenButt";
   return offset(shape, distance/2, { endType, jointType: "jtMiter" });
@@ -296,66 +119,6 @@ const copyPaste = (shape, n, fn) => {
 
   return shape;
 }
-
-const slerp = (t, p0, p1, angle) => {
-  const factor1 = Math.sin(angle*(1-t))/Math.sin(angle);
-  const factor2 = Math.sin(angle*t)/Math.sin(angle);
-  return {
-    x: p0.x*factor1 + p1.x*factor2, 
-    y: p0.y*factor1 + p1.y*factor2
-  }
-}
-
-const chord = (r, theta) => 2 * r * Math.sin(theta*Math.PI/360)
-const arcPtHelper = (curAngle, curPoint, distance) => {
-  const xCos = Math.cos(curAngle*Math.PI/180);
-  const ySin = Math.sin(curAngle*Math.PI/180);
-  const x = curPoint.x + distance * xCos;
-  const y = curPoint.y + distance * ySin;
-
-  return { x, y };
-}
-
-const arc = (shape, angle, radius) => {
-  isEmpty(shape);
-  // if (angle < 0) radius = -radius;
-  // const endPoint = shape.at(-1).at(-1);
-  // const ogAngle = getAngle(shape);
-  // const res = Math.abs(Math.floor(angle/2));
-  // for (let i = 0; i < res; i++) {
-  //   const ang = (180 - (360-angle/res*(i+1))/2 + ogAngle);
-  //   const pt = arcPtHelper(ang, endPoint, chord(radius, angle/res*(i+1)));
-  //   goTo(shape, pt);
-  // }
-
-  // const curAngle = getAngle(shape);
-
-  // // last line has to match intended angle
-  // turnForward(shape, (angle+ogAngle)-curAngle, radius/10000);
-  // // console.log(ogAngle, angle, getAngle(shape));
-
-  // return shape;
-
-  const theta = Math.abs(angle);
-  
-  const length = radius*theta/180*Math.PI;
-
-  const ogAngle = getAngle(shape);
-  // console.log("ogAngle", )
-  const thetaStep = 1;
-  const steps = theta/thetaStep;
-  const distanceStep = length/steps;
-
-  for (let i = 0; i < steps; i++) {
-    turnForward(shape, thetaStep, distanceStep);
-  }
-
-  // const curAngle = getAngle(shape);
-  // turnForward(shape, (angle+ogAngle)-curAngle, radius/10000);
-  // console.log(ogAngle, angle, curAngle);
-
-  return shape;
-} 
 
 const getPathData = shape => {
   let pathD = "";
@@ -381,11 +144,224 @@ function pathD(shape, string) {
   return shape
 }
 
-const gramify = shape => ({
-  turnForward: (a, d) => turnForward(shape, a, d),
-  translate: (p0, p1) => translate(shape, p0, p1),
-  shape: () => shape,
-})
+const rectangle = (w, h) => {
+  const p0 = { x: -w/2, y: h/2 };
+  const p1 = { x: w/2, y: h/2 };
+  const p2 = { x: w/2, y: -h/2 };
+  const p3 = { x: -w/2, y: -h/2 };
+
+  return [
+    [ p0, p1, p2, p3, p0 ]
+  ]
+}
+
+const circle = r => {
+  const n = 360/2;
+  const pts = [];
+
+  const getX = (theta, r) => r*Math.cos(theta);
+  const getY = (theta, r) => r*Math.sin(theta);
+
+  for ( let i = 0; i < n; i++) {
+    const theta = Math.PI*2/n*i;
+    const x = getX(theta, r);
+    const y = getY(theta, r);
+    pts.push({ x, y });
+  }
+
+  const { x, y } = pts[0];
+  pts.push({ x, y });
+
+  return [ pts ];
+}
+
+class Gram {
+  constructor(shape) {
+    this.shape = shape;
+  }
+
+  turnForward() { 
+    turnForward(this.shape, ...arguments); 
+    return this;
+  };
+
+  vec() { 
+    vec(this.shape, ...arguments); 
+    return this;
+  };
+
+  close() { 
+    close(this.shape, ...arguments); 
+    return this;
+  };
+
+  translate() { 
+    translate(this.shape, ...arguments); 
+    return this;
+  };
+
+  rotate() { 
+    rotate(this.shape, ...arguments); 
+    return this;
+  };
+
+  scale() { 
+    scale(this.shape, ...arguments); 
+    return this;
+  };
+
+  originate() { 
+    originate(this.shape, ...arguments); 
+    return this;
+  };
+
+  goTo() { 
+    goTo(this.shape, ...arguments); 
+    return this;
+  };
+
+  reverse() { 
+    reverse(this.shape, ...arguments); 
+    return this;
+  };
+
+  thicken() { 
+    thicken(this.shape, ...arguments); 
+    return this;
+  };
+
+  copyPaste() { 
+    copyPaste(this.shape, ...arguments); 
+    return this;
+  };
+
+  offset() { 
+    offset(this.shape, ...arguments); 
+    return this;
+  };
+
+  outline() { 
+    outline(this.shape, ...arguments); 
+    return this;
+  };
+
+  expand() { 
+    expand(this.shape, ...arguments); 
+    return this;
+  };
+
+  intersect() { 
+    intersect(this.shape, ...arguments); 
+    return this;
+  };
+
+  difference() { 
+    difference(this.shape, ...arguments); 
+    return this;
+  };
+
+  union() { 
+    union(this.shape, ...arguments); 
+    return this;
+  };
+
+  xor() { 
+    xor(this.shape, ...arguments); 
+    return this;
+  };
+
+  pathD() { 
+    pathD(this.shape, ...arguments); 
+    return this;
+  };
+
+  arc() { 
+    arc(this.shape, ...arguments); 
+    return this;
+  };
+
+  bezier() { 
+    bezier(this.shape, ...arguments); 
+    return this;
+  };
+
+  getAngle() { 
+    return getAngle(this.shape, ...arguments); 
+  };
+
+  getPathData() { 
+    return getPathData(this.shape, ...arguments); 
+  };
+
+  extrema() { 
+    extrema(this.shape, ...arguments); 
+    return this;
+  };
+
+  getPoint() { 
+    getPoint(this.shape, ...arguments); 
+    return this;
+  };
+
+  get lt() { 
+    point(this.shape, "lt"); 
+    return this;
+  };
+
+  get lc() { 
+    point(this.shape, "lc"); 
+    return this;
+  };
+
+  get lb() { 
+    point(this.shape, "lb"); 
+    return this;
+  };
+
+  get ct() { 
+    point(this.shape, "ct"); 
+    return this;
+  };
+
+  get cc() { 
+    point(this.shape, "cc"); 
+    return this;
+  };
+
+  get cb() { 
+    point(this.shape, "cb"); 
+    return this;
+  };
+
+  get rt() { 
+    point(this.shape, "rt"); 
+    return this;
+  };
+
+  get rc() { 
+    point(this.shape, "rc"); 
+    return this;
+  };
+
+  get rb() { 
+    point(this.shape, "rb"); 
+    return this;
+  };
+
+  get centroid() { 
+    return centroid(this.shape, ...arguments); 
+  };
+
+  get width() { 
+    return width(this.shape, ...arguments); 
+  };
+
+  get height() { 
+    return height(this.shape, ...arguments); 
+  };
+
+};
+
 
 export {
   turnForward,
@@ -413,5 +389,11 @@ export {
   width,
   height,
   getPathData,
-  pathD
+  pathD,
+  arc,
+  rectangle,
+  circle,
+  bezier,
+  path,
+  Gram
 }
