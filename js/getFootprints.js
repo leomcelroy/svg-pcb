@@ -50,7 +50,7 @@ function makeFootprintTurtle(footprintObj) {
 
   translate(t, getPoint(t, "cc"), [-25, 25]);
   scale(t, [40/maxDim, -40/maxDim], getPoint(t, "cc"));
-  outline(t);
+  // outline(t);
 
   return t;
 

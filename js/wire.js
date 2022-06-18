@@ -219,7 +219,9 @@ export function wire(cmds, thickness) {
 
   // TODO: remove overlapping
 
-  return offset([pts.map(([x, y]) => ({ x, y }))], thickness/2);
+  const shape = [pts.map(([x, y]) => ({ x, y }))];
+  offset(shape, thickness/2)
+  return shape;
 }
 
 
