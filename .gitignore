@@ -3,3 +3,5 @@ build
 package-lock.json
 __pycache__/
 .idea/
+geogram/libs/.DS_Store
+geogram/.DS_Store
