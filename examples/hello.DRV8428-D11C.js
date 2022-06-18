@@ -58,8 +58,8 @@ let R3 = board.add(R_1206, {translate: [C3.posX+.22, C3.posY], name: 'R3\n0'});
 let R4 = board.add(R_1206, {translate: [IC2.padX("A04")-.04, IC3.posY], rotate: 90, name: 'R4\n1k'});
 let LED = board.add(LED_1206, {translate: [R4.posX+.1, R4.posY], rotate: -90, name: 'LED'});
 
-board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J3.posX, 5.12+J3.posY]).rotate(0.00000001, J3.pos));
-board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J3.posX, -5.12+J3.posY]).rotate(0.00000001, J3.pos));
+// board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J3.posX, 5.12+J3.posY]).rotate(0.00000001, J3.pos));
+// board.subtractShape("interior", new Turtle().rectangle(1.05, 9.76).translate([0.475+J3.posX, -5.12+J3.posY]).rotate(0.00000001, J3.pos));
 
 
 /* -- ADD_WIRES -- */
