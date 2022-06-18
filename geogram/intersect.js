@@ -1,13 +1,13 @@
-import Shape from "../../libs/simple-clipper.js";
+import Shape from "./libs/simple-clipper.js";
 
-export function union(shape0, shape1) {
+export function intersect(shape0, shape1) {
   
   const scale = getScale([...shape0, ...shape1]);
   const data0 =  toBooleanForm(shape0, scale);
   const data1 =  toBooleanForm(shape1, scale);
   const subject = new Shape(data0, true);
   const clip = new Shape(data1, true);
-  const result = subject.union(clip);
+  const result = subject.intersect(clip);
                   
   const newShape = fromBooleanForm(result, scale);
 

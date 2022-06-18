@@ -1,9 +1,10 @@
-import { transform } from "./src/transform.js";
-import { offset } from "./src/offset.js";
-import { union } from "./src/union.js";
-import { intersect } from "./src/intersect.js";
-import { difference } from "./src/difference.js";
-import { xor } from "./src/xor.js";
+import { transform } from "./transform.js";
+import { offset } from "./offset.js";
+import { union } from "./union.js";
+import { intersect } from "./intersect.js";
+import { difference } from "./difference.js";
+import { xor } from "./xor.js";
+import { flattenPath } from "./libs/path-to-points.js";
 
 
 
@@ -356,13 +357,37 @@ const arc = (shape, angle, radius) => {
   return shape;
 } 
 
+const getPathData = shape => {
+  let pathD = "";
+  shape.forEach(pl => {
+    const { x, y } = pl[0];
+    pathD += `M ${x},${-y}`
+    pl.slice(1).forEach(pt => {
+      const { x, y } = pt;
+      pathD += `L ${x},${-y}`
+    })
+  })
+
+  return pathD;
+}
+
+function pathD(shape, string) {
+  // console.log(Bezier);
+  const polylines = flattenPath(string, {maxError: 0.001}).map(x => x.points);
+  polylines.forEach(pl => {
+    shape.push(pl.map((point, i) => ({ x: point[0], y: point[1] }) ));
+  })
+
+  return shape
+}
+
 const gramify = shape => ({
   turnForward: (a, d) => turnForward(shape, a, d),
   translate: (p0, p1) => translate(shape, p0, p1),
   shape: () => shape,
 })
 
-export default {
+export {
   turnForward,
   vec,
   close,
@@ -381,21 +406,12 @@ export default {
   difference,
   union,
   xor,
-  lastAngle,
+  getAngle,
   extrema,
-  point,
-  lt,
-  lc,
-  lb,
-  ct,
-  cc,
-  cb,
-  rt,
-  rc,
-  rb,
-  start,
-  end,
+  getPoint,
   centroid,
   width,
   height,
+  getPathData,
+  pathD
 }

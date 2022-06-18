@@ -19,10 +19,12 @@ function hexToRgb(hex) {
 export const drawPath = ({ data, color, groupId = ""}) => {
   const alpha = parseInt(color.slice(-2), 16) / 255;
 
+  // why did I need to add this scale
   const renderDataString = s => svg`
     <path
         d="${s}"
         fill-rule="nonzero"
+        transform=${`scale(1 -1)`}
         fill="${color.slice(0, -2)}"
         fill-opacity=${alpha}/>
   `

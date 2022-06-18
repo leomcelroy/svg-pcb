@@ -1,4 +1,4 @@
-import { Turtle } from "./Turtle.js";
+import { offset } from "/geogram/index.js";
 
 const overlap = (p1, p2) => length(p1, p2) < 0.000001;
 const length = ([x1, y1], [x2, y2]) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
@@ -219,13 +219,7 @@ export function wire(cmds, thickness) {
 
   // TODO: remove overlapping
 
-  const result = new Turtle();
-
-  pts.forEach((pt, i) => result.goTo(pt, i !== 0));
-
-  result.offset(thickness/2)
-
-  return result;
+  return offset([pts.map(([x, y]) => ({ x, y }))], thickness/2);
 }
 
 

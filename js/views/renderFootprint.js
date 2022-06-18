@@ -1,4 +1,5 @@
 import { html, svg } from "lit-html";
+import { getPathData } from "/geogram/index.js";
 
 export const renderFootprint = ([name, footprint, svgView], i) => {
       // <svg width="30" height="30">
@@ -26,7 +27,7 @@ export const renderFootprint = ([name, footprint, svgView], i) => {
         <path
             class="path-footprint"
             data-index=${i} 
-            d="${svgView.getPathData()}"
+            d="${getPathData(svgView)}"
             fill-rule="nonzero"
             />
       </svg>

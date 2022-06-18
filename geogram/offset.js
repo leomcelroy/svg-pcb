@@ -1,4 +1,4 @@
-import Shape from "../../libs/simple-clipper.js";
+import Shape from "./libs/simple-clipper.js";
 
 const overlap = (p0, p1) => 0.00000001 > Math.abs(p0.x - p1.x) + Math.abs(p0.y - p1.y);
 

@@ -1,6 +1,6 @@
 import { makeComponent } from "./pcb_helpers.js";
 import { wire } from "./wire.js";
-import { Turtle } from "./Turtle.js";
+import { getPathData, scale, outline, union } from "/geogram/index.js";
 
 export class PCB {
   constructor() {
@@ -43,7 +43,6 @@ export class PCB {
   }
 
   addShape(layer, shapeOrText) {
-    // if (!(shape instanceof Turtle)) return console.error("Shape isn't Turtle.");
 
     if (layer in this.layers) {
       this.layers[layer].push(shapeOrText);
@@ -54,24 +53,26 @@ export class PCB {
     return this.layers[layer];
   }
 
-  getLayer(layer, flatten = true) { // returns array of path data
+  getLayer(layer, flatten = false) { // returns array of path data
     if (!(layer in this.layers)) {
       // console.error(`No layer with name: ${layer}`);
       return [];
     }
 
-    const turtle = new Turtle();
+    const shapes = [];
     const texts = [];
 
     this.layers[layer].forEach( x => {
-      if (x instanceof Turtle) turtle.group(x);
-      else texts.push(x);
+      if (Array.isArray(x)) {
+        if (flatten) union(shapes, x);
+        else shapes.push(...x);
+      } else texts.push(x);
     })
 
+    // if (shapes.length > 0) scale(shapes, [1, -1]);
+
     return [
-      flatten 
-        ? turtle.flatten().getPathData()
-        : turtle.getPathData(), 
+      getPathData(shapes), 
       ...texts
     ]
   }

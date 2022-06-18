@@ -1,6 +1,6 @@
 import esprima from 'esprima';
 import { generate } from 'astring';
-import { Turtle } from "./Turtle.js";
+import { pathD, translate, scale, outline, width, height, getPoint } from "/geogram/index.js";
 
 function makeSvgFootprint(footprintObj) {
 
@@ -23,7 +23,7 @@ function makeSvgFootprint(footprintObj) {
 
 function makeFootprintTurtle(footprintObj) {
 
-   const t =  new Turtle();
+   const t =  [];
 
   for (const padName in footprintObj) {
     const pad = footprintObj[padName];
@@ -39,19 +39,20 @@ function makeFootprintTurtle(footprintObj) {
 
     // const [ dx, dy ] = pad.pos;
 
-    t.group(new Turtle().pathD(pad.shape).translate(offset));
+    t.push(...translate(pathD([], pad.shape), offset));
   }
 
-  const w = t.width;
-  const h = t.height;
-  const center = t.cc;
+  const w = width(t);
+  const h = height(t);
+  const center = getPoint(t, "cc");
 
   const maxDim = Math.max(w, h);
 
-  return t
-    .translate(t.cc, [-25, -25])
-    .scale([40/maxDim, -40/maxDim], t.cc)
-    .flatten();
+  translate(t, getPoint(t, "cc"), [-25, 25]);
+  scale(t, [40/maxDim, -40/maxDim], getPoint(t, "cc"));
+  outline(t);
+
+  return t;
 
 }
 

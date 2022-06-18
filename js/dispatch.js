@@ -6,7 +6,6 @@ import { addEvents } from "./events.js";
 import { PCB as real_PCB } from "./pcb.js";
 import { via } from "./pcb_helpers.js";
 import { kicadToObj } from "./ki_cad_parser.js"
-import { Turtle } from "./Turtle.js";
 import { getFootprints } from "./getFootprints.js";
 import { getWires } from "./getWires.js";
 import { getFileSection } from "./getFileSection.js"
@@ -110,7 +109,6 @@ const included = {
 	kicadToObj,
 	PCB,
 	via,
-	Turtle,
 	renderPCB,
 	renderShapes,
 	document: null,
@@ -267,6 +265,11 @@ const ACTIONS = {
 
 export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];
-	if (trigger) return trigger(args, STATE);
+	if (trigger) {
+		console.time(action);
+		const result = trigger(args, STATE);
+		console.timeEnd(action);
+		return result;
+	}
 	else console.log("Action not recongnized:", action);
 }

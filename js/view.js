@@ -1,6 +1,5 @@
 import { dispatch } from "./dispatch.js";
 import { html, svg } from "lit-html";
-import { Turtle } from "../libs/gram-js.js";
 import "code-mirror";
 import { files } from "./components-names.js";
 import { downloadSVG, downloadText, downloadGerber } from "./events/download.js"
