@@ -54,7 +54,7 @@ export class PCB {
     return this.layers[layer];
   }
 
-  getLayer(layer, flatten = true) { // returns array of path data
+  getLayer(layer, flatten = false) { // returns array of path data
     if (!(layer in this.layers)) {
       // console.error(`No layer with name: ${layer}`);
       return [];
