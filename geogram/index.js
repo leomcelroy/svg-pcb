@@ -361,10 +361,10 @@ const getPathData = shape => {
   let pathD = "";
   shape.forEach(pl => {
     const { x, y } = pl[0];
-    pathD += `M ${x},${-y}`
+    pathD += `M ${x},${y}`
     pl.slice(1).forEach(pt => {
       const { x, y } = pt;
-      pathD += `L ${x},${-y}`
+      pathD += `L ${x},${y}`
     })
   })
 

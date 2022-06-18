@@ -24,7 +24,6 @@ export const drawPath = ({ data, color, groupId = ""}) => {
     <path
         d="${s}"
         fill-rule="nonzero"
-        transform=${`scale(1 -1)`}
         fill="${color.slice(0, -2)}"
         fill-opacity=${alpha}/>
   `

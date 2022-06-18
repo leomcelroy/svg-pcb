@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "astring": "^1.7.5",
+    "codemirror": "^6.0.0",
     "esprima": "^4.0.1",
     "lit-html": "^2.0.1"
   }

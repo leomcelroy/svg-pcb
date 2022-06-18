@@ -67,7 +67,7 @@ export function addTranslateHandle(state, svgListener) {
 
     index = e.target.dataset.index;
 
-    const string = state.codemirror.view.state.doc.toString();
+    let string = state.codemirror.view.state.doc.toString();
     const esprimaAST = esprima.parseScript(string, { range: true, comment: true });
 
     let adds = [];
@@ -171,6 +171,8 @@ export function addTranslateHandle(state, svgListener) {
         });
 
         state.codemirror.view.dispatch({ changes });
+
+        // string = state.codemirror.view.state.doc.toString();
       })
 
       foldImports(state);

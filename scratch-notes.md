@@ -1,5 +1,8 @@
 # TODO
 
+- [] optimize
+	- [] don't generate wires until export, use native path rendering
+	- [] use codemirror parsing instead of esprima
 - [] create function to generate callback for manipulating points
 - [] fix gerber export
 - [] convert kicad to json on import

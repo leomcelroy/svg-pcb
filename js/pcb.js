@@ -61,6 +61,7 @@ export class PCB {
 
     const shapes = [];
     const texts = [];
+    // const wires = [];
 
     this.layers[layer].forEach( x => {
       if (Array.isArray(x)) {

@@ -51,7 +51,8 @@ or
 - [x] union
 - [x] xor
 - [] trim
-- [] pathD(pathData: string): polyline
+- [x] pathD(pathData: string): polyline
+- [x] getPathData
 - [] bezier
 - [] fillet
 - [] roundCorners

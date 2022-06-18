@@ -48,8 +48,8 @@ function makeFootprintTurtle(footprintObj) {
 
   const maxDim = Math.max(w, h);
 
-  translate(t, getPoint(t, "cc"), [-25, 25]);
-  scale(t, [40/maxDim, -40/maxDim], getPoint(t, "cc"));
+  translate(t, getPoint(t, "cc"), [-25, -25]);
+  scale(t, [40/maxDim, 40/maxDim], getPoint(t, "cc"));
   // outline(t);
 
   return t;
