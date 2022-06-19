@@ -1,6 +1,7 @@
 import { dispatch } from "./dispatch.js";
 import { html, svg } from "lit-html";
 import "code-mirror";
+import "./codemirror/codemirror.js";
 import { files } from "./components-names.js";
 import { downloadSVG, downloadText, downloadGerber } from "./events/download.js"
 import { drawImportItems } from "./views/drawImportItems.js";
@@ -94,7 +95,7 @@ export function view(state) {
 			</div>
 		</div>
 		<div style="display: flex; height: 100%; min-height: 100%; max-height: 100%;">
-			<code-mirror id="code-editor" style="overflow: scroll;"></code-mirror>
+		<codemirror-2 id="code-editor" style="overflow: scroll;"></codemirror-2>
 			<div class="right-side">
 				${svgViewer(state)}
 				<div class="footprint-toolbox">${state.footprints.map(renderFootprint)}</div>

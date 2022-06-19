@@ -9,6 +9,7 @@
     "snowpack": "^3.8.8"
   },
   "dependencies": {
+    "@codemirror/lang-javascript": "^6.0.0",
     "astring": "^1.7.5",
     "codemirror": "^6.0.0",
     "esprima": "^4.0.1",

@@ -1,32 +1,34 @@
 import Shape from "./libs/simple-clipper.js";
+// import polygonClipping from 'https://cdn.skypack.dev/@labelbox/polygon-clipping';
+
 
 import { polygonClipping } from './libs/polygon-clipping';
 
-// export function union(shape0, shape1) {
-//   const poly1 = shape0.map(pl => pl.map(pt => [pt.x, pt.y]));
-//   const poly2 = shape1.map(pl => pl.map(pt => [pt.x, pt.y]));
-//   const newShape = polygonClipping.union(poly1, poly2).flat();
-//   console.log(newShape)
+export function union2(shape0, shape1) {
+  const poly1 = shape0.map(pl => pl.map(pt => [pt.x, pt.y]));
+  const poly2 = shape1.map(pl => pl.map(pt => [pt.x, pt.y]));
+  const newShape = polygonClipping.union(poly1, poly2).flat();
+  console.log(newShape)
   
-//   // const scale = getScale([...shape0, ...shape1]);
-//   // console.log(scale);
-//   // const data0 =  toBooleanForm(shape0, scale);
-//   // const data1 =  toBooleanForm(shape1, scale);
-//   // const subject = new Shape(data0, true);
-//   // const clip = new Shape(data1, true);
-//   // const result = subject.difference(clip);
+  // const scale = getScale([...shape0, ...shape1]);
+  // console.log(scale);
+  // const data0 =  toBooleanForm(shape0, scale);
+  // const data1 =  toBooleanForm(shape1, scale);
+  // const subject = new Shape(data0, true);
+  // const clip = new Shape(data1, true);
+  // const result = subject.difference(clip);
                   
-//   // const newShape = fromBooleanForm(result, scale);
+  // const newShape = fromBooleanForm(result, scale);
 
 
-//   while (shape0.length > newShape.length) shape0.pop();
+  while (shape0.length > newShape.length) shape0.pop();
 
-//   newShape.forEach((pl, i) => {
-//     shape0[i] = pl.map(pt => ({ x: pt[0], y: pt[1] }));
-//   })
+  newShape.forEach((pl, i) => {
+    shape0[i] = pl.map(pt => ({ x: pt[0], y: pt[1] }));
+  })
 
-//   return shape0;
-// }
+  return shape0;
+}
 
 export function union(shape0, shape1, scale = 1000) {
   scale = Math.max(scale, getScale([...shape0, ...shape1]))
