@@ -28,9 +28,8 @@ import { polygonClipping } from './libs/polygon-clipping';
 //   return shape0;
 // }
 
-export function union(shape0, shape1) {
-  
-  const scale = getScale([...shape0, ...shape1]);
+export function union(shape0, shape1, scale = 1000) {
+  scale = Math.max(scale, getScale([...shape0, ...shape1]))
   const data0 =  toBooleanForm(shape0, scale);
   const data1 =  toBooleanForm(shape1, scale);
   const subject = new Shape(data0, true);
@@ -49,26 +48,26 @@ export function union(shape0, shape1) {
   return shape0;
 }
 
-const pointAdjust = (p, scale) => {
-  const temp = {};
-  temp["X"] = Math.round(p.x*scale);
-  temp["Y"] = Math.round(p.y*scale);
-  return temp;
-}
-
 const dist = (p0, p1) => Math.sqrt((p1.x - p0.x)**2 + (p1.y - p0.y)**2);
 
 function getScale(shape) {
-  const distances = [];
+  const scales = [];
   const pts = shape.flat();
   for (let i = 0; i < pts.length - 2; i += 1) {
     const p0 = pts[i];
     const p1 = pts[i+1];
     const d2 = dist(p0, p1);
-    if (Math.abs(d2) !== 0) distances.push(d2);
+    if (Math.abs(d2) != 0) scales.push(Math.floor(1/d2 + 1)*10);
   }
 
-  return (1/Math.min(...distances)+1)*10;
+  return Math.max(...scales);
+}
+
+const pointAdjust = (p, scale) => {
+  const temp = {};
+  temp["X"] = Math.round(p.x*scale);
+  temp["Y"] = Math.round(p.y*scale);
+  return temp;
 }
 
 function toBooleanForm(shape, scale) {

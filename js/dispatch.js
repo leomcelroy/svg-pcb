@@ -267,9 +267,9 @@ const ACTIONS = {
 export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];
 	if (trigger) {
-		// console.time(action);
+		console.time(action);
 		const result = trigger(args, STATE);
-		// console.timeEnd(action);
+		console.timeEnd(action);
 		return result;
 	}
 	else console.log("Action not recongnized:", action);
