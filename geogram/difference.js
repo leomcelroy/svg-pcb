@@ -1,7 +1,5 @@
 import Shape from "./libs/simple-clipper.js";
 
-import { polygonClipping } from './libs/polygon-clipping';
-
 export function difference(shape0, shape1, scale = 1000) {
   scale = Math.max(scale, getScale([...shape0, ...shape1]))
   const data0 =  toBooleanForm(shape0, scale);

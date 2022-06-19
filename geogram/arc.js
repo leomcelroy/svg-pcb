@@ -16,6 +16,7 @@ function getAngle(shape) {
 }
 
 export const arc = (shape, angle, radius) => {
+  if (angle === 0 || radius === 0) return shape;
   if (shape.length === 0) shape.push([{ x: 0, y:0 }]);
 
   // --- ATTEMPT 1 ---
@@ -61,7 +62,6 @@ export const arc = (shape, angle, radius) => {
   // return shape;
 
   // --- ATTEMPT 3 ---
-
   const n = 32;
   const pts = [ [] ];
   const a = angle/180*Math.PI;
@@ -79,7 +79,7 @@ export const arc = (shape, angle, radius) => {
   }
 
   translate(pts, lp, pts[0][0])
-  rotate(pts, la-90, pts[0][0])
+  rotate(pts, la+(angle < 0 ? 90 : -90), pts[0][0])
 
   pts[0].slice(1).forEach(pt => shape.at(-1).push(pt));
   const curAngle = getAngle(shape);

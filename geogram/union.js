@@ -1,8 +1,4 @@
 import Shape from "./libs/simple-clipper.js";
-// import polygonClipping from 'https://cdn.skypack.dev/@labelbox/polygon-clipping';
-
-
-import { polygonClipping } from './libs/polygon-clipping';
 
 export function union2(shape0, shape1) {
   const poly1 = shape0.map(pl => pl.map(pt => [pt.x, pt.y]));

@@ -1,30 +1,6 @@
 import { sParse } from "./s-expression-parser.js";
+import { rectangle, circle } from "/geogram/index.js";
 
-// geogram
-
-const rectangle = (w, h) => {
-  const p0 = { x: -w/2, y: h/2 };
-  const p1 = { x: w/2, y: h/2 };
-  const p2 = { x: w/2, y: -h/2 };
-  const p3 = { x: -w/2, y: -h/2 };
-
-  return [
-    [ p0, p1, p2, p3, p0 ]
-  ]
-}
-
-const circle = (r) => {
-  const pl = [];
-
-  for (let i = 0; i < 20; i++) {
-    const x = 0;
-    const y = 0;
-
-    pl.push({ x, y });
-  }
-
-  return rectangle(r, r);
-}
 
 // parser should take units
 
