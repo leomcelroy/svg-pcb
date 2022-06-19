@@ -58,7 +58,8 @@ or
 - [x] bezier
 - [] fillet
 - [] roundCorners
-- [] arc
+- [x] arc
+  - [] arc which is tangent and has endpoint
 - [] chamfer
 
 - [x] lastAngle
@@ -97,3 +98,8 @@ or
 
 create a way of adding metadata to shapes which is preserved on transformations
 should transformations mutate data?
+
+
+
+
+
