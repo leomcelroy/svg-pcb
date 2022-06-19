@@ -8,6 +8,14 @@ export const renderPreviewFootprint = ([name, footprint, svgView], pos) => {
 
   // <div class="footprint-item-icon" data-index=${i} ></div>
 
+  const renderComp = pts => svg`
+    <path
+      class="path-footprint"
+      d="${getPathData([pts])}"
+      fill-rule="nonzero"
+      />
+  `
+
   const [ x, y ] = pos;
   return html`
     <style>
@@ -17,14 +25,10 @@ export const renderPreviewFootprint = ([name, footprint, svgView], pos) => {
     </style>
 
     <svg 
-      style="position: absolute; left: ${x}; top: ${y}; transform: translate(-50%, -50%);"
+      style="position: absolute; left: ${x}; top: ${y}; transform: translate(-50%, -50%) scale(1, -1);"
       width="50px"
       height="50px">
-      <path
-          class="path-footprint-dragged" 
-          d="${getPathData(svgView)}"
-          fill-rule="nonzero"
-          />
+      ${svgView.map(renderComp)}
     </svg>
 
   `

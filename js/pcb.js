@@ -1,5 +1,5 @@
 import { makeComponent } from "./pcb_helpers.js";
-import { getPathData, scale, outline, union, path } from "/geogram/index.js";
+import { getPathData, scale, outline, union, path, offset } from "/geogram/index.js";
 
 export class PCB {
   constructor() {
@@ -64,16 +64,22 @@ export class PCB {
     const wires = [];
 
     this.layers[layer].forEach( x => {
-      if (Array.isArray(x)) {
-        if (flatten) union(shapes, x);
-        else shapes.push(...x);
+
+      if (x.type === "wire" && !flatten) {
+        wires.push({
+          type: "wire",
+          data: getPathData(x.shape),
+          thickness: x.thickness,
+        });
+      } else if (Array.isArray(x) || (x.type === "wire" && flatten)) {
+        if (flatten && x.type === "wire") {
+          union(shapes, offset(x.shape, x.thickness/2));
+        } else if (flatten) {
+          x.forEach( pl => union(shapes, [ pl ] ));
+        } else shapes.push(...x);
       } 
       else if (x.type === "text") texts.push(x);
-      else if (x.type === "wire") wires.push({
-        type: "wire",
-        data: getPathData(x.shape),
-        thickness: x.thickness,
-      });
+      
     })
 
     // if (shapes.length > 0) scale(shapes, [1, -1]);

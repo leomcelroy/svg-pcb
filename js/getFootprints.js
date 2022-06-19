@@ -22,7 +22,6 @@ function makeSvgFootprint(footprintObj) {
 }
 
 function makeFootprintTurtle(footprintObj) {
-
    const t =  [];
 
   for (const padName in footprintObj) {
@@ -42,6 +41,7 @@ function makeFootprintTurtle(footprintObj) {
     t.push(...translate(pathD([], pad.shape), offset));
   }
 
+
   const w = width(t);
   const h = height(t);
   const center = getPoint(t, "cc");
@@ -50,7 +50,6 @@ function makeFootprintTurtle(footprintObj) {
 
   translate(t, getPoint(t, "cc"), [-25, -25]);
   scale(t, [40/maxDim, 40/maxDim], getPoint(t, "cc"));
-  // outline(t);
 
   return t;
 

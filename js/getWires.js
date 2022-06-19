@@ -6,7 +6,7 @@ export function getWires(string) {
 
   const esprimaAST = esprima.parseScript(string, { range: true, comment: true });
 
-  console.log("getting wires", esprimaAST);
+  // console.log("getting wires", esprimaAST);
 
   const wires = [];
 

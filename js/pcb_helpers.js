@@ -1,5 +1,5 @@
 import { Turtle } from "./Turtle.js";
-import { pathD, circle, rectangle, translate as trans, rotate as rot } from "/geogram/index.js";
+import { pathD, circle, rectangle, translate as trans, rotate as rot, outline } from "/geogram/index.js";
 
 const length = ([x1, y1], [x2, y2]) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
 
@@ -120,7 +120,7 @@ function makeComponent(comp, options = {}) {
     if (typeof shape === "string") shape = pathD([], shape);
 
     let offset = [pos[0], pos[1]];
-    if (origin != undefined) {
+    if (origin !== undefined) {
       offset[0] = origin[0];
       offset[1] = origin[1];
     }

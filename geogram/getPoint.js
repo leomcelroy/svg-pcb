@@ -10,7 +10,7 @@ export const getPoint = (shape, target) => {
     xMin,
     yMax,
     yMin
-  } = extrema(shape)();
+  } = extrema(shape);
 
   let middX = (xMax + xMin) / 2;
   let middY = (yMax + yMin) / 2;

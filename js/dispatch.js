@@ -9,6 +9,7 @@ import { kicadToObj } from "./ki_cad_parser.js"
 import { getFootprints } from "./getFootprints.js";
 import { getWires } from "./getWires.js";
 import { getFileSection } from "./getFileSection.js"
+import * as geo from "/geogram/index.js";
 
 const STATE = {
 	codemirror: undefined,
@@ -107,6 +108,7 @@ function renderShapes({ shapes, limits, mm_per_unit }) {
 
 const included = {
 	kicadToObj,
+	geo,
 	PCB,
 	via,
 	renderPCB,
@@ -187,7 +189,6 @@ const ACTIONS = {
 	},
 	RUN({ dragging = false } = {}, state) {
 		const string = state.codemirror.view.state.doc.toString();
-
 		if (!dragging) {
 			let footprints = [];
 			try {
@@ -201,7 +202,7 @@ const ACTIONS = {
 			let wires = [];
 			try {
 				wires = getWires(string);
-				console.log(wires);
+				// console.log(wires);
 			} catch (err) {}
 
 			state.wires = wires;

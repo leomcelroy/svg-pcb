@@ -1,5 +1,5 @@
 
-export const extrema = (shape) => () => {
+export const extrema = shape => {
   let xMin = Number.POSITIVE_INFINITY;
   let xMax = Number.NEGATIVE_INFINITY;
   let yMin = Number.POSITIVE_INFINITY;

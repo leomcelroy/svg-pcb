@@ -71,17 +71,15 @@ const centroid = shape => { // BUG: vec messes up centroid calculation
    return { x:x/f, y:y/f };
 }
 
-const copy = (shape, ) => JSON.parse(JSON.stringify(shape));
+const copy = (shape) => JSON.parse(JSON.stringify(shape));
 
-const width = (shape, ) => {
-  const { xMin, xMax } = extrema(shape)();
-
+const width = (shape) => {
+  const { xMin, xMax } = extrema(shape);
   return xMax - xMin;
 }
 
-const height = (shape, ) => {
-  const { yMin, yMax } = extrema(shape)();
-
+const height = (shape) => {
+  const { yMin, yMax } = extrema(shape);
   return yMax - yMin;
 }
 

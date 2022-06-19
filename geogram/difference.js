@@ -1,8 +1,10 @@
 import Shape from "./libs/simple-clipper.js";
 
+import { polygonClipping } from './libs/polygon-clipping';
+
 export function difference(shape0, shape1) {
-  
   const scale = getScale([...shape0, ...shape1]);
+  console.log(scale);
   const data0 =  toBooleanForm(shape0, scale);
   const data1 =  toBooleanForm(shape1, scale);
   const subject = new Shape(data0, true);
@@ -14,12 +16,24 @@ export function difference(shape0, shape1) {
 
   while (shape0.length > newShape.length) shape0.pop();
 
-  newShape.forEach((pl, i) => {
-    shape0[i] = pl;
-  })
+  newShape.forEach((pl, i) => shape0[i] = pl)
 
   return shape0;
 }
+
+// export function difference(shape0, shape1) {
+//   const poly1 = shape0.map(pl => pl.map(pt => [pt.x, pt.y]));
+//   const poly2 = shape1.map(pl => pl.map(pt => [pt.x, pt.y]));
+//   const newShape = polygonClipping.difference(poly1, poly2).flat();
+
+//   while (shape0.length > newShape.length) shape0.pop();
+
+//   newShape.forEach((pl, i) => {
+//     shape0[i] = pl.map(pt => ({ x: pt[0], y: pt[1] }));
+//   })
+
+//   return shape0;
+// }
 
 const pointAdjust = (p, scale) => {
   const temp = {};
@@ -40,7 +54,7 @@ function getScale(shape) {
     if (Math.abs(d2) !== 0) distances.push(d2);
   }
 
-  return (1/Math.min(...distances)+1)*10;
+  return (1/Math.min(...distances)+1)*100;
 }
 
 function toBooleanForm(shape, scale) {
