@@ -1,5 +1,6 @@
 import esprima from 'esprima';
 import { dispatch } from "../dispatch.js";
+import { syntaxTree } from "@codemirror/language";
 
 function foldImports(state) {
   const anotherComp = l => l.includes("return kicadToObj(");
@@ -70,110 +71,71 @@ export function addTranslateHandle(state, svgListener) {
     let string = state.codemirror.view.state.doc.toString();
     const esprimaAST = esprima.parseScript(string, { range: true, comment: true });
 
+    // console.time("tiny parse")
+    // esprima.parseScript("[32, 32]", { range: true, comment: true });
+    // console.timeEnd("tiny parse")
+
     let adds = [];
     walk(esprimaAST, node => {
       if (node?.callee?.type === "MemberExpression" && node?.callee?.property?.name === "add") adds.push(node.arguments[1]);
     })
+
     // sort by first range
     const sortedAdds = adds.sort((a, b) => a.range[0] - b.range[0])
-    const sigFigs = num => num.includes(".")
-      ? num.split(".")[1].length
-      : num.length;
-
-    const step = (num, stepSize) => Math.round(num/stepSize)*stepSize;
-    const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
-    const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
-
     // const comp = state.storedPCB.components[index];
 
     state.transformUpdate = (x, y) => {
 
       const changes = [];
+      const create_change_x_or_y = create2_change_x_or_y(changes, state);
 
-      sortedAdds[index].properties.forEach( prop => {
-        if (prop.key.name !== "translate") return;
+      // sortedAdds[index].properties.forEach( prop => {
+      //   if (prop.key.name !== "translate") return;
 
-        const [ xNode, yNode ] = prop.value.elements;
+      //   const [ xNode, yNode ] = prop.value.elements;
+      //   console.log(xNode, yNode);
+      //   const change_x = create_change_x_or_y();
+      //   walk(xNode, n => change_x(n, x));
+      //   const change_y = create_change_x_or_y();
+      //   walk(yNode, n => change_y(n, y));
 
-        let is_sum = false;
-        let is_neg = false;
-        let changed = false;
+      //   console.time("UPDATE CM FROM TRANS")
 
-        let change_x_or_y = function(n, delta) {
-          if (changed) return;
+      //   console.time("1")
+      //   const currentString = state.codemirror.view.state.doc.toString();
+      //   console.timeEnd("1")
 
-          if (n.type === "Literal" && typeof n.value === "number") {
+      //   console.time("2")
+      //   state.codemirror.view.dispatch({
+      //     changes: { from: 0, to: currentString.length, insert: string }
+      //   });
+      //   console.timeEnd("2")
 
-            let n_from = n.range[0];
+      //   console.time("3")
+      //   // state.codemirror.view.dispatch({ changes });
+      //   console.timeEnd("3")
 
-            if (n.parent.operator === "/") {
-              return;
-            }
+      //   console.timeEnd("UPDATE CM FROM TRANS")
 
-            if (n.parent.operator === "-") {
-              is_neg = true;
-            }
+      // })
 
-            if (n.parent.type === "BinaryExpression" && (n.parent.operator === "+" || n.parent.operator === "-") && n.parent.right == n) {
-              is_sum = true;
-              n_from = n.parent.left.range[1];
-            }
+      // console.time("cm parse")
+      const exps = cmAST(state);
+      exps.forEach( (exp, i) => {
+        if (i !== Number(index)) return;
+        const { start, ast } = exp;
+        const [ xNode, yNode ] = ast.body[0].expression.elements;
+        const change_x = create_change_x_or_y(start);
+        walk(xNode, n => change_x(n, x));
+        const change_y = create_change_x_or_y(start);
+        walk(yNode, n => change_y(n, y));
+      });
 
-            if (n.parent.type === "UnaryExpression" && n.parent.operator === "-") {
-              n_from = n.parent.range[0];
-            }
+      console.log(changes);
 
-            if (!n.ogValue) n.ogValue = n.value;
-            if (!n.ogRaw) n.ogRaw = n.raw;
-
-            let newNum;
-            if (is_neg) {
-              newNum = -n.ogValue + delta;
-            } else {
-              newNum = n.ogValue + delta;
-            }
-
-            let n_val = state.gridSize === 0 ? round(newNum, sigFigs(n.ogRaw)) : round(step(newNum, state.gridSize), 8);
-
-            let is_neg_new = n_val < 0;
-
-            let n_insert;
-            if (is_neg_new) {
-              n_insert = `-${Math.abs(n_val)}`
-            } else if (is_sum) {
-              n_insert = `+${n_val}`
-            } else {
-              n_insert = `${n_val}`
-            }
-
-            changes.push({
-              from: n_from,
-              to: n.range[1],
-              insert: n_insert
-            });
-
-            changed = true;
-          }
-        }
-
-        walk(xNode, n => change_x_or_y(n, x));
-
-        is_sum = false;
-        is_neg = false;
-        changed = false;
-
-        walk(yNode, n => change_x_or_y(n, y));
-
-        const currentString = state.codemirror.view.state.doc.toString();
-
-        state.codemirror.view.dispatch({
-          changes: { from: 0, to: currentString.length, insert: string }
-        });
-
-        state.codemirror.view.dispatch({ changes });
-
-        // string = state.codemirror.view.state.doc.toString();
-      })
+      state.codemirror.view.dispatch({ changes });
+      
+      // console.timeEnd("cm parse")
 
       foldImports(state);
 
@@ -206,3 +168,98 @@ export function addTranslateHandle(state, svgListener) {
     state.transforming = false;
   })
 }
+
+const sigFigs = num => num.includes(".")
+  ? num.split(".")[1].length
+  : num.length;
+
+const step = (num, stepSize) => Math.round(num/stepSize)*stepSize;
+const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
+const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
+
+const create2_change_x_or_y = (changes, state) => (offset = 0) => {
+  let is_sum = false;
+  let is_neg = false;
+  let changed = false;
+
+  return (n, delta) => {
+    if (changed) return;
+
+    if (n.type === "Literal" && typeof n.value === "number") {
+      let n_from = n.range[0];
+      
+      if (n.parent && n.parent.operator === "/") {
+        return;
+      }
+
+      if (n.parent && n.parent.operator === "-") {
+        is_neg = true;
+      }
+
+      if (n.parent && n.parent.type === "BinaryExpression" && (n.parent.operator === "+" || n.parent.operator === "-") && n.parent.right == n) {
+        is_sum = true;
+        n_from = n.parent.left.range[1];
+      }
+
+      if (n.parent && n.parent.type === "UnaryExpression" && n.parent.operator === "-") {
+        n_from = n.parent.range[0];
+      }
+
+      if (!n.ogValue) n.ogValue = n.value;
+      if (!n.ogRaw) n.ogRaw = n.raw;
+
+      let newNum;
+      if (is_neg) {
+        newNum = -n.value + delta;
+      } else {
+        newNum = n.value + delta;
+      }
+
+      let n_val = state.gridSize === 0 ? round(newNum, sigFigs(n.ogRaw)) : round(step(newNum, state.gridSize), 8);
+
+      let is_neg_new = n_val < 0;
+
+      let n_insert;
+      if (is_neg_new) {
+        n_insert = `-${Math.abs(n_val)}`
+      } else if (is_sum) {
+        n_insert = `+${n_val}`
+      } else {
+        n_insert = `${n_val}`
+      }
+        
+      changes.push({
+        from: n_from+offset,
+        to: n.range[1]+offset,
+        insert: n_insert
+      });
+
+      changed = true;
+    }
+  }
+}
+
+
+function cmAST(state) {
+  const string = state.codemirror.view.state.doc.toString();
+  const ast = syntaxTree(state.codemirror.view.state);
+
+  let texts = [];
+  const cursor = ast.cursor()
+  do {
+    // console.log(`Node ${cursor.name} from ${cursor.from} to ${cursor.to} with value ${string.slice(cursor.from, cursor.to)}`, cursor);
+    const value = string.slice(cursor.from, cursor.to);
+    if (cursor.name !== "PropertyDefinition" || value !== "translate") continue;
+    cursor.next()
+    cursor.next(); 
+    const text = string.slice(cursor.from, cursor.to);
+    texts.push({ text, start: cursor.from });
+
+  } while (cursor.next())
+
+  return texts.map(x => ({
+    ...x, 
+    ast: esprima.parseScript(x.text, { range: true, comment: true })
+  }));
+}
+

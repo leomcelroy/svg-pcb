@@ -1,5 +1,5 @@
 import { makeComponent } from "./pcb_helpers.js";
-import { getPathData, scale, outline, union, path, offset } from "/geogram/index.js";
+import { getPathData, scale, outline, union, path, offset, boolean } from "/geogram/index.js";
 
 export class PCB {
   constructor() {
@@ -73,9 +73,9 @@ export class PCB {
         });
       } else if (Array.isArray(x) || (x.type === "wire" && flatten)) {
         if (flatten && x.type === "wire") {
-          union(shapes, offset(x.shape, x.thickness/2));
+          boolean(shapes, offset(x.shape, x.thickness/2), "union");
         } else if (flatten) {
-          x.forEach( pl => union(shapes, [ pl ] ));
+          x.forEach( pl => boolean(shapes, [ pl ] , "union"));
         } else shapes.push(...x);
       } 
       else if (x.type === "text") texts.push(x);

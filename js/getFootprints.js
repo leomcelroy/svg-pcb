@@ -57,7 +57,6 @@ function makeFootprintTurtle(footprintObj) {
 
 
 export function getFootprints(string) {
-
   const esprimaAST = esprima.parseScript(string, { range: true, comment: true });
 
   const footprints = [];

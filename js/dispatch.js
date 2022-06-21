@@ -10,6 +10,8 @@ import { getFootprints } from "./getFootprints.js";
 import { getWires } from "./getWires.js";
 import { getFileSection } from "./getFileSection.js"
 import * as geo from "/geogram/index.js";
+import { syntaxTree } from "@codemirror/language";
+import esprima from 'esprima';
 
 const STATE = {
 	codemirror: undefined,
@@ -30,6 +32,7 @@ const STATE = {
 	viewHandles: true,
 	panZoomParams: undefined,
 	previewFootprint: null,
+	paths: [],
 }
 
 class PCB extends real_PCB {
@@ -81,6 +84,7 @@ function renderPCB({ pcb, layerColors, limits, mm_per_unit }) {
 	STATE.shapes = shapes; // TODO ??? what should the shape format be { d: path data string, color: hex or valid svg color, classes: []}
 	STATE.limits = limits;
 	STATE.mm_per_unit = mm_per_unit;
+	STATE.paths = pcb.getLayer("paths") || [];
 
 	dispatch("RENDER");
 }
@@ -189,11 +193,14 @@ const ACTIONS = {
 	},
 	RUN({ dragging = false } = {}, state) {
 		const string = state.codemirror.view.state.doc.toString();
+
 		if (!dragging) {
 			let footprints = [];
 			try {
 				footprints = getFootprints(string);
-			} catch (err) {}
+			} catch (err) {
+				console.error(err);
+			}
 
 			state.footprints = footprints;
 		}
@@ -267,9 +274,9 @@ const ACTIONS = {
 export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];
 	if (trigger) {
-		console.time(action);
+		// console.time(action);
 		const result = trigger(args, STATE);
-		console.timeEnd(action);
+		// console.timeEnd(action);
 		return result;
 	}
 	else console.log("Action not recongnized:", action);

@@ -94,7 +94,7 @@ export function view(state) {
 				</div>
 			</div>
 		</div>
-		<div style="display: flex; height: 100%; min-height: 100%; max-height: 100%;">
+		<div style="display: flex; height: 100%; overflow:hidden;">
 		<codemirror-2 id="code-editor" style="overflow: scroll;"></codemirror-2>
 			<div class="right-side">
 				${svgViewer(state)}

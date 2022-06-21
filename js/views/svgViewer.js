@@ -4,8 +4,12 @@ import { drawGrid } from "./drawGrid.js";
 import { drawPath } from "./drawPath.js";
 import { drawHandles } from "./drawHandles.js";
 
+const drawP = (p) => svg`
+  <path d=${p} stroke="black" stroke-width="0.03" fill="none"></path>
+`
 export const svgViewer = (state) => {
   const shapes = state.shapes.map(p => drawPath(p))
+  const paths = state.paths.map(p => drawP(p))
 
   const corners = state.panZoomParams?.corners();
 
@@ -24,6 +28,7 @@ export const svgViewer = (state) => {
               />` : ""
             }
           <g class="shapes">${shapes}</g>
+          <g class="paths">${paths}</g>
         ${state.panZoomParams && state.gridSize > 0 && state.grid ? drawGrid(state.panZoomParams.corners(), state.gridSize) : ""}
 
         <rect

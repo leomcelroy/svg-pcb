@@ -1,12 +1,11 @@
 # TODO
-
+- [] only draw handles if layer handle it on is visible
 - [] optimize
-	- [] don't generate wires until export, use native path rendering
+	- [x] don't generate wires until export, use native path rendering
 	- [] use codemirror parsing instead of esprima
 - [] create function to generate callback for manipulating points
 - [] fix gerber export
 - [] convert kicad to json on import
-- [] fix gram js text to be faster
 - [] why is the wire path getting flattened, can't have holes
 - [x] prevent auto-import with matching names
 - [] cache recent files (up to five?)
@@ -26,6 +25,7 @@
 - [x] fix minus bug
 - [] fix text rendering in gram-js
 - [] firefox rendering bug
+- [] fix gram js text to be faster
 - [x] save
 - [] upload
 	- [x] kicad module

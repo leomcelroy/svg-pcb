@@ -120,8 +120,9 @@ export function addImportDrag(state, listener) {
         dispatch("RUN");
       };
     }
-
     state.previewFootprint = null;
+
+    if (clicked) dispatch("RENDER");
     clicked = false;
   })
 

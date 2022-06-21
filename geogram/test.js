@@ -31,7 +31,9 @@ import {
   rectangle,
   circle,
   path,
-  Gram
+  Gram,
+  offset2,
+  boolean
 } from "./index.js";
 
 const svg = document.querySelector("svg");
@@ -66,12 +68,12 @@ const clearSVG = () => {
   target.innerHTML = "";
 }
 
-const t = path([
+let t = path([
   [20, 30],
   // ["fillet", 1, [100, 32]],
   ["fillet", 10, [200, 32]],
-  ["fillet", 10000, [100, 248]],
-  // ["bezier", [21, 30], [10, 200]],
+  // ["fillet", 10000, [100, 248]],
+  // ["bezier", [21, 30], [10, 200], [65, 78]],
   // ["chamfer", 78, [300, 200]],
   // [100, 120],
   // ["bezier", [21, 30], [10, 200]],
@@ -88,6 +90,14 @@ const t = path([
 // arc(t, 90, 23)
 // arc(t, -45, 70)
 // thicken(t, 6)
+
+const c = circle(50)
+translate(c, [100, 0])
+// boolean(t, c, "difference")
+t.push(...c)
+// thicken(t, 2)
+// scale(t, 0.003)
+offset2(t, 4, { endType: "openRound", joinType: "square" });
 draw(t);
 
 setScaleXY({

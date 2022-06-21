@@ -33,6 +33,12 @@ const test_footprint = {
 /* -- DECLARE_PCB -- */
 let board = new PCB();
 
+board.addShape("paths", geo.path([
+  [0, 0],
+  [1, 1],
+  [0, 1]
+]))
+
 /* -- ADD_COMPONENTS -- */
 test_comp1 = board.add(test_footprint, {translate: [0.35, 0.65], name: "COMP1"})
 test_comp2 = board.add(test_footprint, {translate: [0.7, 0.3], name: "COMP2"})

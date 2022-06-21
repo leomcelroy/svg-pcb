@@ -10,8 +10,8 @@ export function addNumberDragging(state, bodyListener) {
   let is_sum = false;
   let is_neg = false;
 
-  bodyListener("mousedown", ".ͼb", e => {
-    const cm = document.querySelector("code-mirror");
+  bodyListener("mousedown", ".ͼz", e => {
+    const cm = state.codemirror;
 
     const s = cm.view.state;
     const doc = s.doc;
@@ -46,8 +46,6 @@ export function addNumberDragging(state, bodyListener) {
         }
     }
 
-    console.log(is_sum, is_neg, pos_sign);
-
     selectedText = text.slice(start-from, end-from);
 
     num = Number(selectedText);
@@ -64,7 +62,7 @@ export function addNumberDragging(state, bodyListener) {
 
   bodyListener("mousemove", "", e => {
     if (!dragged) return;
-    const cm = document.querySelector("code-mirror");
+    const cm = state.codemirror;
 
         let newValue;
 
