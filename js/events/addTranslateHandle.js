@@ -131,7 +131,7 @@ export function addTranslateHandle(state, svgListener) {
 
       // console.timeEnd("cm parse")
 
-      foldImports(state);
+      // foldImports(state);
 
     }
 
