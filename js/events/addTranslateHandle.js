@@ -53,20 +53,16 @@ export function addTranslateHandle(state, svgListener) {
 
   let clicked = false;
   let clickedPoint;
-  let lastX = 0;
-  let lastY = 0;
   let index;
+  let lastPoint;
 
   svgListener("mousedown", ".translate-handle-trigger", e => {
-    clicked = true;
-    state.transforming = true;
-    lastX = 0;
-    lastY = 0;
-
     const svgPoint = svg.panZoomParams.svgPoint;
     clickedPoint = svgPoint({x: e.offsetX, y: e.offsetY})
-
-    index = e.target.dataset.index;
+    lastPoint = clickedPoint
+    clicked = true;
+    state.transforming = true;
+    index = Number(e.target.dataset.index);
 
     let string = state.codemirror.view.state.doc.toString();
     const esprimaAST = esprima.parseScript(string, { range: true, comment: true });
@@ -122,7 +118,7 @@ export function addTranslateHandle(state, svgListener) {
       // console.time("cm parse")
       const exps = cmAST(state);
       exps.forEach( (exp, i) => {
-        if (i !== Number(index)) return;
+        if (i !== index) return;
         const { start, ast } = exp;
         const [ xNode, yNode ] = ast.body[0].expression.elements;
         const change_x = create_change_x_or_y(start);
@@ -131,17 +127,14 @@ export function addTranslateHandle(state, svgListener) {
         walk(yNode, n => change_y(n, y));
       });
 
-      console.log(changes);
-
       state.codemirror.view.dispatch({ changes });
-      
+
       // console.timeEnd("cm parse")
 
       foldImports(state);
 
     }
 
-    // pauseEvent(e);
   })
 
   svgListener("mousemove", "", e => {
@@ -149,13 +142,10 @@ export function addTranslateHandle(state, svgListener) {
 
     const svgPoint = svg.panZoomParams.svgPoint;
     const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
-    const x = currentPoint.x - clickedPoint.x;
-    const y = currentPoint.y - clickedPoint.y;
-    // dispatch("TRANSLATE", { x: x - lastX, y: y - lastY, index });
+    const x = currentPoint.x - lastPoint.x;
+    const y = currentPoint.y - lastPoint.y;
+    lastPoint = currentPoint;
     dispatch("TRANSLATE", { x, y, index });
-    lastX = x;
-    lastY = y;
-    // pauseEvent(e);
   })
 
   svgListener("mouseup", "", e => {
@@ -177,12 +167,13 @@ const step = (num, stepSize) => Math.round(num/stepSize)*stepSize;
 const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
 const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 
-const create2_change_x_or_y = (changes, state) => (offset = 0) => {
+const create2_change_x_or_y = (changes, state) => (offsetStart) => {
   let is_sum = false;
   let is_neg = false;
   let changed = false;
 
-  return (n, delta) => {
+  // differential programming problem?
+  return (n, delta) => { // TODO: can I set this up as an equation to solve so I can pass the target value not the delta
     if (changed) return;
 
     if (n.type === "Literal" && typeof n.value === "number") {
@@ -205,8 +196,11 @@ const create2_change_x_or_y = (changes, state) => (offset = 0) => {
         n_from = n.parent.range[0];
       }
 
-      if (!n.ogValue) n.ogValue = n.value;
-      if (!n.ogRaw) n.ogRaw = n.raw;
+      // let newNum = is_neg ? -newVal : newVal;
+      // let newNum = delta;
+
+      // if (!n.ogValue) n.ogValue = n.value;
+      // if (!n.ogRaw) n.ogRaw = n.raw;
 
       let newNum;
       if (is_neg) {
@@ -215,7 +209,10 @@ const create2_change_x_or_y = (changes, state) => (offset = 0) => {
         newNum = n.value + delta;
       }
 
-      let n_val = state.gridSize === 0 ? round(newNum, sigFigs(n.ogRaw)) : round(step(newNum, state.gridSize), 8);
+      // BUG: the rounding breaks the changing, why didn't it before? because delta was from og to new not last to new
+      // let n_val = state.gridSize === 0 ? round(newNum, sigFigs(n.raw)) : round(step(newNum, state.gridSize), 8);
+      let n_val = newNum;
+      // console.log(n_val, newNum);
 
       let is_neg_new = n_val < 0;
 
@@ -229,8 +226,8 @@ const create2_change_x_or_y = (changes, state) => (offset = 0) => {
       }
         
       changes.push({
-        from: n_from+offset,
-        to: n.range[1]+offset,
+        from: n_from+offsetStart,
+        to: n.range[1]+offsetStart,
         insert: n_insert
       });
 
@@ -238,7 +235,6 @@ const create2_change_x_or_y = (changes, state) => (offset = 0) => {
     }
   }
 }
-
 
 function cmAST(state) {
   const string = state.codemirror.view.state.doc.toString();

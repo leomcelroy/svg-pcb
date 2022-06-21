@@ -40,8 +40,9 @@ board.addShape("paths", geo.path([
 ]))
 
 /* -- ADD_COMPONENTS -- */
-test_comp1 = board.add(test_footprint, {translate: [0.35, 0.65], name: "COMP1"})
-test_comp2 = board.add(test_footprint, {translate: [0.7, 0.3], name: "COMP2"})
+let x = 0.09
+const test_comp1 = board.add(test_footprint, {translate: [0.35, 0.65], name: "COMP1"})
+const test_comp2 = board.add(test_footprint, {translate: [0.7+x, 0.3], name: "COMP2"})
 
 /* -- ADD_WIRES -- */
 board.wire([test_comp1.pad("GND"),
