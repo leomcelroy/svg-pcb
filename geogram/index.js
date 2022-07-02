@@ -97,10 +97,10 @@ function offset2(paths, delta, ops = {}) {
     miter: 2
   }
 
-  const et = ops.endType;
+  let et = ops.endType;
   if (!(et in endTypes)) et = "closedPolygon";
 
-  const jt = ops.joinType || "round";
+  let jt = ops.joinType || "round";
   if (!(jt in joinTypes)) jt = "round";
 
   const miterLimit = ops.miterLimit || 2;

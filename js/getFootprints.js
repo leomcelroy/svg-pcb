@@ -1,4 +1,4 @@
-import esprima from 'esprima';
+import esprima from '/libs/esprima.js';
 import { generate } from 'astring';
 import { pathD, translate, scale, outline, width, height, getPoint } from "/geogram/index.js";
 

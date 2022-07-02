@@ -2,17 +2,19 @@
   "name": "SVG-PCB",
   "version": "0.0.0",
   "scripts": {
-    "start": "snowpack dev",
-    "build": "snowpack build"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "snowpack": "^3.8.8"
+    "vite": "^2.9.13"
   },
   "dependencies": {
     "@codemirror/commands": "^6.0.0",
     "@codemirror/lang-javascript": "^6.0.0",
     "@codemirror/search": "^6.0.0",
     "@codemirror/state": "^6.0.1",
+    "acorn": "^8.7.1",
     "astring": "^1.7.5",
     "codemirror": "^6.0.0",
     "esprima": "^4.0.1",

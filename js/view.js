@@ -1,6 +1,6 @@
 import { dispatch } from "./dispatch.js";
 import { html, svg } from "lit-html";
-import "code-mirror";
+// import "code-mirror";
 import "./codemirror/codemirror.js";
 import { files } from "./components-names.js";
 import { downloadSVG, downloadText, downloadGerber } from "./events/download.js"

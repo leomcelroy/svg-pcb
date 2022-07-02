@@ -1,4 +1,5 @@
-import esprima from 'esprima';
+import esprima from '/libs/esprima.js';
+// import acorn from 'acorn';
 import { dispatch } from "../dispatch.js";
 import { syntaxTree } from "@codemirror/language";
 
@@ -55,6 +56,8 @@ export function addTranslateHandle(state, svgListener) {
   let clickedPoint;
   let index;
   let lastPoint;
+  let ogPos;
+
 
   svgListener("mousedown", ".translate-handle-trigger", e => {
     const svgPoint = svg.panZoomParams.svgPoint;
@@ -63,22 +66,18 @@ export function addTranslateHandle(state, svgListener) {
     clicked = true;
     state.transforming = true;
     index = Number(e.target.dataset.index);
+    ogPos = state.storedPCB.components[index].pos;
 
     let string = state.codemirror.view.state.doc.toString();
     const esprimaAST = esprima.parseScript(string, { range: true, comment: true });
 
-    // console.time("tiny parse")
-    // esprima.parseScript("[32, 32]", { range: true, comment: true });
-    // console.timeEnd("tiny parse")
-
-    let adds = [];
-    walk(esprimaAST, node => {
-      if (node?.callee?.type === "MemberExpression" && node?.callee?.property?.name === "add") adds.push(node.arguments[1]);
-    })
+    // let adds = [];
+    // walk(esprimaAST, node => {
+    //   if (node?.callee?.type === "MemberExpression" && node?.callee?.property?.name === "add") adds.push(node.arguments[1]);
+    // })
 
     // sort by first range
-    const sortedAdds = adds.sort((a, b) => a.range[0] - b.range[0])
-    // const comp = state.storedPCB.components[index];
+    // const sortedAdds = adds.sort((a, b) => a.range[0] - b.range[0])
 
     state.transformUpdate = (x, y) => {
 
@@ -144,8 +143,11 @@ export function addTranslateHandle(state, svgListener) {
     const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
     const x = currentPoint.x - lastPoint.x;
     const y = currentPoint.y - lastPoint.y;
-    lastPoint = currentPoint;
     dispatch("TRANSLATE", { x, y, index });
+    lastPoint = currentPoint;
+
+    // const dx = currentPoint.x - lastPoint.x;
+    // const dy = currentPoint.y - lastPoint.y;
   })
 
   svgListener("mouseup", "", e => {
@@ -173,7 +175,8 @@ const create2_change_x_or_y = (changes, state) => (offsetStart) => {
   let changed = false;
 
   // differential programming problem?
-  return (n, delta) => { // TODO: can I set this up as an equation to solve so I can pass the target value not the delta
+  // TODO: can I set this up as an equation to solve so I can pass the target value not the delta
+  return (n, delta) => { 
     if (changed) return;
 
     if (n.type === "Literal" && typeof n.value === "number") {
@@ -236,6 +239,61 @@ const create2_change_x_or_y = (changes, state) => (offsetStart) => {
   }
 }
 
+const createGetAdditiveConstant = () => {
+  let is_sum = false;
+  let is_neg = false;
+  let changed = false;
+
+  // differential programming problem?
+  // TODO: can I set this up as an equation to solve so I can pass the target value not the delta
+  return (n, delta) => { 
+    if (changed) return 0;
+    
+    let n_val = 0;
+
+    if (n.type === "Literal" && typeof n.value === "number") {
+      let n_from = n.range[0];
+      
+      if (n.parent && n.parent.operator === "/") {
+        return;
+      }
+
+      if (n.parent && n.parent.operator === "-") {
+        is_neg = true;
+      }
+
+      if (n.parent && n.parent.type === "BinaryExpression" && (n.parent.operator === "+" || n.parent.operator === "-") && n.parent.right == n) {
+        is_sum = true;
+        n_from = n.parent.left.range[1];
+      }
+
+      if (n.parent && n.parent.type === "UnaryExpression" && n.parent.operator === "-") {
+        n_from = n.parent.range[0];
+      }
+
+      let newNum;
+      if (is_neg) {
+        newNum = -n.value + delta;
+      } else {
+        newNum = n.value + delta;
+      }
+
+      let is_neg_new = n_val < 0;
+
+      let n_insert;
+      if (is_neg_new) {
+        n_insert = `-${Math.abs(n_val)}`
+      } else if (is_sum) {
+        n_insert = `+${n_val}`
+      } else {
+        n_insert = `${n_val}`
+      }
+    }
+
+    return n_val;
+  }
+}
+
 function cmAST(state) {
   const string = state.codemirror.view.state.doc.toString();
   const ast = syntaxTree(state.codemirror.view.state);
@@ -258,4 +316,31 @@ function cmAST(state) {
     ast: esprima.parseScript(x.text, { range: true, comment: true })
   }));
 }
+
+
+/*
+
+given 
+  - ast
+  - target point
+
+solve for additive constant which will move the component to the target point 
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

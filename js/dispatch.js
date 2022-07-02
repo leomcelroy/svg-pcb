@@ -10,8 +10,7 @@ import { getFootprints } from "./getFootprints.js";
 import { getWires } from "./getWires.js";
 import { getFileSection } from "./getFileSection.js"
 import * as geo from "/geogram/index.js";
-import { syntaxTree } from "@codemirror/language";
-import esprima from 'esprima';
+
 
 const STATE = {
 	codemirror: undefined,
@@ -198,21 +197,12 @@ const ACTIONS = {
 			let footprints = [];
 			try {
 				footprints = getFootprints(string);
+				// TODO: should get wires here as well
 			} catch (err) {
 				console.error(err);
 			}
 
 			state.footprints = footprints;
-		}
-
-		if (!dragging) {
-			let wires = [];
-			try {
-				wires = getWires(string);
-				// console.log(wires);
-			} catch (err) {}
-
-			state.wires = wires;
 		}
 
 

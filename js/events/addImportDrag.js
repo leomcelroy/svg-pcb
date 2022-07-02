@@ -1,4 +1,4 @@
-import esprima from 'esprima';
+import esprima from '/libs/esprima.js';
 import { dispatch } from "../dispatch.js";
 import { getFileSection } from "../getFileSection.js"
 

@@ -1,5 +1,6 @@
 import { generate } from 'astring';
-import esprima from 'esprima';
+import esprima from '/libs/esprima.js';
+
 
 
 export function getWires(string) {
