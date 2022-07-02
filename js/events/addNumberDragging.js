@@ -10,7 +10,7 @@ export function addNumberDragging(state, bodyListener) {
   let is_sum = false;
   let is_neg = false;
 
-  bodyListener("mousedown", ".ͼz", e => {
+  bodyListener("mousedown", ".ͼd", e => {
     const cm = state.codemirror;
 
     const s = cm.view.state;

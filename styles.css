@@ -204,11 +204,11 @@ input {
 	z-index: 0;
 }
 
-.ͼz {
+.ͼd {
   border: solid 1px rgb(0, 0, 0, 0);
 }
 
-.ͼz:hover {
+.ͼd:hover {
   background: #e4e0e0;
   border: solid 1px grey;
   box-sizing: border-box;

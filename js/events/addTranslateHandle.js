@@ -55,66 +55,34 @@ export function addTranslateHandle(state, svgListener) {
   let clicked = false;
   let clickedPoint;
   let index;
-  let lastPoint;
   let ogPos;
-
+  let initialOffset;
 
   svgListener("mousedown", ".translate-handle-trigger", e => {
     const svgPoint = svg.panZoomParams.svgPoint;
     clickedPoint = svgPoint({x: e.offsetX, y: e.offsetY})
-    lastPoint = clickedPoint
     clicked = true;
     state.transforming = true;
     index = Number(e.target.dataset.index);
     ogPos = state.storedPCB.components[index].pos;
 
-    let string = state.codemirror.view.state.doc.toString();
-    const esprimaAST = esprima.parseScript(string, { range: true, comment: true });
-
-    // let adds = [];
-    // walk(esprimaAST, node => {
-    //   if (node?.callee?.type === "MemberExpression" && node?.callee?.property?.name === "add") adds.push(node.arguments[1]);
-    // })
-
-    // sort by first range
-    // const sortedAdds = adds.sort((a, b) => a.range[0] - b.range[0])
+    initialOffset = [];
+    const exps = cmAST(state);
+    exps.forEach( (exp, i) => {
+      if (i !== index) return;
+      const { start, ast } = exp;
+      const [ xNode, yNode ] = ast.body[0].expression.elements;
+      const change_x = createGetAdditiveConstant(initialOffset);
+      walk(xNode, n => change_x(n));
+      const change_y = createGetAdditiveConstant(initialOffset);
+      walk(yNode, n => change_y(n));
+    });
 
     state.transformUpdate = (x, y) => {
 
       const changes = [];
       const create_change_x_or_y = create2_change_x_or_y(changes, state);
 
-      // sortedAdds[index].properties.forEach( prop => {
-      //   if (prop.key.name !== "translate") return;
-
-      //   const [ xNode, yNode ] = prop.value.elements;
-      //   console.log(xNode, yNode);
-      //   const change_x = create_change_x_or_y();
-      //   walk(xNode, n => change_x(n, x));
-      //   const change_y = create_change_x_or_y();
-      //   walk(yNode, n => change_y(n, y));
-
-      //   console.time("UPDATE CM FROM TRANS")
-
-      //   console.time("1")
-      //   const currentString = state.codemirror.view.state.doc.toString();
-      //   console.timeEnd("1")
-
-      //   console.time("2")
-      //   state.codemirror.view.dispatch({
-      //     changes: { from: 0, to: currentString.length, insert: string }
-      //   });
-      //   console.timeEnd("2")
-
-      //   console.time("3")
-      //   // state.codemirror.view.dispatch({ changes });
-      //   console.timeEnd("3")
-
-      //   console.timeEnd("UPDATE CM FROM TRANS")
-
-      // })
-
-      // console.time("cm parse")
       const exps = cmAST(state);
       exps.forEach( (exp, i) => {
         if (i !== index) return;
@@ -128,26 +96,21 @@ export function addTranslateHandle(state, svgListener) {
 
       state.codemirror.view.dispatch({ changes });
 
-      // console.timeEnd("cm parse")
-
-      // foldImports(state);
-
     }
 
   })
 
   svgListener("mousemove", "", e => {
     if (!clicked) return;
+    const toGrid = (n) => state.gridSize === 0 ? n : round(step(n, state.gridSize), 8);
 
     const svgPoint = svg.panZoomParams.svgPoint;
     const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
-    const x = currentPoint.x - lastPoint.x;
-    const y = currentPoint.y - lastPoint.y;
+    const xOffset = ( ogPos[0] - initialOffset[0] );
+    const yOffset = ( ogPos[1] - initialOffset[1] );
+    const x = round(toGrid(currentPoint.x) - xOffset, 8);
+    const y = round(toGrid(currentPoint.y) - yOffset, 8);
     dispatch("TRANSLATE", { x, y, index });
-    lastPoint = currentPoint;
-
-    // const dx = currentPoint.x - lastPoint.x;
-    // const dy = currentPoint.y - lastPoint.y;
   })
 
   svgListener("mouseup", "", e => {
@@ -205,16 +168,16 @@ const create2_change_x_or_y = (changes, state) => (offsetStart) => {
       // if (!n.ogValue) n.ogValue = n.value;
       // if (!n.ogRaw) n.ogRaw = n.raw;
 
-      let newNum;
-      if (is_neg) {
-        newNum = -n.value + delta;
-      } else {
-        newNum = n.value + delta;
-      }
+      // let newNum = delta;
+      // if (is_neg) {
+      //   newNum = -n.value + delta;
+      // } else {
+      //   newNum = n.value + delta;
+      // }
 
       // BUG: the rounding breaks the changing, why didn't it before? because delta was from og to new not last to new
       // let n_val = state.gridSize === 0 ? round(newNum, sigFigs(n.raw)) : round(step(newNum, state.gridSize), 8);
-      let n_val = newNum;
+      let n_val = delta;
       // console.log(n_val, newNum);
 
       let is_neg_new = n_val < 0;
@@ -239,15 +202,15 @@ const create2_change_x_or_y = (changes, state) => (offsetStart) => {
   }
 }
 
-const createGetAdditiveConstant = () => {
+const createGetAdditiveConstant = (constants) => {
   let is_sum = false;
   let is_neg = false;
   let changed = false;
 
   // differential programming problem?
   // TODO: can I set this up as an equation to solve so I can pass the target value not the delta
-  return (n, delta) => { 
-    if (changed) return 0;
+  return (n) => { 
+    if (changed) return;
     
     let n_val = 0;
 
@@ -273,22 +236,26 @@ const createGetAdditiveConstant = () => {
 
       let newNum;
       if (is_neg) {
-        newNum = -n.value + delta;
+        newNum = -n.value;
       } else {
-        newNum = n.value + delta;
+        newNum = n.value;
       }
+
+      n_val = newNum;
 
       let is_neg_new = n_val < 0;
 
-      let n_insert;
       if (is_neg_new) {
-        n_insert = `-${Math.abs(n_val)}`
+        n_val = -Math.abs(n_val);
       } else if (is_sum) {
-        n_insert = `+${n_val}`
+        n_val = n_val;
       } else {
-        n_insert = `${n_val}`
+        n_val = n_val;
       }
+
+      constants.push(n_val);
     }
+
 
     return n_val;
   }
