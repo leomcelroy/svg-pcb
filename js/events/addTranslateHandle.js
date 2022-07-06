@@ -161,24 +161,8 @@ const create2_change_x_or_y = (changes, state) => (offsetStart) => {
       if (n.parent && n.parent.type === "UnaryExpression" && n.parent.operator === "-") {
         n_from = n.parent.range[0];
       }
-
-      // let newNum = is_neg ? -newVal : newVal;
-      // let newNum = delta;
-
-      // if (!n.ogValue) n.ogValue = n.value;
-      // if (!n.ogRaw) n.ogRaw = n.raw;
-
-      // let newNum = delta;
-      // if (is_neg) {
-      //   newNum = -n.value + delta;
-      // } else {
-      //   newNum = n.value + delta;
-      // }
-
-      // BUG: the rounding breaks the changing, why didn't it before? because delta was from og to new not last to new
-      // let n_val = state.gridSize === 0 ? round(newNum, sigFigs(n.raw)) : round(step(newNum, state.gridSize), 8);
+      
       let n_val = delta;
-      // console.log(n_val, newNum);
 
       let is_neg_new = n_val < 0;
 
@@ -207,8 +191,6 @@ const createGetAdditiveConstant = (constants) => {
   let is_neg = false;
   let changed = false;
 
-  // differential programming problem?
-  // TODO: can I set this up as an equation to solve so I can pass the target value not the delta
   return (n) => { 
     if (changed) return;
     

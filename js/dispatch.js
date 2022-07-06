@@ -154,8 +154,15 @@ async function urlToCode(file_url, state) {
     document.querySelector(".center-button").click();
 }
 
+const r = () => {
+	render(view(STATE), document.getElementById("root"));
+	requestAnimationFrame(r);
+}
+
 const ACTIONS = {
 	INIT(args, state) {
+		// r();
+
 		dispatch("RENDER");
 		state.codemirror = document.querySelector("#code-editor");
 		addEvents(state);
@@ -271,3 +278,5 @@ export function dispatch(action, args = {}) {
 	}
 	else console.log("Action not recongnized:", action);
 }
+
+
