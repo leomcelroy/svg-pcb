@@ -128,8 +128,22 @@ input {
   place-content: center;
 }
 
-.seperator {
+.separator {
 	margin: 5px;
+}
+
+.menu-item {
+	cursor: pointer;
+	padding-left: 5px;
+	padding-right: 5px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.menu-item:hover {
+	background: black;
+	color: white;
 }
 
 .dropdown-container {
@@ -139,6 +153,7 @@ input {
 }
 
 .dropdown-content {
+	color: black;
 	visibility: hidden;
 	display: flex;
 	flex-direction: column;

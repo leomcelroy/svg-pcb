@@ -13,21 +13,21 @@ export function view(state) {
 	return html`
 		<div class="top-menu">
 			<div class="left">
-				<button
+				<div
+					class="menu-item"
 					@click=${() => dispatch("RUN")}>
 					run (shift + enter)
-				</button>
-				<div class="seperator"></div>
-				<div class="dropdown-container">
+				</div>
+				<div class="menu-item" @click=${() => dispatch("NEW_FILE")}>new</div>
+				<div class="menu-item dropdown-container">
 				 	import
 				 	<div class="dropdown-content">
 				 		${drawImportItems(files)}
 				 	</div>
 				 </div>
-				 <div class="seperator"></div>
-				 <div class="dropdown-container">
+				 <div class="menu-item dropdown-container">
 					download
-					<div class="dropdown-content dropdown-content">
+					<div class="dropdown-content">
 						<button
 							@click=${() => downloadSVG(state)}>
 							svg
@@ -42,10 +42,9 @@ export function view(state) {
 						</button>
 					</div>
 				</div>
-				<div class="seperator"></div>
-				<div class="dropdown-container">
+				<div class="menu-item dropdown-container">
 					drawing
-					<div class="dropdown-content dropdown-content">
+					<div class="dropdown-content">
 						<button
 							class="center-button"
 							@click=${() => {

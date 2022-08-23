@@ -1,8 +1,19 @@
 # TODO
+- [] copper fill
+- [] wire dragging
+- [] smart routing
+- [] when dragging screen and triggering out drag continues on re-entry
+- [] add error handling
+- [] don't snap to grid when grid is off
+- [x] add new file button
+
+- [] add names to dropped components
+- [] fix codemirror config
+	- [] remove autocomplete
 - [] only draw handles if layer handle it on is visible
 - [] optimize
 	- [x] don't generate wires until export, use native path rendering
-	- [] use codemirror parsing instead of esprima
+	- [x] use codemirror parsing instead of esprima
 - [] create function to generate callback for manipulating points
 - [] fix gerber export
 - [] convert kicad to json on import

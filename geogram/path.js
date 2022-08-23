@@ -142,7 +142,6 @@ export function path(cmds) {
           pt[1] + prevNorm[1]*dist
         ]
 
-
         const end = [
           pt[0] + nextNorm[0]*dist,
           pt[1] + nextNorm[1]*dist,

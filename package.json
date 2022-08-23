@@ -2,12 +2,15 @@
   "name": "SVG-PCB",
   "version": "0.0.0",
   "scripts": {
+    "start": "web-dev-server --node-resolve --open --watch",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^2.9.13"
+    "@web/dev-server": "^0.1.32",
+    "vite": "^3.0.3",
+    "yarn": "^1.22.19"
   },
   "dependencies": {
     "@codemirror/commands": "^6.0.0",
@@ -18,7 +21,6 @@
     "astring": "^1.7.5",
     "codemirror": "^6.0.0",
     "esprima": "^4.0.1",
-    "lit-html": "^2.0.1",
-    "yarn": "^1.22.19"
+    "lit-html": "^2.0.1"
   }
 }
