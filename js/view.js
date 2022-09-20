@@ -68,7 +68,7 @@ export function view(state) {
 							<span>grid</span>
 							<input
 								type="checkbox"
-								checked=${state.grid}
+								.checked=${state.grid}
 								@change=${(e) => {
 									state.grid = e.target.checked;
 									dispatch("RENDER");
@@ -87,6 +87,18 @@ export function view(state) {
 									state.gridSize = Number(e.target.value);
 									dispatch("RENDER");
 								}}>
+							</input>
+						</div>
+						<div>
+							<span>wire drawing</span>
+							<input
+								type="checkbox"
+								.checked=${state.wireDrawing}
+								@change=${(e) => {
+									state.wireDrawing = e.target.checked;
+									dispatch("RENDER");
+								}}
+								>
 							</input>
 						</div>
 					</div>

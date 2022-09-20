@@ -1,4 +1,5 @@
 import { addTranslateHandle } from "./events/addTranslateHandle.js";
+// import { addPtDragging } from "./events/addPtDragging.js";
 import { addVerticalBarDrag } from "./events/addVerticalBarDrag.js";
 import { addImgPanZoom } from "./events/addImgPanZoom.js";
 import { addDropUpload } from "./events/addDropUpload.js";
@@ -6,6 +7,7 @@ import { addSelectBox } from "./events/addSelectBox.js";
 import { addNumberDragging } from "./events/addNumberDragging.js";
 // import { download } from "./events/download.js"
 import { addImportDrag } from "./events/addImportDrag.js";
+import { addWireDrawing } from "./events/addWireDrawing.js";
 
 import { dispatch } from "./dispatch.js";
 
@@ -38,6 +40,8 @@ export function addEvents(state) {
 
 	addSelectBox(state, listenSVG);
   	addTranslateHandle(state, listenSVG);
+  	// addPtDragging(state, listenSVG);
+  	addWireDrawing(state, listenSVG);
 
 	const body = document.querySelector("body");
 	const listenBody = createListener(body);

@@ -4,8 +4,8 @@ import { drawGrid } from "./drawGrid.js";
 import { drawPath } from "./drawPath.js";
 import { drawHandles } from "./drawHandles.js";
 
-const drawP = (p) => svg`
-  <path d=${p} stroke="black" stroke-width="0.03" fill="none"></path>
+const drawP = ({ d, stroke, strokeWidth, fill }) => svg`
+  <path d=${d} stroke=${stroke} stroke-width=${strokeWidth} fill=${fill}></path>
 `
 export const svgViewer = (state) => {
   const shapes = state.shapes.map(p => drawPath(p))
