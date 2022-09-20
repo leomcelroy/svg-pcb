@@ -1,3 +1,5 @@
+import { dispatch } from "../dispatch.js";
+
 export function addImgPanZoom(state, listen) {
   let mousedown = false;
 
@@ -70,7 +72,6 @@ export function addImgPanZoom(state, listen) {
   })
 
   function setScaleXY(limits) {
-    console.log("set scale x y")
     const svg = document.querySelector("svg");
     const bb = svg.getBoundingClientRect();
     const xr = limits.x[1] - limits.x[0];

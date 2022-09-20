@@ -1,3 +1,5 @@
+import { dispatch } from "../dispatch.js";
+
 export function addSelectBox(state, svgListener) {
   let start = null;
   let end = null;

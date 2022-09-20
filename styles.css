@@ -30,6 +30,7 @@ input {
 /* GENERAL SET-UP */
 /* ///////////////////////////////////////////////////// */
 
+/*
 #root {
   display: grid;
   width: 100vw;
@@ -39,19 +40,30 @@ input {
     "editor view" 1fr
     / var(--vertical-bar) 1fr;
 }
+*/
+
+#root {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  position: fixed;
+}
 
 #code-editor {
 	grid-area: editor;
 	background: #f4e6d0;
 	overflow: scroll;
+	width: var(--vertical-bar);
 }
 
 .right-side {
 		grid-area: view;
-    width: 100%;
+    width: calc(100% - var(--vertical-bar));
     height: 100%;
     position: relative;
     overflow: hidden;
+
 /*    transform: scale(1, -1);*/
 }
 
@@ -59,7 +71,7 @@ input {
 	width: min-content;
 	height: min-content;
 	overflow: scroll;
-	max-height: 200px;
+	max-height: 320px;
 	background: #f4e6d0aa;
 	position: absolute;
 	right: 0px;
@@ -95,15 +107,17 @@ input {
 	display: flex;
 	place-items: center;
 	width: 100%;
-	height: 100%;
+	height: 30px;
+	max-height: 30px;
+	min-height: 30px;
 	background: lightgrey;
 }
 
 .left {
-	margin-left: 20px;
+  margin-left: 20px;
   height: 100%;
-  display: grid;
-  place-content: center;
+  display: flex;
+  align-items: center;
 }
 
 .right {
@@ -114,15 +128,32 @@ input {
   place-content: center;
 }
 
+.separator {
+	margin: 5px;
+}
+
+.menu-item {
+	cursor: pointer;
+	padding-left: 5px;
+	padding-right: 5px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.menu-item:hover {
+	background: black;
+	color: white;
+}
+
 .dropdown-container {
 	position: relative;
-	width: 100%;
-	height: 100%;
 	cursor: pointer;
 	z-index: 100;
 }
 
 .dropdown-content {
+	color: black;
 	visibility: hidden;
 	display: flex;
 	flex-direction: column;
@@ -188,11 +219,11 @@ input {
 	z-index: 0;
 }
 
-.ͼb {
+.ͼd {
   border: solid 1px rgb(0, 0, 0, 0);
 }
 
-.ͼb:hover {
+.ͼd:hover {
   background: #e4e0e0;
   border: solid 1px grey;
   box-sizing: border-box;
@@ -228,9 +259,10 @@ input {
 	background: #d83030c4;
 }*/
 
+.translate-handle {
+    opacity: 0.6;
+}
+
 .translate-handle:hover {
 	filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(330deg);
 }
-
-
-

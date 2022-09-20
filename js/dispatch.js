@@ -1,89 +1,57 @@
 import { view } from "./view.js";
-import { render } from "https://cdn.skypack.dev/lit-html";
+import { render } from "lit-html";
 
 import { addEvents } from "./events.js";
-import { test } from "./test.js";
 
 import { PCB as real_PCB } from "./pcb.js";
+import { via } from "./pcb_helpers.js";
 import { kicadToObj } from "./ki_cad_parser.js"
-import { Turtle } from "./Turtle.js";
-import { getFootprints } from "./getFootprints.js";
+import { getSemanticInfo } from "./getSemanticInfo.js";
+import { getFileSection } from "./getFileSection.js"
+import * as geo from "/geogram/index.js";
 
-import { parse2 } from "./parser.js";
-import esprima from 'https://cdn.skypack.dev/esprima';
-import acorn from 'https://cdn.skypack.dev/acorn';
-import { generate } from 'https://cdn.skypack.dev/astring';
-import { walk } from 'https://cdn.skypack.dev/esprima-walk';
+import { global_state } from "./global_state.js";
 
+import { renderShapes } from "./renderShapes.js";
+import { renderPath } from "./renderPath.js";
+import { renderPCB } from "./renderPCB.js";
 
-const STATE = {
-	codemirror: undefined,
-	storedPCB: undefined,
-	transforming: false,
-	transformUpdate: () => {},
-	selectBox: {},
-	footprints: [],
-	shapes: [],
-	limits: {
-		x: [0, 1],
-		y: [0, 1]
-	},
-	mm_per_unit: 25.4,
-	gridSize: 0.05,
-	viewHandles: true,
-	panZoomParams: undefined,
-}
+import { urlToCode } from "./urlToCode.js";
+import { defaultText } from "./defaultText.js";
 
 class PCB extends real_PCB {
 	constructor() {
 		super();
-		STATE.storedPCB = this;
+		global_state.storedPCB = this;
 	}
 }
 
+
 const included = {
-	kicadToObj,
+	// kicadToObj, // FIXME: remove references to
+	geo,
 	PCB,
 	via,
-	Turtle,
 	renderPCB,
 	renderShapes,
+	renderPath,
 	document: null,
 	window: null,
 	localStorage: null,
 	Function: null,
 	eval: null,
+	pt: (x, y) => { 
+		global_state.pts.push([x, y]);
+		return [x, y]; 
+	}
 	// "import": null,
 }
 
-async function urlToCode(file_url, state) {
-	const file = await fetch(file_url,  {mode: 'cors'});
-	const txt = await file.text();      
 
-    state.codemirror.view.dispatch({
-	  changes: {from: 0, insert: txt}
-	});
 
-    // fold imports
-	const anotherComp = l => l.includes("return kicadToObj(");
-
-	const doc = state.codemirror.view.state.doc;
-	const lines = doc.toString().split("\n");
-	let i = 0;
-	let count = 0;
-	while (true) {
-		const line = lines[i];
-		if (!line) break;
-		count += line.length;
-		if (i > lines.length) break;
-		if (lines[i] === "`)})()" && !anotherComp(lines[i+1])) break;
-		i++;
-	};
-
-	state.codemirror.foldRange(0, count+i);
-
-    dispatch("RUN");
-    document.querySelector(".center-button").click();
+const r = () => {
+	render(view(global_state), document.getElementById("root"));
+	requestAnimationFrame(r);
 }
 
 const ACTIONS = {
@@ -97,6 +65,11 @@ const ACTIONS = {
 	    const search = window.location.search;
 	    const code = new URLSearchParams(search).get("code");
 	    const file = new URLSearchParams(search).get("file");
+	    const handlesOff = new URLSearchParams(search).get("bezier") === "false";
+	    const gridOff = new URLSearchParams(search).get("grid") === "false";
+
+	    if (handlesOff) state.viewHandles = false;
+	    if (gridOff) state.grid = false;
 
 	    if (code) {
 
@@ -105,73 +78,112 @@ const ACTIONS = {
           if (!file.startsWith("http")) file_url = `examples/${file}`;
 
           urlToCode(file_url, state);
-	    } else {
-		    state.codemirror.view.dispatch({
-			  changes: {from: 0, insert: test}
-			});
-			dispatch("RUN");
+	    } else { // should check before running this
+	    	const saved = window.localStorage.getItem("svg-pcb")
+			    state.codemirror.view.dispatch({
+				  changes: {from: 0, insert: saved ?? ""}
+				});
+
+				dispatch("RUN");
+				document.querySelector(".center-button").click();
 	    }
+
+	    dispatch("RENDER");
 	},
-	RUN(args, state) {
+	RUN({ dragging = false } = {}, state) {
+		state.paths = [];
 		const string = state.codemirror.view.state.doc.toString();
-		// const result = JSON.parse(string); // if json
 
-		let footprints = [];
-		try {
-			footprints = getFootprints(string);
-		} catch (err) {}
+		if (!dragging) {
+			let footprints = [];
+			let wires = [];
+			let layers = [];
+			try {
+				const semantics = getSemanticInfo(string);
+				footprints = semantics.footprints;
+				wires = semantics.wires ?? [];
+				layers = semantics.layers ?? [];
+			} catch (err) {
+				console.error(err);
+			}
 
-		state.footprints = footprints;
-
-
-		// need to sanitize text
-
-		const BLACK_LISTED_WORDS = ["import"]; // "document", "window", "localStorage"
-		BLACK_LISTED_WORDS.forEach(word => {
-			if (string.includes(word))
-				throw `"${word}" is not permitted due to security concerns.`;
-		});
+			state.footprints = footprints;
+			state.wires = wires;
+			state.layers = layers;
+		}
 
 		const f = new Function(...Object.keys(included), string)
-		const result = f(...Object.values(included));
-
-		let { shapes, limits, mm_per_unit } = typeof result === "string" ? JSON.parse(result) : result;
-
-		state.shapes = shapes;
-		state.limits = limits;
-		state.mm_per_unit = mm_per_unit;
-		// console.log(state.storedPCB);
+		f(...Object.values(included));
 		dispatch("RENDER");
+	},
+	NEW_FILE(args, state) {
+	  dispatch("UPLOAD_JS", { text: defaultText });
 	},
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");
-		text = `const ${name} = (() => { return kicadToObj(\n\`${text}\`)})()\n`
+		text = JSON.stringify(kicadToObj(text));
+		text = `const ${"temp_name"} = ${text}\n`
+
+		const string = state.codemirror.view.state.doc.toString();
+		const startIndex = getFileSection("DECLARE_COMPONENTS", string) ?? 0;
 		state.codemirror.view.dispatch({
-		  changes: {from: 0, insert: text}
+		  changes: {from: startIndex, insert: text}
 		});
 
 		state.codemirror.foldRange(0, text.length);
 		dispatch("RENDER");
 	},
+	UPLOAD_JS({ text }, state) {
+		const end = state.codemirror.view.state.doc.toString().length;
+		state.codemirror.view.dispatch({
+		  changes: {from: 0, to: end, insert: text}
+		});
+
+		dispatch("RUN");
+		document.querySelector(".center-button").click()
+	},
 	ADD_IMPORT({ text, name }, state) {
+		const alreadyImported = state.footprints.map(x => x[0]);
+		if (alreadyImported.includes(name)) return;
+
+		const string = state.codemirror.view.state.doc.toString();
+		const startIndex = getFileSection("DECLARE_COMPONENTS", string) ?? 0;
+
 		text = `const ${name} = ${text}\n`
 		state.codemirror.view.dispatch({
-		  changes: {from: 0, insert: text}
+		  changes: {from: startIndex, insert: text}
 		});
 
 		dispatch("RUN");
 	},
 	TRANSLATE({ x, y, index }, state) {
 		state.transformUpdate(x, y);
-		dispatch("RUN");
+		dispatch("RUN", { dragging: true });
 	},
 	RENDER() {
-		render(view(STATE), document.getElementById("root"));
+		render(view(global_state), document.getElementById("root"));
 	}
 }
 
 export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];
-	if (trigger) trigger(args, STATE);
+	if (trigger) {
+		// console.time(action);
+		const result = trigger(args, global_state);
+		// console.timeEnd(action);
+		return result;
+	}
 	else console.log("Action not recongnized:", action);
 }
+
+
+function checkBlacklist(string) {
+	// poor attempt at sanitizing
+
+	const BLACK_LISTED_WORDS = []; // import, document, window, localStorage
+	BLACK_LISTED_WORDS.forEach(word => {
+		if (string.includes(word))
+			throw `"${word}" is not permitted due to security concerns.`;
+	});
+}
+
