@@ -1,5 +1,6 @@
 import * as esprima from 'esprima';
 import { generate } from 'astring';
+import { walk } from "./walk.js";
 import { pathD, translate, scale, outline, width, height, getPoint } from "/geogram/index.js";
 
 function makeFootprintGeometry(footprintObj) {
@@ -100,27 +101,36 @@ function getLayers(term, layers) {
   console.log(term);
 }
 
-function getPts(term, layers) {
-  // console.log(term);
+const getPts = (pts) => (node) => {
+  if (node.type !== "CallExpression") return;
+
+  const callee = node.callee.name;
+
+  if (callee !== "pt") return;
+
+
+  pts.push(node.range);
 }
 
 
 
 export function getSemanticInfo(string) {
+  // console.time()
   const esprimaAST = esprima.parseScript(string, { range: true, comment: true });
-
+// console.timeEnd();
   const footprints = [];
-  const wires = [];
+  // const wires = [];
   const layers = [];
-  const pts = [];
+
+  // const pts = [];
+  // walk(esprimaAST, getPts(pts));
 
   esprimaAST.body.forEach( x => {
     getFootprints(x, footprints);
-    getPts(x, pts);
   })
 
   return {
     footprints,
-    pts
+    // pts,
   }
 }

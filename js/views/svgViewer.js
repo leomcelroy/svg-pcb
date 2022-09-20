@@ -4,12 +4,25 @@ import { drawGrid } from "./drawGrid.js";
 import { drawPath } from "./drawPath.js";
 import { drawHandles } from "./drawHandles.js";
 
+const drawPt = ({ pt, start, end, text }, i) => svg`
+  <circle 
+    class="draggable-pt"
+    cx=${pt[0]} 
+    cy=${pt[1]} 
+    r="0.02" 
+    data-index=${i}
+    data-start=${start} 
+    data-end=${end} 
+    data-text=${text}></circle>
+`
+
 const drawP = ({ d, stroke, strokeWidth, fill }) => svg`
   <path d=${d} stroke=${stroke} stroke-width=${strokeWidth} fill=${fill}></path>
 `
 export const svgViewer = (state) => {
-  const shapes = state.shapes.map(p => drawPath(p))
-  const paths = state.paths.map(p => drawP(p))
+  const shapes = state.shapes.map(drawPath);
+  const paths = state.paths.map(drawP);
+  const pts = state.pts.map(drawPt);
 
   const corners = state.panZoomParams?.corners();
 
@@ -27,8 +40,11 @@ export const svgViewer = (state) => {
                 "
               />` : ""
             }
+
           <g class="shapes">${shapes}</g>
           <g class="paths">${paths}</g>
+          
+
         ${state.panZoomParams && state.gridSize > 0 && state.grid ? drawGrid(state.panZoomParams.corners(), state.gridSize) : ""}
 
         <rect
@@ -38,7 +54,8 @@ export const svgViewer = (state) => {
           stroke="black" fill="transparent" stroke-width="1"
           vector-effect="non-scaling-stroke"
           transform="translate(${state.limits.x[0]}, ${state.limits.y[0]})"/>
-        ${state.storedPCB && state.viewHandles ? drawHandles(state.storedPCB) : ""}
+        <g class="pts no-download">${pts}</g>
+        ${false && state.storedPCB && state.viewHandles ? drawHandles(state.storedPCB) : ""}
       </g>
 
     </svg>

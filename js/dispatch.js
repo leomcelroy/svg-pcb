@@ -19,12 +19,17 @@ import { renderPCB } from "./renderPCB.js";
 import { urlToCode } from "./urlToCode.js";
 import { defaultText } from "./defaultText.js";
 
+
+import { getPoints } from "./getPoints.js";
+
 class PCB extends real_PCB {
 	constructor() {
 		super();
 		global_state.storedPCB = this;
 	}
 }
+
+const getProgramString = () => global_state.codemirror.view.state.doc.toString();
 
 
 const included = {
@@ -40,10 +45,18 @@ const included = {
 	localStorage: null,
 	Function: null,
 	eval: null,
-	pt: (x, y) => { 
-		global_state.pts.push([x, y]);
+	pt: (x, y, start = -1, end = -1) => { 
+
+		const dupe = global_state.pts.some(pt => pt.start === start);
+		if (start === -1 || dupe) return [x, y];
+
+		const string = getProgramString();
+		const snippet = string.slice(start, end);
+		const pt = { pt: [x, y], start, end, text: snippet };
+		global_state.pts.push(pt);
 		return [x, y]; 
-	}
+	},
+	path: (...args) => args
 	// "import": null,
 }
 
@@ -92,25 +105,42 @@ const ACTIONS = {
 	},
 	RUN({ dragging = false } = {}, state) {
 		state.paths = [];
-		const string = state.codemirror.view.state.doc.toString();
+		state.pts = [];
+
+		let string = state.codemirror.view.state.doc.toString();
 
 		if (!dragging) {
 			let footprints = [];
-			let wires = [];
 			let layers = [];
 			try {
-				const semantics = getSemanticInfo(string);
+				const semantics = getSemanticInfo(string, dragging);
 				footprints = semantics.footprints;
-				wires = semantics.wires ?? [];
 				layers = semantics.layers ?? [];
 			} catch (err) {
 				console.error(err);
 			}
 
 			state.footprints = footprints;
-			state.wires = wires;
 			state.layers = layers;
 		}
+
+		const ptsPos = getPoints(state);
+		const newProg = [];
+
+		let min = 0;
+		ptsPos.sort((a, b) => a[0] - b[0]).forEach((r, i) => {
+			const [l, u] = r;
+			newProg.push(string.substr(min, l-min));
+			const ogPt = string.substr(l, u-l);
+			const firstParen = ogPt.indexOf("(");
+			const newPt = `${ogPt.slice(0, -1)}, ${l+firstParen+1}, ${u-1})`
+			newProg.push(newPt);
+			min = u;
+			if (i === ptsPos.length - 1) newProg.push(string.substr(u));
+		})
+
+
+		if (newProg.length > 0) string = newProg.join("");
 
 		const f = new Function(...Object.keys(included), string)
 		f(...Object.values(included));

@@ -3,33 +3,7 @@ import * as esprima from 'esprima';
 // import acorn from 'acorn';
 import { dispatch } from "../dispatch.js";
 import { syntaxTree } from "@codemirror/language";
-
-function walk( ast, fn ) {
-  var stack = [ ast ], i, j, key, len, node, child, subchild
-  for ( i = 0; i < stack.length; i += 1 ) {
-    node = stack[ i ]
-    if (typeof node == 'number')
-      continue
-    fn( node )
-    for ( key in node ) {
-      if ( key !== 'parent' ) {
-        child = node[ key ]
-        if ( child instanceof Array ) {
-          for ( j = 0, len = child.length; j < len; j += 1 ) {
-            subchild = child[ j ]
-            if( subchild instanceof Object ) {
-              subchild.parent = node
-            }
-            stack.push( subchild )
-          }
-        } else if ( child != void 0 && typeof child.type === 'string' ) {
-          child.parent = node
-          stack.push( child )
-        }
-      }
-    }
-  }
-}
+import { walk } from "../walk.js";
 
 export function addPtDragging(state, svgListener) {
   const svg = document.querySelector("svg");
@@ -39,45 +13,48 @@ export function addPtDragging(state, svgListener) {
   let index;
   let ogPos;
   let initialOffset;
+  let dragPt;
 
-  svgListener("mousedown", ".translate-handle-trigger", e => {
+  svgListener("mousedown", ".draggable-pt", e => {
     const svgPoint = svg.panZoomParams.svgPoint;
     clickedPoint = svgPoint({x: e.offsetX, y: e.offsetY})
     clicked = true;
     state.transforming = true;
     index = Number(e.target.dataset.index);
-    ogPos = state.storedPCB.components[index].pos;
+    ogPos = [
+      Number(e.target.getAttribute("cx")),
+      Number(e.target.getAttribute("cy"))
+    ];
 
-    initialOffset = [];
-    const exps = cmAST(state);
-    exps.forEach( (exp, i) => {
-      if (i !== index) return;
-      const { start, ast } = exp;
-      const [ xNode, yNode ] = ast.body[0].expression.elements;
-      const change_x = createGetAdditiveConstant(initialOffset);
-      walk(xNode, n => change_x(n));
-      const change_y = createGetAdditiveConstant(initialOffset);
-      walk(yNode, n => change_y(n));
-    });
+    const [xSnippet, ySnippet] = e.target.dataset.text.split(",");
 
-    state.transformUpdate = (x, y) => {
+    initialOffset = [...ogPos];
+    const xNode = esprima.parse(xSnippet, { range: true, comment: true }).body[0];
+    const yNode = esprima.parse(ySnippet, { range: true, comment: true }).body[0];
+    const change_x_0 = createGetAdditiveConstant(initialOffset, 0);
+    walk(xNode, n => change_x_0(n));
+    const change_y_0 = createGetAdditiveConstant(initialOffset, 1);
+    walk(yNode, n => change_y_0(n));
+
+
+    dragPt = (x, y, i) => {
+      const pt = state.pts[i];
+      const [xSnippet, ySnippet] = pt.text.split(",");
+      const xNode = esprima.parse(xSnippet, { range: true, comment: true }).body[0];
+      const yNode = esprima.parse(ySnippet, { range: true, comment: true }).body[0];
+
+      const startX = pt.start;
+      const startY = startX + xSnippet.length+1;
 
       const changes = [];
       const create_change_x_or_y = create_change_x_or_y_helper(changes, state);
-
-      const exps = cmAST(state);
-      exps.forEach( (exp, i) => {
-        if (i !== index) return;
-        const { start, ast } = exp;
-        const [ xNode, yNode ] = ast.body[0].expression.elements;
-        const change_x = create_change_x_or_y(start);
-        walk(xNode, n => change_x(n, x));
-        const change_y = create_change_x_or_y(start);
-        walk(yNode, n => change_y(n, y));
-      });
+      const change_x = create_change_x_or_y(startX);
+      walk(xNode, n => change_x(n, x));
+      const change_y = create_change_x_or_y(startY);
+      walk(yNode, n => change_y(n, y));
 
       state.codemirror.view.dispatch({ changes });
-
+      dispatch("RUN", { dragging: true });
     }
 
   })
@@ -92,7 +69,7 @@ export function addPtDragging(state, svgListener) {
     const yOffset = ( ogPos[1] - initialOffset[1] );
     const x = round(toGrid(currentPoint.x) - xOffset, 8);
     const y = round(toGrid(currentPoint.y) - yOffset, 8);
-    dispatch("TRANSLATE", { x, y, index });
+    dragPt(x, y, index);
   })
 
   svgListener("mouseup", "", e => {
@@ -168,7 +145,7 @@ const create_change_x_or_y_helper = (changes, state) => (offsetStart) => {
   }
 }
 
-const createGetAdditiveConstant = (constants) => {
+const createGetAdditiveConstant = (constants, index) => {
   let is_sum = false;
   let is_neg = false;
   let changed = false;
@@ -217,47 +194,13 @@ const createGetAdditiveConstant = (constants) => {
         n_val = n_val;
       }
 
-      constants.push(n_val);
+      constants[index] = n_val;
     }
 
 
     return n_val;
   }
 }
-
-function cmAST(state) {
-  const string = state.codemirror.view.state.doc.toString();
-  const ast = syntaxTree(state.codemirror.view.state);
-
-  let texts = [];
-  const cursor = ast.cursor()
-  do {
-    // console.log(`Node ${cursor.name} from ${cursor.from} to ${cursor.to} with value ${string.slice(cursor.from, cursor.to)}`, cursor);
-    const value = string.slice(cursor.from, cursor.to);
-    if (cursor.name !== "PropertyDefinition" || value !== "translate") continue;
-    cursor.next()
-    cursor.next(); 
-    const text = string.slice(cursor.from, cursor.to);
-    texts.push({ text, start: cursor.from });
-
-  } while (cursor.next())
-
-  return texts.map(x => ({
-    ...x, 
-    ast: esprima.parseScript(x.text, { range: true, comment: true })
-  }));
-}
-
-
-/*
-
-given 
-  - ast
-  - target point
-
-solve for additive constant which will move the component to the target point 
-
-*/
 
 
 

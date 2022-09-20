@@ -230,6 +230,10 @@ input {
   cursor: col-resize;
 }
 
+.cm-editor {
+	height: 100%;
+}
+
 .selectBox {
   fill: blue;
   opacity: .2;
@@ -266,3 +270,15 @@ input {
 .translate-handle:hover {
 	filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(330deg);
 }
+
+.draggable-pt {
+	opacity: 0.6;
+	fill: red;
+	z-index: 100;
+}
+
+.draggable-pt:hover {
+	fill: orange;
+}
+
+

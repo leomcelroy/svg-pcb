@@ -10,4 +10,10 @@ a()
 
 /*
 problem because board.add is called last but declared first
+
+need to know location when pt is called 
+
+or
+
+need to only call things declared in order, which would be top level
 */
