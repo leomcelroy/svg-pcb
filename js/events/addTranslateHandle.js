@@ -35,9 +35,7 @@ export function addTranslateHandle(state, svgListener) {
       walk(yNode, n => change_y(n));
     });
 
-
     state.transformUpdate = (x, y) => {
-
       const changes = [];
       const create_change_x_or_y = create_change_x_or_y_helper(changes, state);
 
@@ -53,7 +51,6 @@ export function addTranslateHandle(state, svgListener) {
       });
 
       state.codemirror.view.dispatch({ changes });
-
     }
 
   })

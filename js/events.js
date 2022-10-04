@@ -7,7 +7,7 @@ import { addSelectBox } from "./events/addSelectBox.js";
 import { addNumberDragging } from "./events/addNumberDragging.js";
 // import { download } from "./events/download.js"
 import { addImportDrag } from "./events/addImportDrag.js";
-import { addWireDrawing } from "./events/addWireDrawing.js";
+import { addPathManipulation } from "./events/addPathManipulation.js";
 
 import { dispatch } from "./dispatch.js";
 
@@ -41,7 +41,7 @@ export function addEvents(state) {
 	addSelectBox(state, listenSVG);
   	addTranslateHandle(state, listenSVG);
   	addPtDragging(state, listenSVG);
-  	addWireDrawing(state, listenSVG);
+  	addPathManipulation(state, listenSVG);
 
 	const body = document.querySelector("body");
 	const listenBody = createListener(body);

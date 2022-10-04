@@ -22,7 +22,7 @@ const slerp = (t, p0, p1, angle) => {
   return [p0[0]*factor1 + p1[0]*factor2, p0[1]*factor1 + p1[1]*factor2]
 }
 
-function getWirePt(cmd) {
+function getWirePt(cmd) {  
   if (typeof cmd[0] !== "string") {
     return cmd;
   } else if (cmd[0] === "chamfer") {
@@ -57,6 +57,8 @@ function mergeHandles(cmds) {
 }
 
 export function path(cmds) {
+  if (cmds.length === 0) return [];
+  
   cmds = mergeHandles(cmds);
 
   let prevPt = getWirePt(cmds[0]);

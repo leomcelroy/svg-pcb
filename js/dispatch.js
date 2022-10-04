@@ -110,6 +110,7 @@ const ACTIONS = {
 		let string = state.codemirror.view.state.doc.toString();
 
 		if (!dragging) {
+
 			let footprints = [];
 			let layers = [];
 			try {
