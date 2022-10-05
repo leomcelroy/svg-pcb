@@ -21,7 +21,7 @@ import { defaultText } from "./defaultText.js";
 
 import { syntaxTree, ensureSyntaxTree } from "@codemirror/language";
 
-
+import { logError } from "./logError.js";
 import { getPoints } from "./getPoints.js";
 
 class PCB extends real_PCB {
@@ -58,7 +58,10 @@ const included = {
 		global_state.pts.push(pt);
 		return [x, y]; 
 	},
-	path: (...args) => args
+	path: (...args) => {
+
+		return args;
+	}
 	// "import": null,
 }
 
@@ -72,7 +75,7 @@ const r = () => {
 const ACTIONS = {
 	INIT(args, state) {
 		dispatch("RENDER");
-		state.codemirror = document.querySelector("#code-editor");
+		state.codemirror = document.querySelector(".code-editor");
 		addEvents(state);
 
 		const url = new URL(window.location.href);
@@ -108,6 +111,7 @@ const ACTIONS = {
 	RUN({ dragging = false } = {}, state) {
 		state.paths = [];
 		state.pts = [];
+		state.error = "";
 
 		const doc = state.codemirror.view.state.doc;
 	  let string = doc.toString();
@@ -123,6 +127,7 @@ const ACTIONS = {
 				layers = semantics.layers ?? [];
 			} catch (err) {
 				console.error(err);
+				logError(err);
 			}
 
 			state.footprints = footprints;
@@ -130,32 +135,6 @@ const ACTIONS = {
 		}
 
 		const { pts, paths } = getPoints(state, ast);
-		
-		// console.log(pts, paths);
-
-		let selectedPath = null;
-		paths.forEach(path => {
-			const [pathStart, pathEnd] = path;
-			const selections = global_state.codemirror.view.state.selection.ranges;
-			
-			const tempSelectedPath = selections.some(selection => {
-				const { from, to } = selection;
-				// if selection greater than pathStart and less than path end
-				return from > pathStart && to < pathEnd;
-			})
-
-			if (tempSelectedPath) {
-				selectedPath = {
-					pathStart,
-					pathEnd,
-					str: string.substr(pathStart, pathEnd - pathStart),
-				};
-			}
-		})
-
-
-		global_state.selectedPath = selectedPath;
-		
 
 		const newProg = [];
 
@@ -174,8 +153,14 @@ const ACTIONS = {
 
 		if (newProg.length > 0) string = newProg.join("");
 
-		const f = new Function(...Object.keys(included), string)
-		f(...Object.values(included));
+		try {
+			const f = new Function(...Object.keys(included), string)
+			f(...Object.values(included));
+		} catch (err) {
+			console.error("prog erred", err);
+			logError(err);
+		}
+
 		dispatch("RENDER");
 	},
 	NEW_FILE(args, state) {

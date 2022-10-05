@@ -1,21 +1,29 @@
 # TODO
+- [] select path from gui
+- [] right click for code snippets
+- [] change handle view check to points
+- [] png export
+- [] logo in top-left corner
+- [] improve wire rendering
+- [] flatten wires on export
+- [] style it up
 - [] handles for
 	- [] deleting components
 	- [] deleting inventory, which clears adds
 	- [] rotating components
-- [] file names
+- [x] file names
 - [] select components
 - [] component labels by default 
 - [] copper fill
-- [] wire dragging
+- [x] wire dragging
 - [] smart routing
 - [] when dragging screen and triggering out drag continues on re-entry
 - [] add error handling
 - [x] don't snap to grid when grid is off
 - [x] add new file button
-
+- [] should geo.path be variadic
 - [] add names to dropped components
-- [] fix codemirror config
+- [x] fix codemirror config
 	- [] remove autocomplete
 - [] only draw handles if layer handle it on is visible
 - [] optimize
@@ -23,7 +31,7 @@
 	- [x] use codemirror parsing instead of esprima
 - [] create function to generate callback for manipulating points
 - [] fix gerber export
-- [] convert kicad to json on import
+- [x] convert kicad to json on import
 - [] why is the wire path getting flattened, can't have holes
 - [x] prevent auto-import with matching names
 - [] cache recent files (up to five?)
@@ -34,7 +42,7 @@
 - [] filter shapes with empty paths
 - [] should we accept the color arrays or just color strings
 - [x] add drag n drop component
-- [] add wire direct manipulation
+- [x] add wire direct manipulation
 - [] add color editor widget for board render
 - [] gerber
 - [x] render function

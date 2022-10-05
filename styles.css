@@ -50,21 +50,43 @@ input {
   position: fixed;
 }
 
-#code-editor {
-	grid-area: editor;
-	background: #f4e6d0;
-	overflow: scroll;
-	width: var(--vertical-bar);
+.content {
+	display: flex;
+	width: 100%;
+	flex: 1;
+	overflow: hidden;
+}
+
+.left-side {
+	width: calc(var(--vertical-bar) - 5px);
+	display: flex;
+  flex-direction: column;
 }
 
 .right-side {
-		grid-area: view;
-    width: calc(100% - var(--vertical-bar));
+    flex: 1;
     height: 100%;
     position: relative;
-    overflow: hidden;
-
 /*    transform: scale(1, -1);*/
+}
+
+codemirror-2 {
+	background: #f4e6d0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.cm-editor {
+	height: 100%;
+}
+
+.error-log {
+	background: #c92a2a;
+  color: #ffffff;
+  min-height: 80px;
+  padding: 5px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .footprint-toolbox {
@@ -230,10 +252,6 @@ input {
   cursor: col-resize;
 }
 
-.cm-editor {
-	height: 100%;
-}
-
 .selectBox {
   fill: blue;
   opacity: .2;
@@ -279,6 +297,22 @@ input {
 
 .draggable-pt:hover {
 	fill: orange;
+}
+
+.path-selected {
+	position: absolute;
+  color: red;
+  left: 10px;
+  top: 10px;
+  padding: 4px;
+  background: #efe4e4;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all .1s ease-in-out; 
+}
+
+.path-selected:hover {
+	transform: scale(1.02);
 }
 
 

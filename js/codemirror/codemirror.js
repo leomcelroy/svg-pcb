@@ -1,7 +1,9 @@
 import { EditorView, basicSetup } from "codemirror"
+import { keymap } from "@codemirror/view";
 import { javascript } from "@codemirror/lang-javascript"
 import { EditorState, StateField } from "@codemirror/state";
-import { syntaxTree } from "@codemirror/language";
+import { syntaxTree, indentUnit } from "@codemirror/language";
+import { indentWithTab } from "@codemirror/commands";
 
 const countDocChanges = StateField.define({
   create(state) {
@@ -35,6 +37,8 @@ class CodeMirror extends HTMLElement {
         const extensions = [
             basicSetup, 
             javascript(),
+            keymap.of([indentWithTab]), // TODO: We should put a note about Esc+Tab for accessibility somewhere.
+            indentUnit.of("  "),
             // countDocChanges
         ]
 

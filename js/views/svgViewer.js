@@ -9,7 +9,7 @@ const drawPt = ({ pt, start, end, text }, i) => svg`
     class="draggable-pt"
     cx=${pt[0]} 
     cy=${pt[1]} 
-    r="0.02" 
+    r="0.015" 
     data-index=${i}
     data-start=${start} 
     data-end=${end} 
@@ -54,8 +54,7 @@ export const svgViewer = (state) => {
           stroke="black" fill="transparent" stroke-width="1"
           vector-effect="non-scaling-stroke"
           transform="translate(${state.limits.x[0]}, ${state.limits.y[0]})"/>
-        <g class="pts no-download">${pts}</g>
-        ${false && state.storedPCB && state.viewHandles ? drawHandles(state.storedPCB) : ""}
+        <g class="pts no-download">${state.viewHandles ? pts : ""}</g>
       </g>
 
     </svg>

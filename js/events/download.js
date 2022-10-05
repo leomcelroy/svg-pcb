@@ -36,7 +36,7 @@ export function downloadSVG(state) {
     // make download link
     const downloadLink = document.createElement("a");
     downloadLink.href = svgUrl;
-    downloadLink.download = `download.svg`;
+    downloadLink.download = `${state.name === "" ? "anon" : state.name}.svg`;
     document.body.appendChild(downloadLink);
     downloadLink.click();
 
@@ -72,7 +72,7 @@ export function downloadGerber(state) {
 
   str += strs.join("") + "M02*";
 
-  downloadText("anon.gerber", str);
+  downloadText(`${state.name === "" ? "anon" : state.name}.gerber`, str);
 }
 
 export function downloadText(filename, text) {

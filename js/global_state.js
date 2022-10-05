@@ -21,6 +21,8 @@ export const global_state = {
   previewFootprint: null,
   paths: [],
   pts: [], 
+  name: "",
+  error: ""
   // how do you know what point values are and how they map to concrete syntax tree
 }
 

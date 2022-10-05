@@ -2,35 +2,10 @@
 import * as esprima from 'esprima';
 // import acorn from 'acorn';
 import { dispatch } from "../dispatch.js";
-import { syntaxTree } from "@codemirror/language";
 import { getFileSection } from "../getFileSection.js";
-
-function walk( ast, fn ) {
-  var stack = [ ast ], i, j, key, len, node, child, subchild
-  for ( i = 0; i < stack.length; i += 1 ) {
-    node = stack[ i ]
-    if (typeof node == 'number')
-      continue
-    fn( node )
-    for ( key in node ) {
-      if ( key !== 'parent' ) {
-        child = node[ key ]
-        if ( child instanceof Array ) {
-          for ( j = 0, len = child.length; j < len; j += 1 ) {
-            subchild = child[ j ]
-            if( subchild instanceof Object ) {
-              subchild.parent = node
-            }
-            stack.push( subchild )
-          }
-        } else if ( child != void 0 && typeof child.type === 'string' ) {
-          child.parent = node
-          stack.push( child )
-        }
-      }
-    }
-  }
-}
+import { ensureSyntaxTree } from "@codemirror/language";
+import { getPoints } from "../getPoints.js";
+import { global_state } from "../global_state.js";
 
 const sigFigs = num => num.includes(".")
   ? num.split(".")[1].length
@@ -41,6 +16,17 @@ const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
 const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 
 export function addPathManipulation(state, svgListener) {
+  // window.addEventListener("mousedown", () => updateSelectedPath(state));
+  // window.addEventListener("keydown", (evt) => {
+  //   const key = event.keyCode || event.charCode;
+  //   if (key == 8) {
+  //     //backspace pressed
+  //     updateSelectedPath(state);
+  //   }
+  // });
+
+  setInterval(() => updateSelectedPath(state), 300);
+
   const svg = document.querySelector("svg");
   const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 8);
 
@@ -57,7 +43,7 @@ export function addPathManipulation(state, svgListener) {
     const doc = state.codemirror.view.state.doc;
     const string = doc.toString();
 
-    let start = state.selectedPath.pathEnd;
+    let start = state.selectedPath.pathEnd-2;
     const chs = [" ", "\t", "\n"];
     let ch = " ";
     while (start > 0) {
@@ -65,54 +51,54 @@ export function addPathManipulation(state, svgListener) {
       if (!chs.includes(ch)) break;
       start--;
     }
-    
-    console.log({
-      path: state.selectedPath,
-      addComma,
-      pt,
-      ch
-    })
-    
 
-    if (false) {
-      // create new wire
-      const text = `board.wire([
-  [${pt.x}, ${pt.y}],
-  /* -- NEXT_POINT_HERE -- */
-], 0.016);\n\n`
+    if (ch === "," || ch === "(") {
+      const text = `\n  pt(${pt.x}, ${pt.y}),`
 
-      const string = state.codemirror.view.state.doc.toString();
-      const startIndex = getFileSection("ADD_WIRES", string) ?? -1;
-      if (startIndex !== -1) {
-        state.codemirror.view.dispatch({
-          changes: {
-            from: startIndex, 
-            insert: text
-          }
-        });
-      };
-
-      dispatch("RUN");
-    } else {
-      const text = `[${pt.x}, ${pt.y}],\n  /* -- NEXT_POINT_HERE -- */\n`
-
-      const string = state.codemirror.view.state.doc.toString();
-      const startIndex = getFileSection("NEXT_POINT_HERE", string) ?? -1;
-      if (startIndex !== -1) {
-        const commentLength = `/* -- NEXT_POINT_HERE -- */`.length;
-        state.codemirror.view.dispatch({
-          changes: {
-            from: startIndex - commentLength - 1, 
-            to: startIndex, 
-            insert: text
-          }
-        });
-      }
+      state.codemirror.view.dispatch({
+        changes: {
+          from: start+1, 
+          // to: startIndex, 
+          insert: text
+        }
+      });
+      
 
       dispatch("RUN");
     }
   })
+}
 
+function updateSelectedPath(state) {
+  const doc = state.codemirror.view.state.doc;
+  let string = doc.toString();
+  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
+
+  const { pts, paths } = getPoints(state, ast);
+  
+  let selectedPath = null;
+  paths.forEach(path => {
+    const [pathStart, pathEnd] = path;
+    const selections = global_state.codemirror.view.state.selection.ranges;
+    
+    const tempSelectedPath = selections.some(selection => {
+      const { from, to } = selection;
+      // if selection greater than pathStart and less than path end
+      return from > pathStart && to < pathEnd;
+    })
+
+    if (tempSelectedPath) {
+      selectedPath = {
+        pathStart,
+        pathEnd,
+        str: string.substr(pathStart, pathEnd - pathStart),
+      };
+    }
+  })
+
+
+  global_state.selectedPath = selectedPath;
+  dispatch("RENDER");
 }
 
 
