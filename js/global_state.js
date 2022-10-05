@@ -16,6 +16,7 @@ export const global_state = {
   gridSize: 0.05,
   viewHandles: true,
   wireDrawing: false,
+  selectedPath: null,
   panZoomParams: undefined,
   previewFootprint: null,
   paths: [],
@@ -23,4 +24,4 @@ export const global_state = {
   // how do you know what point values are and how they map to concrete syntax tree
 }
 
-window.logState = () => console.log(global_state);
+window.getState = () => global_state;

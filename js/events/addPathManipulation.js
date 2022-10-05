@@ -40,15 +40,13 @@ const step = (num, stepSize) => Math.round(num/stepSize)*stepSize;
 const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
 const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 
-export function addWireDrawing(state, svgListener) {
+export function addPathManipulation(state, svgListener) {
   const svg = document.querySelector("svg");
   const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 8);
 
-  let clicked = false;
-  let drawing = false;
-
   svgListener("mousedown", "", e => {
-    if (!state.wireDrawing) return;
+    if (state.selectedPath === null) return;
+
     const svgPoint = svg.panZoomParams.svgPoint;
     const clickedPoint = svgPoint({x: e.offsetX, y: e.offsetY});
     const pt = {
@@ -56,7 +54,27 @@ export function addWireDrawing(state, svgListener) {
       y: toGrid(clickedPoint.y)
     }
 
-    if (!drawing) {
+    const doc = state.codemirror.view.state.doc;
+    const string = doc.toString();
+
+    let start = state.selectedPath.pathEnd;
+    const chs = [" ", "\t", "\n"];
+    let ch = " ";
+    while (start > 0) {
+      ch = string[start];
+      if (!chs.includes(ch)) break;
+      start--;
+    }
+    
+    console.log({
+      path: state.selectedPath,
+      addComma,
+      pt,
+      ch
+    })
+    
+
+    if (false) {
       // create new wire
       const text = `board.wire([
   [${pt.x}, ${pt.y}],
@@ -93,41 +111,8 @@ export function addWireDrawing(state, svgListener) {
 
       dispatch("RUN");
     }
-
-    drawing = true;
-    clicked = true;
   })
 
-  svgListener("mousemove", "", e => {
-    if (!clicked) return;
-  })
-
-  svgListener("mouseup", "", e => {
-    clicked = false;
-  })
-
-  svgListener("mouseleave", "", e => {
-    clicked = false;
-  })
-
-  // svgListener("keypress", "", e => {
-  //   let code = event.code;
-  //   console.log("end wire");
-  //   if (code === "Enter") {
-  //     drawing = false;
-  //   } 
-  //   clicked = false;
-  // });
-
-  document.body.addEventListener("keydown", e => {
-    let code = event.code;
-    console.log("end wire");
-    if (code === "Enter") {
-      // remove next point here
-      drawing = false;
-    } 
-    clicked = false;
-  });
 }
 
 

@@ -19,6 +19,8 @@ import { renderPCB } from "./renderPCB.js";
 import { urlToCode } from "./urlToCode.js";
 import { defaultText } from "./defaultText.js";
 
+import { syntaxTree, ensureSyntaxTree } from "@codemirror/language";
+
 
 import { getPoints } from "./getPoints.js";
 
@@ -107,7 +109,9 @@ const ACTIONS = {
 		state.paths = [];
 		state.pts = [];
 
-		let string = state.codemirror.view.state.doc.toString();
+		const doc = state.codemirror.view.state.doc;
+	  let string = doc.toString();
+	  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
 		if (!dragging) {
 
@@ -125,11 +129,38 @@ const ACTIONS = {
 			state.layers = layers;
 		}
 
-		const ptsPos = getPoints(state);
+		const { pts, paths } = getPoints(state, ast);
+		
+		// console.log(pts, paths);
+
+		let selectedPath = null;
+		paths.forEach(path => {
+			const [pathStart, pathEnd] = path;
+			const selections = global_state.codemirror.view.state.selection.ranges;
+			
+			const tempSelectedPath = selections.some(selection => {
+				const { from, to } = selection;
+				// if selection greater than pathStart and less than path end
+				return from > pathStart && to < pathEnd;
+			})
+
+			if (tempSelectedPath) {
+				selectedPath = {
+					pathStart,
+					pathEnd,
+					str: string.substr(pathStart, pathEnd - pathStart),
+				};
+			}
+		})
+
+
+		global_state.selectedPath = selectedPath;
+		
+
 		const newProg = [];
 
 		let min = 0;
-		ptsPos.sort((a, b) => a[0] - b[0]).forEach((r, i) => {
+		pts.sort((a, b) => a[0] - b[0]).forEach((r, i) => {
 			const [l, u] = r;
 			newProg.push(string.substr(min, l-min));
 			const ogPt = string.substr(l, u-l);
@@ -137,7 +168,7 @@ const ACTIONS = {
 			const newPt = `${ogPt.slice(0, -1)}, ${l+firstParen+1}, ${u-1})`
 			newProg.push(newPt);
 			min = u;
-			if (i === ptsPos.length - 1) newProg.push(string.substr(u));
+			if (i === pts.length - 1) newProg.push(string.substr(u));
 		})
 
 

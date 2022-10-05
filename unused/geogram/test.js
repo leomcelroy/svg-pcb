@@ -1,5 +1,4 @@
 import { addPanZoom } from "./addPanZoom.js";
-
 import {
   turnForward,
   vec,
@@ -33,7 +32,7 @@ import {
   circle,
   path,
   Gram,
-  offset,
+  offset2,
   boolean
 } from "./index.js";
 
