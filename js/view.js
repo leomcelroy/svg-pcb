@@ -57,10 +57,6 @@ const menu = state => html`
 						png
 					</div class="menu-item">
 					<div class="menu-item"
-						@click=${() => {}}>
-						gerber (under construction)
-					</div class="menu-item">
-					<div class="menu-item"
 						@click=${() => downloadText(`${state.name === "" ? "anon" : state.name}.js`, state.codemirror.view.state.doc.toString())}>
 						js
 					</div class="menu-item">
