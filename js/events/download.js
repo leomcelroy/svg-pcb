@@ -1,5 +1,17 @@
 export function downloadSVG(state) {
+    const svgUrl = makeSVG(state);
+    // make download link
+    const downloadLink = document.createElement("a");
+    downloadLink.href = svgUrl;
+    downloadLink.download = `${state.name === "" ? "anon" : state.name}.svg`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
 
+    // clean up
+    document.body.removeChild(downloadLink);
+  }
+
+function makeSVG(state) {
     const serializer = new XMLSerializer();
     const svg = document.querySelector("svg").cloneNode(true);
     const toRemove = svg.querySelectorAll(".no-download");
@@ -32,17 +44,9 @@ export function downloadSVG(state) {
 
     const source = serializer.serializeToString(svg);
     const svgUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
-
-    // make download link
-    const downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    downloadLink.download = `download.svg`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-
-    // clean up
-    document.body.removeChild(downloadLink);
-  }
+    
+    return svgUrl;
+}
 
  function format(x) {
    var s = x.toFixed(6)
@@ -72,7 +76,7 @@ export function downloadGerber(state) {
 
   str += strs.join("") + "M02*";
 
-  downloadText("anon.gerber", str);
+  downloadText(`${state.name === "" ? "anon" : state.name}.gerber`, str);
 }
 
 export function downloadText(filename, text) {
@@ -83,4 +87,9 @@ export function downloadText(filename, text) {
   link.download = `${filename}`;
   link.click();
   URL.revokeObjectURL(link);
+}
+
+export function downloadPNG(state) {
+   console.log(state.name);
+
 }

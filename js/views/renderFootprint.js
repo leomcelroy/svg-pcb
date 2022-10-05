@@ -1,4 +1,8 @@
 import { html, svg } from "lit-html";
+import { getPathData } from "/geogram/index.js";
+
+
+
 
 export const renderFootprint = ([name, footprint, svgView], i) => {
       // <svg width="30" height="30">
@@ -6,6 +10,15 @@ export const renderFootprint = ([name, footprint, svgView], i) => {
       // </svg>
 
       // <div class="footprint-item-icon" data-index=${i} ></div>
+
+  const renderComp = pts => svg`
+    <path
+      class="path-footprint"
+      data-index=${i}
+      d="${getPathData([pts])}"
+      fill-rule="nonzero"
+      />
+  `
 
   return html`
     <style>
@@ -18,17 +31,13 @@ export const renderFootprint = ([name, footprint, svgView], i) => {
       }
     </style>
     <div class="footprint-item">
-      <svg 
+      <svg
         data-index=${i}
-        class="footprint-svg footprint-${i}" 
+        class="footprint-svg footprint-${i}"
         width="50px"
-        height="50px">
-        <path
-            class="path-footprint"
-            data-index=${i} 
-            d="${svgView.getPathData()}"
-            fill-rule="nonzero"
-            />
+        height="50px"
+        transform="scale(1, -1)">
+        ${svgView.map(renderComp)}
       </svg>
       <span style="padding-left: 5px;">${name}</span>
     </div>

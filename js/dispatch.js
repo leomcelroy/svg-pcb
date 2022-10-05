@@ -6,153 +6,76 @@ import { addEvents } from "./events.js";
 import { PCB as real_PCB } from "./pcb.js";
 import { via } from "./pcb_helpers.js";
 import { kicadToObj } from "./ki_cad_parser.js"
-import { Turtle } from "./Turtle.js";
-import { getFootprints } from "./getFootprints.js";
+import { getSemanticInfo } from "./getSemanticInfo.js";
 import { getFileSection } from "./getFileSection.js"
+import * as geo from "/geogram/index.js";
 
-const STATE = {
-	codemirror: undefined,
-	storedPCB: undefined,
-	transforming: false,
-	transformUpdate: () => {},
-	selectBox: {},
-	footprints: [],
-	shapes: [],
-	limits: {
-		x: [0, 1],
-		y: [0, 1]
-	},
-	mm_per_unit: 25.4,
-	grid: true,
-	gridSize: 0.05,
-	viewHandles: true,
-	panZoomParams: undefined,
-	previewFootprint: null,
-}
+import { global_state } from "./global_state.js";
+
+import { renderShapes } from "./renderShapes.js";
+import { renderPath } from "./renderPath.js";
+import { renderPCB } from "./renderPCB.js";
+
+import { urlToCode } from "./urlToCode.js";
+import { defaultText } from "./defaultText.js";
+
+import { syntaxTree, ensureSyntaxTree } from "@codemirror/language";
+
+import { logError } from "./logError.js";
+import { getPoints } from "./getPoints.js";
 
 class PCB extends real_PCB {
 	constructor() {
 		super();
-		STATE.storedPCB = this;
+		global_state.storedPCB = this;
 	}
 }
 
-// {
-//   board: board,
-//   layerColors: { // have default colors for default layers
-//     "F.Cu": "red",
-//     "Vias": "rbg(32, 32, 32)",
-//   },
-//   limits: {
-//     x: [0, 1],
-//     y: [0, 1]
-//   },
-//   mm_per_unit: 25.4
-// }
+const getProgramString = () => global_state.codemirror.view.state.doc.toString();
 
-const default_renderPCB_params = {
-	pcb: null,
-	layerColors: { "F.Cu": "#ff8c00cc" },
-	limits: {
-	    x: [0, 1],
-	    y: [0, 1]
-	},
-	mm_per_unit: 25.4,
-}
 
-function renderPCB({ pcb, layerColors, limits, mm_per_unit }) {
-	if (pcb === undefined) console.log("renderPCB must include pcb param");
-
-	if (layerColors === undefined) layerColors = default_renderPCB_params.layerColors;
-	if (limits === undefined) limits = default_renderPCB_params.limits;
-	if (mm_per_unit === undefined) mm_per_unit = default_renderPCB_params.mm_per_unit;
-
-	const shapes = [];
-	for (const layer in layerColors) {
-		shapes.push({
-			d: pcb.getLayer(layer),
-			color: layerColors[layer],
-			groupId: layer
-		});
-	}
-
-	STATE.shapes = shapes; // TODO ??? what should the shape format be { d: path data string, color: hex or valid svg color, classes: []}
-	STATE.limits = limits;
-	STATE.mm_per_unit = mm_per_unit;
-
-	dispatch("RENDER");
-}
-
-const default_renderShapes_params = {
-	shapes: [],
-	limits: {
-	    x: [0, 1],
-	    y: [0, 1]
-	},
-	mm_per_unit: 25.4,
-}
-
-function renderShapes({ shapes, limits, mm_per_unit }) {
-	if (shapes === undefined) shapes = default_renderShapes_params.shapes;
-	if (limits === undefined) limits = default_renderShapes_params.limits;
-	if (mm_per_unit === undefined) mm_per_unit = default_renderShapes_params.mm_per_unit;
-
-	STATE.shapes = shapes;
-	STATE.limits = limits;
-	STATE.mm_per_unit = mm_per_unit;
-
-	dispatch("RENDER");
-}
-
-const included = {
-	kicadToObj,
+const makeIncluded = (flatten) => ({
+	// kicadToObj, // FIXME: remove references to
+	geo,
 	PCB,
 	via,
-	Turtle,
-	renderPCB,
+	renderPCB: renderPCB(flatten),
 	renderShapes,
+	renderPath,
 	document: null,
 	window: null,
 	localStorage: null,
 	Function: null,
 	eval: null,
+	pt: (x, y, start = -1, end = -1) => { 
+
+		const dupe = global_state.pts.some(pt => pt.start === start);
+		if (start === -1 || dupe) return [x, y];
+
+		const string = getProgramString();
+		const snippet = string.slice(start, end);
+		const pt = { pt: [x, y], start, end, text: snippet };
+		global_state.pts.push(pt);
+		return [x, y]; 
+	},
+	path: (...args) => {
+
+		return args;
+	}
 	// "import": null,
-}
+})
 
-async function urlToCode(file_url, state) {
-	const file = await fetch(file_url,  {mode: 'cors'});
-	const txt = await file.text();
 
-    state.codemirror.view.dispatch({
-	  changes: {from: 0, insert: txt}
-	});
 
-    // fold imports
-	const anotherComp = l => l.includes("return kicadToObj(");
-
-	const doc = state.codemirror.view.state.doc;
-	const lines = doc.toString().split("\n");
-	let i = 0;
-	let count = 0;
-	while (true) {
-		const line = lines[i];
-		if (!line) break;
-		count += line.length;
-		if (i > lines.length) break;
-		if (lines[i] === "`)})()" && !anotherComp(lines[i+1])) break;
-		i++;
-	};
-
-	state.codemirror.foldRange(0, count+i);
-
-    dispatch("RUN");
-    document.querySelector(".center-button").click();
+const r = () => {
+	render(view(global_state), document.getElementById("root"));
+	requestAnimationFrame(r);
 }
 
 const ACTIONS = {
 	INIT(args, state) {
 		dispatch("RENDER");
-		state.codemirror = document.querySelector("#code-editor");
+		state.codemirror = document.querySelector(".code-editor");
 		addEvents(state);
 
 		const url = new URL(window.location.href);
@@ -160,7 +83,7 @@ const ACTIONS = {
 	    const search = window.location.search;
 	    const code = new URLSearchParams(search).get("code");
 	    const file = new URLSearchParams(search).get("file");
-	    const handlesOff = new URLSearchParams(search).get("handles") === "false";
+	    const handlesOff = new URLSearchParams(search).get("bezier") === "false";
 	    const gridOff = new URLSearchParams(search).get("grid") === "false";
 
 	    if (handlesOff) state.viewHandles = false;
@@ -185,37 +108,75 @@ const ACTIONS = {
 
 	    dispatch("RENDER");
 	},
-	RUN({ dragging = false } = {}, state) {
-		const string = state.codemirror.view.state.doc.toString();
+	RUN({ dragging = false, flatten = false } = {}, state) {
+		state.paths = [];
+		state.pts = [];
+		state.error = "";
+
+		const doc = state.codemirror.view.state.doc;
+	  let string = doc.toString();
+	  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
 		if (!dragging) {
+
 			let footprints = [];
+			let layers = [];
 			try {
-				footprints = getFootprints(string);
-			} catch (err) {}
+				const semantics = getSemanticInfo(string, dragging);
+				footprints = semantics.footprints;
+				layers = semantics.layers ?? [];
+			} catch (err) {
+				console.error(err);
+				logError(err);
+			}
 
 			state.footprints = footprints;
+			state.layers = layers;
 		}
 
+		const { pts, paths } = getPoints(state, ast);
+
+		const newProg = [];
+
+		let min = 0;
+		pts.sort((a, b) => a[0] - b[0]).forEach((r, i) => {
+			const [l, u] = r;
+			newProg.push(string.substr(min, l-min));
+			const ogPt = string.substr(l, u-l);
+			const firstParen = ogPt.indexOf("(");
+			const newPt = `${ogPt.slice(0, -1)}, ${l+firstParen+1}, ${u-1})`
+			newProg.push(newPt);
+			min = u;
+			if (i === pts.length - 1) newProg.push(string.substr(u));
+		})
 
 
-		// need to sanitize text
+		if (newProg.length > 0) string = newProg.join("");
 
-		const BLACK_LISTED_WORDS = []; // import, document, window, localStorage
-		BLACK_LISTED_WORDS.forEach(word => {
-			if (string.includes(word))
-				throw `"${word}" is not permitted due to security concerns.`;
-		});
+		const included = makeIncluded(flatten);
 
-		const f = new Function(...Object.keys(included), string)
-		f(...Object.values(included));
+		try {
+			const f = new Function(...Object.keys(included), string)
+			f(...Object.values(included));
+		} catch (err) {
+			console.error("prog erred", err);
+			logError(err);
+		}
 
+		dispatch("RENDER");
+	},
+	NEW_FILE(args, state) {
+	  dispatch("UPLOAD_JS", { text: defaultText });
 	},
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");
-		text = `const ${name} = (() => { return kicadToObj(\n\`${text}\`)})()\n`
+		text = JSON.stringify(kicadToObj(text));
+		text = `const ${"temp_name"} = ${text}\n`
+
+		const string = state.codemirror.view.state.doc.toString();
+		const startIndex = getFileSection("DECLARE_COMPONENTS", string) ?? 0;
 		state.codemirror.view.dispatch({
-		  changes: {from: 0, insert: text}
+		  changes: {from: startIndex, insert: text}
 		});
 
 		state.codemirror.foldRange(0, text.length);
@@ -249,12 +210,29 @@ const ACTIONS = {
 		dispatch("RUN", { dragging: true });
 	},
 	RENDER() {
-		render(view(STATE), document.getElementById("root"));
+		render(view(global_state), document.getElementById("root"));
 	}
 }
 
 export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];
-	if (trigger) return trigger(args, STATE);
+	if (trigger) {
+		// console.time(action);
+		const result = trigger(args, global_state);
+		// console.timeEnd(action);
+		return result;
+	}
 	else console.log("Action not recongnized:", action);
 }
+
+
+function checkBlacklist(string) {
+	// poor attempt at sanitizing
+
+	const BLACK_LISTED_WORDS = []; // import, document, window, localStorage
+	BLACK_LISTED_WORDS.forEach(word => {
+		if (string.includes(word))
+			throw `"${word}" is not permitted due to security concerns.`;
+	});
+}
+

@@ -1,5 +1,6 @@
 import { sParse } from "./s-expression-parser.js";
-import { Turtle } from "./Turtle.js";
+import { rectangle, circle } from "/geogram/index.js";
+
 
 // parser should take units
 
@@ -35,9 +36,25 @@ export function kicadToObj(data) {
   
       let size = line[5].slice(1).map(x => Number(x)*scale);
 
-      let shapeTurtle = shape === "rect"
-        ? new Turtle().rectangle(...size)
-        : new Turtle().circle(size[0]);
+      // let shapeTurtle = shape === "rect"
+      //   ? rectangle(...size)
+      //   : circle(size[0]);
+
+      const shapeCases = {
+        "rect": () => rectangle(...size),
+        "roundrect": () => {
+          let _ = rectangle(...size);
+          // roundCorners(_);
+          return _;
+        },
+        "circle": () => circle(...size),
+        // "ellipse": () => circle(...size), 
+      }
+
+      let shapeTurtle = 
+        (shape in shapeCases) 
+        ? shapeCases[shape]()
+        : [];
      
       if (padsToAdd[name] === undefined) padsToAdd[name] = [{ pos: at, shape: shapeTurtle, layers }];
       else padsToAdd[name].push({ pos: at, shape: shapeTurtle, layers });
@@ -48,7 +65,7 @@ export function kicadToObj(data) {
         let drillDia = Number(line[line.length - 2][1])/25.4;
         let l = { 
           pos: at, 
-          shape: new Turtle().circle(drillDia),
+          shape: circle(drillDia),
           layers: ["drill"]
         }
 
@@ -71,6 +88,22 @@ export function kicadToObj(data) {
 
     return acc;
   }, {});
+
+  Object.keys(result).forEach(k => {
+    let d = "";
+    const shape = result[k].shape;
+    shape.forEach(s => {
+      s.forEach((p, i) => {
+        const { x, y } = p;
+        d += `${i==0 ? "M" : "L"} ${x} ${y} `
+      })
+      
+    })
+
+    result[k].shape = d;
+    // TODO: FIX BUG HERE
+    result[k].layers = ["F.Cu"];
+  })
 
   return result;
 }

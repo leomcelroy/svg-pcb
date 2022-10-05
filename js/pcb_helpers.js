@@ -1,4 +1,4 @@
-import { Turtle } from "./Turtle.js";
+import { pathD, getPathData, circle, rectangle, translate as trans, rotate as rot, outline } from "/geogram/index.js";
 
 const length = ([x1, y1], [x2, y2]) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
 
@@ -6,19 +6,19 @@ const via = (rv, rp) => {
   return {
     "F": {
       "pos": [0, 0],
-      "shape": new Turtle().circle(rp).getPathData(),
+      "shape": getPathData(circle(rp)),
       "layers": ["F.Cu"],
       "index": 1
     },
     "B": {
       "pos": [0, 0],
-      "shape": new Turtle().circle(rp).getPathData(),
+      "shape": getPathData(circle(rp)),
       "layers": ["B.Cu"],
       "index": 2
     },
     "drill": {
       "pos": [0, 0],
-      "shape": new Turtle().circle(rv).getPathData(),
+      "shape": getPathData(circle(rv)),
       "layers": ["drill"]
     }
   };
@@ -76,29 +76,29 @@ class Component {
 //   }
 // }
 
-function makeText(text, height, pos, rotate) {
-  let lines = text.split('\n');
-  let t = new Turtle();
+// function makeText(text, height, pos, rotate) {
+//   let lines = text.split('\n');
+//   let t = new Turtle();
 
-  for (let [i, txt] of lines.entries()) {
-    if (txt.length == 0) {
-      continue;
-    }
+//   for (let [i, txt] of lines.entries()) {
+//     if (txt.length == 0) {
+//       continue;
+//     }
 
-    if (txt.localeCompare("A") == 0) {
-        txt = "A ";
-    }
+//     if (txt.localeCompare("A") == 0) {
+//         txt = "A ";
+//     }
 
-    // TODO: render text better
-    let t2 = new Turtle().text(txt).scale(0.01*height).originate().translate([0, i*height*1.5]);
-    // let t2 = new Turtle();
+//     // TODO: render text better
+//     let t2 = new Turtle().text(txt).scale(0.01*height).originate().translate([0, i*height*1.5]);
+//     // let t2 = new Turtle();
 
-    t.group(t2);
-  }
+//     t.group(t2);
+//   }
 
-  // return t.originate().translate(pos);
-  return t.originate().translate(pos).rotate(rotate, pos);
-}
+//   // return t.originate().translate(pos);
+//   return t.originate().translate(pos).rotate(rotate, pos);
+// }
 
 function makeComponent(comp, options = {}) {
   let translate = options.translate || [0, 0];
@@ -116,32 +116,40 @@ function makeComponent(comp, options = {}) {
   for (const pad in comp) {
     let { pos, shape, layers, origin } = comp[pad];
 
-    shape = typeof shape === "string" ? new Turtle().pathD(shape) : shape.copy();
+    if (typeof shape === "string") shape = pathD([], shape);
 
     let offset = [pos[0], pos[1]];
-    if (origin != undefined) {
+    if (origin !== undefined) {
       offset[0] = origin[0];
       offset[1] = origin[1];
     }
-    shape.translate(offset).translate(translate).rotate(rotate, translate);
+    trans(shape, offset)
+    trans(shape, translate)
+    rot(shape, rotate, translate);
 
     let pad_pos = vector_add(vector_rotate(pos, rad), translate);
     pads[pad] = pad_pos;
 
     if (!pad.includes("drill")) {
-      let text = makeText(pad, padLabelSize, pad_pos, rotate);
-      padsLabels.push( text );
+      // let text = makeText(pad, padLabelSize, pad_pos, rotate);
+      padsLabels.push({
+        type: "text",
+        value: pad,
+        translate: pad_pos,
+        rotate,
+        size: padLabelSize
+      });
     }
 
     layers.forEach(l => {
-      if (l in results) results[l] = results[l].group(shape);
-      else results[l] = shape;
+      if (l in results) results[l].push(shape);
+      else results[l] = [shape];
     })
   }
 
   pads["center"] = translate;
 
-  results.padLabels = padsLabels.reduce( (acc, cur) => acc.group(cur), new Turtle());
+  results.padLabels = padsLabels;
 
   return new Component({
     pads,
@@ -150,7 +158,7 @@ function makeComponent(comp, options = {}) {
 }
 
 export {
-  makeText,
+  // makeText,
   makeComponent,
   via
 }

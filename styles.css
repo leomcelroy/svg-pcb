@@ -50,21 +50,43 @@ input {
   position: fixed;
 }
 
-#code-editor {
-	grid-area: editor;
-	background: #f4e6d0;
-	overflow: scroll;
-	width: var(--vertical-bar);
+.content {
+	display: flex;
+	width: 100%;
+	flex: 1;
+	overflow: hidden;
+}
+
+.left-side {
+	width: calc(var(--vertical-bar) - 5px);
+	display: flex;
+  flex-direction: column;
 }
 
 .right-side {
-		grid-area: view;
-    width: calc(100% - var(--vertical-bar));
+    flex: 1;
     height: 100%;
     position: relative;
-    overflow: hidden;
-
 /*    transform: scale(1, -1);*/
+}
+
+codemirror-2 {
+	background: #f4e6d0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.cm-editor {
+	height: 100%;
+}
+
+.error-log {
+	background: #c92a2a;
+  color: #ffffff;
+  min-height: 80px;
+  padding: 5px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .footprint-toolbox {
@@ -107,10 +129,15 @@ input {
 	display: flex;
 	place-items: center;
 	width: 100%;
-	height: 30px;
-	max-height: 30px;
-	min-height: 30px;
+	height: max-content;
+	max-height: max-content;
+	min-height: max-content;
 	background: lightgrey;
+}
+
+.top-menu > .left > .menu-item {
+	padding-top: 7px;
+	padding-bottom: 7px;
 }
 
 .left {
@@ -128,8 +155,22 @@ input {
   place-content: center;
 }
 
-.seperator {
+.separator {
 	margin: 5px;
+}
+
+.menu-item {
+	cursor: pointer;
+	padding: 3px;
+	padding-left: 5px;
+	padding-right: 5px;
+	display: flex;
+	align-items: center;
+}
+
+.menu-item:hover {
+	background: black;
+	color: white;
 }
 
 .dropdown-container {
@@ -139,6 +180,7 @@ input {
 }
 
 .dropdown-content {
+	color: black;
 	visibility: hidden;
 	display: flex;
 	flex-direction: column;
@@ -152,7 +194,6 @@ input {
 	border-top: 5px solid lightgrey;
 	max-height: 50vh;
 	overflow: scroll;
-	padding: 5px;
 	box-sizing: border-box;
 }
 
@@ -166,11 +207,12 @@ input {
 	visibility: visible;
 }
 
+/*
 .import-item:hover {
 	background: blue;
 	color: white;
 }
-
+*/
 .canvas-container {
 	display: grid;
 	place-items: center;
@@ -186,7 +228,6 @@ input {
 #vertical-bar {
   position: absolute;
   left: calc( var(--vertical-bar) - 5px);
-  top: 30px;
   background: black;
   width: 10px;
   height: 100%;
@@ -204,11 +245,11 @@ input {
 	z-index: 0;
 }
 
-.ͼb {
+.ͼd {
   border: solid 1px rgb(0, 0, 0, 0);
 }
 
-.ͼb:hover {
+.ͼd:hover {
   background: #e4e0e0;
   border: solid 1px grey;
   box-sizing: border-box;
@@ -251,3 +292,31 @@ input {
 .translate-handle:hover {
 	filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(330deg);
 }
+
+.draggable-pt {
+	opacity: 0.6;
+	fill: red;
+	z-index: 100;
+}
+
+.draggable-pt:hover {
+	fill: orange;
+}
+
+.path-selected {
+	position: absolute;
+  color: red;
+  left: 10px;
+  top: 10px;
+  padding: 4px;
+  background: #efe4e4;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all .1s ease-in-out; 
+}
+
+.path-selected:hover {
+	transform: scale(1.02);
+}
+
+

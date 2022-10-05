@@ -34,7 +34,7 @@ const test_footprint = {
 let board = new PCB();
 
 /* -- ADD_COMPONENTS -- */
-test_comp1 = board.add(test_footprint, {translate: [0.35, 0.65], name: "COMP1"})
+test_comp1 = board.add(test_footprint, {translate: pt(0.35, 0.65), name: "COMP1"})
 
 /* -- RENDER_PCB -- */
 renderPCB({

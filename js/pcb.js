@@ -1,6 +1,5 @@
-import { makeComponent, makeText } from "./pcb_helpers.js";
-import { wire } from "./wire.js";
-import { Turtle } from "./Turtle.js";
+import { makeComponent } from "./pcb_helpers.js";
+import { getPathData, expand, scale, outline, union, xor, path, offset, offset2, boolean } from "/geogram/index.js";
 
 export class PCB {
   constructor() {
@@ -21,13 +20,21 @@ export class PCB {
     const newComp = makeComponent(footprint, transform);
 
     for ( const layer in newComp.layers) {
-      this.addShape(layer, newComp.layers[layer]);
+      newComp.layers[layer].forEach( data => {
+        this.addShape(layer, data);
+      })
     }
 
     if (name !== "" && !name.includes("drill")) {
-      let componentLabels = makeText(name, transform.componentLabelSize, transform.translate, 0);
+      // let componentLabels = makeText(name, transform.componentLabelSize, transform.translate, 0);
 
-      this.addShape("componentLabels", componentLabels);
+      this.addShape("componentLabels", {
+        type: "text", 
+        value: name,  
+        translate: transform.translate,
+        rotate: 0,
+        size: transform.componentLabelSize
+      });
     }
 
     this.components.push(newComp);
@@ -35,41 +42,79 @@ export class PCB {
     return newComp;
   }
 
-  addShape(layer, shape) {
-    if (!(shape instanceof Turtle)) return console.error("Shape isn't Turtle.");
+  addShape(layer, shapeOrText) {
 
     if (layer in this.layers) {
-      this.layers[layer] = this.layers[layer].group(shape);
+      this.layers[layer].push(shapeOrText);
     } else {
-      this.layers[layer] = shape;
+      this.layers[layer] = [shapeOrText];
     }
 
     return this.layers[layer];
   }
 
-  subtractShape(layer, shape) {
-    if (!(shape instanceof Turtle)) return console.error("Shape isn't Turtle.");
-
-    if (layer in this.layers) {
-      this.layers[layer] = this.layers[layer].difference(shape);
-    } else {
-      this.layers[layer] = new Turtle();
+  getLayer(layer, flatten = false) { 
+    if (!(layer in this.layers)) {
+      // console.error(`No layer with name: ${layer}`);
+      return [];
     }
 
-    return this.layers[layer];
-  }
+    const shapes = [];
+    const texts = [];
+    const wires = [];
 
-  getLayer(layer, flatten = null) { // returns array of path data
-    flatten = flatten ?? !["padLabels", "componentLabels"].includes(layer);
+    this.layers[layer].forEach( x => {
 
-    return this.layers[layer]
-      ? flatten
-        ? this.layers[layer].flatten().getPathData() // TODO: this flatten is a bottleneck
-        : this.layers[layer].getPathData()
-      : "";
+      if (x.type === "wire") {
+        wires.push({
+          type: "wire",
+          data: getPathData(x.shape),
+          thickness: x.thickness,
+          shape: x.shape
+        });
+      } else if (Array.isArray(x)) {
+        shapes.push(x)
+      } else if (x.type === "text") {
+        texts.push(x);
+      }
+    })
+
+    const unioned = () => union(
+      ...shapes, 
+      ...wires.map( 
+        w => offset2(
+          w.shape, 
+          w.thickness/2, 
+          {
+            endType: "etOpenRound", 
+            jointType:"jtRound", 
+          })
+        )
+    ) ?? [];
+
+    const shapeString = () => shapes.reduce((acc, cur) => {
+
+      if (cur.length === 0) return acc;
+
+      const newD = getPathData(cur);
+      return acc + newD;
+    }, "");
+
+    return flatten 
+      ? [ getPathData(unioned()), ...texts ] 
+      : [
+          ...shapes.map(getPathData),
+          ...texts,
+          ...wires
+        ]
   }
 
   wire(pts, thickness, layer = "F.Cu") {
-    this.addShape(layer, wire(pts, thickness));
+    const newWire = {
+      type: "wire",
+      shape: path(pts),
+      thickness: thickness
+    }
+    this.addShape(layer, newWire);
   }
 }

@@ -1,6 +1,45 @@
 # TODO
-
-- [] fix gram js text to be faster
+- [] zips 
+	- [] png
+	- [] gerber
+- [] scale bug
+- [x] flatten wires on export, done?
+- [] style it up
+- [] png export
+- [] add path to board
+- [] when to use joint vs join type in booleans
+- [] adaptive grid
+- [] select path from gui
+- [] right click for code snippets
+- [x] change handle view check to points
+- [] png export
+- [] logo in top-left corner
+- [x] improve wire rendering
+- [] handles for
+	- [] deleting components
+	- [] deleting inventory, which clears adds
+	- [] rotating components
+- [x] file names
+- [] select components
+- [] component labels by default 
+- [] copper fill
+- [x] wire dragging
+- [] smart routing
+- [] when dragging screen and triggering out drag continues on re-entry
+- [x] add error handling
+- [x] don't snap to grid when grid is off
+- [x] add new file button
+- [] should geo.path be variadic
+- [] add names to dropped components
+- [x] fix codemirror config
+	- [] remove autocomplete
+- [x] only draw handles if layer handle it on is visible
+- [] optimize
+	- [x] don't generate wires until export, use native path rendering
+	- [x] use codemirror parsing instead of esprima
+- [] create function to generate callback for manipulating points
+- [] fix gerber export
+- [x] convert kicad to json on import
 - [] why is the wire path getting flattened, can't have holes
 - [x] prevent auto-import with matching names
 - [] cache recent files (up to five?)
@@ -11,15 +50,15 @@
 - [] filter shapes with empty paths
 - [] should we accept the color arrays or just color strings
 - [x] add drag n drop component
-- [] add wire direct manipulation
+- [x] add wire direct manipulation
 - [] add color editor widget for board render
 - [] gerber
 - [x] render function
 - [x] change return to function call
-- [] add error messages
 - [x] fix minus bug
 - [] fix text rendering in gram-js
 - [] firefox rendering bug
+- [] fix gram js text to be faster
 - [x] save
 - [] upload
 	- [x] kicad module
