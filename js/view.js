@@ -3,7 +3,7 @@ import { html, svg } from "lit-html";
 // import "code-mirror";
 import "./codemirror/codemirror.js";
 import { files } from "./components-names.js";
-import { downloadSVG, downloadText, downloadGerber } from "./events/download.js"
+import { downloadSVG, downloadText, downloadGerber, downloadPNG } from "./events/download.js"
 import { drawImportItems } from "./views/drawImportItems.js";
 import { renderPreviewFootprint } from "./views/renderPreviewFootprint.js";
 import { svgViewer } from "./views/svgViewer.js";
@@ -25,9 +25,8 @@ export function view(state) {
 				<div class="footprint-toolbox">${state.footprints.map(renderFootprint)}</div>
 				${state.previewFootprint ? renderPreviewFootprint(...state.previewFootprint) : ""}
 			</div>
-
+			<div id="vertical-bar"></div>
 		</div>
-		<div id="vertical-bar"></div>
 	`
 }
 
@@ -49,18 +48,22 @@ const menu = state => html`
 			 <div class="menu-item dropdown-container">
 				download
 				<div class="dropdown-content">
-					<button
-						@click=${() => downloadSVG(state)}>
+					<div class="menu-item"
+						@click=${() => { dispatch("RUN", { flatten: true }); downloadSVG(state); }}>
 						svg
-					</button>
-					<button
+					</div class="menu-item">
+					<div class="menu-item"
+						@click=${() => { dispatch("RUN", { flatten: true }); downloadPNG(state); }}>
+						png
+					</div class="menu-item">
+					<div class="menu-item"
+						@click=${() => {}}>
+						gerber (under construction)
+					</div class="menu-item">
+					<div class="menu-item"
 						@click=${() => downloadText(`${state.name === "" ? "anon" : state.name}.js`, state.codemirror.view.state.doc.toString())}>
 						js
-					</button>
-					<button
-						@click=${() => downloadGerber(state)}>
-						gerber
-					</button>
+					</div class="menu-item">
 					<input 
 						.value=${state.name} 
 						placeholder="name-here"
@@ -112,18 +115,6 @@ const menu = state => html`
 								state.gridSize = Number(e.target.value);
 								dispatch("RENDER");
 							}}>
-						</input>
-					</div>
-					<div>
-						<span>wire drawing</span>
-						<input
-							type="checkbox"
-							.checked=${state.wireDrawing}
-							@change=${(e) => {
-								state.wireDrawing = e.target.checked;
-								dispatch("RENDER");
-							}}
-							>
 						</input>
 					</div>
 				</div>

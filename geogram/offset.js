@@ -1,5 +1,14 @@
 import { ClipperLib } from "./libs/clipper_unminified.js";
 
+const overlap = (p0, p1) => 0.00000001 > Math.abs(p0.x - p1.x) + Math.abs(p0.y - p1.y);
+const isClosed = shape => {
+  if (shape.length === 0) return true;
+  const start = shape[0][0];
+  const end = shape.at(-1).at(-1);
+  const closed = overlap(start, end);
+  return closed;
+}
+
 export function offset(paths, delta, ops = {}) {
   /*
     {

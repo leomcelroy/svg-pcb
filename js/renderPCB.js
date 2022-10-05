@@ -10,7 +10,7 @@ const default_renderPCB_params = {
   mm_per_unit: 25.4,
 }
 
-export function renderPCB({ pcb, layerColors, limits, mm_per_unit }) {
+export const renderPCB = flatten => ({ pcb, layerColors, limits, mm_per_unit }) => {
   if (pcb === undefined) console.log("renderPCB must include pcb param");
 
   if (layerColors === undefined) layerColors = default_renderPCB_params.layerColors;
@@ -20,7 +20,7 @@ export function renderPCB({ pcb, layerColors, limits, mm_per_unit }) {
   const shapes = [];
   for (const layer in layerColors) {
     shapes.push({
-      data: pcb.getLayer(layer), // could be pathData or text
+      data: pcb.getLayer(layer, flatten), // could be pathData or text
       color: layerColors[layer],
       groupId: layer
     });

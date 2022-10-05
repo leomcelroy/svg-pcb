@@ -34,12 +34,12 @@ class PCB extends real_PCB {
 const getProgramString = () => global_state.codemirror.view.state.doc.toString();
 
 
-const included = {
+const makeIncluded = (flatten) => ({
 	// kicadToObj, // FIXME: remove references to
 	geo,
 	PCB,
 	via,
-	renderPCB,
+	renderPCB: renderPCB(flatten),
 	renderShapes,
 	renderPath,
 	document: null,
@@ -63,7 +63,7 @@ const included = {
 		return args;
 	}
 	// "import": null,
-}
+})
 
 
 
@@ -108,7 +108,7 @@ const ACTIONS = {
 
 	    dispatch("RENDER");
 	},
-	RUN({ dragging = false } = {}, state) {
+	RUN({ dragging = false, flatten = false } = {}, state) {
 		state.paths = [];
 		state.pts = [];
 		state.error = "";
@@ -152,6 +152,8 @@ const ACTIONS = {
 
 
 		if (newProg.length > 0) string = newProg.join("");
+
+		const included = makeIncluded(flatten);
 
 		try {
 			const f = new Function(...Object.keys(included), string)

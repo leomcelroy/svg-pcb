@@ -1,5 +1,6 @@
 import { transform } from "./transform.js";
 import { offset } from "./offset.js";
+import { offset2 } from "./offset2.js";
 import { boolean } from "./boolean.js";
 import { flattenPath } from "./libs/path-to-points.js";
 import { bezier } from "./bezier.js";
@@ -21,10 +22,26 @@ const isClosed = shape => {
   return closed;
 }
 
-const union = (shape, ...rest) => shapes.reduce( (acc, cur) => boolean(acc, cur, "union"), shape);
-const intersect = (shape, ...rest) => shapes.reduce( (acc, cur) => boolean(acc, cur, "union"), shape);
-const difference = (shape, ...rest) => shapes.reduce( (acc, cur) => boolean(acc, cur, "union"), shape);
-const xor = (shape, ...rest) => shapes.reduce( (acc, cur) => boolean(acc, cur, "union"), shape);
+function union() {
+  const [ shape, ...shapes] = arguments;
+  return shapes.reduce( (acc, cur) => boolean(acc, cur, "union"), shape);
+}
+
+function intersect() {
+  const [ shape, ...shapes] = arguments;
+  return shapes.reduce( (acc, cur) => boolean(acc, cur, "intersect"), shape);
+}
+
+function difference() {
+  const [ shape, ...shapes] = arguments;
+  return shapes.reduce( (acc, cur) => boolean(acc, cur, "difference"), shape);
+}
+
+function xor() {
+  const [ shape, ...shapes] = arguments;
+  return shapes.reduce( (acc, cur) => boolean(acc, cur, "xor"), shape);
+}
+
 
 function getAngle(shape) {
   if (shape.length === 0) throw new Error(`Shape must have at least one pt.`);
@@ -195,6 +212,7 @@ export {
   thicken,
   copyPaste,
   offset,
+  offset2,
   outline,
   expand,
   intersect,

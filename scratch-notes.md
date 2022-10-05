@@ -1,12 +1,20 @@
 # TODO
+- [] zips 
+	- [] png
+	- [] gerber
+- [] scale bug
+- [x] flatten wires on export, done?
+- [] style it up
+- [] png export
+- [] add path to board
+- [] when to use joint vs join type in booleans
+- [] adaptive grid
 - [] select path from gui
 - [] right click for code snippets
-- [] change handle view check to points
+- [x] change handle view check to points
 - [] png export
 - [] logo in top-left corner
-- [] improve wire rendering
-- [] flatten wires on export
-- [] style it up
+- [x] improve wire rendering
 - [] handles for
 	- [] deleting components
 	- [] deleting inventory, which clears adds
@@ -18,14 +26,14 @@
 - [x] wire dragging
 - [] smart routing
 - [] when dragging screen and triggering out drag continues on re-entry
-- [] add error handling
+- [x] add error handling
 - [x] don't snap to grid when grid is off
 - [x] add new file button
 - [] should geo.path be variadic
 - [] add names to dropped components
 - [x] fix codemirror config
 	- [] remove autocomplete
-- [] only draw handles if layer handle it on is visible
+- [x] only draw handles if layer handle it on is visible
 - [] optimize
 	- [x] don't generate wires until export, use native path rendering
 	- [x] use codemirror parsing instead of esprima
@@ -47,7 +55,6 @@
 - [] gerber
 - [x] render function
 - [x] change return to function call
-- [] add error messages
 - [x] fix minus bug
 - [] fix text rendering in gram-js
 - [] firefox rendering bug

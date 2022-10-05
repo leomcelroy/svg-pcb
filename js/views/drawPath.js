@@ -45,6 +45,8 @@ export const drawPath = ({ data, color, groupId = ""}) => {
   const renderWire = ({ data, thickness }) => svg`
     <path
       d=${data}
+      stroke-linecap="round"
+      stroke-linejoin="round"
       stroke-width=${thickness}
       fill-rule="nonzero"
       stroke="${color.slice(0, -2)}"
@@ -57,12 +59,29 @@ export const drawPath = ({ data, color, groupId = ""}) => {
 
   data.forEach(d => {
     if (typeof d === "string") { // pathData
-      d.split(/(?=M)/g).forEach(dstring => {
-        toRender.push(renderDataString(dstring));
-      });
-    } else if (d.type === "text") { // text
+      // why was I doing this? now I remember
+      // parts overlap then i want to render on top (first way)
+      // interior shapes I want to render outside (second way)
+      
+      // d.split(/(?=M)/g).forEach(dstring => {
+      //   toRender.push(renderDataString(dstring));
+      // });
+
+      const toAdd = svg`
+        <path
+            d="${d}"
+            fill-rule="evenodd"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            fill="${color.slice(0, -2)}"
+            fill-opacity=${alpha}/>
+      `
+
+      toRender.push(toAdd);
+
+    } else if (d.type === "text") { 
       toRender.push(renderText(d));
-    } else if (d.type === "wire") { // text
+    } else if (d.type === "wire") {
       toRender.push(renderWire(d));
     }
   })

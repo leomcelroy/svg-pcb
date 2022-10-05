@@ -15,7 +15,6 @@ export const global_state = {
   grid: true,
   gridSize: 0.05,
   viewHandles: true,
-  wireDrawing: false,
   selectedPath: null,
   panZoomParams: undefined,
   previewFootprint: null,

@@ -129,10 +129,15 @@ codemirror-2 {
 	display: flex;
 	place-items: center;
 	width: 100%;
-	height: 30px;
-	max-height: 30px;
-	min-height: 30px;
+	height: max-content;
+	max-height: max-content;
+	min-height: max-content;
 	background: lightgrey;
+}
+
+.top-menu > .left > .menu-item {
+	padding-top: 7px;
+	padding-bottom: 7px;
 }
 
 .left {
@@ -156,9 +161,9 @@ codemirror-2 {
 
 .menu-item {
 	cursor: pointer;
+	padding: 3px;
 	padding-left: 5px;
 	padding-right: 5px;
-	height: 100%;
 	display: flex;
 	align-items: center;
 }
@@ -189,7 +194,6 @@ codemirror-2 {
 	border-top: 5px solid lightgrey;
 	max-height: 50vh;
 	overflow: scroll;
-	padding: 5px;
 	box-sizing: border-box;
 }
 
@@ -203,11 +207,12 @@ codemirror-2 {
 	visibility: visible;
 }
 
+/*
 .import-item:hover {
 	background: blue;
 	color: white;
 }
-
+*/
 .canvas-container {
 	display: grid;
 	place-items: center;
@@ -223,7 +228,6 @@ codemirror-2 {
 #vertical-bar {
   position: absolute;
   left: calc( var(--vertical-bar) - 5px);
-  top: 30px;
   background: black;
   width: 10px;
   height: 100%;

@@ -1,5 +1,5 @@
 import { makeComponent } from "./pcb_helpers.js";
-import { getPathData, scale, outline, union, path, offset, boolean } from "/geogram/index.js";
+import { getPathData, expand, scale, outline, union, xor, path, offset, offset2, boolean } from "/geogram/index.js";
 
 export class PCB {
   constructor() {
@@ -65,30 +65,48 @@ export class PCB {
 
     this.layers[layer].forEach( x => {
 
-      if (x.type === "wire" && !flatten) {
+      if (x.type === "wire") {
         wires.push({
           type: "wire",
           data: getPathData(x.shape),
           thickness: x.thickness,
+          shape: x.shape
         });
-      } else if (Array.isArray(x) || (x.type === "wire" && flatten)) {
-        if (flatten && x.type === "wire") {
-          boolean(shapes, offset(x.shape, x.thickness/2), "union");
-        } else if (flatten) {
-          x.forEach( pl => boolean(shapes, [ pl ] , "union"));
-        } else shapes.push(...x);
-      } 
-      else if (x.type === "text") texts.push(x);
-      
+      } else if (Array.isArray(x)) {
+        shapes.push(x)
+      } else if (x.type === "text") {
+        texts.push(x);
+      }
     })
 
-    // if (shapes.length > 0) scale(shapes, [1, -1]);
+    const unioned = () => union(
+      ...shapes, 
+      ...wires.map( 
+        w => offset2(
+          w.shape, 
+          w.thickness/2, 
+          {
+            endType: "etOpenRound", 
+            jointType:"jtRound", 
+          })
+        )
+    ) ?? [];
 
-    return [
-      getPathData(shapes),
-      ...texts,
-      ...wires
-    ]
+    const shapeString = () => shapes.reduce((acc, cur) => {
+
+      if (cur.length === 0) return acc;
+
+      const newD = getPathData(cur);
+      return acc + newD;
+    }, "");
+
+    return flatten 
+      ? [ getPathData(unioned()), ...texts ] 
+      : [
+          ...shapes.map(getPathData),
+          ...texts,
+          ...wires
+        ]
   }
 
   wire(pts, thickness, layer = "F.Cu") {
