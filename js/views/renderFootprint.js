@@ -14,7 +14,7 @@ export const renderFootprint = ([name, footprint, svgView], i) => {
   const renderComp = pts => svg`
     <path
       class="path-footprint"
-      data-index=${i} 
+      data-index=${i}
       d="${getPathData([pts])}"
       fill-rule="nonzero"
       />
@@ -31,9 +31,9 @@ export const renderFootprint = ([name, footprint, svgView], i) => {
       }
     </style>
     <div class="footprint-item">
-      <svg 
+      <svg
         data-index=${i}
-        class="footprint-svg footprint-${i}" 
+        class="footprint-svg footprint-${i}"
         width="50px"
         height="50px"
         transform="scale(1, -1)">

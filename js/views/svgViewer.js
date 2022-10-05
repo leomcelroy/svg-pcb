@@ -5,14 +5,14 @@ import { drawPath } from "./drawPath.js";
 import { drawHandles } from "./drawHandles.js";
 
 const drawPt = ({ pt, start, end, text }, i) => svg`
-  <circle 
+  <circle
     class="draggable-pt"
-    cx=${pt[0]} 
-    cy=${pt[1]} 
-    r="0.015" 
+    cx=${pt[0]}
+    cy=${pt[1]}
+    r="0.015"
     data-index=${i}
-    data-start=${start} 
-    data-end=${end} 
+    data-start=${start}
+    data-end=${end}
     data-text=${text}></circle>
 `
 
@@ -43,7 +43,7 @@ export const svgViewer = (state) => {
 
           <g class="shapes">${shapes}</g>
           <g class="paths">${paths}</g>
-          
+
 
         ${state.panZoomParams && state.gridSize > 0 && state.grid ? drawGrid(state.panZoomParams.corners(), state.gridSize) : ""}
 

@@ -1,4 +1,4 @@
-import { pathD, circle, rectangle, translate as trans, rotate as rot, outline } from "/geogram/index.js";
+import { pathD, getPathData, circle, rectangle, translate as trans, rotate as rot, outline } from "/geogram/index.js";
 
 const length = ([x1, y1], [x2, y2]) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
 
@@ -132,9 +132,9 @@ function makeComponent(comp, options = {}) {
 
     if (!pad.includes("drill")) {
       // let text = makeText(pad, padLabelSize, pad_pos, rotate);
-      padsLabels.push({ 
+      padsLabels.push({
         type: "text",
-        value: pad,  
+        value: pad,
         translate: pad_pos,
         rotate,
         size: padLabelSize

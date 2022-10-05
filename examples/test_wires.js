@@ -34,10 +34,10 @@ const test_footprint = {
 let board = new PCB();
 
 /* -- ADD_COMPONENTS -- */
-let test_comp1 = board.add(test_footprint, {translate: [0.3, 0.7], name: "COMP1"})
-let test_comp2 = board.add(test_footprint, {translate: [0.75, 0.3], name: "COMP2"})
-let v1 = board.add(via(0.02, 0.035), {translate: [test_comp1.padX("D+"), 0.4]})
-let v2 = board.add(via(0.02, 0.035), {translate: [0.4, v1.posY]})
+let test_comp1 = board.add(test_footprint, {translate: pt(0.3, 0.7), name: "COMP1"})
+let test_comp2 = board.add(test_footprint, {translate: pt(0.8, 0.3), name: "COMP2"})
+let v1 = board.add(via(0.02, 0.035), {translate: pt(test_comp1.padX("D+"), 0.1)})
+let v2 = board.add(via(0.02, 0.035), {translate: pt(0.35, v1.posY)})
 
 /* -- ADD_WIRES -- */
 board.wire([test_comp1.pad("D+"),
@@ -47,32 +47,23 @@ board.wire([v1.pos,
             v2.pos], 0.015, "B.Cu")
 
 board.wire([v2.pos,
-            [v2.posX+0.1, v2.posY],
-            [v2.posX+0.1, test_comp2.padY("D+")],
+            pt(v2.posX+0.1, v2.posY),
+            pt(v2.posX+0.1, test_comp2.padY("D+")),
             test_comp2.pad("D+")], 0.015)
 
 // fillet
 board.wire([test_comp1.pad("GND"),
-            ["fillet", 0.1, [test_comp2.padX("GND"), test_comp1.padY("GND")]],
+            ["fillet", 0.1, pt(test_comp2.padX("GND"), test_comp1.padY("GND"))],
             test_comp2.pad("GND")], 0.015)
 
 // chamfer and bezier handles
 board.wire([test_comp1.pad("VCC"),
-            ["chamfer", 0.03, [test_comp1.padX("VCC")+0.1, test_comp1.padY("VCC")]],
-            [test_comp1.padX("VCC")+0.1, test_comp1.padY("D+")-0.05],
-            ["bezier", [test_comp1.padX("VCC")+0.1, test_comp1.padY("D+")-0.2],
-                        [test_comp2.padX("VCC"), test_comp2.padY("VCC")+0.3]],
+            ["chamfer", 0.03, pt(test_comp1.padX("VCC")+0.1, test_comp1.padY("VCC"))],
+            pt(test_comp1.padX("VCC")+0.1, test_comp1.padY("D+")-0.05),
+            ["bezier", pt(test_comp1.padX("VCC")+0.1, test_comp1.padY("D+")-0.2),
+                        pt(test_comp2.padX("VCC"), test_comp2.padY("VCC")+0.25)],
             test_comp2.pad("VCC")], 0.015)
 
-board.wire([
-  [0.3, 0.4],
-  ["chamfer", 0.06,  [0.39, -0.06]],
-  // [0.57, -0.05],
-  ["fillet", 0.10, [0.84, 0.13]],
-  [0.66, -0.26],
-  ["bezier", [0.3, -0.35], [-0.09, -0.14]],
-  [0.24, 0.00],
-], 0.015)
 
 /* -- RENDER_PCB -- */
 renderPCB({
