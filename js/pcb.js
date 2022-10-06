@@ -13,8 +13,8 @@ export class PCB {
     const transform = {
       translate: ops.translate || [0, 0],
       rotate: ops.rotate || 0,
-      padLabelSize: ops.padLabelSize || 0.03,
-      componentLabelSize: ops.componentLabelSize || 0.04,
+      padLabelSize: ops.padLabelSize || 0.02,
+      componentLabelSize: ops.componentLabelSize || 0.025,
     };
 
     const newComp = makeComponent(footprint, transform);
