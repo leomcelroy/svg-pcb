@@ -1,10 +1,12 @@
 # TODO
 - [] style it up
-- [] png export
-
+- [x] png export
+- [] automatically add comma if missing from path
 - [] zips 
 	- [] png
 	- [] gerber
+- [] addShape and wire should take lists of points or lists of lists of points
+- [] geogram takes pt array not pt object
 - [] scale bug
 - [x] flatten wires on export, done?
 - [] add path to board

@@ -1,6 +1,10 @@
 :root {
   --vertical-bar: 60%;
   --background-color: #8686868c;
+  --lightgrey-0: #ced4da;
+  /* old yellow - #f4e6d0 */
+  --construction-paper: #fff4e6;
+  --construction-paper-transparent: #fff4e6aa;
 }
 
 html,
@@ -71,7 +75,7 @@ input {
 }
 
 codemirror-2 {
-	background: #f4e6d0;
+	background: var(--construction-paper);
   flex: 1;
   overflow: hidden;
 }
@@ -94,13 +98,19 @@ codemirror-2 {
 	height: min-content;
 	overflow: scroll;
 	max-height: 320px;
-	background: #f4e6d0aa;
+	background: var(--construction-paper-transparent);
 	position: absolute;
 	right: 0px;
 	top: 0px;
 	padding: 5px;
 	display: flex;
 	flex-direction: column;
+}
+
+.logo {
+	margin-right: -10px;
+	width: 40px; 
+	padding: 5px;
 }
 
 .footprint-item {
@@ -114,14 +124,13 @@ codemirror-2 {
 	width: 20px;
 	height: 20px;
 	border-radius: 50px;
-	background: yellow;
 	border: 5px grey solid;
 	box-sizing: border-box;
 	margin: 5px;
 }
 
 .footprint-item-icon:hover {
-	background: orange;
+	background: #fab005;
 }
 
 .top-menu {
@@ -132,16 +141,18 @@ codemirror-2 {
 	height: max-content;
 	max-height: max-content;
 	min-height: max-content;
-	background: lightgrey;
+	background: var(--lightgrey-0);
 }
 
 .top-menu > .left > .menu-item {
 	padding-top: 7px;
 	padding-bottom: 7px;
+	box-sizing: border-box;
+	height: 100%;
 }
 
 .left {
-  margin-left: 20px;
+  margin-left: 10px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -188,10 +199,10 @@ codemirror-2 {
 	z-index: 10;
 	left: 0px;
 	top: 100%;
-	background: lightgrey;
+	background: var(--lightgrey-0);
 	width: max-content;
 	min-width: 100%;
-	border-top: 5px solid lightgrey;
+	border-top: 5px solid var(--lightgrey-0);
 	max-height: 50vh;
 	overflow: scroll;
 	box-sizing: border-box;
@@ -236,7 +247,7 @@ codemirror-2 {
 
 #vertical-bar:hover {
   cursor: col-resize;
-  background: grey;
+  background: var(--lightgrey-0);
 }
 
 .CodeMirror {

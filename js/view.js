@@ -32,6 +32,7 @@ export function view(state) {
 
 const menu = state => html`
 	<div class="top-menu">
+		<img src="/logo.svg" class="logo" alt="fab-circuit-logo" />
 		<div class="left">
 			<div
 				class="menu-item"

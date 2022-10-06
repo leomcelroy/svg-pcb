@@ -43,6 +43,9 @@ export class PCB {
   }
 
   addShape(layer, shapeOrText) {
+    if (shapeOrText[0] && (typeof shapeOrText[0][0] === "number" || typeof shapeOrText[0][0] === "string")) {
+      shapeOrText = path(shapeOrText);
+    } 
 
     if (layer in this.layers) {
       this.layers[layer].push(shapeOrText);
