@@ -37,40 +37,40 @@ board.addShape("interior", interior);
 
 
 /* -- ADD_WIRES -- */
-board.wire([J1.pad("GND"),
-            pt(IC1.padX("gnd"), J1.padY("GND")),
-            IC1.pad("gnd")], w);
+board.wire(path(J1.pad("GND"),
+                pt(IC1.padX("gnd"), J1.padY("GND")),
+                IC1.pad("gnd")), w);
 
-board.wire([J1.pad("VCC"),
-            pt(IC1.padX("in"), J1.padY("VCC")),
-            IC1.pad("in")], w);
+board.wire(path(J1.pad("VCC"),
+                pt(IC1.padX("in"), J1.padY("VCC")),
+                IC1.pad("in")), w);
 
-board.wire([C1.pad("1"),
-            pt(IC1.padX("out"), C1.padY("1")),
-            IC1.pad("out")], w);
+board.wire(path(C1.pad("1"),
+                pt(IC1.padX("out"), C1.padY("1")),
+                IC1.pad("out")), w);
 
-board.wire([C1.pad("2"),
-            pt(IC1.padX("gnd"), C1.padY("2")),
-            IC1.pad("gnd")], w);
+board.wire(path(C1.pad("2"),
+                pt(IC1.padX("gnd"), C1.padY("2")),
+                IC1.pad("gnd")), w);
 
-board.wire([HM.pad("TX"),
-            pt(HM.padX("TX"), HM.padY("TX")-.09),
-            pt(IC1.posX, HM.padY("TX")-.09),
-            pt(IC1.posX, J1.padY("Rx")),
-            J1.pad("Rx")], w);
+board.wire(path(HM.pad("TX"),
+                pt(HM.padX("TX"), HM.padY("TX")-.09),
+                pt(IC1.posX, HM.padY("TX")-.09),
+                pt(IC1.posX, J1.padY("Rx")),
+                J1.pad("Rx")), w);
 
-board.wire([J1.pad("Tx"),
-            pt(HM.padX("RX"), J1.padY("Tx")),
-            HM.pad("RX")], w);
+board.wire(path(J1.pad("Tx"),
+                pt(HM.padX("RX"), J1.padY("Tx")),
+                HM.pad("RX")), w);
 
-board.wire([C1.pad("1"),
-            pt(HM.padX("VCC"), C1.padY("1")),
-            HM.pad("VCC")], w);
+board.wire(path(C1.pad("1"),
+                pt(HM.padX("VCC"), C1.padY("1")),
+                HM.pad("VCC")), w);
 
-board.wire([HM.pad("GND"),
-            pt(HM.padX("GND"), HM.padY("GND")+.09),
-            pt(IC1.padX("gnd"), HM.padY("GND")+.09),
-            IC1.pad("gnd")], w);
+board.wire(path(HM.pad("GND"),
+                pt(HM.padX("GND"), HM.padY("GND")+.09),
+                pt(IC1.padX("gnd"), HM.padY("GND")+.09),
+                IC1.pad("gnd")), w);
 
 
 // rendering
