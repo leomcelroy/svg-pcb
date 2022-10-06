@@ -9,6 +9,7 @@ import { renderPreviewFootprint } from "./views/renderPreviewFootprint.js";
 import { svgViewer } from "./views/svgViewer.js";
 import { renderFootprint } from "./views/renderFootprint.js";
 import { clearSelectedPath } from "./clearSelectedPath.js";
+import logoURL from '../logo.svg'
 
 export function view(state) {
 	return html`
@@ -32,7 +33,7 @@ export function view(state) {
 
 const menu = state => html`
 	<div class="top-menu">
-		<img src="logo.svg" class="logo" alt="fab-circuit-logo" />
+		<img src=${logoURL} class="logo" alt="fab-circuit-logo" />
 		<div class="left">
 			<div
 				class="menu-item"
