@@ -1,8 +1,9 @@
 # TODO
+- [] !! README
 - [x] style it up, done?
 - [x] png export
+- [] clear selection box better
 - [] better snap to grid control
-- [] !! README
 - [] automatically add comma if missing from path
 - [] zips 
 	- [] png
