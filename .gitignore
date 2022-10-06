@@ -1,10 +1,4 @@
 node_modules
-build
 package-lock.json
-__pycache__/
-.idea/
-js/.DS_Store
 .DS_Store
-.DS_Store
-.github/.DS_Store
 index.html
