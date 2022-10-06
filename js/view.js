@@ -120,6 +120,9 @@ const menu = state => html`
 				</div>
 			</div>
 		</div>
+		<a class="github-logo" href="https://github.com/leomcelroy/svg-pcb">
+			<i class="fa fa-github" style="font-size:24px"></i>
+		</a>
 	</div>
 `
 

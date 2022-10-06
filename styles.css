@@ -336,4 +336,15 @@ codemirror-2 {
 	transform: scale(1.02);
 }
 
+.github-logo {
+	color: inherit;
+	position: absolute;
+  right: 10px;
+}
+
+.github-logo:hover {
+	cursor: pointer;
+	opacity: .8;
+}
+
 
