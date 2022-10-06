@@ -1,12 +1,19 @@
-# SVG PCB
+# SVG PCB: a bidirectional editor for making circuits with code
 
-SVG PCB is hardware description language in the browser. Powered by the [Gram drawing library](https://github.com/leomcelroy/gram-js).
+![teaser](https://user-images.githubusercontent.com/27078897/194322283-9ed63453-8606-4120-8d87-8f650782af4e.jpg)
 
-For more information go to the [SVG PCB Website](https://leomcelroy.com/svg-pcb-website/#/home)
+SVG PCB is JavaScript based hardware description language and a browser-based editor for that language.
+
+For more information go to the [SVG PCB Website](https://leomcelroy.com/svg-pcb-website/#/home).
 
 
-## Install
+## Dev
 
-    npm run start
+Download the repo and run:
+
+```
+yarn
+yarn dev
+```
 
 
