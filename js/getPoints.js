@@ -18,7 +18,5 @@ export function getPoints(state, ast) {
 
   } while (cursor.next())
 
-  // console.log(result);
-
   return { pts, paths };
 }
