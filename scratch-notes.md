@@ -9,6 +9,7 @@
 	- [] png
 	- [] gerber
 - [] addShape and wire should take lists of points or lists of lists of points
+	- shape :: path | path[]     ?
 - [] geogram takes pt array not pt object
 - [] scale bug
 - [x] flatten wires on export, done?

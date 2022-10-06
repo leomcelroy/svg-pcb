@@ -9,7 +9,12 @@ const height = 1;
 /* -- DECLARE_PCB -- */
 let board = new PCB();
 
-let interior = geo.rectangle(width, height)
+let interior = path(
+  pt(-0.5, 0.5),
+  pt(0.5, 0.5),
+  pt(0.5, -0.5),
+  pt(-0.5, -0.5),
+);
 
 board.addShape("interior", interior);
 

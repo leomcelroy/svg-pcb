@@ -54,6 +54,7 @@ export function addPtDragging(state, svgListener) {
       walk(yNode, n => change_y(n, y));
 
       state.codemirror.view.dispatch({ changes });
+
       dispatch("RUN", { dragging: true });
     }
 

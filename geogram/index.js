@@ -199,6 +199,13 @@ const circle = r => {
   return [ pts ];
 }
 
+// shape is filled path?
+// shape is multiple paths
+
+const convertPtType = (shape) => {
+  return shape.map(pl => pl.map( ([ x, y ]) => ({ x, y })) );
+}
+
 export {
   turnForward,
   vec,
@@ -233,4 +240,5 @@ export {
   bezier,
   path,
   boolean,
+  convertPtType
 }

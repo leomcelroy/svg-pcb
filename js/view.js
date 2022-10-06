@@ -22,7 +22,7 @@ export function view(state) {
 			</div>
 			<div class="right-side">
 				${svgViewer(state)}
-				${state.selectedPath !== null ? html`<div class="path-selected" @click=${clearSelectedPath}>Clear Selected Path</div>` : ""}
+				${state.selectedPath !== null ? html`<div class="path-selected" @click=${clearSelectedPath}>unselect path</div>` : ""}
 				<div class="footprint-toolbox">${state.footprints.map(renderFootprint)}</div>
 				${state.previewFootprint ? renderPreviewFootprint(...state.previewFootprint) : ""}
 			</div>

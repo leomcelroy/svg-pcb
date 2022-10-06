@@ -31,7 +31,8 @@ export function addPathManipulation(state, svgListener) {
   const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 8);
 
   svgListener("mousedown", "", e => {
-    if (state.selectedPath === null) return;
+    const isPt = e.composedPath().some(el => el.classList?.contains("draggable-pt"));
+    if (isPt || state.selectedPath === null) return;
 
     const svgPoint = svg.panZoomParams.svgPoint;
     const clickedPoint = svgPoint({x: e.offsetX, y: e.offsetY});
@@ -52,20 +53,19 @@ export function addPathManipulation(state, svgListener) {
       start--;
     }
 
-    if (ch === "," || ch === "(") {
-      const text = `\n  pt(${pt.x}, ${pt.y}),`
+    const text = `${(ch === "," || ch === "(") ? "" : ","}\n  pt(${pt.x}, ${pt.y}),`
 
-      state.codemirror.view.dispatch({
-        changes: {
-          from: start+1, 
-          // to: startIndex, 
-          insert: text
-        }
-      });
-      
+    state.codemirror.view.dispatch({
+      changes: {
+        from: start+1, 
+        // to: startIndex, 
+        insert: text
+      }
+    });
+    
 
-      dispatch("RUN");
-    }
+    dispatch("RUN");
+    
   })
 }
 
