@@ -1,18 +1,18 @@
 # TODO
+- [] style it up
+- [] png export
+
 - [] zips 
 	- [] png
 	- [] gerber
 - [] scale bug
 - [x] flatten wires on export, done?
-- [] style it up
-- [] png export
 - [] add path to board
 - [] when to use joint vs join type in booleans
 - [] adaptive grid
 - [] select path from gui
 - [] right click for code snippets
 - [x] change handle view check to points
-- [] png export
 - [] logo in top-left corner
 - [x] improve wire rendering
 - [] handles for

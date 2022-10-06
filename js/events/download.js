@@ -89,8 +89,44 @@ export function downloadText(filename, text) {
   URL.revokeObjectURL(link);
 }
 
-export function downloadPNG(state) {
-   console.log(state.name);
-   const svgUrl = makeSVG(state);
-   console.log(svgUrl);
+export function downloadPNG(state, dpi = 1000) {
+  const src = makeSVG(state);
+
+  var units = 25.4;
+
+  const w = (state.limits.x[1] - state.limits.x[0])*state.mm_per_unit;
+  const h = (state.limits.y[1] - state.limits.y[0])*state.mm_per_unit;
+  var width = dpi*w/units;
+  var height = dpi*h/units;
+
+  var img = new Image()
+  img.width = width;
+  img.height = height;
+  img.setAttribute("src", src)
+  img.onload = function() {
+    const canvas = document.createElement("canvas");
+    const pixels = width+' x '+height+" (pixels)";
+    const inches = (width/dpi).toFixed(3)+' x '+(height/dpi).toFixed(3)+" (inches)";
+    const mm = (25.4*width/dpi).toFixed(3)+' x '+(25.4*height/dpi).toFixed(3)+" (mm)";
+    canvas.width = width
+    canvas.height = height
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0,0,width,height);
+    ctx.drawImage(img,0,0,width,height);
+    const imageData = ctx.getImageData(0, 0, width, height);
+    dlCanvas(canvas, `${state.name === "" ? "anon" : state.name}`);
+  }
 }
+
+function dlCanvas(canvas, name) {
+  // Convert the canvas to data
+  var image = canvas.toDataURL();
+  // Create a link
+  var aDownloadLink = document.createElement('a');
+  // Add the name of the file to the link
+  aDownloadLink.download = `${name}.png`;
+  // Attach the data to the link
+  aDownloadLink.href = image;
+  // Get the code to click the download link
+  aDownloadLink.click();
+};
