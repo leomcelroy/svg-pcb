@@ -218,6 +218,12 @@ codemirror-2 {
 	visibility: visible;
 }
 
+.check-item, .input-item {
+	padding: 3px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 /*
 .import-item:hover {
 	background: blue;

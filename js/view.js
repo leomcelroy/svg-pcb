@@ -63,6 +63,8 @@ const menu = state => html`
 						js
 					</div class="menu-item">
 					<input 
+						class="input-item"
+						style="margin: 3px;"
 						.value=${state.name} 
 						placeholder="name-here"
 						@input=${(e) => {state.name = e.target.value}}/>
@@ -71,14 +73,14 @@ const menu = state => html`
 			<div class="menu-item dropdown-container">
 				drawing
 				<div class="dropdown-content">
-					<button
-						class="center-button"
+					<div
+						class="menu-item"
 						@click=${() => {
 								state.panZoomParams.setScaleXY(state.limits);
 						}}>
 						center
-					</button>
-					<div>
+					</div>
+					<div class="check-item"> 
 						<span>handles</span>
 						<input
 							type="checkbox"
@@ -90,7 +92,7 @@ const menu = state => html`
 							class="handles-checkbox">
 						</input>
 					</div>
-					<div>
+					<div class="check-item"> 
 						<span>grid</span>
 						<input
 							type="checkbox"
@@ -102,7 +104,7 @@ const menu = state => html`
 							>
 						</input>
 					</div>
-					<div>
+					<div class="input-item">
 						<span>grid size:</span>
 						<input
 							type="number"
