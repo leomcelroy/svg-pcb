@@ -37,37 +37,37 @@ board.addShape("interior", interior);
 /* -- ADD_WIRES -- */
 board.wire(path(ESP.pad("+5V"),
                 pt(ESP.padX("+5V"), J1.padY("VCC")),
-                J1.pad("VCC")), w);
+                J1.pad("VCC"),), w);
 
 board.wire(path(ESP.pad("GND1"),
                 pt(J1.padX("GND"), ESP.padY("GND1")),
-                J1.pad("GND")), w);
+                J1.pad("GND"),), w);
 
 board.wire(path(ESP.pad("GND2"),
                 pt(ESP.padX("GND2"), J1.padY("VCC")),
                 pt(ESP.padX("GND1"), J1.padY("VCC")),
-                ESP.pad("GND1")), w);
+                ESP.pad("GND1"),), w);
 
 board.wire(path(ESP.pad("U0T"),
                 pt(ESP.padX("U0T"), J1.padY("Rx")),
-                J1.pad("Rx")), w);
+                J1.pad("Rx"),), w);
 
 board.wire(path(ESP.pad("U0R"),
                 pt(ESP.padX("U0R"), J1.padY("Rx")-.05),
                 pt(J1.padX("Tx")+.1, J1.padY("Rx")-.05),
                 pt(J1.padX("Tx")+.1, J1.padY("Tx")),
-                J1.pad("Tx")), w);
+                J1.pad("Tx"),), w);
 
 board.wire(path(S1.pad("1"),
                 pt(ESP.padX("GND2"), S1.padY("1")),
-                ESP.pad("GND2")), w);
+                ESP.pad("GND2"),), w);
 
 board.wire(path(S1.pad("1"),
                 pt(ESP.padX("GND3"), S1.padY("1")),
-                ESP.pad("GND3")), w);
+                ESP.pad("GND3"),), w);
 
 board.wire(path(S1.pad("2"),
-                ESP.pad("IO0")), w);
+                ESP.pad("IO0"),), w);
 
 
 // rendering
