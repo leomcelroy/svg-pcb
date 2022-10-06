@@ -45,97 +45,97 @@ board.addShape("interior", interior);
 board.wire(path(J1.pad("MISO"),
                 pt(J1.padX("MISO"), J1.padY("MISO")+.05),
                 pt(IC1.padX("PB1"), J1.padY("MISO")+.05),
-                IC1.pad("PB1")), w);
+                IC1.pad("PB1"),), w);
 
 board.wire(path(J1.pad("V"),
                 pt(J1.padX("MOSI")-.08, J1.padY("V")),
                 pt(J1.padX("MOSI")-.08, J1.padY("MOSI")+.05),
                 pt(IC1.padX("VCC"), J1.padY("MOSI")+.05),
-                IC1.pad("VCC")), w);
+                IC1.pad("VCC"),), w);
 
 board.wire(path(J1.pad("SCK"),
                 pt(IC1.padX("PB2"), J1.padY("SCK")),
-                IC1.pad("PB2")), w);
+                IC1.pad("PB2"),), w);
 
 board.wire(path(IC1.pad("PB0"),
                 pt(IC1.padX("PB0"), IC1.padY("PB0")-.035),
                 pt(J1.posX, IC1.padY("PB0")-.035),
                 pt(J1.posX, J1.posY),
-                J1.pad("MOSI")), w);
+                J1.pad("MOSI"),), w);
 
 board.wire(path(IC1.pad("RST"),
                 pt(IC1.padX("RST"), IC1.padY("RST")-.07),
                 pt(J1.padX("RST"), IC1.padY("RST")-.07),
-                J1.pad("RST")), w);
+                J1.pad("RST"),), w);
 
 board.wire(path(IC1.pad("GND"),
                 pt(J1.padX("GND"), IC1.padY("GND")),
-                J1.pad("GND")), w);
+                J1.pad("GND"),), w);
 
 board.wire(path(IC1.pad("VCC"),
                 pt(R1.posX, IC1.padY("VCC")),
-                R1.pad("1")), w);
+                R1.pad("1"),), w);
 
 board.wire(path(IC1.pad("RST"),
                 pt(IC1.padX("RST"), IC1.padY("RST")-.07),
                 pt(R1.posX, IC1.padY("RST")-.07),
-                R1.pad("2")), w);
+                R1.pad("2"),), w);
 
 board.wire(path(C1.pad("1"),
-                R1.pad("1")), w);
+                R1.pad("1"),), w);
 
 board.wire(path(J2.pad("GND"),
                 pt(C1.posX, J2.padY("GND")),
-                C1.pad("2")), w);
+                C1.pad("2"),), w);
 
 board.wire(path(C1.pad("1"),
                 pt(C1.posX+.06, C1.padY("1")),
                 pt(C1.posX+.06, J2.padY("VCC")),
-                J2.pad("VCC")), w);
+                J2.pad("VCC"),), w);
 
 board.wire(path(J2.pad("Rx"),
                 pt(J2.posX, J2.padY("Rx")-.05),
                 pt(C1.posX, J2.padY("Rx")-.05),
                 pt(C1.posX, IC1.padY("PB2")-.08),
                 pt(IC1.padX("PB2"), IC1.padY("PB2")-.08),
-                IC1.pad("PB2")), w);
+                IC1.pad("PB2"),), w);
 
 board.wire(path(oled.pad("VCC"),
                 pt((R1.posX+C1.posX)/2, oled.padY("VCC")),
-                pt((R1.posX+C1.posX)/2, C1.padY("1"))), w);
+                pt((R1.posX+C1.posX)/2, C1.padY("1")),), w);
 
 board.wire(path(oled.pad("GND"),
                 pt(J2.posX, oled.padY("GND")),
-                J2.pad("GND")), w);
+                J2.pad("GND"),), w);
 
 board.wire(path(oled.pad("SCL"),
-                IC1.pad("PB4")), w);
+                IC1.pad("PB4"),), w);
 
 board.wire(path(oled.pad("SDA"),
                 pt(oled.posX, oled.padY("SDA")),
-                IC1.pad("PB3")), w);
+                IC1.pad("PB3"),), w);
 
 board.wire(path(R2.pad("2"),
                 pt(oled.padX("SCL"), R2.padY("2")),
-                oled.pad("SCL")), w);
+                oled.pad("SCL"),), w);
 
 board.wire(path(R2.pad("1"),
-                R3.pad("1")), w);
+                R3.pad("1"),), w);
 
 board.wire(path(R3.pad("1"),
                 pt(J1.padX("MOSI")-.08, R3.padY("1")),
-                pt(J1.padX("MOSI")-.08, J1.padY("MOSI"))), w);
+                pt(J1.padX("MOSI")-.08, J1.padY("MOSI")),), w);
 
 board.wire(path(R3.pad("2"),
                 pt(R3.posX, oled.padY("SDA")),
-                oled.pad("SDA")), w);
+                oled.pad("SDA"),), w);
 
 board.wire(path(oled.pad("GND"),
                 pt(oled.padX("GND"), oled.padY("GND")+.07),
                 pt(J1.padX("GND")-.08, oled.padY("GND")+.07),
                 pt(J1.padX("GND")-.08, R3.posY),
                 pt(IC1.padX("GND"), R3.posY),
-                IC1.pad("GND")), w);
+                IC1.pad("GND"),), w);
 
 
 // rendering
