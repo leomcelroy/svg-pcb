@@ -1,5 +1,5 @@
 # TODO
-- [] style it up
+- [x] style it up, done?
 - [x] png export
 - [] automatically add comma if missing from path
 - [] zips 

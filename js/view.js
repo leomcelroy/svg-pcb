@@ -74,7 +74,7 @@ const menu = state => html`
 				drawing
 				<div class="dropdown-content">
 					<div
-						class="menu-item"
+						class="menu-item center-button"
 						@click=${() => {
 								state.panZoomParams.setScaleXY(state.limits);
 						}}>
