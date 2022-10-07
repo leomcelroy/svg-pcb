@@ -105,9 +105,9 @@ export function downloadPNG(state, dpi = 1000) {
   img.setAttribute("src", src)
   img.onload = function() {
     const canvas = document.createElement("canvas");
-    const pixels = width+' x '+height+" (pixels)";
-    const inches = (width/dpi).toFixed(3)+' x '+(height/dpi).toFixed(3)+" (inches)";
-    const mm = (25.4*width/dpi).toFixed(3)+' x '+(25.4*height/dpi).toFixed(3)+" (mm)";
+    // const pixels = width+' x '+height+" (pixels)";
+    // const inches = (width/dpi).toFixed(3)+' x '+(height/dpi).toFixed(3)+" (inches)";
+    // const mm = (25.4*width/dpi).toFixed(3)+' x '+(25.4*height/dpi).toFixed(3)+" (mm)";
     canvas.width = width
     canvas.height = height
     var ctx = canvas.getContext("2d");
