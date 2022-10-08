@@ -38,3 +38,14 @@
 - [ ] when dragging screen and triggering out drag continues on re-entry
 - [ ] preview path when editting
 - [ ] indent new points properly
+- [ ] kicad components sometimes drop text in program and aren't converted
+- [ ] add visual cue when uploading something
+	- [ ] js
+	- [ ] json component
+	- [ ] svg ?
+	- [ ] kicad_comp
+- [ ] add svg uploading
+- [ ] export/import
+	- [ ] kicad
+	- [ ] eagle
+	- [ ] gerber

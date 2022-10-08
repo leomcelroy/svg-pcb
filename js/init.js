@@ -3,7 +3,7 @@ import { addEvents } from "./events.js";
 import { dispatch } from "./dispatch.js";
 import { urlToCode } from "./urlToCode.js";
 
-export async function init() {
+export function init() {
   dispatch("RENDER");
   global_state.codemirror = document.querySelector(".code-editor");
   addEvents(global_state);
