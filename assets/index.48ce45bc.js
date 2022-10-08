@@ -202,7 +202,7 @@ const Xr={Z:"Z",M:"M",L:"L",C:"C",Q:"Q",A:"A",H:"H",V:"V",S:"S",T:"T",z:"Z",m:"m
 					</div class="menu-item">
 					<div class="menu-item"
 						@click=${()=>{ct("RUN",{flatten:!0}),K1(i)}}>
-						png (1000 dpi)
+						png
 					</div class="menu-item">
 					<div class="menu-item"
 						@click=${()=>J1(`${i.name===""?"anon":i.name}.js`,i.codemirror.view.state.doc.toString())}>
