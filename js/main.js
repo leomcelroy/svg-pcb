@@ -1,5 +1,5 @@
-import { dispatch } from "./dispatch.js";
+import { init } from "./init.js";
 
 window.addEventListener("load", () => {
-	dispatch("INIT");
+	init();
 });

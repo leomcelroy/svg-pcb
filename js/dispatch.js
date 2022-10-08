@@ -1,7 +1,6 @@
 import { view } from "./view.js";
 import { render } from "lit-html";
 
-import { addEvents } from "./events.js";
 
 import { PCB as real_PCB } from "./pcb.js";
 import { via } from "./pcb_helpers.js";
@@ -16,7 +15,6 @@ import { renderShapes } from "./renderShapes.js";
 import { renderPath } from "./renderPath.js";
 import { renderPCB } from "./renderPCB.js";
 
-import { urlToCode } from "./urlToCode.js";
 import { defaultText } from "./defaultText.js";
 
 import { syntaxTree, ensureSyntaxTree } from "@codemirror/language";
@@ -73,41 +71,6 @@ const r = () => {
 }
 
 const ACTIONS = {
-	INIT(args, state) {
-		dispatch("RENDER");
-		state.codemirror = document.querySelector(".code-editor");
-		addEvents(state);
-
-		const url = new URL(window.location.href);
-
-	    const search = window.location.search;
-	    const code = new URLSearchParams(search).get("code");
-	    const file = new URLSearchParams(search).get("file");
-	    const handlesOff = new URLSearchParams(search).get("bezier") === "false";
-	    const gridOff = new URLSearchParams(search).get("grid") === "false";
-
-	    if (handlesOff) state.viewHandles = false;
-	    if (gridOff) state.grid = false;
-
-	    if (code) {
-
-	    } else if (file) {
-          let file_url = file;
-          if (!file.startsWith("http")) file_url = `examples/${file}`;
-
-          urlToCode(file_url, state);
-	    } else { // should check before running this
-	    	const saved = window.localStorage.getItem("svg-pcb")
-			    state.codemirror.view.dispatch({
-				  changes: {from: 0, insert: saved ?? ""}
-				});
-
-				dispatch("RUN");
-				document.querySelector(".center-button").click();
-	    }
-
-	    dispatch("RENDER");
-	},
 	RUN({ dragging = false, flatten = false } = {}, state) {
 		state.paths = [];
 		state.pts = [];

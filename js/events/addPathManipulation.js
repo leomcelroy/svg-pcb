@@ -24,21 +24,37 @@ export function addPathManipulation(state, svgListener) {
   //     updateSelectedPath(state);
   //   }
   // });
+  let clickedPoint = null;
 
   setInterval(() => updateSelectedPath(state), 300);
 
   const svg = document.querySelector("svg");
   const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 8);
+  const svgPoint = svg.panZoomParams.svgPoint;
 
   svgListener("mousedown", "", e => {
     const isPt = e.composedPath().some(el => el.classList?.contains("draggable-pt"));
     if (isPt || state.selectedPath === null) return;
 
-    const svgPoint = svg.panZoomParams.svgPoint;
-    const clickedPoint = svgPoint({x: e.offsetX, y: e.offsetY});
+    
+    clickedPoint = {x: e.offsetX, y: e.offsetY };
+    
+  })
+
+  svgListener("mouseup", "", e => {
+    const currentPoint = { x: e.offsetX, y: e.offsetY };
+    if (clickedPoint === null 
+        || clickedPoint.x !== currentPoint.x 
+        || clickedPoint.y !== currentPoint.y ) {
+      clickedPoint = null;
+      return null;
+    }
+
+    const targetPoint = svgPoint(clickedPoint);
+
     const pt = {
-      x: toGrid(clickedPoint.x),
-      y: toGrid(clickedPoint.y)
+      x: toGrid(targetPoint.x),
+      y: toGrid(targetPoint.y)
     }
 
     const doc = state.codemirror.view.state.doc;
@@ -65,7 +81,6 @@ export function addPathManipulation(state, svgListener) {
     
 
     dispatch("RUN");
-    
   })
 }
 

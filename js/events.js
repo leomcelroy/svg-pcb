@@ -5,7 +5,6 @@ import { addImgPanZoom } from "./events/addImgPanZoom.js";
 import { addDropUpload } from "./events/addDropUpload.js";
 import { addSelectBox } from "./events/addSelectBox.js";
 import { addNumberDragging } from "./events/addNumberDragging.js";
-// import { download } from "./events/download.js"
 import { addImportDrag } from "./events/addImportDrag.js";
 import { addPathManipulation } from "./events/addPathManipulation.js";
 
@@ -64,13 +63,6 @@ export function addEvents(state) {
 		const string = state.codemirror.view.state.doc.toString();
 		window.localStorage.setItem("svg-pcb", string);
 	})
-
-  // listenBody("mousedown", ".download-button", () => download(state));
-
-  // listenBody("click", ".center-button", () => {
-  //   const svg = document.querySelector("svg");
-  //   svg.panZoomParams.setScaleXY(state.limits);
-  // })
 }
 
 

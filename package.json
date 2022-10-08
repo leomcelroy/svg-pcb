@@ -5,8 +5,7 @@
     "start": "web-dev-server --node-resolve --open --watch",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "deploy": "bash deploy.sh"
+    "preview": "vite preview"
   },
   "devDependencies": {
     "@web/dev-server": "^0.1.32",

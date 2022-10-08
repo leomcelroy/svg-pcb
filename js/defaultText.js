@@ -20,6 +20,7 @@ board.addShape("interior", interior);
 /* -- ADD_COMPONENTS -- */
 
 /* -- ADD_WIRES -- */
+board.wire(path(), 0.03);
 
 /* -- RENDER_PCB -- */
 renderPCB({

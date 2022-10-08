@@ -26,7 +26,7 @@
 - [ ] autorouting
 - [ ] copper fills
 - [ ] make it work in firefox
-- [ ] leave point on mouse up, if dragged don't leave point
+- [x] leave point on mouse up, if dragged don't leave point
 - [ ] better import menu
 	- import from component from json
 	- import component libraries
@@ -36,3 +36,5 @@
 - [ ] select path from gui
 - [ ] clear selection box better
 - [ ] when dragging screen and triggering out drag continues on re-entry
+- [ ] preview path when editting
+- [ ] indent new points properly
