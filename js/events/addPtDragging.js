@@ -62,14 +62,14 @@ export function addPtDragging(state, svgListener) {
 
   svgListener("mousemove", "", e => {
     if (!clicked) return;
-    const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 8);
+    const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 3);
 
     const svgPoint = svg.panZoomParams.svgPoint;
     const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
     const xOffset = ( ogPos[0] - initialOffset[0] );
     const yOffset = ( ogPos[1] - initialOffset[1] );
-    const x = round(toGrid(currentPoint.x) - xOffset, 8);
-    const y = round(toGrid(currentPoint.y) - yOffset, 8);
+    const x = round(toGrid(currentPoint.x) - xOffset, 3);
+    const y = round(toGrid(currentPoint.y) - yOffset, 3);
     dragPt(x, y, index);
   })
 

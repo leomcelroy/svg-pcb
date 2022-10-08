@@ -57,7 +57,7 @@ export function addTranslateHandle(state, svgListener) {
 
   svgListener("mousemove", "", e => {
     if (!clicked) return;
-    const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 8);
+    const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 3);
 
     const svgPoint = svg.panZoomParams.svgPoint;
     const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})

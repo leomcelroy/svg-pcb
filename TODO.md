@@ -33,10 +33,11 @@
 - [ ] select multiple points at once
 - [ ] don't show all pts on screen at once
 - [ ] better path gui
+	- [ ] show where path would be when editting
+	- [ ] don't show points on path unless path selected
 - [ ] select path from gui
 - [ ] clear selection box better
 - [ ] when dragging screen and triggering out drag continues on re-entry
-- [ ] preview path when editting
 - [ ] indent new points properly
 - [ ] kicad components sometimes drop text in program and aren't converted
 - [ ] add visual cue when uploading something

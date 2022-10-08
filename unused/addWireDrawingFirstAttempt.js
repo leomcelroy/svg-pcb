@@ -42,7 +42,7 @@ const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 
 export function addWireDrawing(state, svgListener) {
   const svg = document.querySelector("svg");
-  const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 8);
+  const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 3);
 
   let clicked = false;
   let drawing = false;

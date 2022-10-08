@@ -29,7 +29,7 @@ export function addPathManipulation(state, svgListener) {
   setInterval(() => updateSelectedPath(state), 300);
 
   const svg = document.querySelector("svg");
-  const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 8);
+  const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 3);
   const svgPoint = svg.panZoomParams.svgPoint;
 
   svgListener("mousedown", "", e => {
