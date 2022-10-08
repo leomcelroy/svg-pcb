@@ -56,7 +56,7 @@ const menu = state => html`
 					</div class="menu-item">
 					<div class="menu-item"
 						@click=${() => { dispatch("RUN", { flatten: true }); downloadPNG(state); }}>
-						png (1000 dpi)
+						png
 					</div class="menu-item">
 					<div class="menu-item"
 						@click=${() => downloadText(`${state.name === "" ? "anon" : state.name}.js`, state.codemirror.view.state.doc.toString())}>
