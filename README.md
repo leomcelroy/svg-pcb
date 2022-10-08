@@ -6,6 +6,7 @@ SVG PCB is JavaScript based hardware description language and a browser-based ed
 
 For more information go to the [SVG PCB Website](https://leomcelroy.com/svg-pcb-website/#/home).
 
+**Use a Chromium Browser**
 
 ## Dev
 

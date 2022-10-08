@@ -49,3 +49,5 @@
 	- [ ] kicad
 	- [ ] eagle
 	- [ ] gerber
+- [ ] clean up code
+	- remove translate handle code (`pt`s superseded)
