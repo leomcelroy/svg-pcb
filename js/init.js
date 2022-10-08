@@ -15,6 +15,7 @@ export function init() {
     const file = new URLSearchParams(search).get("file");
     const handlesOff = new URLSearchParams(search).get("bezier") === "false";
     const gridOff = new URLSearchParams(search).get("grid") === "false";
+    const dontRun = new URLSearchParams(search).get("run") === "false";
 
     if (handlesOff) global_state.viewHandles = false;
     if (gridOff) global_state.grid = false;
@@ -32,7 +33,7 @@ export function init() {
         changes: {from: 0, insert: saved ?? ""}
       });
 
-      dispatch("RUN")
+      if (!dontRun) dispatch("RUN")
 
       document.querySelector(".center-button").click();
     }
