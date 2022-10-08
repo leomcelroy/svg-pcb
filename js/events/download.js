@@ -1,3 +1,5 @@
+import { changeDpiDataUrl } from "./changeDPI.js";
+
 export function downloadSVG(state) {
   const svgUrl = makeSVG(state);
   // make download link
@@ -120,7 +122,8 @@ export function downloadPNG(state, dpi = 1000) {
 
 function dlCanvas(canvas, name) {
   // Convert the canvas to data
-  var image = canvas.toDataURL();
+  var image = canvas.toDataURL("image/png");
+  image = changeDpiDataUrl(image, 1000);
   // Create a link
   var aDownloadLink = document.createElement('a');
   // Add the name of the file to the link
