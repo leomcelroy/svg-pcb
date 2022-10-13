@@ -2,7 +2,7 @@ import { getPoint } from "./getPoint.js";
 
 export const scale = (shape, scaleXY, point) => {
   if (!point) point = getPoint(shape, "cc");
-  const { x, y } = pointConversion(point);
+  const [ x, y ] = point;
 
   if (typeof scaleXY === "number") scaleXY = [ scaleXY, scaleXY ];
 
@@ -10,10 +10,10 @@ export const scale = (shape, scaleXY, point) => {
 
   const fn = p => {
 
-    const newPoint = {
-      x: ((p.x-x) * xScale) + x,
-      y: ((p.y-y) * yScale) + y
-    };
+    const newPoint = [
+      ((p[0]-x) * xScale) + x,
+      ((p[1]-y) * yScale) + y
+    ];
 
     return newPoint;
   };
@@ -27,9 +27,4 @@ const applyFn = (shape, fn) => {
   })
 
   return shape;
-}
-
-const pointConversion = (point) => {
-  if (Array.isArray(point)) return { x: point[0], y: point[1] };
-  else return point;
 }

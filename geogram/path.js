@@ -218,8 +218,7 @@ export function path(cmds) {
 
   // TODO: remove overlapping
 
-  const shape = [pts.map(([x, y]) => ({ x, y }))];
-  return shape;
+  return [ pts ];
 }
 
 

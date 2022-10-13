@@ -1,7 +1,7 @@
-const lerp = (t, p1, p2) => ({
-  x: (1 - t) * p1.x + t * p2.x,
-  y: (1 - t) * p1.y + t * p2.y,
-});
+const lerp = (t, p1, p2) => [
+  (1 - t) * p1.x + t * p2.x,
+  (1 - t) * p1.y + t * p2.y,
+];
 
 // Example: reduce(0.5, ...[0.0, 1.0, 2.0, 3.0]) == [0.5, 1.5, 2.5]
 const reduce = (t, p1, p2, ...ps) => ps.length > 0
@@ -20,7 +20,7 @@ const pointConversion = (point) => {
 
 export function bezier(shape, ...ps) {
   ps = ps.map(pointConversion);
-  if (shape.length < 0) shape = [[{x: 0, y: 0}]];
+  if (shape.length < 0) shape = [[ [ 0, 0 ] ]];
   const prevPt = shape.at(-1).at(-1);
   ps = [ prevPt, ...ps ];
 

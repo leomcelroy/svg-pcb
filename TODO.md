@@ -52,3 +52,5 @@
 	- [ ] gerber
 - [ ] clean up code
 	- remove translate handle code (`pt`s superseded)
+- [ ] should component layer be specified in add or in footprint description
+- [ ] preview paths when drawing
