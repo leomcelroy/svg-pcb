@@ -112,7 +112,7 @@ const height = (shape) => {
 
 const originate = (shape) => {
   const cc = getPoint(shape, "cc");
-  return translate([0, 0], cc);
+  return translate(shape, [0, 0], cc);
 }
 
 const goTo = (shape, pt) => {
