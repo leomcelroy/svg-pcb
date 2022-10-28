@@ -64,7 +64,7 @@ const menu = state => html`
 					</div class="menu-item">
 					<div class="menu-item"
 						@click=${() => downloadGerber(state)}>
-						gerber
+						gerber (WIP)
 					</div class="menu-item">
 					<input 
 						class="input-item"

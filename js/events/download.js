@@ -78,7 +78,7 @@ export function downloadGerber(state) {
     else return x;
   }).flat();
 
-  const drill = layers["drill"].flat().map( x => {
+  const drill = (layers["drill"] ? layers["drill"] : []).flat().map( x => {
 
     const getCenter = (pts) => {
       let totalX = 0;
