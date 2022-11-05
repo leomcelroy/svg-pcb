@@ -33,7 +33,7 @@ import {
   circle,
   path,
   Gram,
-  offset,
+  offset2,
   boolean
 } from "./index.js";
 

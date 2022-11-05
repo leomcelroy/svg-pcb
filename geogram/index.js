@@ -238,5 +238,6 @@ export {
   bezier,
   path,
   boolean,
-  convertPtType
+  convertPtType,
+  offset2
 }

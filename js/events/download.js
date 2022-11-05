@@ -26,6 +26,12 @@ function makeSVG(state) {
   }
 
   const tg = svg.querySelector(".transform-group");
+  // tg.style.background = "black"; // TODO
+  /*
+    add limits
+    rect with stroke = none, fill = background
+    <rect class="limits no-download" stroke="black" fill="transparent" stroke-width="1" vector-effect="non-scaling-stroke" width="2.7" height="1.4000000000000001" transform="translate(-0.1, -0.1)"></rect>
+  */
   tg.style.transformOrigin = "";
   tg.style.transform = "";
   //const sg = svg.querySelector(".transform-group");
