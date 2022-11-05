@@ -62,6 +62,10 @@ const menu = state => html`
 						@click=${() => downloadText(`${state.name === "" ? "anon" : state.name}.js`, state.codemirror.view.state.doc.toString())}>
 						js
 					</div class="menu-item">
+					<div class="menu-item"
+						@click=${() => downloadGerber(state)}>
+						gerber (WIP)
+					</div class="menu-item">
 					<input 
 						class="input-item"
 						style="margin: 3px;"

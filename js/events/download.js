@@ -1,4 +1,8 @@
 import { changeDpiDataUrl } from "./changeDPI.js";
+import { offset2 } from "../../geogram/index.js";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+
 
 export function downloadSVG(state) {
   const svgUrl = makeSVG(state);
@@ -59,26 +63,121 @@ function format(x) {
 export function downloadGerber(state) {
   const layers = state.storedPCB.layers;
 
-  // console.log(layers);
-  let str = ''
-  str += "%MOIN*%\n" // inch units
-  str += "%LPD*%\n" // layer dark
-  str += "%FSLAX66Y66*%\n" // format absolute 6.6
-  str += "G01*\n" // linear interpolation
+  const expandWire = w => offset2(
+    w.shape, 
+    w.thickness/2, 
+    {
+      endType: "etOpenRound", 
+      jointType:"jtRound", 
+    }
+  );
 
+  // this is a list of polylines
+  const frontCopper = layers["F.Cu"].map( x => {
+    if (x.type === "wire") return expandWire(x);
+    else return x;
+  }).flat();
 
-  const front_copper = layers["F.Cu"];
-  const strs = front_copper.polylines().map( (x) => {
-    const { pts } = x;
-    let ptsString = pts.reduce((acc, cur, i) => `${acc}X${format(cur.x)}Y${format(cur.y)}D0${i === 0 ? 2 : 1}*\n`, "G36*\n")
-    ptsString += "G37*\n";
+  const drill = (layers["drill"] ? layers["drill"] : []).flat().map( x => {
 
-    return ptsString;
+    const getCenter = (pts) => {
+      let totalX = 0;
+      let totalY = 0;
+      pts.forEach(pt => {
+        totalX += pt.x;
+        totalY += pt.y;
+      })
+
+      return { x: totalX/pts.length, y: totalY/pts.length };
+    }
+
+    const getDistance = (pt0, pt1) => Math.sqrt((pt1.x - pt0.x)**2+(pt1.y - pt0.y)**2);
+
+    const center = getCenter(x);
+    const dist = Math.round(1000*x.reduce((acc, cur) => acc + getDistance(center, cur), 0)/x.length)/1000;
+
+    return {
+      center, 
+      dist
+    };
   });
 
-  str += strs.join("") + "M02*";
+  const interior = layers["interior"].map( x => {
+    return x;
+  }).flat();;
 
-  downloadText(`${state.name === "" ? "anon" : state.name}.gerber`, str);
+  console.log({
+    drill,
+    frontCopper,
+    interior
+  })
+
+  const makeFile = (layer) => {
+    let str = ''
+    str += "%MOIN*%\n" // inch units
+    str += "%LPD*%\n" // layer dark
+    str += "%FSLAX66Y66*%\n" // format absolute 6.6
+    str += "G01*\n" // linear interpolation
+
+    const strs = layer.map( pts => {
+      let ptsString = pts.reduce((acc, cur, i) => `${acc}X${format(cur.x)}Y${format(cur.y)}D0${i === 0 ? 2 : 1}*\n`, "G36*\n")
+      ptsString += "G37*\n";
+
+      return ptsString;
+    });
+
+    str += strs.join("") + "M02*";
+
+    return str;
+  }
+
+  const makeFileDrill = (drills) => {
+    const tools = {};
+    drills.forEach( ({ dist, center }) => {
+      if (dist in tools) {
+        tools[dist].push(center);
+      } else {
+        tools[dist] = [ center ];
+      }
+    })
+
+    let str = "";
+    str += "M48\n" // start of header
+    str += "INCH,LZ\n" // inch units with leading zeros
+    str += "VER,1\n" // version 1
+    str += "FMAT,2\n" // format 2
+    for (const tool in tools) {
+      str += 'T'+ tool + 'C'+ tool + "\n"; // +'C'+tool+"\n" // define tools
+    }
+    str += "M95\n" // end of header
+    str += "G05\n" // drill mode
+    for (const tool in tools) {
+       str += 'T'+tool+'\n' // tool selection
+       for (var i = 0; i < tools[tool].length; i++) {
+          const hole = tools[tool][i];
+          str += 'X'+format(hole.x)+'Y'+format(hole.y)+'\n'
+       }
+    }
+    
+    str += "M30\n" // end of program
+
+    return str;
+  }
+  
+
+  var zip = new JSZip();
+  zip.file(`${state.name === "" ? "anon" : state.name}-F_Cu.gbr`, makeFile(frontCopper));
+  zip.file(`${state.name === "" ? "anon" : state.name}-Edge_Cuts.gbr`, makeFile(interior));
+  zip.file(`${state.name === "" ? "anon" : state.name}-Drill.xln`, makeFileDrill(drill));
+
+  zip
+    .generateAsync({ type:"blob" })
+    .then((content) => {
+        // see FileSaver.js
+        saveAs(content, `${state.name === "" ? "anon" : state.name}-gerber.zip`);
+    });
+
+  // downloadText(`${state.name === "" ? "anon" : state.name}-F_Cu.gbr`, str);
 }
 
 export function downloadText(filename, text) {

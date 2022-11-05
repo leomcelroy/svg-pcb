@@ -1,11 +1,11 @@
 import { dispatch } from "./dispatch.js";
 
 export async function urlToCode(file_url, state) {
-  const file = await fetch(file_url,  {mode: 'cors'});
+  const file = await fetch(file_url,  { mode: 'cors' });
   const txt = await file.text();
 
-    state.codemirror.view.dispatch({
-    changes: {from: 0, insert: txt}
+  state.codemirror.view.dispatch({
+    changes: { from: 0, insert: txt }
   });
 
     // fold imports
