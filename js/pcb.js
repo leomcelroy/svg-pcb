@@ -43,8 +43,8 @@ export class PCB {
   }
 
   addShape(layer, shapeOrText) {
-    if (shapeOrText[0] && (typeof shapeOrText[0][0] === "number" || typeof shapeOrText[0][0] === "string")) {
-      shapeOrText = path(shapeOrText);
+    if (shapeOrText[0] && (typeof shapeOrText[0][0] === "number")) {
+      shapeOrText = [ shapeOrText ];
     } 
 
     if (layer in this.layers) {
@@ -115,7 +115,7 @@ export class PCB {
   wire(pts, thickness, layer = "F.Cu") {
     const newWire = {
       type: "wire",
-      shape: path(pts),
+      shape: [ pts ], // TODO: seems like this shouldn't be wrapped in another array
       thickness: thickness
     }
     this.addShape(layer, newWire);

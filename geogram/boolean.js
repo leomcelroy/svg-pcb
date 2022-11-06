@@ -4,7 +4,6 @@ import { ClipperLib } from "./libs/clipper_unminified.js";
 export function boolean(subjectPaths, clipPaths, type) {
 
   const toClipperFormat = pl => {
-    console.log(pl);
     return pl.map( 
     ([ x, y ]) => ({ X:x, Y:y }) 
   )}

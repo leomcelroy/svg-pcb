@@ -58,7 +58,7 @@ const makeIncluded = (flatten) => ({
 	},
 	path: (...args) => {
 
-		return args;
+		return geo.path(args)[0];
 	},
 	pipe: (x, ...fns) => fns.reduce((v, f) => f(v), x)
 	// "import": null,
