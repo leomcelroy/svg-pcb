@@ -57,7 +57,7 @@ function mergeHandles(cmds) {
 }
 
 export function path(cmds) {
-  if (cmds.length === 0) return [];
+  if (cmds.length === 0) return [ [] ];
   
   cmds = mergeHandles(cmds);
 

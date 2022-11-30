@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] dropped svgs turn into components
 - [ ] make README nice and informative
 - [ ] better documentation
 - [ ] render components directly from board object

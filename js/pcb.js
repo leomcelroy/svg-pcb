@@ -113,6 +113,8 @@ export class PCB {
   }
 
   wire(pts, thickness, layer = "F.Cu") {
+    // if (pts.length <= 1) return;
+    if (pts.length === 0) return;
     const newWire = {
       type: "wire",
       shape: [ pts ], // TODO: seems like this shouldn't be wrapped in another array
