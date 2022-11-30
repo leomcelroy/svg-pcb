@@ -65,9 +65,11 @@ function readFileSVG(file) {
 
   reader.onloadend = event => {
     let text = reader.result;
+    text = text.replace(/<\?xml.*>\n/g, "");
+    console.log(text);
     const div = document.createElement("div");
     div.innerHTML = text;
-    const pls = flattenSVG(div.firstChild);
+    const pls = flattenSVG(div.firstChild, { maxError: 0.001 });
     const newComponent = {};
 
     pls.forEach((pl, i) => {
@@ -78,7 +80,6 @@ function readFileSVG(file) {
         // index ?
       }
     })
-    console.log(newComponent);
     dispatch("UPLOAD_COMP_OBJ", { obj: newComponent });
   };
 
