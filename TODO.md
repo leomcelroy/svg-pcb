@@ -1,6 +1,20 @@
 # TODO
 
-- [ ] dropped svgs turn into components
+- [ ] remove
+	- storedPCB
+	- addTranslateHandle
+- [ ] path
+	- handle types
+		- pt
+		- fillet
+		- chamfer
+		- bezier (2 handles)
+		- turnForward?
+		- vec?
+	- should be able to do this for any pt
+- [ ] preview path
+- [?] change coordinate system of components
+- [x] dropped svgs turn into components
 - [ ] make README nice and informative
 - [ ] better documentation
 - [ ] render components directly from board object
