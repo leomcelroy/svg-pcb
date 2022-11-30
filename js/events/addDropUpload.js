@@ -80,7 +80,6 @@ function readFileSVG(file) {
         // index ?
       }
     })
-    console.log(newComponent);
     dispatch("UPLOAD_COMP_OBJ", { obj: newComponent });
   };
 
