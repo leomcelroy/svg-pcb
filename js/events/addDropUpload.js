@@ -1,4 +1,5 @@
 import { dispatch } from "../dispatch.js";
+import { flattenSVG } from 'flatten-svg';
 
 let count = 0;
 
@@ -37,11 +38,51 @@ function upload(files, extensions = []) {
     readFileUploadComp(file);
   } else if (extension === "js") {
     readFileJS(file);
+  } else if (extension === "svg") {
+    readFileSVG(file);
   } else {
     throw Error("Unknown extension:", extension);
   }
 
 };
+
+const round = n => Math.round(n*1000)/1000;
+
+function makePathData(pl) {
+  let str = "";
+
+  pl.points.forEach((pt, i) => {
+    if (i === 0) str += `M${round(pt[0])},${-round(pt[1])}`;
+    else str += `L${round(pt[0])},${-round(pt[1])}`;
+  })
+
+  return str;
+}
+
+function readFileSVG(file) {
+  var reader = new FileReader();
+  reader.readAsText(file);
+
+  reader.onloadend = event => {
+    let text = reader.result;
+    const div = document.createElement("div");
+    div.innerHTML = text;
+    const pls = flattenSVG(div.firstChild);
+    const newComponent = {};
+
+    pls.forEach((pl, i) => {
+      newComponent[i] = {
+        shape: makePathData(pl),
+        "pos":[ 0, 0 ],
+        "layers": [ "F.Cu" ],
+        // index ?
+      }
+    })
+    console.log(newComponent);
+    dispatch("UPLOAD_COMP_OBJ", { obj: newComponent });
+  };
+
+}
 
 export function addDropUpload(state, bodyListener) {
   bodyListener("drop", "", function(evt) {    

@@ -146,6 +146,19 @@ const ACTIONS = {
 		state.codemirror.foldRange(0, text.length);
 		dispatch("RENDER");
 	},
+	UPLOAD_COMP_OBJ({ obj }, state) {
+		let text = JSON.stringify(obj);
+		text = `const temp_name = ${text}\n`
+
+		const string = state.codemirror.view.state.doc.toString();
+		const startIndex = getFileSection("DECLARE_COMPONENTS", string) ?? 0;
+		state.codemirror.view.dispatch({
+		  changes: {from: startIndex, insert: text}
+		});
+
+		state.codemirror.foldRange(0, text.length);
+		dispatch("RENDER");
+	},
 	UPLOAD_JS({ text }, state) {
 		const end = state.codemirror.view.state.doc.toString().length;
 		state.codemirror.view.dispatch({

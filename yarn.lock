@@ -818,6 +818,11 @@ find-replace@^3.0.0:
   dependencies:
     array-back "^3.0.1"
 
+flatten-svg@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/flatten-svg/-/flatten-svg-0.3.0.tgz#04ed8ef4b2ee045c8036013cf0de4816a747e371"
+  integrity sha512-8CwSAVxqDglcgOBCjdL9hiyGXd3CmuEL9zQwiE6oinsjTnM7RZnk/t/2K8URYV9W1adUu1CXlQwW3QdzB5q9Sg==
+
 fresh@~0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-0.5.2.tgz#3d8cadd90d976569fa835ab1f8e4b23a105605a7"
