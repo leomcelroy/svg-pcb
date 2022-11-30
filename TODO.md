@@ -3,6 +3,7 @@
 - [ ] remove
 	- storedPCB
 	- addTranslateHandle
+	- xmlline from svg import
 - [ ] path
 	- handle types
 		- pt
