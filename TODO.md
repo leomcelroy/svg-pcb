@@ -1,9 +1,13 @@
 # TODO
 
+- [ ] default background color
+- [ ] holes
+- [ ] dragging in ternary adds extra plus
 - [ ] remove
 	- storedPCB
 	- addTranslateHandle
-	- xmlline from svg import
+- [x] xmlline from svg import
+- [ ] svg export flipping
 - [ ] path
 	- handle types
 		- pt

@@ -6,6 +6,7 @@ import { getFileSection } from "../getFileSection.js";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { getPoints } from "../getPoints.js";
 import { global_state } from "../global_state.js";
+import { snapToGrid } from "../snapToGrid.js";
 
 const sigFigs = num => num.includes(".")
   ? num.split(".")[1].length
@@ -29,7 +30,6 @@ export function addPathManipulation(state, svgListener) {
   setInterval(() => updateSelectedPath(state), 300);
 
   const svg = document.querySelector("svg");
-  const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 3);
   const svgPoint = svg.panZoomParams.svgPoint;
 
   svgListener("mousedown", "", e => {
@@ -53,8 +53,8 @@ export function addPathManipulation(state, svgListener) {
     const targetPoint = svgPoint(clickedPoint);
 
     const pt = {
-      x: toGrid(targetPoint.x),
-      y: toGrid(targetPoint.y)
+      x: snapToGrid(targetPoint.x),
+      y: snapToGrid(targetPoint.y)
     }
 
     const doc = state.codemirror.view.state.doc;

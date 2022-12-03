@@ -4,6 +4,7 @@ import * as esprima from 'esprima';
 import { dispatch } from "../dispatch.js";
 import { syntaxTree } from "@codemirror/language";
 import { walk } from "../walk.js";
+import { snapToGrid } from "../snapToGrid.js";
 
 export function addPtDragging(state, svgListener) {
   const svg = document.querySelector("svg");
@@ -62,14 +63,13 @@ export function addPtDragging(state, svgListener) {
 
   svgListener("mousemove", "", e => {
     if (!clicked) return;
-    const toGrid = (n) => state.gridSize === 0 || !state.grid ? n : round(step(n, state.gridSize), 3);
 
     const svgPoint = svg.panZoomParams.svgPoint;
     const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
     const xOffset = ( ogPos[0] - initialOffset[0] );
     const yOffset = ( ogPos[1] - initialOffset[1] );
-    const x = round(toGrid(currentPoint.x) - xOffset, 3);
-    const y = round(toGrid(currentPoint.y) - yOffset, 3);
+    const x = round(snapToGrid(currentPoint.x) - xOffset, 3);
+    const y = round(snapToGrid(currentPoint.y) - yOffset, 3);
     dragPt(x, y, index);
   })
 

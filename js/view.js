@@ -108,13 +108,25 @@ const menu = state => html`
 							>
 						</input>
 					</div>
+					<div class="check-item"> 
+						<span>adaptiveGrid</span>
+						<input
+							type="checkbox"
+							.checked=${state.adaptiveGrid}
+							@change=${(e) => {
+								state.adaptiveGrid = e.target.checked;
+								dispatch("RENDER");
+							}}
+							>
+						</input>
+					</div>
 					<div class="input-item">
 						<span>grid size:</span>
 						<input
 							type="number"
 							step="0.005"
 							min="0"
-							value=${state.gridSize}
+							.value=${state.gridSize}
 							@change=${e => {
 								state.gridSize = Number(e.target.value);
 								dispatch("RENDER");

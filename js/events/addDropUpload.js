@@ -66,7 +66,6 @@ function readFileSVG(file) {
   reader.onloadend = event => {
     let text = reader.result;
     text = text.replace(/<\?xml.*>\n/g, "");
-    console.log(text);
     const div = document.createElement("div");
     div.innerHTML = text;
     const pls = flattenSVG(div.firstChild, { maxError: 0.001 });

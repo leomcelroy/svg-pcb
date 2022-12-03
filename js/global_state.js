@@ -14,6 +14,7 @@ export const global_state = {
   mm_per_unit: 25.4,
   grid: true,
   gridSize: 0.05,
+  adaptiveGrid: true,
   viewHandles: true,
   selectedPath: null,
   panZoomParams: undefined,
