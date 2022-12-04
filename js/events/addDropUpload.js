@@ -65,11 +65,20 @@ function readFileSVG(file) {
 
   reader.onloadend = event => {
     let text = reader.result;
-    text = text.replace(/<\?xml.*>\n/g, "");
-    console.log(text);
-    const div = document.createElement("div");
-    div.innerHTML = text;
-    const pls = flattenSVG(div.firstChild, { maxError: 0.001 });
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, "image/svg+xml");
+    const svg = doc.querySelector("svg");
+
+    // const window = new Window
+    // window.document.documentElement.innerHTML = text;
+    // const svg = window.document.documentElement;
+
+    // text = text.replace(/<\?xml.*>\n/g, "");
+    // const div = document.createElement("div");
+    // div.innerHTML = text;
+
+    const pls = flattenSVG(svg, { maxError: 0.001 });
     const newComponent = {};
 
     pls.forEach((pl, i) => {
