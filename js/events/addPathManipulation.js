@@ -17,14 +17,6 @@ const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
 const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 
 export function addPathManipulation(state, svgListener) {
-  // window.addEventListener("mousedown", () => updateSelectedPath(state));
-  // window.addEventListener("keydown", (evt) => {
-  //   const key = event.keyCode || event.charCode;
-  //   if (key == 8) {
-  //     //backspace pressed
-  //     updateSelectedPath(state);
-  //   }
-  // });
   let clickedPoint = null;
 
   setInterval(() => updateSelectedPath(state), 300);
@@ -113,6 +105,7 @@ function updateSelectedPath(state) {
 
 
   global_state.selectedPath = selectedPath;
+
   dispatch("RENDER");
 }
 

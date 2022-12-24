@@ -1,4 +1,3 @@
-import { addTranslateHandle } from "./events/addTranslateHandle.js";
 import { addPtDragging } from "./events/addPtDragging.js";
 import { addVerticalBarDrag } from "./events/addVerticalBarDrag.js";
 import { addImgPanZoom } from "./events/addImgPanZoom.js";
@@ -38,7 +37,6 @@ export function addEvents(state) {
   	state.panZoomParams = svg.panZoomParams;
 
 	addSelectBox(state, listenSVG);
-  	addTranslateHandle(state, listenSVG);
   	addPtDragging(state, listenSVG);
   	addPathManipulation(state, listenSVG);
 

@@ -1,33 +1,19 @@
 import { view } from "./view.js";
 import { render } from "lit-html";
-
-
-import { PCB as real_PCB } from "./pcb.js";
+import { PCB } from "./pcb.js";
 import { via } from "./pcb_helpers.js";
 import { kicadToObj } from "./ki_cad_parser.js"
 import { getSemanticInfo } from "./getSemanticInfo.js";
 import { getFileSection } from "./getFileSection.js"
 import * as geo from "/geogram/index.js";
-
 import { global_state } from "./global_state.js";
-
 import { renderShapes } from "./renderShapes.js";
 import { renderPath } from "./renderPath.js";
 import { renderPCB } from "./renderPCB.js";
-
 import { defaultText } from "./defaultText.js";
-
-import { syntaxTree, ensureSyntaxTree } from "@codemirror/language";
-
+import { ensureSyntaxTree } from "@codemirror/language";
 import { logError } from "./logError.js";
 import { getPoints } from "./getPoints.js";
-
-class PCB extends real_PCB {
-	constructor() {
-		super();
-		global_state.storedPCB = this;
-	}
-}
 
 const getProgramString = () => global_state.codemirror.view.state.doc.toString();
 
@@ -57,6 +43,8 @@ const makeIncluded = (flatten) => ({
 		return [x, y]; 
 	},
 	path: (...args) => {
+		// const start = args.at(-2);
+		// const end = args.at(-1);
 		return geo.path(args)[0];
 	},
 	pipe: (x, ...fns) => fns.reduce((v, f) => f(v), x)
@@ -68,6 +56,26 @@ const makeIncluded = (flatten) => ({
 const r = () => {
 	render(view(global_state), document.getElementById("root"));
 	requestAnimationFrame(r);
+}
+
+function modifyAST(string, els) {
+	const newProg = [];
+	let min = 0;
+
+	els.sort((a, b) => a[0] - b[0]).forEach((r, i) => {
+		const [l, u] = r;
+		newProg.push(string.substr(min, l-min));
+		const ogPt = string.substr(l, u-l);
+		const firstParen = ogPt.indexOf("(");
+		const newPt = `${ogPt.slice(0, -1)}, ${l+firstParen+1}, ${u-1})`
+		newProg.push(newPt);
+		min = u;
+		if (i === els.length - 1) newProg.push(string.substr(u));
+	})
+
+	if (newProg.length > 0) string = newProg.join("");
+
+	return string;
 }
 
 const ACTIONS = {
@@ -85,7 +93,7 @@ const ACTIONS = {
 			let footprints = [];
 			let layers = [];
 			try {
-				const semantics = getSemanticInfo(string, dragging);
+				const semantics = getSemanticInfo(string);
 				footprints = semantics.footprints;
 				layers = semantics.layers ?? [];
 			} catch (err) {
@@ -99,22 +107,8 @@ const ACTIONS = {
 
 		const { pts, paths } = getPoints(state, ast);
 
-		const newProg = [];
-
-		let min = 0;
-		pts.sort((a, b) => a[0] - b[0]).forEach((r, i) => {
-			const [l, u] = r;
-			newProg.push(string.substr(min, l-min));
-			const ogPt = string.substr(l, u-l);
-			const firstParen = ogPt.indexOf("(");
-			const newPt = `${ogPt.slice(0, -1)}, ${l+firstParen+1}, ${u-1})`
-			newProg.push(newPt);
-			min = u;
-			if (i === pts.length - 1) newProg.push(string.substr(u));
-		})
-
-
-		if (newProg.length > 0) string = newProg.join("");
+		string = modifyAST(string, pts);
+		// string = modifyAST(string, paths);
 
 		const included = makeIncluded(flatten);
 

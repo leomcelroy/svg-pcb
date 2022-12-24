@@ -1,20 +1,27 @@
 export const global_state = {
   codemirror: undefined,
-  storedPCB: undefined,
+  pcb: undefined,
+
   transforming: false,
   transformUpdate: () => {},
+  
   selectBox: {},
+
   footprints: [],
   wires: [],
   shapes: [],
+
   limits: {
     x: [0, 1],
     y: [0, 1]
   },
   mm_per_unit: 25.4,
+
+  // -- grid --
   grid: true,
   gridSize: 0.05,
-  adaptiveGrid: true,
+  adaptiveGrid: false,
+
   viewHandles: true,
   selectedPath: null,
   panZoomParams: undefined,

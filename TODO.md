@@ -4,8 +4,8 @@
 - [ ] holes
 - [ ] dragging in ternary adds extra plus
 - [ ] remove
-	- storedPCB
-	- addTranslateHandle
+	- [x] storedPCB
+	- [x] addTranslateHandle
 - [x] xmlline from svg import
 - [ ] svg export flipping
 - [ ] path

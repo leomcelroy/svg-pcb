@@ -12,6 +12,7 @@ import { getPoint } from "./getPoint.js";
 import { extrema } from "./extrema.js";
 import { turnForward } from "./turnForward.js";
 import { path } from "./path.js";
+import { path as path2 } from "./path2.js";
 
 const overlap = (p0, p1) => 0.00000001 > Math.abs(p0[0] - p1[0]) + Math.abs(p0[1] - p1[1]);
 const isClosed = shape => {
@@ -237,6 +238,7 @@ export {
   circle,
   bezier,
   path,
+  path2,
   boolean,
-  convertPtType,
+  convertPtType
 }

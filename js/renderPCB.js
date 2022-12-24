@@ -26,6 +26,7 @@ export const renderPCB = flatten => ({ pcb, layerColors, limits, mm_per_unit }) 
     });
   }
 
+  global_state.pcb = pcb;
   global_state.shapes = shapes; // TODO ??? what should the shape format be { d: path data string, color: hex or valid svg color, classes: []}
   global_state.limits = limits;
   global_state.mm_per_unit = mm_per_unit;

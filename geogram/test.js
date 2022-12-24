@@ -32,7 +32,7 @@ import {
   rectangle,
   circle,
   path,
-  Gram,
+  // Gram,
   offset2,
   boolean
 } from "./index.js";

@@ -67,7 +67,7 @@ function format(x) {
 }
 
 export function downloadGerber(state) {
-  const layers = state.storedPCB.layers;
+  const layers = state.pcb.layers;
 
   const expandWire = w => offset2(
     w.shape, 

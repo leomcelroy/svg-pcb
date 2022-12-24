@@ -13,10 +13,15 @@ export function getPoints(state, ast) {
     // console.log(`Node ${cursor.name} from ${cursor.from} to ${cursor.to} with value ${string.slice(cursor.from, cursor.to)}`, cursor);
     const value = string.slice(cursor.from, cursor.to);
 
-    if (cursor.name === "CallExpression" && value.slice(0, 2) === "pt") pts.push([ cursor.from, cursor.to ]);
-    if (cursor.name === "CallExpression" && value.slice(0, 4) === "path") paths.push([ cursor.from, cursor.to ]);
+    if (cursor.name === "CallExpression" && value.slice(0, 2) === "pt") {
+      pts.push([ cursor.from, cursor.to ]);
+    }
 
-  } while (cursor.next())
+    if (cursor.name === "CallExpression" && value.slice(0, 4) === "path") {
+      paths.push([ cursor.from, cursor.to ]);
+    }
+
+  } while (cursor.next());
 
   return { pts, paths };
 }
