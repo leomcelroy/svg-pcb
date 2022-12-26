@@ -32,5 +32,3 @@ export const global_state = {
   error: ""
   // how do you know what point values are and how they map to concrete syntax tree
 }
-
-window.getState = () => global_state;

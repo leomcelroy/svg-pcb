@@ -1,6 +1,9 @@
 # TODO
 
+- [ ] import options on drag and drop upload of components
+	- [ ] transform: translate, scale, rotate
 - [ ] default background color
+- [ ] if limits is number just make it padding
 - [ ] holes
 - [ ] dragging in ternary adds extra plus
 - [ ] dragging when something highlighted causes issues

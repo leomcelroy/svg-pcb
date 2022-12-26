@@ -14,9 +14,9 @@ import { defaultText } from "./defaultText.js";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { logError } from "./logError.js";
 import { getPoints } from "./getPoints.js";
+import { createWorker } from "./createWorker.js";
 
 const getProgramString = () => global_state.codemirror.view.state.doc.toString();
-
 
 const makeIncluded = (flatten) => ({
 	// kicadToObj, // FIXME: remove references to
@@ -47,11 +47,9 @@ const makeIncluded = (flatten) => ({
 		// const end = args.at(-1);
 		return geo.path(args)[0];
 	},
-	pipe: (x, ...fns) => fns.reduce((v, f) => f(v), x)
+	// pipe: (x, ...fns) => fns.reduce((v, f) => f(v), x)
 	// "import": null,
 })
-
-
 
 const r = () => {
 	render(view(global_state), document.getElementById("root"));
@@ -78,6 +76,8 @@ function modifyAST(string, els) {
 	return string;
 }
 
+// let worker = createWorker();
+
 const ACTIONS = {
 	RUN({ dragging = false, flatten = false } = {}, state) {
 		state.paths = [];
@@ -86,6 +86,7 @@ const ACTIONS = {
 
 		const doc = state.codemirror.view.state.doc;
 	  let string = doc.toString();
+
 	  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
 		if (!dragging) {
@@ -110,9 +111,12 @@ const ACTIONS = {
 		string = modifyAST(string, pts);
 		// string = modifyAST(string, paths);
 
-		const included = makeIncluded(flatten);
 
 		try {
+			// worker.postMessage("isReady");
+			// worker.postMessage({ flatten, string });
+
+		  const included = makeIncluded(flatten);
 			const f = new Function(...Object.keys(included), string)
 			f(...Object.values(included));
 		} catch (err) {

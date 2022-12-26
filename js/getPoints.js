@@ -1,4 +1,3 @@
-import * as esprima from 'esprima';
 import { walk } from "./walk.js";
 
 export function getPoints(state, ast) {
@@ -6,8 +5,9 @@ export function getPoints(state, ast) {
   const string = doc.toString();
   // const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
-  let pts = [];
-  let paths = [];
+  const pts = [];
+  const paths = [];
+
   const cursor = ast.cursor()
   do {
     // console.log(`Node ${cursor.name} from ${cursor.from} to ${cursor.to} with value ${string.slice(cursor.from, cursor.to)}`, cursor);
