@@ -17,11 +17,6 @@ const makeIncluded = (flatten) => ({
   renderPCB: renderPCB(flatten),
   renderShapes,
   renderPath,
-  document: null,
-  window: null,
-  localStorage: null,
-  Function: null,
-  eval: null,
   pt: (x, y, start = -1, end = -1) => { 
 
     const dupe = global_state.pts.some(pt => pt.start === start);
@@ -47,6 +42,9 @@ addEventListener('message', e => {
   const included = makeIncluded(flatten);
   const f = new Function(...Object.keys(included), string)
   f(...Object.values(included));
+
+  console.log(global_state);
+
   postMessage("done");
 });
 

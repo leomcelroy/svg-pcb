@@ -77,6 +77,13 @@ function modifyAST(string, els) {
 }
 
 // let worker = createWorker();
+// const checkWorker = () => {
+// 	if (!worker.running) return null;
+// 	worker.terminate();
+// 	worker = createWorker();
+// }
+
+// let lastCheck = null;
 
 const ACTIONS = {
 	RUN({ dragging = false, flatten = false } = {}, state) {
@@ -113,12 +120,16 @@ const ACTIONS = {
 
 
 		try {
-			// worker.postMessage("isReady");
-			// worker.postMessage({ flatten, string });
+			// checkWorker();
+			// worker.run({ flatten, string });
+
+			// if (lastCheck) clearTimeout(lastCheck);
+			// lastCheck = setTimeout(checkWorker, 5000)
 
 		  const included = makeIncluded(flatten);
 			const f = new Function(...Object.keys(included), string)
 			f(...Object.values(included));
+
 		} catch (err) {
 			console.error("prog erred", err);
 			logError(err);
