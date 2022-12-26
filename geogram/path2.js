@@ -56,6 +56,10 @@ function getLastHandle(cmd) {
   }
 }
 
+function getCmd(cmd) {  
+  return typeof cmd[0] !== "string" ? "pt" : cmd[0];
+}
+
 function arcToCubic(start, end, center) {
   const [ x1, y1 ] = start;
   const [ x4, y4 ] = end;
@@ -128,12 +132,15 @@ function getStartEndCenter(prevPt, pt, nextPt, radius) {
 }
 
 function pathToCubics(cmds) {
-  if (cmds.length === 0) return [ [] ];
+  if (cmds.length === 0) return { cubics: [], fillets: [], chamfers: [] };
   
   let cubics = [];
 
   let prevPt = getCmdPt(cmds[0]);
   let prevHandle = getLastHandle(cmds[0]);
+  
+  const fillets = [];
+  const chamfers = [];
 
   for (let i = 1; i < cmds.length; i++) { 
     const cmd = cmds[i];
@@ -141,38 +148,37 @@ function pathToCubics(cmds) {
       cubics.push([prevPt, prevHandle, cmd, cmd]);
       prevPt = cmd;
       prevHandle = cmd;
-    } else if (cmd[0] === "chamfer") {
-      const [ _, radius, pt ] = cmd;
+    } else if (cmd[0] === "fillet" || cmd[0] === "chamfer") {
+      const [ str, radius, pt ] = cmd;
       const nextPt = i === cmds.length - 1 ? pt : getCmdPt(cmds[i+1]);
-      
-      const _pts = getStartEndCenter(prevPt, pt, nextPt, radius);
-      if (_pts === null) {
-        cubics.push([prevPt, prevHandle, pt, pt]);
-        prevPt = pt;
-        prevHandle = pt;
-      } else {
-        const [ start, end, center ] = _pts;
-        if (i === 1) cubics.push([prevPt, prevHandle, start, start]);
-        cubics.push([start, start, end, end]);
-        prevPt = end;
-        prevHandle = end;
+
+      const info = { 
+        lowerLimit: prevPt, 
+        start: pt, 
+        upperLimit: nextPt, 
+        radius, 
+        cubicIndex: i - 1
       }
-    } else if (cmd[0] === "fillet") {
-      const [ _, radius, pt ] = cmd;
-      const nextPt = i === cmds.length - 1 ? pt : getCmdPt(cmds[i+1]);
-      const _pts = getStartEndCenter(prevPt, pt, nextPt, radius);
-      if (_pts === null) {
-        cubics.push([prevPt, prevHandle, pt, pt]);
-        prevPt = pt;
-        prevHandle = pt;
-      } else {
-        const [ start, end, center ] = _pts;
-        if (i === 1) cubics.push([prevPt, prevHandle, start, start]);
-        const cubic = arcToCubic(start, end, center);
-        cubics.push(cubic);
-        prevPt = cubic[3];
-        prevHandle = cubic[3];
-      }
+
+      if (str === "fillet") fillets.push(info);
+      if (str === "chamfer") chamfers.push(info);
+
+      cubics.push([prevPt, prevHandle, pt, pt]);
+      prevPt = pt;
+      prevHandle = pt;
+
+      // if (_pts === null) {
+      //   cubics.push([prevPt, prevHandle, pt, pt]);
+      //   prevPt = pt;
+      //   prevHandle = pt;
+      // } else {
+      //   const [ start, end, center ] = _pts;
+      //   if (i === 1) cubics.push([prevPt, prevHandle, start, start]);
+      //   const cubic = arcToCubic(start, end, center);
+      //   cubics.push(cubic);
+      //   prevPt = cubic[3];
+      //   prevHandle = cubic[3];
+      // }
     } else if (cmd[0] === "cubic") {
       const [ _, handle0, pt, handle1 ] = cmd;      
       cubics.push([prevPt, prevHandle, handle0, pt]);
@@ -185,18 +191,84 @@ function pathToCubics(cmds) {
   }
   
 
-  return cubics;
+  return { cubics, chamfers, fillets };
 }
 
 export function path(...cmds) {
-  const cubics = pathToCubics(cmds);
-  const pts = [];
+  const { cubics, chamfers, fillets } = pathToCubics(cmds);
+  let pts = [];
+  const resolution = 64;
 
-  cubics.forEach( (cubic, i) => {
-    // if (i === 0) pts.push(cubic[0]);
-    // pts.push(...bezier(cubic).slice(1));
-    pts.push(...bezier(cubic));
-  })
+  const toFillet = [];
+
+  for (let i = 0; i < cubics.length; i++) {
+    const cubic = cubics[i];
+    if (i === 0) pts.push(cubic[0]);
+
+    const lower = pts.length - 1;
+
+    pts.push(...bezier(cubic, resolution).slice(1));
+
+    fillets.forEach(fillet => {
+      if (fillet.cubicIndex !== i) return;
+      if (i === cubics.length - 1) return;
+      
+      fillet.ptIndex = pts.length - 1;
+      fillet.lowerIndex = lower;
+      fillet.upperIndex = fillet.ptIndex + bezier(cubics[i+1], resolution).length - 1;
+      toFillet.push(fillet);
+    })
+
+    // chamfers.forEach(chamfer => {
+    //   if (chamfer.index-1 === i) chamfer.ptIndex = pts.length - 1;
+    // })
+
+    // pts.push(...bezier(cubic, resolution));
+  }
+
+  let added = 0;
+
+  toFillet.forEach(fillet => {
+    if (fillet.radius <= 0) return;
+
+    let lowerCount = -32;
+    let upperCount = 32;
+    lowerCount = Math.max(lowerCount, fillet.lowerIndex - fillet.ptIndex);
+    upperCount = Math.min(upperCount, fillet.upperIndex - fillet.ptIndex);
+
+    const index = fillet.ptIndex + added;
+    const pt = pts[index];
+    const prevPt = pts[index + lowerCount];
+    const nextPt = pts[index + upperCount];
+
+    // let newPts = null;
+    const newPts = getStartEndCenter(prevPt, pt, nextPt, fillet.radius);
+
+
+
+    if (newPts) {
+      const [ start, end, center ] = newPts;
+   
+      const startIndex = index+lowerCount+1;
+
+      // bezier
+      const toAdd = bezier(arcToCubic(start, end, center), resolution);
+      // chamfer
+      // start
+      // end
+      const endIndex = index+upperCount;
+   
+       pts = [
+        ...pts.slice(0, startIndex),
+        ...toAdd,
+        ...pts.slice(endIndex)
+      ]
+
+      added += toAdd.length - (upperCount - lowerCount - 1);
+    }
+
+  });
+
 
   return pts;
 }
@@ -217,9 +289,12 @@ const deCasteljau = (t, ps) => ps.length > 1
     ? deCasteljau(t, reduce(t, ...ps))
     : ps[0];
 
-function bezier(ps) {
+function bezier(ps, resolution) {
+
+  if (overlap(ps[0], ps[1]) && overlap(ps[2], ps[3])) return [ ps[0], ps[3] ];
+
   const pts = [];
-  for (let t = 0; t <= 1; t += 1/64 ) {
+  for (let t = 0; t <= 1; t += 1/resolution ) {
     const pt = deCasteljau(t, ps);
     pts.push(pt);
   }
