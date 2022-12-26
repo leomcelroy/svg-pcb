@@ -245,7 +245,8 @@ export function path(...cmds) {
       const toAdd = fillet.type === "fillet"
         ? bezier(arcToCubic(start, end, center), resolution)
         : [start, end]; // it's a "chamfer"
-   
+     
+
        pts = [
         ...pts.slice(0, startIndex),
         ...toAdd,

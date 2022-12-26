@@ -3,6 +3,8 @@
 - [ ] default background color
 - [ ] holes
 - [ ] dragging in ternary adds extra plus
+- [ ] dragging when something highlighted causes issues
+- [ ] make new path gui
 - [ ] remove
 	- [x] storedPCB
 	- [x] addTranslateHandle
