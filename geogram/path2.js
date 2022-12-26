@@ -82,10 +82,12 @@ function arcToCubic(start, end, center) {
 }
 
 function getStartEndCenter(prevPt, pt, nextPt, radius) {
-  if (radius < 0) radius = 0.00000001;
-
-
-  if (overlap(pt, prevPt) || overlap(pt, nextPt) || radius === 0) return null;
+  if (
+    overlap(pt, prevPt) 
+    || overlap(pt, nextPt) 
+    || overlap(prevPt, nextPt) 
+    || radius <= 0
+  ) return null;
 
 
   // need to find norm of bezier
@@ -185,7 +187,7 @@ function pathToCubics(cmds) {
 export function path(...cmds) {
   const { cubics, filletsAndChamfers } = pathToCubics(cmds);
   let pts = [];
-  const resolution = 64;
+  const resolution = 30;
 
   const toFilletAndChamfer = [];
 
@@ -215,10 +217,14 @@ export function path(...cmds) {
   toFilletAndChamfer.forEach(fillet => {
     if (fillet.radius <= 0) return;
 
-    let lowerCount = -32;
-    let upperCount = 32;
+    // don't support bezier fillets yet
+    if (fillet.upperIndex - fillet.lowerIndex > 2) return;
+
+    let lowerCount = -1;
+    let upperCount = 1;
     lowerCount = Math.max(lowerCount, fillet.lowerIndex - fillet.ptIndex);
     upperCount = Math.min(upperCount, fillet.upperIndex - fillet.ptIndex);
+    if (lowerCount >= upperCount) return;
 
     const index = fillet.ptIndex + added;
     const pt = pts[index];
@@ -226,18 +232,19 @@ export function path(...cmds) {
     const nextPt = pts[index + upperCount];
 
     // let newPts = null;
+    // this should use the points near the prevPt and nextPt
+    // should take two lines and the target radius
     const newPts = getStartEndCenter(prevPt, pt, nextPt, fillet.radius);
 
     if (newPts) {
       const [ start, end, center ] = newPts;
    
       const startIndex = index+lowerCount+1;
-
+      const endIndex = index+upperCount;
 
       const toAdd = fillet.type === "fillet"
         ? bezier(arcToCubic(start, end, center), resolution)
         : [start, end]; // it's a "chamfer"
-      const endIndex = index+upperCount;
    
        pts = [
         ...pts.slice(0, startIndex),
@@ -271,12 +278,12 @@ const deCasteljau = (t, ps) => ps.length > 1
     : ps[0];
 
 function bezier(ps, resolution) {
-
+  // if it's just a line skip the interpolation 
   if (overlap(ps[0], ps[1]) && overlap(ps[2], ps[3])) return [ ps[0], ps[3] ];
 
   const pts = [];
-  for (let t = 0; t <= 1; t += 1/resolution ) {
-    const pt = deCasteljau(t, ps);
+  for (let t = 0; t <= 1*resolution; t += 1 ) {
+    const pt = deCasteljau(t/resolution, ps);
     pts.push(pt);
   }
 
