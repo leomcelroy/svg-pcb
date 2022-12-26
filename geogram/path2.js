@@ -132,15 +132,15 @@ function getStartEndCenter(prevPt, pt, nextPt, radius) {
 }
 
 function pathToCubics(cmds) {
-  if (cmds.length === 0) return { cubics: [], fillets: [], chamfers: [] };
-  
-  let cubics = [];
+
+  const cubics = [];
+  const filletsAndChamfers = [];
+
+  if (cmds.length === 0) return { cubics, filletsAndChamfers };
 
   let prevPt = getCmdPt(cmds[0]);
   let prevHandle = getLastHandle(cmds[0]);
   
-  const fillets = [];
-  const chamfers = [];
 
   for (let i = 1; i < cmds.length; i++) { 
     const cmd = cmds[i];
@@ -149,7 +149,7 @@ function pathToCubics(cmds) {
       prevPt = cmd;
       prevHandle = cmd;
     } else if (cmd[0] === "fillet" || cmd[0] === "chamfer") {
-      const [ str, radius, pt ] = cmd;
+      const [ type, radius, pt ] = cmd;
       const nextPt = i === cmds.length - 1 ? pt : getCmdPt(cmds[i+1]);
 
       const info = { 
@@ -157,28 +157,16 @@ function pathToCubics(cmds) {
         start: pt, 
         upperLimit: nextPt, 
         radius, 
-        cubicIndex: i - 1
+        cubicIndex: i - 1,
+        type
       }
 
-      if (str === "fillet") fillets.push(info);
-      if (str === "chamfer") chamfers.push(info);
+      filletsAndChamfers.push(info);
 
       cubics.push([prevPt, prevHandle, pt, pt]);
       prevPt = pt;
       prevHandle = pt;
 
-      // if (_pts === null) {
-      //   cubics.push([prevPt, prevHandle, pt, pt]);
-      //   prevPt = pt;
-      //   prevHandle = pt;
-      // } else {
-      //   const [ start, end, center ] = _pts;
-      //   if (i === 1) cubics.push([prevPt, prevHandle, start, start]);
-      //   const cubic = arcToCubic(start, end, center);
-      //   cubics.push(cubic);
-      //   prevPt = cubic[3];
-      //   prevHandle = cubic[3];
-      // }
     } else if (cmd[0] === "cubic") {
       const [ _, handle0, pt, handle1 ] = cmd;      
       cubics.push([prevPt, prevHandle, handle0, pt]);
@@ -191,15 +179,15 @@ function pathToCubics(cmds) {
   }
   
 
-  return { cubics, chamfers, fillets };
+  return { cubics, filletsAndChamfers };
 }
 
 export function path(...cmds) {
-  const { cubics, chamfers, fillets } = pathToCubics(cmds);
+  const { cubics, filletsAndChamfers } = pathToCubics(cmds);
   let pts = [];
   const resolution = 64;
 
-  const toFillet = [];
+  const toFilletAndChamfer = [];
 
   for (let i = 0; i < cubics.length; i++) {
     const cubic = cubics[i];
@@ -209,26 +197,22 @@ export function path(...cmds) {
 
     pts.push(...bezier(cubic, resolution).slice(1));
 
-    fillets.forEach(fillet => {
-      if (fillet.cubicIndex !== i) return;
-      if (i === cubics.length - 1) return;
+    const chopIt = info => {
+      if (info.cubicIndex !== i) return; // if it's not the cubic to fillet return
+      if (i === cubics.length - 1) return; // if it's the last return
       
-      fillet.ptIndex = pts.length - 1;
-      fillet.lowerIndex = lower;
-      fillet.upperIndex = fillet.ptIndex + bezier(cubics[i+1], resolution).length - 1;
-      toFillet.push(fillet);
-    })
+      info.ptIndex = pts.length - 1;
+      info.lowerIndex = lower;
+      info.upperIndex = info.ptIndex + bezier(cubics[i+1], resolution).length - 1;
+      toFilletAndChamfer.push(info);
+    }
 
-    // chamfers.forEach(chamfer => {
-    //   if (chamfer.index-1 === i) chamfer.ptIndex = pts.length - 1;
-    // })
-
-    // pts.push(...bezier(cubic, resolution));
+    filletsAndChamfers.forEach(chopIt);
   }
 
   let added = 0;
 
-  toFillet.forEach(fillet => {
+  toFilletAndChamfer.forEach(fillet => {
     if (fillet.radius <= 0) return;
 
     let lowerCount = -32;
@@ -244,18 +228,15 @@ export function path(...cmds) {
     // let newPts = null;
     const newPts = getStartEndCenter(prevPt, pt, nextPt, fillet.radius);
 
-
-
     if (newPts) {
       const [ start, end, center ] = newPts;
    
       const startIndex = index+lowerCount+1;
 
-      // bezier
-      const toAdd = bezier(arcToCubic(start, end, center), resolution);
-      // chamfer
-      // start
-      // end
+
+      const toAdd = fillet.type === "fillet"
+        ? bezier(arcToCubic(start, end, center), resolution)
+        : [start, end]; // it's a "chamfer"
       const endIndex = index+upperCount;
    
        pts = [
