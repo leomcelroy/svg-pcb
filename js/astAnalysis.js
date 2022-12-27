@@ -132,73 +132,55 @@ export function astAnalysis(string, ast) {
     // if (cursor.node) console.log(cursor.node, getValue());
 
     if (cursor.name === "CallExpression" && value.slice(0, 9) === "renderPCB") {
-      let tree = [];
-      const enter = node => {
-        if (["}", "{", "(", ")", ";", ":", ",", "[", "]"].includes(getValue())) return false;
-        tree.push("OPEN");
-        tree.push({ name: node.name, from: node.from, to: node.to, value: getValue() });
-      }
-
-      const leave = () => {
-        tree.push("CLOSE");
-      }
-
-      // const final = [];
-      // let stack = [ final ];
-
+      // let tree = [];
       // const enter = node => {
       //   if (["}", "{", "(", ")", ";", ":", ",", "[", "]"].includes(getValue())) return false;
-      //   const newArr = [];
-      //   stack.at(-1).push(newArr);
-      //   stack.push(newArr);
-      //   stack.at(-1).push({ name: node.name, from: node.from, to: node.to, value: getValue() });
+      //   tree.push("OPEN");
+      //   tree.push({ name: node.name, from: node.from, to: node.to, value: getValue() });
       // }
 
       // const leave = () => {
-      //   stack.at(-1).push(item);
+      //   tree.push("CLOSE");
       // }
-      
-      // cursor.firstChild();
-      // cursor.nextSibling();
-      // cursor.firstChild();
-      // cursor.nextSibling();
-      // console.log(getValue());
 
-      // const tree = cursor.tree;
-      // console.log(tree);
-      
-      // const t = [];
-      // tree.iterate({
-      //   enter(type, start, end) {
-      //     t.push([type.name, start, end])
-      //   },
-      //   leave() {
-      //     t.push("leave");
-      //   }
-      // })
+      const final = [];
+      let stack = [ final ];
 
-      // console.log(t);
-
-      cursor.iterate(enter, leave);
-
-      const fold = arr => {
-        const final = [];
-        let stack = [ final ];
-        arr.forEach(item => {
-          if (item === "OPEN") {
-            const newArr = [];
-            stack.at(-1).push(newArr);
-            stack.push(newArr);
-          } else if (item === "CLOSE") {
-            stack.pop();
-          } else stack.at(-1).push(item);
-        })
-
-        return final;
+      const enter = node => {
+        if (["}", "{", "(", ")", ";", ":", ",", "[", "]"].includes(getValue())) return false;
+        const newArr = [];
+        stack.at(-1).push(newArr);
+        stack.push(newArr);
+        stack.at(-1).push({ name: node.name, from: node.from, to: node.to, value: getValue() });
       }
 
+      const leave = () => {
+        stack.pop();
+      }
 
-      console.log(fold(tree))
+      console.time("iter")
+      cursor.iterate(enter, leave);
+      console.timeEnd("iter")
+
+      // const fold = arr => {
+      //   const final = [];
+      //   let stack = [ final ];
+      //   arr.forEach(item => {
+      //     if (item === "OPEN") {
+      //       const newArr = [];
+      //       stack.at(-1).push(newArr);
+      //       stack.push(newArr);
+      //     } else if (item === "CLOSE") {
+      //       stack.pop();
+      //     } else stack.at(-1).push(item);
+      //   })
+
+      //   return final;
+      // }
+
+      // console.time("fold")
+      // console.log(fold(tree))
+      // console.timeEnd("fold")
     }
 
     if (cursor.name === "CallExpression" && value.slice(0, 2) === "pt") {
