@@ -31,10 +31,11 @@ export function view(state) {
 	`
 }
 
+
 const menu = state => html`
 	<div class="top-menu">
-		<img src=${logoURL} class="logo" alt="fab-circuit-logo" />
 		<div class="left">
+			<img src=${logoURL} class="logo" alt="fab-circuit-logo" />
 			<div
 				class="menu-item"
 				@click=${() => dispatch("RUN")}>

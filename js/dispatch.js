@@ -3,7 +3,7 @@ import { render } from "lit-html";
 import { PCB } from "./pcb.js";
 import { via } from "./pcb_helpers.js";
 import { kicadToObj } from "./ki_cad_parser.js"
-import { getSemanticInfo } from "./getSemanticInfo.js";
+import { astAnalysis } from "./astAnalysis.js";
 import { getFileSection } from "./getFileSection.js"
 import * as geo from "/geogram/index.js";
 import { global_state } from "./global_state.js";
@@ -23,7 +23,10 @@ const makeIncluded = (flatten) => ({
 	geo,
 	PCB,
 	via,
-	renderPCB: renderPCB(flatten),
+	renderPCB: obj => {
+		// console.log(obj.layerColors);
+		return renderPCB(flatten)(obj);
+	},
 	renderShapes,
 	renderPath,
 	document: null,
@@ -45,7 +48,7 @@ const makeIncluded = (flatten) => ({
 	path: (...args) => {
 		// const start = args.at(-2);
 		// const end = args.at(-1);
-		return geo.path(args)[0];
+		return geo.path2(...args);
 	},
 	// pipe: (x, ...fns) => fns.reduce((v, f) => f(v), x)
 	// "import": null,
@@ -76,14 +79,15 @@ function modifyAST(string, els) {
 	return string;
 }
 
-// let worker = createWorker();
-// const checkWorker = () => {
-// 	if (!worker.running) return null;
-// 	worker.terminate();
-// 	worker = createWorker();
-// }
+let worker = createWorker();
+const checkWorker = () => {
+	if (!worker.running) return null;
+	console.log("Terminating worker.");
+	worker.terminate();
+	worker = createWorker();
+}
 
-// let lastCheck = null;
+let lastCheck = null;
 
 const ACTIONS = {
 	RUN({ dragging = false, flatten = false } = {}, state) {
@@ -96,35 +100,10 @@ const ACTIONS = {
 
 	  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
-		if (!dragging) {
-
-			let footprints = [];
-			let layers = [];
-			try {
-				const semantics = getSemanticInfo(string);
-				footprints = semantics.footprints;
-				layers = semantics.layers ?? [];
-			} catch (err) {
-				console.error(err);
-				logError(err);
-			}
-
-			state.footprints = footprints;
-			state.layers = layers;
-		}
-
-		const { pts, paths } = getPoints(state, ast);
-
-		string = modifyAST(string, pts);
-		// string = modifyAST(string, paths);
-
-
 		try {
-			// checkWorker();
-			// worker.run({ flatten, string });
-
-			// if (lastCheck) clearTimeout(lastCheck);
-			// lastCheck = setTimeout(checkWorker, 5000)
+			const { pts, paths, footprints } = astAnalysis(string, ast);
+			state.footprints = footprints;
+			string = modifyAST(string, pts);
 
 		  const included = makeIncluded(flatten);
 			const f = new Function(...Object.keys(included), string)
@@ -136,6 +115,12 @@ const ACTIONS = {
 		}
 
 		dispatch("RENDER");
+
+		// checkWorker();
+		// worker.run({ flatten, string });
+		// if (lastCheck) clearTimeout(lastCheck);
+		// lastCheck = setTimeout(checkWorker, 5000)
+
 	},
 	NEW_FILE(args, state) {
 	  dispatch("UPLOAD_JS", { text: defaultText });
@@ -209,15 +194,3 @@ export function dispatch(action, args = {}) {
 	}
 	else console.log("Action not recongnized:", action);
 }
-
-
-function checkBlacklist(string) {
-	// poor attempt at sanitizing
-
-	const BLACK_LISTED_WORDS = []; // import, document, window, localStorage
-	BLACK_LISTED_WORDS.forEach(word => {
-		if (string.includes(word))
-			throw `"${word}" is not permitted due to security concerns.`;
-	});
-}
-

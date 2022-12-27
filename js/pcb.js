@@ -122,4 +122,7 @@ export class PCB {
     }
     this.addShape(layer, newWire);
   }
+
+  // components({ name: obj })
+  // renderPCB -> render()
 }

@@ -3,7 +3,7 @@ import { generate } from 'astring';
 import { walk } from "./walk.js";
 import { pathD, translate, scale, outline, width, height, getPoint } from "../geogram/index.js";
 
-function makeFootprintGeometry(footprintObj) {
+export function makeFootprintGeometry(footprintObj) {
    const t =  [];
 
   for (const padName in footprintObj) {
