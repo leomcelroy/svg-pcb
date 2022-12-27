@@ -9,7 +9,7 @@ import { ensureSyntaxTree } from "@codemirror/language";
 
 const getProgramString = () => global_state.codemirror.view.state.doc.toString();
 
-const makeIncluded = (flatten) => ({
+const makeIncluded = (flatten, prog) => ({
   // kicadToObj, // FIXME: remove references to
   geo,
   PCB,
@@ -22,7 +22,7 @@ const makeIncluded = (flatten) => ({
     const dupe = global_state.pts.some(pt => pt.start === start);
     if (start === -1 || dupe) return [x, y];
 
-    const string = ""; // getProgramString();
+    const string = prog;
     const snippet = string.slice(start, end);
     const pt = { pt: [x, y], start, end, text: snippet };
     global_state.pts.push(pt);
@@ -39,12 +39,21 @@ const makeIncluded = (flatten) => ({
 
 addEventListener('message', e => {
   const { flatten, string } = e.data;
-  const included = makeIncluded(flatten);
+  const included = makeIncluded(flatten, string);
   const f = new Function(...Object.keys(included), string)
   f(...Object.values(included));
+  
+  self.postMessage({
+    renderPCB: true,
+    shapes: global_state.shapes,
+    limits: global_state.limits,
+    mm_per_unit: global_state.mm_per_unit,
+    pts: global_state.pts
+  })
 
-  console.log(global_state);
 
-  postMessage("done");
+  postMessage({
+    done: true
+  });
 });
 
