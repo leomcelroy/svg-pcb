@@ -104,7 +104,6 @@ const ACTIONS = {
 			const { pts, paths, footprints, layers } = astAnalysis(string, ast);
 			state.footprints = footprints;
 			state.layers = layers;
-			console.log(layers);
 			string = modifyAST(string, pts);
 
 		  const included = makeIncluded(flatten);

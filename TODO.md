@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] add background color
 - [ ] incremental parser and incremental evaluator
 - [ ] static vs dynamic analysis
 	- advantage of static analysis is that manipulations that come from graphical interactions are more straightforward if we know what structure a piece of data has to have. For example consider a component which could be an object returned by a function versus one which has to be static json. If we had a component editor drawing tool then the components which are objects won't be manipulatable.
@@ -17,6 +18,7 @@
 	    "B.Cu": "#ff4c007f", 	
 	  ```
 	  If I do this on eval then I could show the color for interior in the GUI but only make B.Cu editable.
+	  eval can't handle comments though
 
 	  If I do it with static analysis I can only show B.Cu as editable
 - [ ] one principle is to privilege plain data structures
@@ -58,11 +60,11 @@
 - [ ] render components directly from board object
 	- don't squash into layers
 	- this allows people to click components and pads
-- [ ] gui for layer menu
+- [x] gui for layer menu
 	- color picker
-- [ ] better snap to grid control
-- [ ] clean up/decide what `path` returns and what `addShape` and `addWire` take
-- [ ] adaptive grid option
+- [x] better snap to grid control
+- [x] clean up/decide what `path` returns and what `addShape` and `addWire` take
+- [x] adaptive grid option
 - [ ] render paths (not just fills/shapes)
 	- add path to board
 - [ ] ability to create wires from gui
@@ -70,7 +72,7 @@
 	- rotating (could do on placement)
 	- deleting components (?)
 - [ ] infer constraints when drawing
-- [ ] make geogram use `[x, y]` vs `{ x, y }` internally
+- [x] make geogram use `[x, y]` vs `{ x, y }` internally
 - [ ] create gram class for fluid programming
 - [ ] gerber export
 - [ ] handle infinite loops
