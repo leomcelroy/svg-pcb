@@ -26,8 +26,11 @@ export const global_state = {
   selectedPath: null,
   panZoomParams: undefined,
   previewFootprint: null,
+  
   paths: [],
   pts: [], 
+  layers: [],
+
   name: "",
   error: ""
   // how do you know what point values are and how they map to concrete syntax tree

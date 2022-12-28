@@ -65,6 +65,36 @@ const getObj = (cursor, getValue) => {
   return obj;
 }
 
+function makeTree(cursor, getValue, func = null) {
+  const start = cursor.from;
+
+  const final = [];
+  let stack = [ final ];
+
+  const enter = node => {
+    const value = getValue();
+    if (["}", "{", "(", ")", ";", ":", ",", "[", "]"].includes(value)) return false;
+    const newArr = [];
+    stack.at(-1).push(newArr);
+    stack.push(newArr);
+    const raw = { name: node.name, from: node.from, to: node.to, value };
+    const processed = func
+      ? func(raw)
+      : raw;
+    stack.at(-1).push(processed);
+  }
+
+  const leave = () => {
+    stack.pop();
+  }
+
+  cursor.iterate(enter, leave);
+
+  cursor.moveTo(start, 1);
+
+  return final;
+}
+
 export function astAnalysis(string, ast) {
   const pts = [];
   const paths = [];
@@ -128,59 +158,20 @@ export function astAnalysis(string, ast) {
       
     }
 
-    // if (cursor.tree) console.log(cursor.tree, getValue());
-    // if (cursor.node) console.log(cursor.node, getValue());
-
     if (cursor.name === "CallExpression" && value.slice(0, 9) === "renderPCB") {
-      // let tree = [];
-      // const enter = node => {
-      //   if (["}", "{", "(", ")", ";", ":", ",", "[", "]"].includes(getValue())) return false;
-      //   tree.push("OPEN");
-      //   tree.push({ name: node.name, from: node.from, to: node.to, value: getValue() });
-      // }
+      while (getValue() !== "layerColors" && cursor.next()) cursor.next();
 
-      // const leave = () => {
-      //   tree.push("CLOSE");
-      // }
+      // const tree0 = getObj(cursor, getValue);
+      const tree = makeTree(cursor, getValue);
 
-      const final = [];
-      let stack = [ final ];
+      // const layers = tree[1].slice(1).map(x => [ 
+      //   x[1][0].value, 
+      //   x[2][0].value,
+      //   x[2][0].from,
+      //   x[2][0].to,
+      // ]);
 
-      const enter = node => {
-        if (["}", "{", "(", ")", ";", ":", ",", "[", "]"].includes(getValue())) return false;
-        const newArr = [];
-        stack.at(-1).push(newArr);
-        stack.push(newArr);
-        stack.at(-1).push({ name: node.name, from: node.from, to: node.to, value: getValue() });
-      }
-
-      const leave = () => {
-        stack.pop();
-      }
-
-      console.time("iter")
-      cursor.iterate(enter, leave);
-      console.timeEnd("iter")
-
-      // const fold = arr => {
-      //   const final = [];
-      //   let stack = [ final ];
-      //   arr.forEach(item => {
-      //     if (item === "OPEN") {
-      //       const newArr = [];
-      //       stack.at(-1).push(newArr);
-      //       stack.push(newArr);
-      //     } else if (item === "CLOSE") {
-      //       stack.pop();
-      //     } else stack.at(-1).push(item);
-      //   })
-
-      //   return final;
-      // }
-
-      // console.time("fold")
-      // console.log(fold(tree))
-      // console.timeEnd("fold")
+      layers = tree[1].slice(1);
     }
 
     if (cursor.name === "CallExpression" && value.slice(0, 2) === "pt") {

@@ -25,11 +25,43 @@ export function view(state) {
 				${state.selectedPath !== null ? html`<div class="path-selected" @click=${clearSelectedPath}>unselect path</div>` : ""}
 				<div class="footprint-toolbox">${state.footprints.map(renderFootprint)}</div>
 				${state.previewFootprint ? renderPreviewFootprint(...state.previewFootprint) : ""}
+				${layerColorPicker(state)}
 			</div>
 			<div id="vertical-bar"></div>
 		</div>
 	`
 }
+
+const layerColorPicker = ({ layers }) => html`
+	<div class="layers-color-picker">
+		<b>Layers:</b>
+		${layers.map(l => { 
+
+			const name = l.length === 3 ? l[1][0].value.slice(1, -1) : l[0].value.match(/\".*?\"/)[0].slice(1, -1)
+			const color = l.length === 3 ? l[2][0].value.slice(1, -3) : "";
+			const opacity = l.length === 3 ? l[2][0].value.slice(8, -1) : "";
+
+			const colorInput = l.length === 3 ?
+				html`
+						<span class="layer-color">
+							<input class="color-input" type="color" .value=${color}/>
+							<span>${opacity}</span>
+						</span>
+				` : "";
+
+			return html`
+				<div class="layer-item">
+					<span class="layer-name">
+						<input type="checkbox" .checked=${l.length === 3}/>
+						<span>${name}</span>
+					</span>
+					${colorInput}
+				</div>
+			`
+		})}
+	</div>
+
+`
 
 
 const menu = state => html`

@@ -323,8 +323,8 @@ codemirror-2 {
 .path-selected {
 	position: absolute;
   color: red;
-  left: 10px;
-  top: 10px;
+  left: 15px;
+  bottom: 10px;
   padding: 4px;
   background: #efe4e4;
   border-radius: 7px;
@@ -345,6 +345,43 @@ codemirror-2 {
 .github-logo:hover {
 	cursor: pointer;
 	opacity: .8;
+}
+
+
+/* ---------------- */
+
+.layers-color-picker {
+	position: absolute;
+	left: 15px;
+	top: 5px;
+}
+
+.layers-color-picker .color-input {
+  width: 25px;
+  height: 25px;
+  padding: 0px;
+  border: none;
+  background: none;
+}
+
+
+.layer-item {
+	display: flex;
+	align-items: center;
+  justify-content: space-between;
+  height: 25px;
+}
+
+.layer-name {
+/*	width: 80%;*/
+}
+
+.layer-color {
+	padding-left: 5px;
+	display: flex;
+  width: 50px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 

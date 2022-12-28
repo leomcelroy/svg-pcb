@@ -101,8 +101,10 @@ const ACTIONS = {
 	  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
 		try {
-			const { pts, paths, footprints } = astAnalysis(string, ast);
+			const { pts, paths, footprints, layers } = astAnalysis(string, ast);
 			state.footprints = footprints;
+			state.layers = layers;
+			console.log(layers);
 			string = modifyAST(string, pts);
 
 		  const included = makeIncluded(flatten);
