@@ -37,15 +37,20 @@ const layerColorPicker = ({ layers }) => html`
 		<b>Layers:</b>
 		${layers.map(l => { 
 
+			const getOpacity = n => (parseInt(n, 16)/255).toFixed(2);
+
 			const name = l.length === 3 ? l[1][0].value.slice(1, -1) : l[0].value.match(/\".*?\"/)[0].slice(1, -1)
 			const color = l.length === 3 ? l[2][0].value.slice(1, -3) : "";
-			const opacity = l.length === 3 ? l[2][0].value.slice(8, -1) : "";
+			const opacity = l.length === 3 ? getOpacity(l[2][0].value.slice(8, -1)) : "";
 
 			const colorInput = l.length === 3 ?
 				html`
 						<span class="layer-color">
-							<input class="color-input" type="color" .value=${color}/>
-							<span>${opacity}</span>
+							<input class="color-input" type="color" style="opacity: ${opacity};" .value=${color}/>
+							<span class="opacity-input">
+								${opacity}
+								<input type="range" min="0" max="1" step="0.01" .value=${opacity}/>
+							</span>
 						</span>
 				` : "";
 

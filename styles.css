@@ -379,9 +379,28 @@ codemirror-2 {
 .layer-color {
 	padding-left: 5px;
 	display: flex;
-  width: 50px;
+  width: 65px;
   align-items: center;
   justify-content: space-between;
+}
+
+.opacity-input {
+	position: relative;
+}
+
+.opacity-input input {
+	position: absolute;
+	left: 100%;
+	visibility: hidden;
+	transition: visibility 0.2s linear;
+}
+
+.opacity-input:hover input {
+	visibility: visible;
+}
+
+.opacity-input input:hover {
+	visibility: visible;
 }
 
 
