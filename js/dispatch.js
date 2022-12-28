@@ -35,7 +35,6 @@ const makeIncluded = (flatten) => ({
 	Function: null,
 	eval: null,
 	pt: (x, y, start = -1, end = -1) => { 
-
 		const dupe = global_state.pts.some(pt => pt.start === start);
 		if (start === -1 || dupe) return [x, y];
 

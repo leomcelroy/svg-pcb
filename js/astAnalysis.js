@@ -107,6 +107,8 @@ export function astAnalysis(string, ast) {
   do {
     // console.log(`Node ${cursor.name} from ${cursor.from} to ${cursor.to} with value ${string.slice(cursor.from, cursor.to)}`, cursor);
     const value = getValue();
+    const startFrom = cursor.from;
+
 
     checkfootprint: if (cursor.name === "VariableDeclaration") {
       cursor.firstChild();
@@ -117,6 +119,7 @@ export function astAnalysis(string, ast) {
       cursor.next();
 
       if (cursor.name !== "ObjectExpression") {
+        cursor.moveTo(startFrom, 1);
         break checkfootprint;
       }
 
@@ -129,18 +132,21 @@ export function astAnalysis(string, ast) {
       cursor.next();
 
       if (cursor.name !== "ObjectExpression") {
+        cursor.moveTo(startFrom, 1);
         break checkfootprint;
       }
 
       const props = getObjKeys(cursor, getValue);
 
       if (!["shape", "pos", "layers"].every(key => props.includes(key))) {
+        cursor.moveTo(startFrom, 1);
         break checkfootprint;
       }
 
       footprints.push(name);
 
       if (name in FOOTPRINTS && FOOTPRINTS[name].footprintString === footprintString) {
+        cursor.moveTo(startFrom, 1);
         break checkfootprint;
       }
 
