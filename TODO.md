@@ -21,6 +21,9 @@
 	  eval can't handle comments though
 
 	  If I do it with static analysis I can only show B.Cu as editable
+	- could check to evaluate components by stringifying obj
+	- board.components({ }) vs defineComponents({ })
+	- board.add takes json, obj, or string of component defined in board.components
 - [ ] one principle is to privilege plain data structures
 	- geogram over gram
 	- json over special object

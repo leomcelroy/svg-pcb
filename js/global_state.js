@@ -31,6 +31,9 @@ export const global_state = {
   pts: [], 
   layers: [],
 
+  componentMenu: false,
+  componentSearch: "",
+
   name: "",
   error: ""
   // how do you know what point values are and how they map to concrete syntax tree
