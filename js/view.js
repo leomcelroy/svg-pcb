@@ -26,16 +26,20 @@ export function view(state) {
 				${svgViewer(state)}
 				${state.selectedPath !== null ? html`<div class="path-selected" @click=${clearSelectedPath}>unselect path</div>` : ""}
 				<div class="footprint-toolbox">
-					<div class="import-button">
-						<button @mousedown=${() => {
+					<b>Components:</b>
+					<div class="import-button-container">
+						<div class="import-button" @mousedown=${() => {
 		          state.componentMenu = true;
 		          dispatch("RENDER");
-		        }}>import</button>
+		        }}>import</div>
 		      </div>
 					<div class="component-list">
 						${state.footprints.map(renderFootprint)}
 					</div>
 					${layersColorPicker(state)}
+					<div class="nub" @click=${() => {
+						document.querySelector(".footprint-toolbox").classList.toggle("footprint-toolbox-closed");
+					}}></div>
 				</div>
 				${state.previewFootprint ? renderPreviewFootprint(...state.previewFootprint) : ""}
 			</div>

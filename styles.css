@@ -4,7 +4,8 @@
   --lightgrey-0: #ced4da;
   /* old yellow - #f4e6d0 */
   --construction-paper: #fff4e6;
-  --construction-paper-transparent: #fff4e6aa;
+  --construction-paper-transparent: #fff4e5e3;
+  --
 }
 
 html,
@@ -71,7 +72,7 @@ input {
     flex: 1;
     height: 100%;
     position: relative;
-/*    transform: scale(1, -1);*/
+    overflow: hidden;
 }
 
 codemirror-2 {
@@ -94,9 +95,8 @@ codemirror-2 {
 }
 
 .footprint-toolbox {
-	width: min-content;
+	width: 300px;
 	height: min-content;
-	overflow: scroll;
 	max-height: 100%;
 	background: var(--construction-paper-transparent);
 	position: absolute;
@@ -105,12 +105,19 @@ codemirror-2 {
 	padding: 5px;
 	display: flex;
 	flex-direction: column;
+	transition: right 0.5s ease;
+	box-sizing: border-box;
+}
+
+.footprint-toolbox-closed {
+	right: -300px;
 }
 
 .logo {
 	margin-right: -10px;
 	width: 40px; 
 	padding: 5px;
+	padding-right: 15px;
 }
 
 .footprint-item {
@@ -353,7 +360,7 @@ codemirror-2 {
 /* ---------------- */
 
 .layers-color-picker {
-	padding: 10px 2px 10px 2px;
+	padding: 10px 25px 10px 2px;
 }
 
 .layers-color-picker .color-input {
@@ -385,14 +392,18 @@ codemirror-2 {
 }
 
 .opacity-input {
+	width: 35px;
 	position: relative;
 }
 
 .opacity-input input {
 	position: absolute;
-	left: 100%;
+	bottom: 0px;
+	left: 33px;
+	width: 30px;
 	visibility: hidden;
 	transition: visibility 0.2s linear;
+	-webkit-appearance: slider-vertical;
 }
 
 .opacity-input:hover input {
@@ -418,6 +429,7 @@ codemirror-2 {
 	padding: 10px;
 	z-index: 99999;
 	border-radius: 5px;
+	border: black 1px solid;
 }
 
 .component-menu .search-container {
@@ -458,7 +470,7 @@ codemirror-2 {
 	overflow: scroll;
 }
 
-.import-button {
+.import-button-container {
 	width: 100%;
 	display: flex;
 	align-items: center;
@@ -466,6 +478,40 @@ codemirror-2 {
   padding: 8px;
 }
 
-.import-button button {
-	width: 80%;
+.import-button {
+	cursor: pointer;
+  width: 80%;
+  background: #ced4da;
+  padding: 4px;
+  text-align: center;
+  border-radius: 5px;
+/*  transition: transform .2s ease-in-out;*/
+	border: transparent solid 1px;
 }
+
+
+.import-button:hover {
+	border: black solid 1px;
+/*	transform: scale(1.02);*/
+}
+
+/* ------------------ */
+
+.nub {
+	width: 20px;
+	height: 50px;
+	background: var(--construction-paper);
+	border: black solid;
+	border-width: 1px 0px 1px 1px;
+	border-radius: 10px 0px 0px 10px;
+	position: absolute;
+	top: 50%;
+	left: 0px;
+	transform: translate(-100%, -50%);
+}
+
+.nub:hover {
+	opacity: 0.7;
+	cursor: pointer;
+}
+
