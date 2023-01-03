@@ -1,4 +1,5 @@
 export const files = [
+  "./library/connectors/XIAO_RP2040.json",
   "./library/connectors/ESP8266_12E.json",
   "./library/connectors/header_FTDI.json",
   "./library/connectors/power_65mm.json",
