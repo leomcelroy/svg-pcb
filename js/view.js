@@ -26,10 +26,11 @@ export function view(state) {
 				${svgViewer(state)}
 				${state.selectedPath !== null ? html`<div class="path-selected" @click=${clearSelectedPath}>unselect path</div>` : ""}
 				<div class="footprint-toolbox">
+					${state.inputs.length > 0 ? html`<div class="toolbox-title">Inputs:</div>` : ""}
 					<div class="input-panel">
-						${state.inputs.map(input => inputRenderers[input.type](input))}
+						${state.inputs.map(input => inputRenderers[input[0].type](...input, state))}
 					</div>
-					<b>Components:</b>
+					<div class="toolbox-title">Components:</div>
 					<div class="import-button-container">
 						<div class="import-button" @mousedown=${() => {
 		          state.componentMenu = true;
@@ -53,7 +54,7 @@ export function view(state) {
 }
 
 const inputRenderers = {
-	"slider": ops => html`
+	"slider": (ops, staticInfo, state) => html`
 		<div class="range-input">
 			<span>${ops.name}:</span>
 			<input 
@@ -63,8 +64,18 @@ const inputRenderers = {
 				step=${ops.step}
 				value=${ops.value}
 				@input=${e => {
+
+					const value = e.target.value;
 					// modify code
-					console.log(Number(e.target.value))
+					state.codemirror.view.dispatch({
+	          changes: {
+	            from: staticInfo.from, 
+	            to: staticInfo.to, 
+	            insert: value
+	          }
+	        });
+
+        	dispatch("RUN", { flatten: false });
 				}}>
 			</input>
 			<span>${ops.value}</span>

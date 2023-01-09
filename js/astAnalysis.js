@@ -99,6 +99,7 @@ export function astAnalysis(string, ast) {
   const pts = [];
   const paths = [];
   const footprints = [];
+  const inputs = [];
   let layers = [];
 
   const cursor = ast.cursor()
@@ -183,7 +184,34 @@ export function astAnalysis(string, ast) {
     if (cursor.name === "CallExpression" && value.slice(0, 2) === "pt") {
       cursor.next();
       cursor.next();
-      pts.push([ cursor.from, cursor.to ]);
+      pts.push({
+        from: cursor.from,
+        to: cursor.to,
+        snippet: getValue()
+      });
+    }
+
+    if (cursor.name === "CallExpression" && value.slice(0, 5) === "input") {
+      cursor.next();
+      cursor.next();
+      const start = cursor.from;
+      const end = cursor.to;
+      cursor.next();
+      cursor.next();
+      const tree = makeTree(cursor, getValue)[0];
+      tree.slice(1).forEach(node => {
+        const propKey = node[1][0];
+        if (propKey.value === "value") {
+          const propValue = node[2][0];
+          const valueIndices = { 
+            from: propValue.from, 
+            to: propValue.to,
+            start,
+            end
+          }
+          inputs.push(valueIndices);
+        }
+      })
     }
 
     if (cursor.name === "CallExpression" && value.slice(0, 4) === "path") {
@@ -211,5 +239,11 @@ export function astAnalysis(string, ast) {
 
   // console.log(layers);
 
-  return { pts, paths, footprints: fps, layers };
+  return { 
+    pts, 
+    paths, 
+    footprints: fps, 
+    layers, 
+    inputs 
+  };
 }

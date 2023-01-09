@@ -41,9 +41,14 @@ const makeIncluded = (flatten) => ({
 		const dupe = global_state.pts.some(pt => pt.start === start);
 		if (start === -1 || dupe) return [x, y];
 
-		const string = getProgramString();
-		const snippet = string.slice(start, end);
-		const pt = { pt: [x, y], start, end, text: snippet };
+		const snippet = staticInfo.snippet;
+		const pt = { 
+			pt: [x, y], 
+			start: start+1, 
+			end: end+1, 
+			text: snippet 
+		};
+
 		global_state.pts.push(pt);
 		return [x, y]; 
 	},
@@ -52,14 +57,16 @@ const makeIncluded = (flatten) => ({
 		// const end = args.at(-1);
 		return geo.path2(...args);
 	},
-	input: (ops) => {
+	input: ([ops], staticInfo) => {
 		// { type: slider, min: num, max: num, step: num, value }
 
 		if ( ops.type === "slider") {
-			global_state.inputs.push(ops);
+			global_state.inputs.push([ops, staticInfo]);
 		} else {
 			console.log("Unrecognized input type:", ops);
 		}
+
+		return ops.value;
 	}
 	// pipe: (x, ...fns) => fns.reduce((v, f) => f(v), x)
 	// "import": null,
@@ -70,27 +77,7 @@ const r = () => {
 	requestAnimationFrame(r);
 }
 
-function modifyAST(string, els) {
-	const newProg = [];
-	let min = 0;
-
-	els.sort((a, b) => a[0] - b[0]).forEach((r, i) => {
-		const [l, u] = r;
-		newProg.push(string.substr(min, l-min));
-		const ogPt = string.substr(l, u-l);
-		const firstParen = ogPt.indexOf("(");
-		const newPt = `${ogPt.slice(0, -1)}, ${l+firstParen+1}, ${u-1})`
-		newProg.push(newPt);
-		min = u;
-		if (i === els.length - 1) newProg.push(string.substr(u));
-	})
-
-	if (newProg.length > 0) string = newProg.join("");
-
-	return string;
-}
-
-function modifyAST2(string, changes) {
+function modifyAST(string, changes) {
 	let result = [];
 	let min = 0;
 	changes.sort((a, b) => a.from - b.from);
@@ -106,8 +93,6 @@ function modifyAST2(string, changes) {
 	result.push(string.substr(min));
 
 	if (result.length > 0) string = result.join("");
-
-	console.log(string);
 
 	return string;
 }
@@ -135,25 +120,35 @@ const ACTIONS = {
 	  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
 		try {
-			const { pts, paths, footprints, layers } = astAnalysis(string, ast);
+			const { pts, paths, footprints, layers, inputs } = astAnalysis(string, ast);
 			state.footprints = footprints;
 			state.layers = layers;
-
-			console.log({ pts, paths, footprints, layers });
 
 			const changes = [];
 
 			pts.forEach(x => {
-				changes.push({ from: x[0]+1, insert: `[` });
-				changes.push({ from: x[1]-1, insert: `]` });
-				changes.push({ from: x[1]-1, insert: `,{from:${x[0]}, to:${x[1]}}` });
+				changes.push({ from: x.from+1, insert: `[` });
+				changes.push({ from: x.to-1, insert: `]` });
+
+				let snippet = "";
+				const src = x.snippet.slice(1, -1);
+				for ( let i = 0; i< src.length; i++) {
+					const ch = src[i];
+
+					if (["\"", "'", "`"].includes(ch)) snippet += `\\${ch}`;
+					else snippet += ch;
+				}
+
+				changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, snippet:"${snippet}"}` });
 			});
 
-			// console.log(changes);
+			inputs.forEach(x => {
+				changes.push({ from: x.start+1, insert: "[" });
+				changes.push({ from: x.end-1, insert: "]" });
+				changes.push({ from: x.end-1, insert: `,{from:${x.from}, to:${x.to}}` });
+			})
 
-			// const newProgram = modifyAST2(string, changes);
-
-			string = modifyAST2(string, changes);
+			string = modifyAST(string, changes);
 
 		  const included = makeIncluded(flatten);
 			const f = new Function(...Object.keys(included), string)

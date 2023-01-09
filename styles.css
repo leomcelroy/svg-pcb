@@ -421,7 +421,8 @@ codemirror-2 {
 .component-menu {
 	position: absolute;
 	background: var(--lightgrey-0);
-	width: 500px;
+	width: 70%;
+	max-width: fit-content;
 	height: 60%;
 	left: 50%;
 	top: 100px;
@@ -521,5 +522,11 @@ codemirror-2 {
 
 .range-input {
 	display: flex;
+}
+
+.toolbox-title {
+	padding-bottom: 5px;
+	padding-top: 5px;
+	font-weight: bold;
 }
 
