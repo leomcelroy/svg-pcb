@@ -12,6 +12,7 @@ import { svgViewer } from "./views/svgViewer.js";
 import { renderFootprint } from "./views/renderFootprint.js";
 import { clearSelectedPath } from "./clearSelectedPath.js";
 import logoURL from '../logo.svg'
+import { inputRenderers } from "./views/inputRenderers.js";
 
 export function view(state) {
 	return html`
@@ -52,36 +53,6 @@ export function view(state) {
 		</div>
 	`
 }
-
-const inputRenderers = {
-	"slider": (ops, staticInfo, state) => html`
-		<div class="range-input">
-			<span>${ops.name}:</span>
-			<input 
-				type="range" 
-				min=${ops.min}
-				max=${ops.max}
-				step=${ops.step}
-				value=${ops.value}
-				@input=${e => {
-
-					const value = e.target.value;
-					// modify code
-					state.codemirror.view.dispatch({
-	          changes: {
-	            from: staticInfo.from, 
-	            to: staticInfo.to, 
-	            insert: value
-	          }
-	        });
-
-        	dispatch("RUN", { flatten: false });
-				}}>
-			</input>
-			<span>${ops.value}</span>
-		</div>`
-}
-
 
 const menu = state => html`
 	<div class="top-menu">
