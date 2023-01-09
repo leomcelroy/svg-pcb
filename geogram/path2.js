@@ -22,7 +22,7 @@ const slerp = (t, p0, p1, angle) => {
   return [p0[0]*factor1 + p1[0]*factor2, p0[1]*factor1 + p1[1]*factor2]
 }
 
-function getCmdPt(cmd) {  
+function getCmdPt(cmd, lastPt = [0, 0], secondLastPt = [0, 0] ) { 
   if (typeof cmd[0] !== "string") {
     return cmd;
   } else if (cmd[0] === "chamfer") {
@@ -34,6 +34,21 @@ function getCmdPt(cmd) {
   } else if (cmd[0] === "cubic") {
     const [ _, handle0, pt, handle1 ] = cmd;
     return pt;
+  } else if (cmd[0] === "rel") {
+    const [ _, dx, dy ] = cmd;
+
+    return [ lastPt[0] + dx, lastPt[1] + dy];
+
+  } else if (cmd[0] === "turnForward") {
+    const [ _, angle, distance ] = cmd;
+    const rad = angle/180 * Math.PI;
+
+    const targetAngle = getAngle(lastPt, secondLastPt) + rad;
+
+    return [ 
+      lastPt[0] + Math.cos(targetAngle)*distance, 
+      lastPt[1] + Math.sin(targetAngle)*distance
+    ];
   } else {
     return null;
   }
@@ -133,6 +148,14 @@ function getStartEndCenter(prevPt, pt, nextPt, radius) {
     
 }
 
+function getAngle(lastPoint, secondLastPoint) {
+  const x = lastPoint[0] - secondLastPoint[0];
+  const y = lastPoint[1] - secondLastPoint[1];
+
+  // in rads
+  return Math.atan2(y, x);
+}
+
 function pathToCubics(cmds) {
 
   const cubics = [];
@@ -142,6 +165,11 @@ function pathToCubics(cmds) {
 
   let prevPt = getCmdPt(cmds[0]);
   let prevHandle = getLastHandle(cmds[0]);
+  if (prevHandle === null) prevHandle = prevPt;
+
+  const getLastPts = () => cubics.length > 0
+    ? bezier(cubics.at(-1), 32).slice(-2).reverse()
+    : [ prevPt, prevPt ];
   
 
   for (let i = 1; i < cmds.length; i++) { 
@@ -151,8 +179,19 @@ function pathToCubics(cmds) {
       prevPt = cmd;
       prevHandle = cmd;
     } else if (cmd[0] === "fillet" || cmd[0] === "chamfer") {
-      const [ type, radius, pt ] = cmd;
-      const nextPt = i === cmds.length - 1 ? pt : getCmdPt(cmds[i+1]);
+      const [ type, radius, filletCmd ] = cmd;
+
+      // acceptedFilletTypes = arr, "rel", "turnForward"
+
+      const pt = getCmdPt(filletCmd, ...getLastPts());
+
+      cubics.push([prevPt, prevHandle, pt, pt]);
+      prevPt = pt;
+      prevHandle = pt;
+
+      const nextPt = i === cmds.length - 1 
+        ? pt 
+        : getCmdPt(cmds[i+1], pt, prevPt);
 
       const info = { 
         lowerLimit: prevPt, 
@@ -164,16 +203,16 @@ function pathToCubics(cmds) {
       }
 
       filletsAndChamfers.push(info);
-
-      cubics.push([prevPt, prevHandle, pt, pt]);
-      prevPt = pt;
-      prevHandle = pt;
-
     } else if (cmd[0] === "cubic") {
       const [ _, handle0, pt, handle1 ] = cmd;      
       cubics.push([prevPt, prevHandle, handle0, pt]);
       prevPt = pt;
       prevHandle = handle1;
+    } else if (cmd[0] === "rel" || cmd[0] === "turnForward") {
+      const pt = getCmdPt(cmd, ...getLastPts());  
+      cubics.push([prevPt, prevHandle, pt, pt]);
+      prevPt = pt;
+      prevHandle = pt;
     } else {
       throw new Error(`Unknown command used in path(...)`);
     }

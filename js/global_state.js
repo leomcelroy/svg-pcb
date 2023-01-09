@@ -30,6 +30,7 @@ export const global_state = {
   paths: [],
   pts: [], 
   layers: [],
+  inputs: [],
 
   componentMenu: false,
   componentSearch: "",

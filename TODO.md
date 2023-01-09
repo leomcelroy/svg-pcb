@@ -1,6 +1,10 @@
 # TODO
 
+- [ ] gerber export
+- [ ] handle infinite loops
+	- use timeout to check if first run is too slow
 - [ ] add background color
+- [ ] silkscreen
 - [ ] incremental parser and incremental evaluator
 - [ ] static vs dynamic analysis
 	- advantage of static analysis is that manipulations that come from graphical interactions are more straightforward if we know what structure a piece of data has to have. For example consider a component which could be an object returned by a function versus one which has to be static json. If we had a component editor drawing tool then the components which are objects won't be manipulatable.
@@ -77,9 +81,6 @@
 - [ ] infer constraints when drawing
 - [x] make geogram use `[x, y]` vs `{ x, y }` internally
 - [ ] create gram class for fluid programming
-- [ ] gerber export
-- [ ] handle infinite loops
-	- use timeout to check if first run is too slow
 - [ ] net lists
 - [ ] autorouting
 - [ ] copper fills

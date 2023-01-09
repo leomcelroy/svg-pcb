@@ -107,6 +107,8 @@ codemirror-2 {
 	flex-direction: column;
 	transition: right 0.5s ease;
 	box-sizing: border-box;
+	border-left: solid 1px black;
+	border-bottom: solid 1px black;
 }
 
 .footprint-toolbox-closed {
@@ -511,7 +513,13 @@ codemirror-2 {
 }
 
 .nub:hover {
-	opacity: 0.7;
+	background: #f0e5d7;
 	cursor: pointer;
+}
+
+/* ------------------ */
+
+.range-input {
+	display: flex;
 }
 

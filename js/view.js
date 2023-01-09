@@ -26,6 +26,9 @@ export function view(state) {
 				${svgViewer(state)}
 				${state.selectedPath !== null ? html`<div class="path-selected" @click=${clearSelectedPath}>unselect path</div>` : ""}
 				<div class="footprint-toolbox">
+					<div class="input-panel">
+						${state.inputs.map(input => inputRenderers[input.type](input))}
+					</div>
 					<b>Components:</b>
 					<div class="import-button-container">
 						<div class="import-button" @mousedown=${() => {
@@ -47,6 +50,25 @@ export function view(state) {
 			${drawComponentMenu(files)}
 		</div>
 	`
+}
+
+const inputRenderers = {
+	"slider": ops => html`
+		<div class="range-input">
+			<span>${ops.name}:</span>
+			<input 
+				type="range" 
+				min=${ops.min}
+				max=${ops.max}
+				step=${ops.step}
+				value=${ops.value}
+				@input=${e => {
+					// modify code
+					console.log(Number(e.target.value))
+				}}>
+			</input>
+			<span>${ops.value}</span>
+		</div>`
 }
 
 
