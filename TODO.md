@@ -1,5 +1,28 @@
 # TODO
 
+- export
+	- [ ] gerber
+	- [ ] kicad
+	- [ ] kicad component
+- import
+	- [ ] kicad
+- [ ] background color
+- [ ] silkscreen
+- [ ] path drawing gui
+- [ ] handle infinite loops
+	- https://blog.replit.com/infinite-loops
+	- https://github.com/facebook/react/blob/main/scripts/babel/transform-prevent-infinite-loops.js
+- better import interface
+	- component imports
+		- [ ] json
+		- [ ] kicad_module
+		- [ ] svg
+	- file import
+		- [ ] js
+- [ ] svg export flipping
+
+---------------------------------------
+
 - [ ] gerber export
 - [ ] handle infinite loops
 	- use timeout to check if first run is too slow
