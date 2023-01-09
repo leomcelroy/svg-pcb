@@ -181,6 +181,8 @@ export function astAnalysis(string, ast) {
     }
 
     if (cursor.name === "CallExpression" && value.slice(0, 2) === "pt") {
+      cursor.next();
+      cursor.next();
       pts.push([ cursor.from, cursor.to ]);
     }
 

@@ -34,7 +34,10 @@ const makeIncluded = (flatten) => ({
 	localStorage: null,
 	Function: null,
 	eval: null,
-	pt: (x, y, start = -1, end = -1) => { 
+	pt: ([x, y], staticInfo) => { 
+		const start = staticInfo.from || -1;
+		const end = staticInfo.to || -1;
+
 		const dupe = global_state.pts.some(pt => pt.start === start);
 		if (start === -1 || dupe) return [x, y];
 
@@ -49,6 +52,15 @@ const makeIncluded = (flatten) => ({
 		// const end = args.at(-1);
 		return geo.path2(...args);
 	},
+	input: (ops) => {
+		// { type: slider, min: num, max: num, step: num, value }
+
+		if ( ops.type === "slider") {
+			global_state.inputs.push(ops);
+		} else {
+			console.log("Unrecognized input type:", ops);
+		}
+	}
 	// pipe: (x, ...fns) => fns.reduce((v, f) => f(v), x)
 	// "import": null,
 })
@@ -78,6 +90,28 @@ function modifyAST(string, els) {
 	return string;
 }
 
+function modifyAST2(string, changes) {
+	let result = [];
+	let min = 0;
+	changes.sort((a, b) => a.from - b.from);
+	
+	changes.forEach(change => {
+		const { from, to, insert } = change;
+
+		result.push(string.substr(min, from-min));
+		result.push(insert);
+		min = (to !== undefined ? to : from);
+	});
+
+	result.push(string.substr(min));
+
+	if (result.length > 0) string = result.join("");
+
+	console.log(string);
+
+	return string;
+}
+
 let worker = createWorker();
 const checkWorker = () => {
 	if (!worker.running) return null;
@@ -91,6 +125,7 @@ let lastCheck = null;
 const ACTIONS = {
 	RUN({ dragging = false, flatten = false } = {}, state) {
 		state.paths = [];
+		state.inputs = [];
 		state.pts = [];
 		state.error = "";
 
@@ -103,7 +138,22 @@ const ACTIONS = {
 			const { pts, paths, footprints, layers } = astAnalysis(string, ast);
 			state.footprints = footprints;
 			state.layers = layers;
-			string = modifyAST(string, pts);
+
+			console.log({ pts, paths, footprints, layers });
+
+			const changes = [];
+
+			pts.forEach(x => {
+				changes.push({ from: x[0]+1, insert: `[` });
+				changes.push({ from: x[1]-1, insert: `]` });
+				changes.push({ from: x[1]-1, insert: `,{from:${x[0]}, to:${x[1]}}` });
+			});
+
+			// console.log(changes);
+
+			// const newProgram = modifyAST2(string, changes);
+
+			string = modifyAST2(string, changes);
 
 		  const included = makeIncluded(flatten);
 			const f = new Function(...Object.keys(included), string)
