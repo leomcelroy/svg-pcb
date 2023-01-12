@@ -103,7 +103,7 @@ function modifyAST(string, changes) {
 	return string;
 }
 
-let worker = createWorker();
+// let worker = createWorker();
 const checkWorker = () => {
 	if (!worker.running) return null;
 	console.log("Terminating worker.");
