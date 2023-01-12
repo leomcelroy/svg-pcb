@@ -52,10 +52,16 @@ const makeIncluded = (flatten) => ({
 		global_state.pts.push(pt);
 		return [x, y]; 
 	},
-	path: (...args) => {
+	path: (args, staticInfo) => {
 		// const start = args.at(-2);
 		// const end = args.at(-1);
-		return geo.path2(...args);
+		const pts = geo.path2(...args);
+
+		// if (global_state.selectedPath && staticInfo.from === global_state.selectedPath.pathStart) {
+		// 	staticInfo.pts = pts;
+		// }
+
+		return pts;
 	},
 	input: ([ops], staticInfo) => {
 		// { type: slider, min: num, max: num, step: num, value }
@@ -146,7 +152,14 @@ const ACTIONS = {
 				changes.push({ from: x.start+1, insert: "[" });
 				changes.push({ from: x.end-1, insert: "]" });
 				changes.push({ from: x.end-1, insert: `,{from:${x.from}, to:${x.to}}` });
-			})
+			});
+
+			paths.forEach(x => {
+				changes.push({ from: x.from+1, insert: "[" });
+				changes.push({ from: x.to-1, insert: "]" });
+				changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
+			});
+
 
 			string = modifyAST(string, changes);
 

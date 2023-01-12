@@ -215,7 +215,12 @@ export function astAnalysis(string, ast) {
     }
 
     if (cursor.name === "CallExpression" && value.slice(0, 4) === "path") {
-      paths.push([ cursor.from, cursor.to ]);
+      cursor.next();
+      cursor.next();
+      paths.push({
+        from: cursor.from,
+        to: cursor.to,
+      });
     }
 
   } while (cursor.next());

@@ -20,6 +20,12 @@
 	- file import
 		- [ ] js
 - [ ] svg export flipping
+- [ ] text
+	- [ ] silkscreen
+	- [ ] better componentLabels
+	- [ ] better padLabels
+	- [ ] "string" to add
+- [ ] fix ast analysis bug
 
 ---------------------------------------
 
