@@ -89,12 +89,14 @@ export function kicadToObj(data) {
     return acc;
   }, {});
 
+  // TODO: BUGS?
+
   Object.keys(result).forEach(k => {
     let d = "";
     const shape = result[k].shape;
     shape.forEach(s => {
       s.forEach((p, i) => {
-        const { x, y } = p;
+        const [ x, y ] = p;
         d += `${i==0 ? "M" : "L"} ${x} ${y} `
       })
       

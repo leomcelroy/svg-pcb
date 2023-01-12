@@ -1,6 +1,6 @@
 import { ClipperLib } from "./libs/clipper_unminified.js";
 
-const overlap = (p0, p1) => 0.00000001 > Math.abs(p0.x - p1.x) + Math.abs(p0.y - p1.y);
+const overlap = (p0, p1) => 0.00000001 > Math.abs(p0[0] - p1[0]) + Math.abs(p0[1] - p1[1]);
 const isClosed = shape => {
   if (shape.length === 0) return true;
   const start = shape[0][0];
@@ -46,11 +46,11 @@ export function offset(paths, delta, ops = {}) {
   const joinType = joinTypes[jt];
 
   const toClipperFormat = pl => pl.map( 
-    ({ x, y }) => ({ X:x, Y:y }) 
+    ([ x, y ]) => ({ X:x, Y:y }) 
   )
 
   const fromClipperFormat = pl => pl.map( 
-    ({ X, Y }) => ({ x:X, y:Y }) 
+    ({ X, Y }) => [ X, Y ] 
   )
 
   const subjectClosed = isClosed(paths);
@@ -68,10 +68,10 @@ export function offset(paths, delta, ops = {}) {
   final.forEach((pl, i) =>  {
     paths[i] = pl;
 
-    paths[i].push({
-      x: pl[0].x,
-      y: pl[0].y,
-    })
+    paths[i].push([
+      pl[0][0],
+      pl[0][1],
+    ])
     
   });
 

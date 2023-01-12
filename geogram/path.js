@@ -57,7 +57,7 @@ function mergeHandles(cmds) {
 }
 
 export function path(cmds) {
-  if (cmds.length === 0) return [];
+  if (cmds.length === 0) return [ [] ];
   
   cmds = mergeHandles(cmds);
 
@@ -218,8 +218,7 @@ export function path(cmds) {
 
   // TODO: remove overlapping
 
-  const shape = [pts.map(([x, y]) => ({ x, y }))];
-  return shape;
+  return [ pts ];
 }
 
 

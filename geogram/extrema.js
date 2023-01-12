@@ -6,10 +6,12 @@ export const extrema = shape => {
   let yMax = Number.NEGATIVE_INFINITY;
 
   shape.flat().forEach(p => {
-    if (xMin > p.x) xMin = p.x;
-    if (xMax < p.x) xMax = p.x;
-    if (yMin > p.y) yMin = p.y;
-    if (yMax < p.y) yMax = p.y;
+    const [ x, y ] = p;
+    
+    if (xMin > x) xMin = x;
+    if (xMax < x) xMax = x;
+    if (yMin > y) yMin = y;
+    if (yMax < y) yMax = y;
   });
 
   return {

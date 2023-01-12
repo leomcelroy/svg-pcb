@@ -1,5 +1,5 @@
 import { makeComponent } from "./pcb_helpers.js";
-import { getPathData, expand, scale, outline, union, xor, path, offset, offset2, boolean } from "/geogram/index.js";
+import { getPathData, expand, scale, outline, union, xor, path, path2, offset, offset2, boolean } from "/geogram/index.js";
 
 export class PCB {
   constructor() {
@@ -43,8 +43,8 @@ export class PCB {
   }
 
   addShape(layer, shapeOrText) {
-    if (shapeOrText[0] && (typeof shapeOrText[0][0] === "number" || typeof shapeOrText[0][0] === "string")) {
-      shapeOrText = path(shapeOrText);
+    if (shapeOrText[0] && (typeof shapeOrText[0][0] === "number")) {
+      shapeOrText = [ shapeOrText ];
     } 
 
     if (layer in this.layers) {
@@ -113,11 +113,16 @@ export class PCB {
   }
 
   wire(pts, thickness, layer = "F.Cu") {
+    // if (pts.length <= 1) return;
+    if (pts.length === 0) return;
     const newWire = {
       type: "wire",
-      shape: path(pts),
+      shape: [ pts ], // TODO: seems like this shouldn't be wrapped in another array
       thickness: thickness
     }
     this.addShape(layer, newWire);
   }
+
+  // components({ name: obj })
+  // renderPCB -> render()
 }

@@ -1,43 +1,32 @@
 import { view } from "./view.js";
 import { render } from "lit-html";
-
-
-import { PCB as real_PCB } from "./pcb.js";
+import { PCB } from "./pcb.js";
 import { via } from "./pcb_helpers.js";
 import { kicadToObj } from "./ki_cad_parser.js"
-import { getSemanticInfo } from "./getSemanticInfo.js";
+import { astAnalysis } from "./astAnalysis.js";
 import { getFileSection } from "./getFileSection.js"
 import * as geo from "/geogram/index.js";
-
 import { global_state } from "./global_state.js";
-
 import { renderShapes } from "./renderShapes.js";
 import { renderPath } from "./renderPath.js";
 import { renderPCB } from "./renderPCB.js";
-
 import { defaultText } from "./defaultText.js";
-
-import { syntaxTree, ensureSyntaxTree } from "@codemirror/language";
-
+import { ensureSyntaxTree } from "@codemirror/language";
 import { logError } from "./logError.js";
 import { getPoints } from "./getPoints.js";
-
-class PCB extends real_PCB {
-	constructor() {
-		super();
-		global_state.storedPCB = this;
-	}
-}
+import { createWorker } from "./createWorker.js";
 
 const getProgramString = () => global_state.codemirror.view.state.doc.toString();
-
 
 const makeIncluded = (flatten) => ({
 	// kicadToObj, // FIXME: remove references to
 	geo,
 	PCB,
 	via,
-	renderPCB: renderPCB(flatten),
+	renderPCB: obj => {
+		// console.log(obj.layerColors);
+		return renderPCB(flatten)(obj);
+	},
 	renderShapes,
 	renderPath,
 	document: null,
@@ -45,89 +34,151 @@ const makeIncluded = (flatten) => ({
 	localStorage: null,
 	Function: null,
 	eval: null,
-	pt: (x, y, start = -1, end = -1) => { 
+	pt: ([x, y], staticInfo) => { 
+		const start = staticInfo.from || -1;
+		const end = staticInfo.to || -1;
 
 		const dupe = global_state.pts.some(pt => pt.start === start);
 		if (start === -1 || dupe) return [x, y];
 
-		const string = getProgramString();
-		const snippet = string.slice(start, end);
-		const pt = { pt: [x, y], start, end, text: snippet };
+		const snippet = staticInfo.snippet;
+		const pt = { 
+			pt: [x, y], 
+			start: start+1, 
+			end: end+1, 
+			text: snippet 
+		};
+
 		global_state.pts.push(pt);
 		return [x, y]; 
 	},
-	path: (...args) => {
+	path: (args, staticInfo) => {
+		// const start = args.at(-2);
+		// const end = args.at(-1);
+		const pts = geo.path2(...args);
 
-		return args;
+		// if (global_state.selectedPath && staticInfo.from === global_state.selectedPath.pathStart) {
+		// 	staticInfo.pts = pts;
+		// }
+
+		return pts;
 	},
-	pipe: (x, ...fns) => fns.reduce((v, f) => f(v), x)
+	input: ([ops], staticInfo) => {
+		// { type: slider, min: num, max: num, step: num, value }
+
+		if ( ops.type === "slider") {
+			global_state.inputs.push([ops, staticInfo]);
+		} else {
+			console.log("Unrecognized input type:", ops);
+		}
+
+		return ops.value;
+	}
+	// pipe: (x, ...fns) => fns.reduce((v, f) => f(v), x)
 	// "import": null,
 })
-
-
 
 const r = () => {
 	render(view(global_state), document.getElementById("root"));
 	requestAnimationFrame(r);
 }
 
+function modifyAST(string, changes) {
+	let result = [];
+	let min = 0;
+	changes.sort((a, b) => a.from - b.from);
+	
+	changes.forEach(change => {
+		const { from, to, insert } = change;
+
+		result.push(string.substr(min, from-min));
+		result.push(insert);
+		min = (to !== undefined ? to : from);
+	});
+
+	result.push(string.substr(min));
+
+	if (result.length > 0) string = result.join("");
+
+	return string;
+}
+
+// let worker = createWorker();
+const checkWorker = () => {
+	if (!worker.running) return null;
+	console.log("Terminating worker.");
+	worker.terminate();
+	worker = createWorker();
+}
+
+let lastCheck = null;
+
 const ACTIONS = {
 	RUN({ dragging = false, flatten = false } = {}, state) {
 		state.paths = [];
+		state.inputs = [];
 		state.pts = [];
 		state.error = "";
 
 		const doc = state.codemirror.view.state.doc;
 	  let string = doc.toString();
+
 	  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
-		if (!dragging) {
-
-			let footprints = [];
-			let layers = [];
-			try {
-				const semantics = getSemanticInfo(string, dragging);
-				footprints = semantics.footprints;
-				layers = semantics.layers ?? [];
-			} catch (err) {
-				console.error(err);
-				logError(err);
-			}
-
+		try {
+			const { pts, paths, footprints, layers, inputs } = astAnalysis(string, ast);
 			state.footprints = footprints;
 			state.layers = layers;
-		}
 
-		const { pts, paths } = getPoints(state, ast);
+			const changes = [];
 
-		const newProg = [];
+			pts.forEach(x => {
+				changes.push({ from: x.from+1, insert: `[` });
+				changes.push({ from: x.to-1, insert: `]` });
 
-		let min = 0;
-		pts.sort((a, b) => a[0] - b[0]).forEach((r, i) => {
-			const [l, u] = r;
-			newProg.push(string.substr(min, l-min));
-			const ogPt = string.substr(l, u-l);
-			const firstParen = ogPt.indexOf("(");
-			const newPt = `${ogPt.slice(0, -1)}, ${l+firstParen+1}, ${u-1})`
-			newProg.push(newPt);
-			min = u;
-			if (i === pts.length - 1) newProg.push(string.substr(u));
-		})
+				let snippet = "";
+				const src = x.snippet.slice(1, -1);
+				for ( let i = 0; i< src.length; i++) {
+					const ch = src[i];
+
+					if (["\"", "'", "`"].includes(ch)) snippet += `\\${ch}`;
+					else snippet += ch;
+				}
+
+				changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, snippet:"${snippet}"}` });
+			});
+
+			inputs.forEach(x => {
+				changes.push({ from: x.start+1, insert: "[" });
+				changes.push({ from: x.end-1, insert: "]" });
+				changes.push({ from: x.end-1, insert: `,{from:${x.from}, to:${x.to}}` });
+			});
+
+			paths.forEach(x => {
+				changes.push({ from: x.from+1, insert: "[" });
+				changes.push({ from: x.to-1, insert: "]" });
+				changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
+			});
 
 
-		if (newProg.length > 0) string = newProg.join("");
+			string = modifyAST(string, changes);
 
-		const included = makeIncluded(flatten);
-
-		try {
+		  const included = makeIncluded(flatten);
 			const f = new Function(...Object.keys(included), string)
 			f(...Object.values(included));
+
 		} catch (err) {
 			console.error("prog erred", err);
 			logError(err);
 		}
 
 		dispatch("RENDER");
+
+		// checkWorker();
+		// worker.run({ flatten, string });
+		// if (lastCheck) clearTimeout(lastCheck);
+		// lastCheck = setTimeout(checkWorker, 5000)
+
 	},
 	NEW_FILE(args, state) {
 	  dispatch("UPLOAD_JS", { text: defaultText });
@@ -201,15 +252,3 @@ export function dispatch(action, args = {}) {
 	}
 	else console.log("Action not recongnized:", action);
 }
-
-
-function checkBlacklist(string) {
-	// poor attempt at sanitizing
-
-	const BLACK_LISTED_WORDS = []; // import, document, window, localStorage
-	BLACK_LISTED_WORDS.forEach(word => {
-		if (string.includes(word))
-			throw `"${word}" is not permitted due to security concerns.`;
-	});
-}
-

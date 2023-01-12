@@ -5,11 +5,14 @@ import "./codemirror/codemirror.js";
 import { files } from "./components-names.js";
 import { downloadSVG, downloadText, downloadGerber, downloadPNG } from "./events/download.js"
 import { drawImportItems } from "./views/drawImportItems.js";
+import { drawComponentMenu } from "./views/drawComponentMenu.js";
+import { layersColorPicker } from "./views/layersColorPicker.js";
 import { renderPreviewFootprint } from "./views/renderPreviewFootprint.js";
 import { svgViewer } from "./views/svgViewer.js";
 import { renderFootprint } from "./views/renderFootprint.js";
 import { clearSelectedPath } from "./clearSelectedPath.js";
 import logoURL from '../logo.svg'
+import { inputRenderers } from "./views/inputRenderers.js";
 
 export function view(state) {
 	return html`
@@ -20,33 +23,47 @@ export function view(state) {
 				<codemirror-2 class="code-editor"></codemirror-2>
 				${state.error !== "" ? html`<div class="error-log">${state.error}</div>` : "" }
 			</div>
-			<div class="right-side">
+			<div class="right-side" @mousedown=${() => dispatch("RUN", { flatten: false })}>
 				${svgViewer(state)}
 				${state.selectedPath !== null ? html`<div class="path-selected" @click=${clearSelectedPath}>unselect path</div>` : ""}
-				<div class="footprint-toolbox">${state.footprints.map(renderFootprint)}</div>
+				<div class="footprint-toolbox">
+					${state.inputs.length > 0 ? html`<div class="toolbox-title">Inputs:</div>` : ""}
+					<div class="input-panel">
+						${state.inputs.map(input => inputRenderers[input[0].type](...input, state))}
+					</div>
+					<div class="toolbox-title">Components:</div>
+					<div class="import-button-container">
+						<div class="import-button" @mousedown=${() => {
+		          state.componentMenu = true;
+		          dispatch("RENDER");
+		        }}>import</div>
+		      </div>
+					<div class="component-list">
+						${state.footprints.map(renderFootprint)}
+					</div>
+					${layersColorPicker(state)}
+					<div class="nub" @click=${() => {
+						document.querySelector(".footprint-toolbox").classList.toggle("footprint-toolbox-closed");
+					}}></div>
+				</div>
 				${state.previewFootprint ? renderPreviewFootprint(...state.previewFootprint) : ""}
 			</div>
 			<div id="vertical-bar"></div>
+			${drawComponentMenu(files)}
 		</div>
 	`
 }
 
 const menu = state => html`
 	<div class="top-menu">
-		<img src=${logoURL} class="logo" alt="fab-circuit-logo" />
 		<div class="left">
+			<img src=${logoURL} class="logo" alt="fab-circuit-logo" />
 			<div
 				class="menu-item"
 				@click=${() => dispatch("RUN")}>
 				run (shift + enter)
 			</div>
 			<div class="menu-item" @click=${() => dispatch("NEW_FILE")}>new</div>
-			<div class="menu-item dropdown-container">
-			 	import
-			 	<div class="dropdown-content">
-			 		${drawImportItems(files)}
-			 	</div>
-			 </div>
 			 <div class="menu-item dropdown-container">
 				download
 				<div class="dropdown-content">
@@ -108,13 +125,25 @@ const menu = state => html`
 							>
 						</input>
 					</div>
+					<div class="check-item"> 
+						<span>adaptiveGrid</span>
+						<input
+							type="checkbox"
+							.checked=${state.adaptiveGrid}
+							@change=${(e) => {
+								state.adaptiveGrid = e.target.checked;
+								dispatch("RENDER");
+							}}
+							>
+						</input>
+					</div>
 					<div class="input-item">
 						<span>grid size:</span>
 						<input
 							type="number"
 							step="0.005"
 							min="0"
-							value=${state.gridSize}
+							.value=${state.gridSize}
 							@change=${e => {
 								state.gridSize = Number(e.target.value);
 								dispatch("RENDER");

@@ -1,4 +1,5 @@
 import { html, svg } from "lit-html";
+import { global_state } from "../global_state.js";
 
 const ptsToD = pts => pts.reduce((acc, cur, i) => `${acc} ${i === 0 ? "M" : "L"} ${cur.join(",")}`, "");
 
@@ -34,8 +35,8 @@ export const drawGrid = (corners, gridSize) => {
     }
 
     const order = Math.round(getBaseLog(5, Math.max(xRange, yRange)));
-    // const stepSize = (5**(order-1))/5;
-    const stepSize = gridSize;
+    const stepSize = global_state.adaptiveGrid ? (5**(order))/20 : gridSize;
+    global_state.gridSize = stepSize;
 
     const getMarkVals = (limits, stepSize) => {
         let marks = [];

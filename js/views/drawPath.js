@@ -33,7 +33,7 @@ export const drawPath = ({ data, color, groupId = ""}) => {
       text-anchor="middle" 
       x=${s.translate[0]} 
       y=${-s.translate[1] + s.size*0.352778}
-      transform=${`scale(1 -1)`}
+      transform=${`scale(1, -1)`}
       style=${`font: ${s.size}pt sans-serif;`}
       fill=${color.slice(0, -2)}
       opacity=${alpha}

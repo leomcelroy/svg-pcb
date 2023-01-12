@@ -1,6 +1,6 @@
 import Shape from "./libs/simple-clipper.js";
 
-const overlap = (p0, p1) => 0.00000001 > Math.abs(p0.x - p1.x) + Math.abs(p0.y - p1.y);
+const overlap = (p0, p1) => 0.00000001 > Math.abs(p0[0] - p1[0]) + Math.abs(p0[1] - p1[1]);
 
 export function offset2(shape, distance, ops = {}) {
   // et = "etOpenSquare" | "etOpenRound" | "etOpenButt" | "etClosedLine" |  "etClosedPolygon"
@@ -37,12 +37,12 @@ export function offset2(shape, distance, ops = {}) {
 
 const pointAdjust = (p, scale) => {
   const temp = {};
-  temp["X"] = Math.round(p.x*scale);
-  temp["Y"] = Math.round(p.y*scale);
+  temp["X"] = Math.round(p[0]*scale);
+  temp["Y"] = Math.round(p[1]*scale);
   return temp;
 }
 
-const dist = (p0, p1) => Math.sqrt((p1.x - p0.x)**2 + (p1.y - p0.y)**2);
+const dist = (p0, p1) => Math.sqrt((p1[0] - p0[0])**2 + (p1[1] - p0[1])**2);
 
 function toBooleanForm(shape, limiter) {
   const distances = [];
@@ -71,7 +71,7 @@ function toBooleanForm(shape, limiter) {
 function fromBooleanForm(clippedPaths, scale) {
 
   const newShape = Object.values(clippedPaths.paths).map(p => {
-    p = p.map( ({X, Y}) => ({x: X/scale, y: Y/scale}) );
+    p = p.map( ({X, Y}) => [ X/scale, Y/scale ] );
     // I automatically close the paths
     const points = [ ...p, p[0] ];
 

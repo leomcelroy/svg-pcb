@@ -79,6 +79,7 @@ function readFileSVG(file) {
     // div.innerHTML = text;
 
     const pls = flattenSVG(svg, { maxError: 0.001 });
+
     const newComponent = {};
 
     pls.forEach((pl, i) => {

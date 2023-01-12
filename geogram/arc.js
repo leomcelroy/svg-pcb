@@ -9,15 +9,15 @@ function getAngle(shape) {
   const lastPoint = pl.at(-1);
   const secondLastPoint = pl.at(-2);
 
-  const x = lastPoint.x - secondLastPoint.x;
-  const y = lastPoint.y - secondLastPoint.y;
+  const x = lastPoint[0] - secondLastPoint[0];
+  const y = lastPoint[1] - secondLastPoint[1];
 
   return Math.atan2(y, x) * 180 / Math.PI;
 }
 
 export const arc = (shape, angle, radius) => {
   if (angle === 0 || radius === 0) return shape;
-  if (shape.length === 0) shape.push([{ x: 0, y:0 }]);
+  if (shape.length === 0) shape.push([ [0, 0] ]);
 
   // --- ATTEMPT 1 ---
 
@@ -75,7 +75,7 @@ export const arc = (shape, angle, radius) => {
     const theta = a/n*i;
     const x = getX(theta, radius);
     const y = getY(theta, radius);
-    pts[0].push({ x, y });
+    pts[0].push([ x, y ]);
   }
 
   translate(pts, lp, pts[0][0])
@@ -85,8 +85,6 @@ export const arc = (shape, angle, radius) => {
   const curAngle = getAngle(shape);
   turnForward(shape, (angle+la)-curAngle, radius/1_000_000_000_000);
 
-  console.log("arc pts", pts);
-
   return shape;
 } 
 
@@ -94,18 +92,18 @@ export const arc = (shape, angle, radius) => {
 const slerp = (t, p0, p1, angle) => {
   const factor1 = Math.sin(angle*(1-t))/Math.sin(angle);
   const factor2 = Math.sin(angle*t)/Math.sin(angle);
-  return {
-    x: p0.x*factor1 + p1.x*factor2, 
-    y: p0.y*factor1 + p1.y*factor2
-  }
+  return [
+    p0[0]*factor1 + p1[0]*factor2, 
+    p0[1]*factor1 + p1[1]*factor2
+  ]
 }
 
 const chord = (r, theta) => 2 * r * Math.sin(theta*Math.PI/360)
 const arcPtHelper = (curAngle, curPoint, distance) => {
   const xCos = Math.cos(curAngle*Math.PI/180);
   const ySin = Math.sin(curAngle*Math.PI/180);
-  const x = curPoint.x + distance * xCos;
-  const y = curPoint.y + distance * ySin;
+  const x = curPoint[0] + distance * xCos;
+  const y = curPoint[1] + distance * ySin;
 
-  return { x, y };
+  return [ x, y ];
 }

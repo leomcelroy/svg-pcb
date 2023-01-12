@@ -1,7 +1,7 @@
 export const turnForward = (shape, theta, distance) => {
   // guard statement
   // if distance is zero then we just get stacked points so let's just not
-  if (shape.length === 0) shape.push([ { x: 0, y: 0 } ])
+  if (shape.length === 0) shape.push([ [ 0, 0 ] ])
   if (distance === 0) return shape;
 
   const lastPoint = shape.at(-1).at(-1);
@@ -11,7 +11,7 @@ export const turnForward = (shape, theta, distance) => {
   const x = lastPoint.x + distance * xCos;
   const y = lastPoint.y + distance * ySin;
 
-  shape.at(-1).push({ x, y });
+  shape.at(-1).push([ x, y ]);
 
   return shape;
 }
@@ -23,8 +23,8 @@ function getAngle(shape) {
   const lastPoint = pl.at(-1);
   const secondLastPoint = pl.at(-2);
 
-  const x = lastPoint.x - secondLastPoint.x;
-  const y = lastPoint.y - secondLastPoint.y;
+  const x = lastPoint[0] - secondLastPoint[0];
+  const y = lastPoint[1] - secondLastPoint[1];
 
   return Math.atan2(y, x) * 180 / Math.PI;
 }

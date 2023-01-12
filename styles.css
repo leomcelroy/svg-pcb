@@ -4,7 +4,8 @@
   --lightgrey-0: #ced4da;
   /* old yellow - #f4e6d0 */
   --construction-paper: #fff4e6;
-  --construction-paper-transparent: #fff4e6aa;
+  --construction-paper-transparent: #fff4e5e3;
+  --
 }
 
 html,
@@ -71,7 +72,7 @@ input {
     flex: 1;
     height: 100%;
     position: relative;
-/*    transform: scale(1, -1);*/
+    overflow: hidden;
 }
 
 codemirror-2 {
@@ -94,10 +95,9 @@ codemirror-2 {
 }
 
 .footprint-toolbox {
-	width: min-content;
+	width: 300px;
 	height: min-content;
-	overflow: scroll;
-	max-height: 320px;
+	max-height: 100%;
 	background: var(--construction-paper-transparent);
 	position: absolute;
 	right: 0px;
@@ -105,12 +105,21 @@ codemirror-2 {
 	padding: 5px;
 	display: flex;
 	flex-direction: column;
+	transition: right 0.5s ease;
+	box-sizing: border-box;
+	border-left: solid 1px black;
+	border-bottom: solid 1px black;
+}
+
+.footprint-toolbox-closed {
+	right: -300px;
 }
 
 .logo {
 	margin-right: -10px;
 	width: 40px; 
 	padding: 5px;
+	padding-right: 15px;
 }
 
 .footprint-item {
@@ -142,6 +151,8 @@ codemirror-2 {
 	max-height: max-content;
 	min-height: max-content;
 	background: var(--lightgrey-0);
+	box-shadow: #979090 0px 1px 2px;
+  z-index: 10000;
 }
 
 .top-menu > .left > .menu-item {
@@ -323,8 +334,8 @@ codemirror-2 {
 .path-selected {
 	position: absolute;
   color: red;
-  left: 10px;
-  top: 10px;
+  left: 15px;
+  bottom: 10px;
   padding: 4px;
   background: #efe4e4;
   border-radius: 7px;
@@ -347,4 +358,175 @@ codemirror-2 {
 	opacity: .8;
 }
 
+
+/* ---------------- */
+
+.layers-color-picker {
+	padding: 10px 25px 10px 2px;
+}
+
+.layers-color-picker .color-input {
+  width: 25px;
+  height: 25px;
+  padding: 0px;
+  border: none;
+  background: none;
+}
+
+
+.layer-item {
+	display: flex;
+	align-items: center;
+  justify-content: space-between;
+  height: 25px;
+}
+
+.layer-name {
+	width: 175px;
+}
+
+.layer-color {
+	padding-left: 5px;
+	display: flex;
+  width: 65px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.opacity-input {
+	width: 35px;
+	position: relative;
+}
+
+.opacity-input input {
+	position: absolute;
+	bottom: 0px;
+	left: 33px;
+	width: 30px;
+	visibility: hidden;
+	transition: visibility 0.2s linear;
+	-webkit-appearance: slider-vertical;
+}
+
+.opacity-input:hover input {
+	visibility: visible;
+}
+
+.opacity-input input:hover {
+	visibility: visible;
+}
+
+/* ---------------------------- */
+
+.component-menu {
+	position: absolute;
+	background: var(--lightgrey-0);
+	width: 70%;
+	max-width: fit-content;
+	height: 60%;
+	left: 50%;
+	top: 100px;
+	transform: translate(-50%, 0);
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	z-index: 99999;
+	border-radius: 5px;
+	border: black 1px solid;
+}
+
+.component-menu .search-container {
+	width: 100%;
+	justify-content: center;
+	display: flex;
+	padding: 5px;
+}
+
+.component-menu .search-container input {
+	width: 80%;
+	padding: 3px;
+}
+
+.component-menu .file-menu {
+	overflow: scroll;
+}
+
+.component-menu .title {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.component-menu .close {
+	color: #f03e3e;
+	cursor: pointer;
+}
+
+.component-menu .close:hover {
+	transform: scale(1.1);
+}
+
+/* -------------- */
+
+.component-list {
+	flex: 1;
+	overflow: scroll;
+}
+
+.import-button-container {
+	width: 100%;
+	display: flex;
+	align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.import-button {
+	cursor: pointer;
+  width: 80%;
+  background: #ced4da;
+  padding: 4px;
+  text-align: center;
+  border-radius: 5px;
+/*  transition: transform .2s ease-in-out;*/
+	border: transparent solid 1px;
+}
+
+
+.import-button:hover {
+	border: black solid 1px;
+/*	transform: scale(1.02);*/
+}
+
+/* ------------------ */
+
+.nub {
+	width: 20px;
+	height: 50px;
+	background: var(--construction-paper);
+	border: black solid;
+	border-width: 1px 0px 1px 1px;
+	border-radius: 10px 0px 0px 10px;
+	position: absolute;
+	top: 50%;
+	left: 0px;
+	transform: translate(-100%, -50%);
+}
+
+.nub:hover {
+	background: #f0e5d7;
+	cursor: pointer;
+}
+
+/* ------------------ */
+
+.range-input {
+	display: flex;
+}
+
+.toolbox-title {
+	padding-bottom: 5px;
+	padding-top: 5px;
+	font-weight: bold;
+}
 

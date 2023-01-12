@@ -1,4 +1,4 @@
-const mapPtFromRule = rule => ({ x, y }) => {
+const mapPtFromRule = rule => ([ x, y ]) => {
 
   const [ a, b, c, d, tx, ty ] = getMatrixRule(rule);
 

@@ -23,6 +23,13 @@ board.addShape("interior", interior);
 board.wire(path(), 0.03);
 
 /* -- RENDER_PCB -- */
+const limit0 = pt(-0.55, -0.55);
+const limit1 = pt(0.55, 0.55);
+const xMin = Math.min(limit0[0], limit1[0]);
+const xMax = Math.max(limit0[0], limit1[0]);
+const yMin = Math.min(limit0[1], limit1[1]);
+const yMax = Math.max(limit0[1], limit1[1]);
+
 renderPCB({
   pcb: board,
   layerColors: {
@@ -34,8 +41,8 @@ renderPCB({
     "componentLabels": "#00e5e5e5",
   },
   limits: {
-    x: [-width/2, width/2],
-    y: [-height/2, height/2]
+    x: [xMin, xMax],
+    y: [yMin, yMax]
   },
   mm_per_unit: 25.4
 });

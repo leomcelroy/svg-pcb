@@ -3,12 +3,13 @@ import { ClipperLib } from "./libs/clipper_unminified.js";
 
 export function boolean(subjectPaths, clipPaths, type) {
 
-  const toClipperFormat = pl => pl.map( 
-    ({ x, y }) => ({ X:x, Y:y }) 
-  )
+  const toClipperFormat = pl => {
+    return pl.map( 
+    ([ x, y ]) => ({ X:x, Y:y }) 
+  )}
 
   const fromClipperFormat = pl => pl.map( 
-    ({ X, Y }) => ({ x:X, y:Y }) 
+    ({ X, Y }) => [ X, Y ] 
   )
 
   const subjectClosed = true;
@@ -38,10 +39,10 @@ export function boolean(subjectPaths, clipPaths, type) {
   final.forEach((pl, i) =>  {
     subjectPaths[i] = pl;
 
-    subjectPaths[i].push({
-      x: pl[0].x,
-      y: pl[0].y,
-    })
+    subjectPaths[i].push([
+      pl[0][0],
+      pl[0][1],
+    ])
     
   });
 
