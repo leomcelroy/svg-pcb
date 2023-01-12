@@ -1,5 +1,5 @@
 import { makeComponent } from "./pcb_helpers.js";
-import { getPathData, expand, scale, outline, union, xor, path, offset, offset2, boolean } from "/geogram/index.js";
+import { getPathData, expand, scale, outline, union, xor, path, path2, offset, offset2, boolean } from "/geogram/index.js";
 
 export class PCB {
   constructor() {
