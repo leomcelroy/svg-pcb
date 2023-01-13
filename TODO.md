@@ -25,7 +25,9 @@
 	- [ ] better componentLabels
 	- [ ] better padLabels
 	- [ ] "string" to add
-- [ ] fix ast analysis bug
+- BUGS
+	- [ ] fix ast analysis bug
+	- ? svg export
 
 ---------------------------------------
 
