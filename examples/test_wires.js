@@ -36,7 +36,7 @@ let board = new PCB();
 /* -- ADD_COMPONENTS -- */
 let test_comp1 = board.add(test_footprint, {translate: pt(0.3, 0.7), name: "COMP1"})
 let test_comp2 = board.add(test_footprint, {translate: pt(0.8, 0.3), name: "COMP2"})
-let v1 = board.add(via(0.02, 0.035), {translate: pt(test_comp1.padX("D+"), 0.1)})
+let v1 = board.add(via(0.02, 0.035), {translate: pt(test_comp1.padX("D+"), 0.4)})
 let v2 = board.add(via(0.02, 0.035), {translate: pt(0.35, v1.posY)})
 
 /* -- ADD_WIRES -- */
@@ -52,17 +52,34 @@ board.wire([v2.pos,
             test_comp2.pad("D+")], 0.015)
 
 // fillet
-board.wire([test_comp1.pad("GND"),
-            ["fillet", 0.1, pt(test_comp2.padX("GND"), test_comp1.padY("GND"))],
-            test_comp2.pad("GND")], 0.015)
+board.wire(path(
+  test_comp1.pad("GND"),
+  ["fillet", 0.1, pt(test_comp2.padX("GND"), test_comp1.padY("GND"))],
+  test_comp2.pad("GND")), 0.015)
 
 // chamfer and bezier handles
-board.wire([test_comp1.pad("VCC"),
-            ["chamfer", 0.03, pt(test_comp1.padX("VCC")+0.1, test_comp1.padY("VCC"))],
-            pt(test_comp1.padX("VCC")+0.1, test_comp1.padY("D+")-0.05),
-            ["bezier", pt(test_comp1.padX("VCC")+0.1, test_comp1.padY("D+")-0.2),
-                        pt(test_comp2.padX("VCC"), test_comp2.padY("VCC")+0.25)],
-            test_comp2.pad("VCC")], 0.015)
+board.wire(path(
+  test_comp1.pad("VCC"),
+  [
+    "chamfer", 
+    0.04, 
+    pt(test_comp1.padX("VCC")+0.1, test_comp1.padY("VCC"))
+  ],
+  pt(test_comp1.padX("VCC")+0.1, test_comp1.padY("VCC")-0.05),
+  [
+    "cubic", 
+    pt(0.30, 0.72),
+    pt(0.30, 0.70),
+    pt(0.30, 0.55),
+  ],
+  [
+    "cubic", 
+    pt(0.45, 0.55),
+    pt(0.5, 0.55),
+    pt(0.7, 0.55),
+  ],
+  test_comp2.pad("VCC"),
+), 0.015)
 
 
 /* -- RENDER_PCB -- */
@@ -73,8 +90,8 @@ renderPCB({
     "B.Cu": "#ff4c007f",
     "F.Cu": "#ff8c00cc",
     "drill": "#ff3300e5",
-    "padLabels": "#ffff99e5",
-    "componentLabels": "#00e5e5e5",
+    //"padLabels": "#ffff99e5",
+    //"componentLabels": "#00e5e5e5",
   },
   limits: {
     x: [0, 1],
