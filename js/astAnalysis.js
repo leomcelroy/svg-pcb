@@ -1,4 +1,4 @@
-import { makeFootprintGeometry } from "./getSemanticInfo.js";
+import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
 
 const FOOTPRINTS = {};
 
@@ -181,6 +181,7 @@ export function astAnalysis(string, ast) {
       layers = tree[1].slice(1);
     }
 
+    // TODO: BUG this will trigger for any function starting with string
     if (cursor.name === "CallExpression" && value.slice(0, 2) === "pt") {
       cursor.next();
       cursor.next();
@@ -191,6 +192,7 @@ export function astAnalysis(string, ast) {
       });
     }
 
+    // TODO: BUG this will trigger for any function starting with string
     if (cursor.name === "CallExpression" && value.slice(0, 5) === "input") {
       cursor.next();
       cursor.next();
@@ -214,6 +216,7 @@ export function astAnalysis(string, ast) {
       })
     }
 
+    // TODO: BUG this will trigger for any function starting with string
     if (cursor.name === "CallExpression" && value.slice(0, 4) === "path") {
       cursor.next();
       cursor.next();

@@ -5,6 +5,8 @@ export function renderPath(path) {
   const stroke = path.stroke ?? "black";
   const fill = path.fill ?? "none";
   const strokeWidth = path.strokeWidth ?? 0.03;
+  const strokeLinecap = path.strokeLinecap ?? "round";
+  const strokeLinejoin = path.strokeLinejoin ?? "round";
 
-  global_state.paths.push({ d, stroke, fill, strokeWidth });
+  global_state.paths.push({ d, stroke, fill, strokeWidth, strokeLinecap, strokeLinejoin });
 }

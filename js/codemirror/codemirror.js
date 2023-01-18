@@ -5,23 +5,30 @@ import { EditorState, StateField } from "@codemirror/state";
 import { syntaxTree, indentUnit } from "@codemirror/language";
 import { indentWithTab } from "@codemirror/commands";
 
-const countDocChanges = StateField.define({
-  create(state) {
-    return 0;
-  },
-  update(value, transaction) {
-    if (transaction.docChanged) {
-      const { state } = transaction;
-      const ast = syntaxTree(state);
-      return value + 1;
-    } else {
-      return value;
-    }
-  },
-  provide(field) {
-    return [];
-  }
-});
+// selectedPath = {
+//   pathStart,
+//   pathEnd,
+//   str: string.substr(pathStart, pathEnd - pathStart),
+// };
+
+// const countDocChanges = StateField.define({
+//   create(state) {
+//     return 0;
+//   },
+//   update(value, transaction) {
+//     if (transaction.docChanged) {
+//       console.log(value, transaction);
+//       const { state } = transaction;
+//       const ast = syntaxTree(state);
+//       return value + 1;
+//     } else {
+//       return value;
+//     }
+//   },
+//   provide(field) {
+//     return [];
+//   }
+// });
 
 class CodeMirror extends HTMLElement {
     constructor() {

@@ -51,6 +51,9 @@ export function view(state) {
 			<div id="vertical-bar"></div>
 			${drawComponentMenu(files)}
 		</div>
+		<div class="drop-modal hidden">
+			<div class="drop-info">Upload JS file, KiCAD Component Module, SVG Component, or JSON Component</div>
+		</div>
 	`
 }
 

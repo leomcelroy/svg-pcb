@@ -23,6 +23,7 @@
     "file-saver": "^2.0.5",
     "flatten-svg": "^0.3.0",
     "jszip": "^3.10.1",
-    "lit-html": "^2.0.1"
+    "lit-html": "^2.0.1",
+    "pathkit-wasm": "^1.0.0"
   }
 }

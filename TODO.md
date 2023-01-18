@@ -17,6 +17,8 @@
 		- [ ] json
 		- [ ] kicad_module
 		- [ ] svg
+			- [ ] options for setting scale of svg
+			- [ ] choose to import as svg or component
 	- file import
 		- [ ] js
 - [ ] svg export flipping
@@ -24,7 +26,7 @@
 	- [ ] silkscreen
 	- [ ] better componentLabels
 	- [ ] better padLabels
-	- [ ] "string" to add
+	- [ ] if "string" is passed to add make it text
 - BUGS
 	- [ ] fix ast analysis bug
 	- ? svg export
