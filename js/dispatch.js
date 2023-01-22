@@ -24,6 +24,7 @@ const makeIncluded = (flatten) => ({
 	PCB,
 	via,
 	renderPCB: obj => {
+		global_state.pcb = obj.pcb;
 		// console.log(obj.layerColors);
 		return renderPCB(flatten)(obj);
 	},

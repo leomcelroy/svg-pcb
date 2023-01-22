@@ -7,6 +7,7 @@ import { ensureSyntaxTree } from "@codemirror/language";
 import { astAnalysis } from "../astAnalysis.js";
 import { global_state } from "../global_state.js";
 import { snapToGrid } from "../snapToGrid.js";
+import { snapToPad } from "../snapToPad.js";
 
 const sigFigs = num => num.includes(".")
   ? num.split(".")[1].length
@@ -44,10 +45,29 @@ export function addPathManipulation(state, svgListener) {
 
     const targetPoint = svgPoint(clickedPoint);
 
-    const pt = {
+    // Make this mutable so we can use other filters later
+    let pt = {
       x: snapToGrid(targetPoint.x),
       y: snapToGrid(targetPoint.y)
     }
+
+    // BEGIN: Snap to pad
+    const components = state.pcb.components;
+    for (const comp in components) {
+      const pads = components[comp].pads;
+      for (const pad in pads) {
+        const p = pads[pad];
+        const dx = Math.abs(targetPoint.x - p[0]);
+        const dy = Math.abs(targetPoint.y - p[1]);
+        if (dx < 0.05 && dy < 0.05) {
+          console.log(`Nearby pad ${pad}`);
+          pt.x = snapToPad(p[0], pt.x);
+          pt.y = snapToPad(p[1], pt.y);
+          break;
+        }
+      }
+    }
+    // END: Snap to pad
 
     const doc = state.codemirror.view.state.doc;
     const string = doc.toString();
