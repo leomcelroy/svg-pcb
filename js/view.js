@@ -137,6 +137,18 @@ const menu = state => html`
 							>
 						</input>
 					</div>
+					<div class="check-item"> 
+						<span>snapPad</span>
+						<input
+							type="checkbox"
+							.checked=${state.snapPad}
+							@change=${(e) => {
+								state.snapPad = e.target.checked;
+								dispatch("RENDER");
+							}}
+							>
+						</input>
+					</div>
 					<div class="input-item">
 						<span>grid size:</span>
 						<input
