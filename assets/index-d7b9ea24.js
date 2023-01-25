@@ -164,19 +164,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <g id=${e}>
       ${s}
     </g>
-  `},YS=({pt:i,start:t,end:e,text:n},r,o)=>We`
+  `},YS=({pt:i,start:t,end:e,text:n},r)=>We`
   <circle
     class="draggable-pt"
     cx=${i[0]}
     cy=${i[1]}
-    r=${.015/(o*.0015)}
+    r="0.015"
     data-index=${r}
     data-start=${t}
     data-end=${e}
     data-text=${n}></circle>
 `,RS=({d:i,stroke:t,strokeWidth:e,fill:n})=>We`
   <path d=${i} stroke=${t} stroke-width=${e} fill=${n}></path>
-`,WS=i=>{var o,s;(o=i.panZoomParams)==null||o.corners();const t=(s=i.panZoomParams)==null?void 0:s.scale(),e=i.shapes.map(MS),n=i.paths.map(RS),r=i.pts.map((a,l)=>YS(a,l,t));return We`
+`,WS=i=>{var r;const t=i.shapes.map(MS),e=i.paths.map(RS),n=i.pts.map(YS);return(r=i.panZoomParams)==null||r.corners(),We`
     <svg id="viewer" style="width: 100%; height: 100%; transform: scale(1, -1);">
       <g class="transform-group">
             ${i.selectBox.start&&i.selectBox.end?We`
@@ -190,8 +190,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 "
               />`:""}
 
-          <g class="shapes">${e}</g>
-          <g class="paths">${n}</g>
+          <g class="shapes">${t}</g>
+          <g class="paths">${e}</g>
 
 
         ${i.panZoomParams&&i.gridSize>0&&i.grid?XS(i.panZoomParams.corners(),i.gridSize):""}
@@ -203,7 +203,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           stroke="black" fill="transparent" stroke-width="1"
           vector-effect="non-scaling-stroke"
           transform="translate(${i.limits.x[0]}, ${i.limits.y[0]})"/>
-        <g class="pts no-download">${i.viewHandles?r:""}</g>
+        <g class="pts no-download">${i.viewHandles?n:""}</g>
       </g>
 
     </svg>
