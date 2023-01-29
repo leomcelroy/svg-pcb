@@ -181,7 +181,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <g class="transform-group">
           <rect 
             x=${i.limits.x[0]} 
-            y=${i.limits.x[0]} 
+            y=${i.limits.y[0]} 
             fill=${i.background} 
             width=${i.limits.x[1]-i.limits.x[0]} 
             height=${i.limits.y[1]-i.limits.y[0]}>
