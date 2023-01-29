@@ -32,6 +32,13 @@ export const svgViewer = (state) => {
   return svg`
     <svg id="viewer" style="width: 100%; height: 100%; transform: scale(1, -1);">
       <g class="transform-group">
+          <rect 
+            x=${state.limits.x[0]} 
+            y=${state.limits.x[0]} 
+            fill=${state.background} 
+            width=${state.limits.x[1] - state.limits.x[0]} 
+            height=${state.limits.y[1] - state.limits.y[0]}>
+            </rect>
             ${ state.selectBox.start && state.selectBox.end ? svg`
               <path
                 class="selectBox"
