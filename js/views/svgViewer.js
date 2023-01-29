@@ -34,7 +34,7 @@ export const svgViewer = (state) => {
       <g class="transform-group">
           <rect 
             x=${state.limits.x[0]} 
-            y=${state.limits.x[0]} 
+            y=${state.limits.y[0]} 
             fill=${state.background} 
             width=${state.limits.x[1] - state.limits.x[0]} 
             height=${state.limits.y[1] - state.limits.y[0]}>

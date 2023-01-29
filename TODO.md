@@ -6,7 +6,7 @@
 	- [ ] kicad component
 - import
 	- [ ] kicad
-- [ ] background color
+- [x] background color
 - [ ] silkscreen
 - [ ] path drawing gui
 - [ ] handle infinite loops
