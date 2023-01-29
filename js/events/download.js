@@ -90,14 +90,14 @@ export function downloadGerber(state) {
       let totalX = 0;
       let totalY = 0;
       pts.forEach(pt => {
-        totalX += pt.x;
-        totalY += pt.y;
+        totalX += pt[0];
+        totalY += pt[1];
       })
 
-      return { x: totalX/pts.length, y: totalY/pts.length };
+      return [ totalX/pts.length, totalY/pts.length ];
     }
 
-    const getDistance = (pt0, pt1) => Math.sqrt((pt1.x - pt0.x)**2+(pt1.y - pt0.y)**2);
+    const getDistance = (pt0, pt1) => Math.sqrt((pt1[0] - pt0[0])**2+(pt1[1] - pt0[1])**2);
 
     const center = getCenter(x);
     const dist = Math.round(1000*x.reduce((acc, cur) => acc + getDistance(center, cur), 0)/x.length)/1000;
@@ -126,7 +126,7 @@ export function downloadGerber(state) {
     str += "G01*\n" // linear interpolation
 
     const strs = layer.map( pts => {
-      let ptsString = pts.reduce((acc, cur, i) => `${acc}X${format(cur.x)}Y${format(cur.y)}D0${i === 0 ? 2 : 1}*\n`, "G36*\n")
+      let ptsString = pts.reduce((acc, cur, i) => `${acc}X${format(cur[0])}Y${format(cur[1])}D0${i === 0 ? 2 : 1}*\n`, "G36*\n")
       ptsString += "G37*\n";
 
       return ptsString;
@@ -161,7 +161,7 @@ export function downloadGerber(state) {
        str += 'T'+tool+'\n' // tool selection
        for (var i = 0; i < tools[tool].length; i++) {
           const hole = tools[tool][i];
-          str += 'X'+format(hole.x)+'Y'+format(hole.y)+'\n'
+          str += 'X'+format(hole[0])+'Y'+format(hole[1])+'\n'
        }
     }
     
