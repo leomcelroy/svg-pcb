@@ -164,19 +164,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <g id=${e}>
       ${s}
     </g>
-  `},YS=({pt:i,start:t,end:e,text:n},r)=>We`
+  `},YS=({pt:i,start:t,end:e,text:n},r,o)=>We`
   <circle
     class="draggable-pt"
     cx=${i[0]}
     cy=${i[1]}
-    r="0.015"
+    r=${.015}
     data-index=${r}
     data-start=${t}
     data-end=${e}
     data-text=${n}></circle>
 `,RS=({d:i,stroke:t,strokeWidth:e,fill:n})=>We`
   <path d=${i} stroke=${t} stroke-width=${e} fill=${n}></path>
-`,WS=i=>{var r;const t=i.shapes.map(MS),e=i.paths.map(RS),n=i.pts.map(YS);return(r=i.panZoomParams)==null||r.corners(),We`
+`,WS=i=>{var r,o;(r=i.panZoomParams)==null||r.corners(),(o=i.panZoomParams)==null||o.scale();const t=i.shapes.map(MS),e=i.paths.map(RS),n=i.pts.map((s,a)=>YS(s,a));return We`
     <svg id="viewer" style="width: 100%; height: 100%; transform: scale(1, -1);">
       <g class="transform-group">
             ${i.selectBox.start&&i.selectBox.end?We`
