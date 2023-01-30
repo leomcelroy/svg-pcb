@@ -26,6 +26,7 @@
 	- [ ] better padLabels
 	- [ ] "string" to add
 - [ ] soldering masks
+- [ ] back layer component adding
 - BUGS
 	- [ ] fix ast analysis bug
 	- ? svg export

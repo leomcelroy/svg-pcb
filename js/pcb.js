@@ -15,6 +15,7 @@ export class PCB {
       rotate: ops.rotate || 0,
       padLabelSize: ops.padLabelSize || 0.02,
       componentLabelSize: ops.componentLabelSize || 0.025,
+      flip: ops.flip || false
     };
 
     const newComp = makeComponent(footprint, transform);
