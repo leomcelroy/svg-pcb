@@ -4,6 +4,7 @@ import { javascript } from "@codemirror/lang-javascript"
 import { EditorState, StateField } from "@codemirror/state";
 import { syntaxTree, indentUnit } from "@codemirror/language";
 import { indentWithTab } from "@codemirror/commands";
+import { vim } from "@replit/codemirror-vim"
 
 const countDocChanges = StateField.define({
   create(state) {
@@ -37,6 +38,7 @@ class CodeMirror extends HTMLElement {
         const extensions = [
             basicSetup, 
             javascript(),
+            // vim(),
             keymap.of([indentWithTab]), // TODO: We should put a note about Esc+Tab for accessibility somewhere.
             indentUnit.of("  "),
             // countDocChanges
@@ -50,5 +52,31 @@ class CodeMirror extends HTMLElement {
         })
     }
 }
+
+export function initCodeMirror(el, vimMode = false) {
+
+    const keybindings = vimMode ? vim() : keymap.of([indentWithTab]);
+    const extensions = [
+        basicSetup, 
+        javascript(),
+        keybindings,
+        indentUnit.of("  "),
+        // countDocChanges
+    ]
+
+    const state = EditorState.create({ extensions });
+
+    const view = new EditorView({
+      state,
+      parent: el
+    })
+
+    return {
+        state, 
+        view
+    }
+}
+
+
 
 window.customElements.define("codemirror-2", CodeMirror);

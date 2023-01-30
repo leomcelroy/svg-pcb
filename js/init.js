@@ -2,10 +2,12 @@ import { global_state } from "./global_state.js";
 import { addEvents } from "./events.js";
 import { dispatch } from "./dispatch.js";
 import { urlToCode } from "./urlToCode.js";
+import { initCodeMirror } from "./codemirror/codemirror.js"
 
 export function init() {
   dispatch("RENDER");
-  global_state.codemirror = document.querySelector(".code-editor");
+  const cmEl = document.querySelector(".code-editor");
+  global_state.codemirror = initCodeMirror(cmEl);
   addEvents(global_state);
 
   const url = new URL(window.location.href);
