@@ -9,6 +9,7 @@
 - [ ] background color
 - [ ] silkscreen
 - [ ] path drawing gui
+	- [ ] path selection **!!!!!IMPORTANT!!!!!**
 - [ ] handle infinite loops
 	- https://blog.replit.com/infinite-loops
 	- https://github.com/facebook/react/blob/main/scripts/babel/transform-prevent-infinite-loops.js
