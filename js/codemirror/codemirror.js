@@ -73,7 +73,8 @@ export function initCodeMirror(el, vimMode = false) {
 
     return {
         state, 
-        view
+        view,
+        foldRange() {}
     }
 }
 
