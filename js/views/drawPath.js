@@ -33,7 +33,7 @@ export const drawPath = ({ data, color, groupId = ""}) => {
         <text 
           text-anchor="middle" 
           x=${s.translate[0]} 
-          y=${s.translate[1] + s.size*0.352778}
+          y=${s.translate[1] + s.size*0.5}
           transform-origin=${`${s.translate[0]} ${s.translate[1]}`}
           transform=${`scale(${s.flip ? -1 : 1}, -1) rotate(${s.flip ? -s.rotate : s.rotate})`}
           style=${`font: ${s.size}pt sans-serif;`}

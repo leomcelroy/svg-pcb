@@ -25,10 +25,14 @@ export class PCB {
         translate: ops.translate,
         rotate: ops.rotate,
         flip: ops.flip,
-        size: ops.size
+        size: Math.max(ops.size, 0)
       }
 
-      this.addShape("F.Silkscreen", textFootprint);
+      const layer = ops.flip
+        ? "B.Silkscreen"
+        : "F.Silkscreen"
+
+      this.addShape(layer, textFootprint);
 
       return;
     }
