@@ -6,54 +6,45 @@ import { initCodeMirror } from "./codemirror/codemirror.js"
 
 export function init() {
   dispatch("RENDER");
+  const search = window.location.search;
+  const turnOnVim = new URLSearchParams(search).get("neil") === "true";
+  
   const cmEl = document.querySelector(".code-editor");
-  global_state.codemirror = initCodeMirror(cmEl);
+  global_state.codemirror = initCodeMirror(cmEl, turnOnVim);
   addEvents(global_state);
 
   const url = new URL(window.location.href);
 
-    const search = window.location.search;
-    const code = new URLSearchParams(search).get("code");
-    const file = new URLSearchParams(search).get("file");
-    const handlesOff = new URLSearchParams(search).get("bezier") === "false";
-    const gridOff = new URLSearchParams(search).get("grid") === "false";
-    const dontRun = new URLSearchParams(search).get("run") === "false";
+  const code = new URLSearchParams(search).get("code");
+  const file = new URLSearchParams(search).get("file");
+  const handlesOff = new URLSearchParams(search).get("bezier") === "false";
+  const gridOff = new URLSearchParams(search).get("grid") === "false";
+  const dontRun = new URLSearchParams(search).get("run") === "false";
 
-    const turnOnVim = new URLSearchParams(search).get("neil") === "true";
 
-    if (handlesOff) global_state.viewHandles = false;
-    if (gridOff) global_state.grid = false;
+  if (handlesOff) global_state.viewHandles = false;
+  if (gridOff) global_state.grid = false;
 
-    // if (turnOnVim) {
-    //   global_state.vimMode = true;
-    //   const cmEl = document.querySelector(".code-editor");
-    //   const str = global_state.codemirror.view.state.doc.toString();
-    //   cmEl.innerHTML = "";
-    //   global_state.codemirror = initCodeMirror(cmEl, global_state.vimMode);
-    //   global_state.codemirror.view.dispatch({
-    //     changes: { from: 0, insert: str }
-    //   });
-    // }
 
-    if (code) {
+  if (code) {
 
-    } else if (file) {
-        let file_url = file;
-        if (!file.startsWith("http")) file_url = `examples/${file}`;
+  } else if (file) {
+      let file_url = file;
+      if (!file.startsWith("http")) file_url = `examples/${file}`;
 
-        urlToCode(file_url, global_state);
-    } else { // should check before running this
-      const saved = window.localStorage.getItem("svg-pcb");
-      global_state.codemirror.view.dispatch({
-        changes: {from: 0, insert: saved ?? ""}
-      });
+      urlToCode(file_url, global_state);
+  } else { // should check before running this
+    const saved = window.localStorage.getItem("svg-pcb");
+    global_state.codemirror.view.dispatch({
+      changes: {from: 0, insert: saved ?? ""}
+    });
 
-      if (!dontRun) dispatch("RUN")
+    if (!dontRun) dispatch("RUN")
 
-      document.querySelector(".center-button").click();
-    }
+    document.querySelector(".center-button").click();
+  }
 
-    dispatch("RENDER");
+  dispatch("RENDER");
 }
 
 
