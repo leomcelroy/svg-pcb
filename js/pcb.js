@@ -34,7 +34,26 @@ export class PCB {
 
       this.addShape(layer, textFootprint);
 
-      return;
+      return {
+        pad() {
+          return undefined;
+        },
+        padX() {
+          return undefined;
+        },
+        padY() {
+          return undefined;
+        },
+        get pos() {
+          return ops.translate;
+        },
+        get posX() {
+          return ops.translate[0];
+        },
+        get posY() {
+          return ops.translate[1];
+        }
+      };
     }
 
     const newComp = makeComponent(footprint, transform);
