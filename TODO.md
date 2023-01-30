@@ -29,7 +29,7 @@
 	- [ ] better padLabels
 	- [ ] if "string" is passed to add make it text
 - BUGS
-	- [ ] fix ast analysis bug
+	- [ ] fix ast analysis bug (slice checking)
 	- ? svg export
 
 ---------------------------------------
