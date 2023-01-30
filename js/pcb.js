@@ -17,10 +17,26 @@ export class PCB {
       componentLabelSize: ops.componentLabelSize || 0.025,
     };
 
+    if (typeof footprint === "string") {
+      const textFootprint = {
+        type: "text",
+        silkscreen: true,
+        value: footprint,
+        translate: ops.translate,
+        rotate: ops.rotate,
+        flip: ops.flip,
+        size: ops.size
+      }
+
+      this.addShape("F.Silkscreen", textFootprint);
+
+      return;
+    }
+
     const newComp = makeComponent(footprint, transform);
 
-    for ( const layer in newComp.layers) {
-      newComp.layers[layer].forEach( data => {
+    for (const layer in newComp.layers) {
+      newComp.layers[layer].forEach(data => {
         this.addShape(layer, data);
       })
     }
