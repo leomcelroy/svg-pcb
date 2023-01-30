@@ -19,8 +19,21 @@ export function init() {
     const gridOff = new URLSearchParams(search).get("grid") === "false";
     const dontRun = new URLSearchParams(search).get("run") === "false";
 
+    const turnOnVim = new URLSearchParams(search).get("neil") === "true";
+
     if (handlesOff) global_state.viewHandles = false;
     if (gridOff) global_state.grid = false;
+
+    if (turnOnVim) {
+      global_state.vimMode = true;
+      const cmEl = document.querySelector(".code-editor");
+      const str = global_state.codemirror.view.state.doc.toString();
+      cmEl.innerHTML = "";
+      global_state.codemirror = initCodeMirror(cmEl, global_state.vimMode);
+      global_state.codemirror.view.dispatch({
+        changes: { from: 0, insert: str }
+      });
+    }
 
     if (code) {
 
