@@ -8,7 +8,8 @@ export function init() {
   dispatch("RENDER");
   const search = window.location.search;
   const turnOnVim = new URLSearchParams(search).get("neil") === "true";
-  
+
+  global_state.vimMode = turnOnVim;
   const cmEl = document.querySelector(".code-editor");
   global_state.codemirror = initCodeMirror(cmEl, turnOnVim);
   addEvents(global_state);

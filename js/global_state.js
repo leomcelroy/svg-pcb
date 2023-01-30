@@ -28,6 +28,7 @@ export const global_state = {
   selectedPath: null,
   panZoomParams: undefined,
   previewFootprint: null,
+  vimMode: false,
   
   paths: [],
   pts: [], 
