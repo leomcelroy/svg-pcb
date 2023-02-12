@@ -64,7 +64,12 @@ export function addPathManipulation(state, svgListener) {
       start--;
     }
 
-    const text = `${(ch === "," || ch === "(") ? "" : ","}\n  pt(${pt.x}, ${pt.y}),`
+    let text = "";
+    if (pt.ref === undefined) {
+      text = `${(ch === "," || ch === "(") ? "" : ","}\n  pt(${pt.x}, ${pt.y}),`
+    } else {
+      text = text = `${(ch === "," || ch === "(") ? "" : ","}\n  ${pt.ref},`
+    }
 
     state.codemirror.view.dispatch({
       changes: {
@@ -74,7 +79,6 @@ export function addPathManipulation(state, svgListener) {
       }
     });
     
-
     dispatch("RUN");
   })
 }

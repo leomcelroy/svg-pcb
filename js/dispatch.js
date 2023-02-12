@@ -120,6 +120,8 @@ const ACTIONS = {
 		state.inputs = [];
 		state.pts = [];
 		state.error = "";
+		state.componentCounter = 0;
+		state.componentVarNames = [];
 
 		const doc = state.codemirror.view.state.doc;
 	  let string = doc.toString();

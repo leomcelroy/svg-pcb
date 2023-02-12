@@ -1,4 +1,5 @@
 import { makeFootprintGeometry } from "./getSemanticInfo.js";
+import { global_state } from "./global_state.js";
 
 const FOOTPRINTS = {};
 
@@ -110,8 +111,21 @@ export function astAnalysis(string, ast) {
     const value = getValue();
     const startFrom = cursor.from;
 
-
     checkfootprint: if (cursor.name === "VariableDeclaration") {
+
+      // We want to know the variable names of components added via PCB.add()
+      if (value.includes(".add(")){
+
+        // Find variable name of the component to be added via PCB.add()
+        cursor.firstChild();
+        cursor.next();
+        const varName = getValue();
+
+        // Add component variable name at a position defined by CallExpression statement
+        global_state.componentVarNames[global_state.componentCounter] = varName;
+        break checkfootprint;
+      }
+
       cursor.firstChild();
       cursor.next();
       const name = getValue();
@@ -223,8 +237,15 @@ export function astAnalysis(string, ast) {
       });
     }
 
+    // Increase component counter for each PCB.add() call.
+    if (cursor.name === "CallExpression" && value.includes(".add(")) {
+      global_state.componentCounter++;
+    }
+
   } while (cursor.next());
 
+  // Reset component counter before PCB.add() calls start coming in
+  global_state.componentCounter = 0;
   const fps = [];
 
   for (const fp in FOOTPRINTS) {
