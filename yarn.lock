@@ -237,6 +237,11 @@
   dependencies:
     "@lezer/common" "^1.0.0"
 
+"@replit/codemirror-vim@^6.0.4":
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/@replit/codemirror-vim/-/codemirror-vim-6.0.4.tgz#3733654315ff9287e47688aab63cbd69eaba0c00"
+  integrity sha512-/LnuwOpD9lKInyQbVNe6b8HC5wM5lWV2WUHWGqE2tTeZB4n2gQL30pvW1M69xV5yLOPNf1o6vUAHn259ljQxZw==
+
 "@rollup/plugin-node-resolve@^13.0.4":
   version "13.3.0"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-node-resolve/-/plugin-node-resolve-13.3.0.tgz#da1c5c5ce8316cef96a2f823d111c1e4e498801c"

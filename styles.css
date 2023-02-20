@@ -75,7 +75,13 @@ input {
     overflow: hidden;
 }
 
-codemirror-2 {
+/*codemirror-2 {
+	background: var(--construction-paper);
+  flex: 1;
+  overflow: hidden;
+}*/
+
+.code-editor {
 	background: var(--construction-paper);
   flex: 1;
   overflow: hidden;

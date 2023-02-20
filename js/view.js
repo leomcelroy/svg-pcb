@@ -13,6 +13,7 @@ import { renderFootprint } from "./views/renderFootprint.js";
 import { clearSelectedPath } from "./clearSelectedPath.js";
 import logoURL from '../logo.svg'
 import { inputRenderers } from "./views/inputRenderers.js";
+import { initCodeMirror } from "./codemirror/codemirror.js";
 
 export function view(state) {
 	return html`
@@ -20,7 +21,7 @@ export function view(state) {
 
 		<div class="content">
 			<div class="left-side">
-				<codemirror-2 class="code-editor"></codemirror-2>
+				<div class="code-editor"></div>
 				${state.error !== "" ? html`<div class="error-log">${state.error}</div>` : "" }
 			</div>
 			<div class="right-side" @mousedown=${() => dispatch("RUN", { flatten: false })}>
@@ -94,16 +95,16 @@ const menu = state => html`
 						@input=${(e) => {state.name = e.target.value}}/>
 				</div>
 			</div>
+			<div
+				class="menu-item center-button"
+				@click=${() => {
+						state.panZoomParams.setScaleXY(state.limits);
+				}}>
+				center-view
+			</div>
 			<div class="menu-item dropdown-container">
-				drawing
+				options
 				<div class="dropdown-content">
-					<div
-						class="menu-item center-button"
-						@click=${() => {
-								state.panZoomParams.setScaleXY(state.limits);
-						}}>
-						center
-					</div>
 					<div class="check-item"> 
 						<span>handles</span>
 						<input
@@ -140,6 +141,18 @@ const menu = state => html`
 							>
 						</input>
 					</div>
+					<div class="check-item"> 
+						<span>snapPad</span>
+						<input
+							type="checkbox"
+							.checked=${state.snapPad}
+							@change=${(e) => {
+								state.snapPad = e.target.checked;
+								dispatch("RENDER");
+							}}
+							>
+						</input>
+					</div>
 					<div class="input-item">
 						<span>grid size:</span>
 						<input
@@ -151,6 +164,24 @@ const menu = state => html`
 								state.gridSize = Number(e.target.value);
 								dispatch("RENDER");
 							}}>
+						</input>
+					</div>
+					<div class="check-item"> 
+						<span>vim mode</span>
+						<input
+							type="checkbox"
+							.checked=${state.vimMode}
+							@change=${(e) => {
+								state.vimMode = e.target.checked;
+								const cmEl = document.querySelector(".code-editor");
+								const str = state.codemirror.view.state.doc.toString();
+								cmEl.innerHTML = "";
+  							state.codemirror = initCodeMirror(cmEl, state.vimMode);
+  							state.codemirror.view.dispatch({
+								  changes: { from: 0, insert: str }
+								});
+							}}
+							>
 						</input>
 					</div>
 				</div>

@@ -5,6 +5,7 @@ import { dispatch } from "../dispatch.js";
 import { syntaxTree } from "@codemirror/language";
 import { walk } from "../walk.js";
 import { snapToGrid } from "../snapToGrid.js";
+import { snapToPad } from "../snapToPad.js";
 
 export function addPtDragging(state, svgListener) {
   const svg = document.querySelector("svg");
@@ -65,11 +66,31 @@ export function addPtDragging(state, svgListener) {
     if (!clicked) return;
 
     const svgPoint = svg.panZoomParams.svgPoint;
-    const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY})
+    const currentPoint = svgPoint({x: e.offsetX, y: e.offsetY});
     const xOffset = ( ogPos[0] - initialOffset[0] );
     const yOffset = ( ogPos[1] - initialOffset[1] );
-    const x = round(snapToGrid(currentPoint.x) - xOffset, 3);
-    const y = round(snapToGrid(currentPoint.y) - yOffset, 3);
+    
+    // Make these mutable so we can apply some more filters later on
+    let x = round(snapToGrid(currentPoint.x) - xOffset, 3);
+    let y = round(snapToGrid(currentPoint.y) - yOffset, 3);
+
+    // BEGIN: Snap to pad
+    const components = state.pcb.components;
+    for (const comp in components) {
+      const pads = components[comp].pads;
+      for (const pad in pads) {
+        const p = pads[pad];
+        const dx = Math.abs(currentPoint.x - p[0]);
+        const dy = Math.abs(currentPoint.y - p[1]);
+        if (dx < 0.05 && dy < 0.05) {
+          x = snapToPad(p[0], x);
+          y = snapToPad(p[1], y);
+          break;
+        }
+      }
+    }
+    // END: Snap to pad
+    
     dragPt(x, y, index);
   })
 

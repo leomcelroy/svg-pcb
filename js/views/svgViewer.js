@@ -4,12 +4,12 @@ import { drawGrid } from "./drawGrid.js";
 import { drawPath } from "./drawPath.js";
 import { drawHandles } from "./drawHandles.js";
 
-const drawPt = ({ pt, start, end, text }, i) => svg`
+const drawPt = ({ pt, start, end, text }, i, scale) => svg`
   <circle
     class="draggable-pt"
     cx=${pt[0]}
     cy=${pt[1]}
-    r="0.015"
+    r=${false ? 0.015 / (scale * 0.0015) : 0.015}
     data-index=${i}
     data-start=${start}
     data-end=${end}
@@ -26,11 +26,14 @@ const drawP = ({ d, stroke, strokeWidth, fill, strokeLinecap, strokeLinejoin }) 
     fill=${fill}></path>
 `
 export const svgViewer = (state) => {
+  const corners = state.panZoomParams?.corners();
+  const scale = state.panZoomParams?.scale();
+
   const shapes = state.shapes.map(drawPath);
   const paths = state.paths.map(drawP);
-  const pts = state.pts.map(drawPt);
+  const pts = state.pts.map((pt, i) => drawPt(pt, i, scale));
 
-  const corners = state.panZoomParams?.corners();
+
 
   return svg`
     <svg id="viewer" style="width: 100%; height: 100%; transform: scale(1, -1);">
@@ -45,6 +48,13 @@ export const svgViewer = (state) => {
         : ""}
 
       <g class="transform-group">
+          <rect 
+            x=${state.limits.x[0]} 
+            y=${state.limits.y[0]} 
+            fill=${state.background} 
+            width=${state.limits.x[1] - state.limits.x[0]} 
+            height=${state.limits.y[1] - state.limits.y[0]}>
+            </rect>
             ${ state.selectBox.start && state.selectBox.end ? svg`
               <path
                 class="selectBox"

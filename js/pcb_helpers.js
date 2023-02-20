@@ -1,4 +1,13 @@
-import { pathD, getPathData, circle, rectangle, translate as trans, rotate as rot, outline } from "/geogram/index.js";
+import { 
+  pathD, 
+  getPathData, 
+  circle, 
+  rectangle, 
+  translate as trans, 
+  rotate as rot, 
+  outline,
+  scale
+} from "/geogram/index.js";
 
 const length = ([x1, y1], [x2, y2]) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
 
@@ -104,7 +113,7 @@ function makeComponent(comp, options = {}) {
   let translate = options.translate || [0, 0];
   let rotate = options.rotate || 0;
   let padLabelSize = options.padLabelSize || 0.02;
-  // add flip
+  let flip = options.flip || false;
 
   const [xOff, yOff] = translate;
   const rad = (rotate * Math.PI) / 180;
@@ -116,6 +125,8 @@ function makeComponent(comp, options = {}) {
   for (const pad in comp) {
     let { pos, shape, layers, origin } = comp[pad];
 
+    if (flip) layers = layers.map(layer => layer === "F.Cu" ? "B.Cu" : layer);
+
     if (typeof shape === "string") shape = pathD([], shape);
 
     let offset = [pos[0], pos[1]];
@@ -123,21 +134,69 @@ function makeComponent(comp, options = {}) {
       offset[0] = origin[0];
       offset[1] = origin[1];
     }
-    trans(shape, offset)
-    trans(shape, translate)
+    
+    trans(shape, offset);
+    if (flip) scale(shape, [-1, 1], [0, 0]);
+    trans(shape, translate);
     rot(shape, rotate, translate);
+
+
 
     let pad_pos = vector_add(vector_rotate(pos, rad), translate);
     pads[pad] = pad_pos;
+
+    const scalePt = (p, [ xScale, yScale ], [ x, y ]) => {
+
+      const newPoint = [
+        ((p[0]-x) * xScale) + x,
+        ((p[1]-y) * yScale) + y
+      ];
+
+      return newPoint;
+    };
+
+    const rotatePt = (p, angle, point) => {
+
+      let delta = angle / 180 * Math.PI;
+
+      let hereX = p[0] - point[0];
+      let hereY = p[1] - point[1];
+
+      let newPoint = [
+        hereX * Math.cos(delta) - hereY * Math.sin(delta) + point[0],
+        hereY * Math.cos(delta) + hereX * Math.sin(delta) + point[1]
+      ];
+
+      return newPoint;
+    }
+
+    const translatePt = (p, toPoint, fromPoint) => {
+      const [ x0, y0 ] = fromPoint;
+      const [ x1, y1 ] = toPoint;
+      const x = x1 - x0;
+      const y = y1 - y0;
+
+      const newPoint = [
+        point[0] + x,
+        point[1] + y
+      ];
+
+      return newPoint;
+    }
+
+    let textLoc = pad_pos;
+    textLoc = scalePt(textLoc, [flip ? -1 : 1, 1], translate);
+    textLoc = rotatePt(textLoc, flip ? 2*rotate : 0, translate);
 
     if (!pad.includes("drill")) {
       // let text = makeText(pad, padLabelSize, pad_pos, rotate);
       padsLabels.push({
         type: "text",
         value: pad,
-        translate: pad_pos,
-        rotate,
+        translate: textLoc,
+        // rotate,
         size: padLabelSize
+        // if flip need to rotate around
       });
     }
 

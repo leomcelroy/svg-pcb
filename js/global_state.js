@@ -16,16 +16,19 @@ export const global_state = {
     y: [0, 1]
   },
   mm_per_unit: 25.4,
+  background: "#00000000",
 
   // -- grid --
   grid: true,
   gridSize: 0.05,
   adaptiveGrid: false,
+  snapPad: false,
 
   viewHandles: true,
   selectedPath: null,
   panZoomParams: undefined,
   previewFootprint: null,
+  vimMode: false,
   
   paths: [],
   pts: [], 

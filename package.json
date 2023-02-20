@@ -16,6 +16,7 @@
     "@codemirror/lang-javascript": "^6.0.0",
     "@codemirror/search": "^6.0.0",
     "@codemirror/state": "^6.0.1",
+    "@replit/codemirror-vim": "^6.0.4",
     "acorn": "^8.7.1",
     "astring": "^1.7.5",
     "codemirror": "^6.0.0",

@@ -6,7 +6,7 @@
 	- [ ] kicad component
 - import
 	- [ ] kicad
-- [ ] background color
+- [x] background color
 - [ ] silkscreen
 - [ ] path drawing gui
 	- [ ] path selection **!!!!!IMPORTANT!!!!!**
@@ -30,6 +30,9 @@
 	- [ ] better componentLabels
 	- [ ] better padLabels
 	- [ ] if "string" is passed to add make it text
+- [ ] soldering masks
+- [ ] back layer component adding
+
 - BUGS
 	- [ ] fix ast analysis bug (slice checking)
 	- ? svg export
