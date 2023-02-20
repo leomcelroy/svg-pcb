@@ -10,6 +10,8 @@
 - [ ] silkscreen
 - [ ] path drawing gui
 	- [ ] path selection **!!!!!IMPORTANT!!!!!**
+	- https://github.com/hackclub/sprig/blob/main/codemirror/editors.js
+	- https://codemirror.net/examples/decoration/
 - [ ] handle infinite loops
 	- https://blog.replit.com/infinite-loops
 	- https://github.com/facebook/react/blob/main/scripts/babel/transform-prevent-infinite-loops.js

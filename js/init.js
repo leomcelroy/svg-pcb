@@ -2,10 +2,14 @@ import { global_state } from "./global_state.js";
 import { addEvents } from "./events.js";
 import { dispatch } from "./dispatch.js";
 import { urlToCode } from "./urlToCode.js";
+import { ensureSyntaxTree } from "@codemirror/language";
 
 export function init() {
   dispatch("RENDER");
   global_state.codemirror = document.querySelector(".code-editor");
+
+  // TODO: sometimes path widget not generated
+  // global_state.codemirror.view.dispatch({});
   addEvents(global_state);
 
   const url = new URL(window.location.href);
@@ -37,6 +41,9 @@ export function init() {
 
       document.querySelector(".center-button").click();
     }
+
+    // const doc = global_state.codemirror.view.state.doc;
+    // ensureSyntaxTree(global_state.codemirror.view.state, doc.length, 10000);
 
     dispatch("RENDER");
 }

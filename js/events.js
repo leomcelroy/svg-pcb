@@ -6,6 +6,7 @@ import { addSelectBox } from "./events/addSelectBox.js";
 import { addNumberDragging } from "./events/addNumberDragging.js";
 import { addImportDrag } from "./events/addImportDrag.js";
 import { addPathManipulation } from "./events/addPathManipulation.js";
+import { addPathSelection } from "./events/addPathSelection.js";
 
 import { dispatch } from "./dispatch.js";
 
@@ -46,6 +47,7 @@ export function addEvents(state) {
 	addDropUpload(state, listenBody);
 	addNumberDragging(state, listenBody);
 	addVerticalBarDrag(state, listenBody);
+	addPathSelection(state, listenBody);
 
 	listenBody("keydown", "", (e) => {
 		let code = event.code;

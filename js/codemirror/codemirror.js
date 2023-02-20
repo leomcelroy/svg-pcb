@@ -4,31 +4,8 @@ import { javascript } from "@codemirror/lang-javascript"
 import { EditorState, StateField } from "@codemirror/state";
 import { syntaxTree, indentUnit } from "@codemirror/language";
 import { indentWithTab } from "@codemirror/commands";
+import { pathWidget } from "./pathWidget.js";
 
-// selectedPath = {
-//   pathStart,
-//   pathEnd,
-//   str: string.substr(pathStart, pathEnd - pathStart),
-// };
-
-// const countDocChanges = StateField.define({
-//   create(state) {
-//     return 0;
-//   },
-//   update(value, transaction) {
-//     if (transaction.docChanged) {
-//       console.log(value, transaction);
-//       const { state } = transaction;
-//       const ast = syntaxTree(state);
-//       return value + 1;
-//     } else {
-//       return value;
-//     }
-//   },
-//   provide(field) {
-//     return [];
-//   }
-// });
 
 class CodeMirror extends HTMLElement {
     constructor() {
@@ -46,6 +23,9 @@ class CodeMirror extends HTMLElement {
             javascript(),
             keymap.of([indentWithTab]), // TODO: We should put a note about Esc+Tab for accessibility somewhere.
             indentUnit.of("  "),
+            pathWidget
+            // underlineField,
+            // showStripes
             // countDocChanges
         ]
 

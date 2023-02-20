@@ -85,6 +85,17 @@ codemirror-2 {
 	height: 100%;
 }
 
+.cm-path-button {
+	background: #c0fdc0d1;
+	padding-left: 3px;
+	padding-right: 3px;
+	border-radius: 5px;
+}
+
+.cm-path-button:hover {
+	cursor: pointer;
+}
+
 .error-log {
 	background: #c92a2a;
   color: #ffffff;
