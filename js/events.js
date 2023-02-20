@@ -51,6 +51,13 @@ export function addEvents(state) {
 
 	listenBody("keydown", "", (e) => {
 		let code = event.code;
+		
+		const isTypingCode = e.target.classList.contains("cm-content");
+		if (isTypingCode) {
+			state.selectedPath = null;
+			dispatch("RENDER");
+		}
+
 		if (code === "Enter" && event.shiftKey) {
 		  event.preventDefault();
 		  dispatch("RUN");

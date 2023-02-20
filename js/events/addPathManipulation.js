@@ -57,7 +57,7 @@ export function addPathManipulation(state, svgListener) {
         const dx = Math.abs(targetPoint.x - p[0]);
         const dy = Math.abs(targetPoint.y - p[1]);
         if (dx < 0.05 && dy < 0.05) {
-          console.log(`Nearby pad ${pad}`);
+          // console.log(`Nearby pad ${pad}`);
           pt.x = snapToPad(p[0], pt.x);
           pt.y = snapToPad(p[1], pt.y);
           break;

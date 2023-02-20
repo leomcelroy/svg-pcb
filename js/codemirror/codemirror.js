@@ -8,38 +8,6 @@ import { pathWidget } from "./pathWidget.js";
 import { vim } from "@replit/codemirror-vim"
 
 
-class CodeMirror extends HTMLElement {
-    constructor() {
-        super();
-        this.view = undefined;
-        this.state = undefined;
-    }
-
-    foldRange() {}
-
-    // lifecycle
-    connectedCallback() {
-        const extensions = [
-            basicSetup, 
-            javascript(),
-            // vim(),
-            keymap.of([indentWithTab]), // TODO: We should put a note about Esc+Tab for accessibility somewhere.
-            indentUnit.of("  "),
-            pathWidget
-            // underlineField,
-            // showStripes
-            // countDocChanges
-        ]
-
-        const state = EditorState.create({ extensions });
-
-        this.view = new EditorView({
-          state,
-          parent: this
-        })
-    }
-}
-
 export function initCodeMirror(el, vimMode = false) {
 
     const keybindings = vimMode ? vim() : keymap.of([indentWithTab]);
@@ -48,6 +16,7 @@ export function initCodeMirror(el, vimMode = false) {
         javascript(),
         keybindings,
         indentUnit.of("  "),
+        pathWidget
         // countDocChanges
     ]
 
@@ -64,7 +33,3 @@ export function initCodeMirror(el, vimMode = false) {
         foldRange() {}
     }
 }
-
-
-
-window.customElements.define("codemirror-2", CodeMirror);

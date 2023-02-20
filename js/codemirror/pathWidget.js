@@ -51,3 +51,7 @@ export const pathWidget = ViewPlugin.fromClass(class {
 }, {
   decorations: v => v.decorations
 })
+
+
+
+
