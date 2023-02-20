@@ -9,7 +9,7 @@
 - [x] background color
 - [ ] silkscreen
 - [ ] path drawing gui
-	- [ ] path selection **!!!!!IMPORTANT!!!!!**
+	- [x] path selection
 	- https://github.com/hackclub/sprig/blob/main/codemirror/editors.js
 	- https://codemirror.net/examples/decoration/
 - [ ] handle infinite loops
@@ -32,6 +32,14 @@
 	- [ ] if "string" is passed to add make it text
 - [ ] soldering masks
 - [ ] back layer component adding
+- [ ] add transform widget for selected components
+	- [ ] translate
+	- [ ] rotate
+	- [ ] flip
+- [ ] publish rico's documentation
+- [ ] add versioning
+	- publish old versions
+	- add metadata to top of file
 
 - BUGS
 	- [ ] fix ast analysis bug (slice checking)
