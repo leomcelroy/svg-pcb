@@ -9,7 +9,7 @@ const drawPt = ({ pt, start, end, text }, i, scale) => svg`
     class="draggable-pt"
     cx=${pt[0]}
     cy=${pt[1]}
-    r=${false ? 0.015 / (scale * 0.0015) : 0.015}
+    r=${true ? 0.01 / (scale * 0.0015) : 0.01}
     data-index=${i}
     data-start=${start}
     data-end=${end}
