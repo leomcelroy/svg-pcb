@@ -11,14 +11,14 @@ Using a combination of **Javascript code** and **graphical drawing tools**, circ
 - No **Electrical Rules Check**  
 - No **Design Rules Check**  
 - No **Auto-routing**  
-- Does not require installation...is browser-based  
+- Does not require installation...is **browser-based**  
 
 And of course the most notable difference is that **SVG-PCB** is an EDA that is centered upon Javascript programming...while having some very useful graphical user interface (GUI) features to make for a unique circuit board design experience.  
 
 > **Disclaimer:** While SVG-PCB is easy to use, it is best suited for those with some knowledge and experience with PCB design…who are able to select, place and connect electronic components in a sensible and functional manner to make a working circuit...as well as some level of comfort with all aspects of programming, particularly Javascript.  
 > 
 
-**SVG-PCB** is a non-tradional EDA for those who enjoy the logical structure and parametric control...of **drawing with code**.  
+**SVG-PCB** is a non-tradional EDA for those who enjoy the logical structure and parametric control...of **Drawing with Code**.  
 ## Getting Started!
 
 - To access **SVG-PCB** go to [https://leomcelroy.com/svg-pcb-website/#/home](https://leomcelroy.com/svg-pcb-website/#/home)  
@@ -26,10 +26,10 @@ And of course the most notable difference is that **SVG-PCB** is an EDA that is 
 - 
     ![2023-02-11_12_49_15-SVG-PCB](https://user-images.githubusercontent.com/27078897/222630446-8d2b0b98-a772-4283-8977-9841e52bcf18.jpg)
     
-    - [**Editor**](https://leomcelroy.com/svg-pcb/) >> the board design workspace page  
-    - [**Learn**](https://leomcelroy.com/svg-pcb-website/#/learn) >> a page with a list of example board designs and their descriptive code  
-    - [**Docs**](https://leomcelroy.com/svg-pcb-website/#/docs) >> a FAQ page providing answers to frequently asked questions and other explanations  
-    - [**About**](https://leomcelroy.com/svg-pcb-website/#/about) >> a page with information about the app developers  
+    - [**Editor**](https://leomcelroy.com/svg-pcb/) >> the **Board Design** workspace page  
+    - [**Learn**](https://leomcelroy.com/svg-pcb-website/#/learn) >> a page with a list of **Example Board Designs** and their descriptive code  
+    - [**Docs**](https://leomcelroy.com/svg-pcb-website/#/docs) >> a **FAQ** page providing answers to frequently asked questions and other explanations  
+    - [**About**](https://leomcelroy.com/svg-pcb-website/#/about) >> a page with information about the app **Developers**  
     
 ## PCB Design Workspace
 
@@ -41,7 +41,7 @@ And of course the most notable difference is that **SVG-PCB** is an EDA that is 
 ### The Interface
 <br>
 
-Let's take a tour around the **SVG-PCB** interface!  
+Let's take a tour around the **SVG-PCB** Board Design interface!  
 
 - Right side >> **Drawing Window**    
 - Left side >> **Coding Window**  
@@ -57,9 +57,10 @@ Let's take a tour around the **SVG-PCB** interface!
     ![2023-02-23_12_54_09-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630543-86a7ac7f-4d3b-40ac-87ce-1a55fc43a000.jpg)
 
     - **Run  (SHIFT + ENTER)** >> runs the program…updates the image in the Drawing Window with changes to the code  
+        - Be careful NOT to click NEW when test running your code...or you will erase all your progress! Save often!
     - **New** >> opens a new program  
         - To **Open Existing SVG-PCB file** >> Drag & Drop a SVG-PCB .js file into the SVG-PCB browser window  
-    - **Download** >> export a file  
+    - **Download** >> Export a file  
     <br> 
     
         ![Untitled](https://user-images.githubusercontent.com/27078897/222630582-051c45e0-a96f-4dbd-b91e-4977233d173f.png)
@@ -151,7 +152,7 @@ const LED_1206 = {"A":{"shape":"M -0.037,0.034L 0.027,0.034L 0.027,-0.034L -0037
 
 ### Placing & Naming Components on the PCB
 
-- From the **COMPONENTS** pop-out window’s **FOOTPRINTS** list…drag & drop the graphical icon component to the board area  
+- From the **COMPONENTS** pop-out window’s **FOOTPRINTS** list…**Drag & Drop** the graphical icon component to the board area  
 - Grab the **RED** component **'handle'** to **Move** the component...and place it on the board    
 
 **Note:** After dropping a component onto the board area…code for the dropped component will appear in the **ADD COMPONENT** section of the code
@@ -193,12 +194,15 @@ Let's take a look at an example...
   
 This is the generic code to create a **WIRE**…  
 
-```jsx
+```js
 board.wire(path(), 0.03)
 ```
 
 - The ‘**board.wire**’ command takes two parameters…**line path,** **wire width**  
 - **0.03mm** is the default wire width  
+-
+> **Tip:** You might want to create variables in the 'Constants' section of the program (near the top) to represent different types of wire widths on your board...ex: const pwrWire = 0.04, const signalWire = 0.02
+
 - In between the parenthesis following the ‘**path**’ command…you will specify the **starting point, intermediate point(s)** and **end point** of the line.
 - These **POINTs** (RED dots) for a polyline will be specified using the **pt(x-coordinate, y-coordinate)** command  
 - To make it possible to draw a polyline **WIRE** graphically in the **Drawing Window…**
@@ -257,7 +261,7 @@ SAMD.padY("GND)
 ```js
 board.wire(path(SAMD.pad("GND"), //starting point, GND pad of SAMD11C
                pt(R1.padX("1"), SAMD.padY("GND")), //Intermediate point referencing the X-position of the resistor pad 1 and Y-position of the SAMD GND pad
-               R1.pad("1")), 0.03); //end point, resistor 1 pad 1 & wire width of 0.03
+               R1.pad("1")), signalWire); //end point, resistor 1 pad 1 & wire width of 0.02, the signal wire type
 ```
 
 ![exampleWire](https://user-images.githubusercontent.com/27078897/222631067-1da7d37a-2119-43d7-bdf9-3c2fa6598e61.jpg)
