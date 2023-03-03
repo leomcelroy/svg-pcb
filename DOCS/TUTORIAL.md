@@ -23,8 +23,8 @@ And of course the most notable difference is that **SVG-PCB** is an EDA that is 
 
 - To access **SVG-PCB** go to [https://leomcelroy.com/svg-pcb-website/#/home](https://leomcelroy.com/svg-pcb-website/#/home)  
 - On the **HOME** screen…you are giving 4 sub-page options  
-    
-    ![2023-02-11 12_49_15-SVG-PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-11_12_49_15-SVG-PCB.jpg)
+- 
+    ![2023-02-11_12_49_15-SVG-PCB](https://user-images.githubusercontent.com/27078897/222630446-8d2b0b98-a772-4283-8977-9841e52bcf18.jpg)
     
     - [**Editor**](https://leomcelroy.com/svg-pcb/) >> the board design workspace page  
     - [**Learn**](https://leomcelroy.com/svg-pcb-website/#/learn) >> a page with a list of example board designs and their descriptive code  
@@ -36,7 +36,7 @@ And of course the most notable difference is that **SVG-PCB** is an EDA that is 
 - **Choose [**Editor**](https://leomcelroy.com/svg-pcb/)** > to enter the **board design workspace**  
 <br>
 
-![SVGPCBinterfaceOverview.png](SVG-PCB%207790292e8ef345ffa33314986070ce32/SVGPCBinterfaceOverview.png)
+![SVGPCBinterfaceOverview](https://user-images.githubusercontent.com/27078897/222630486-7946c754-7257-47b6-989f-7cef1f700c26.png)
 
 ### The Interface
 <br>
@@ -50,27 +50,27 @@ Let's take a tour around the **SVG-PCB** interface!
     - Make Visible/Invisible (checkbox) and change colors for board **Layers**   
     <br>
 
-    ![2023-02-23 12_51_12-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-23_12_51_12-SVG_PCB.jpg)
-    
+    ![2023-02-23_12_51_12-SVG_PCB](https://user-images.githubusercontent.com/27078897/222631162-c32da99b-88e1-4f74-873a-2775ab25a923.jpg)
+
 - Top left side >> **Menu**  
-    
-    ![2023-02-23 12_54_09-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-23_12_54_09-SVG_PCB.jpg)
-    
+
+    ![2023-02-23_12_54_09-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630543-86a7ac7f-4d3b-40ac-87ce-1a55fc43a000.jpg)
+
     - **Run  (SHIFT + ENTER)** >> runs the program…updates the image in the Drawing Window with changes to the code  
     - **New** >> opens a new program  
         - To **Open Existing SVG-PCB file** >> Drag & Drop a SVG-PCB .js file into the SVG-PCB browser window  
     - **Download** >> export a file  
     <br> 
     
-        ![Untitled](SVG-PCB%207790292e8ef345ffa33314986070ce32/Untitled.png)
-        
+        ![Untitled](https://user-images.githubusercontent.com/27078897/222630582-051c45e0-a96f-4dbd-b91e-4977233d173f.png)
+
         - Choose from **SVG**, **PNG**, **JS** file formats (**GERBER** a 'work in progress' feature)     
         - Enter the unique **file name** in the “name-here” input box  
         - **Note:** all exports saved to the **downloads** folder  
     - **Center View** >> centers the PCB board design in the Drawing Window…zooming to fit  
     - **Options** >> toggle options for the Drawing Window  
         
-        ![2023-02-23 12_55_13-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-23_12_55_13-SVG_PCB.jpg)
+        ![2023-02-23_12_55_13-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630637-6d123973-45de-41ad-841a-757f2367ee00.jpg)
         
         - Shapes and component control **handles** Visible/Invisible  
         - **Grid** and snap-to-grid ON/OFF  
@@ -96,9 +96,9 @@ The **SVG-PCB** design process will require a combination of selecting and **pos
 
 - From the **COMPONENTS** pop-out menu (Top-Right of the **Drawing Window**)…use the **IMPORT** button to find/select component footprints for your board from the **COMPONENT MENU** list  
 
-![2023-02-11 17_01_37-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-11_17_01_37-SVG_PCB.jpg)
+![2023-02-11_17_01_37-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630700-7ca954c5-b73e-4e9b-8077-f9a6c47ac6e1.jpg)
 
-![2023-02-11 17_04_58-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-11_17_04_58-SVG_PCB.jpg)
+![2023-02-11_17_04_58-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630728-c2e809f6-daf0-44e4-9d1b-d12c6fdd92fc.jpg)
 
 - **Click once on the desired component to add it** to the component footprint list 
 
@@ -139,15 +139,15 @@ const LED_1206 = {"A":{"shape":"M -0.037,0.034L 0.027,0.034L 0.027,-0.034L -0037
 
 **Original Shape**
 
-![2023-02-11 19_01_41-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-11_19_01_41-SVG_PCB.jpg)
+![2023-02-11_19_01_41-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630863-38ee43c9-ff5d-441f-bbcc-f24730ee0779.jpg)
 
-![2023-02-11 19_01_02-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-11_19_01_02-SVG_PCB.jpg)
+![2023-02-11_19_01_02-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630890-62cb71b7-a2e2-49c7-b204-b97827c0375b.jpg)
 
 **Adjusted Shape**
 
-![2023-02-11 18_45_01-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-11_18_45_01-SVG_PCB.jpg)
+![2023-02-11_18_45_01-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630919-6d8efad8-6107-4b48-9dea-a1294cba9a0e.jpg)
 
-![2023-02-11 19_03_12-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-11_19_03_12-SVG_PCB.jpg)
+![2023-02-11_19_03_12-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630944-da5a21f5-9b87-486d-91d5-75d2fa06ebd8.jpg)
 
 ### Placing & Naming Components on the PCB
 
@@ -171,9 +171,9 @@ const LED_1206 = {"A":{"shape":"M -0.037,0.034L 0.027,0.034L 0.027,-0.034L -0037
 
 > **Tip:** List the added components from top to bottom…with components whose position will be dependent on another component below the component it references.  
 
-![Alt text](constVariable.jpg)
+![constVariable](https://user-images.githubusercontent.com/27078897/222631331-3b7316cf-887a-4db7-a948-e6d55069ad2d.jpg)
 
-![2023-02-11 18_56_44-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-11_18_56_44-SVG_PCB.jpg)
+![2023-02-11_18_56_44-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630978-051d310c-0da0-40ba-81d7-6fc897f71e27.jpg)
 
 ### Routing Wire Between Component Pads
 
@@ -204,16 +204,16 @@ board.wire(path(), 0.03)
 - To make it possible to draw a polyline **WIRE** graphically in the **Drawing Window…**
     - Click in **between the parenthesis** following the **PATH** command…i.e. place the blinking cursor there...and this will make 'drawing' the path graphically possible  
     
-    ![2023-02-23 16_07_44-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-23_16_07_44-SVG_PCB.jpg)
-    
+    ![2023-02-23_16_07_44-SVG_PCB](https://user-images.githubusercontent.com/27078897/222631004-10ee2b8d-e7de-48e6-b8fd-aea5f3205b73.jpg)
+
     - In the **Drawing Window**…click on the locations of the start, intermediates and end **POINTs**  
     <br>
     
-    ![2023-02-23 16_08_34-SVG PCB.jpg](SVG-PCB%207790292e8ef345ffa33314986070ce32/2023-02-23_16_08_34-SVG_PCB.jpg)
-    
+    ![2023-02-23_16_08_34-SVG_PCB](https://user-images.githubusercontent.com/27078897/222631019-bb7b9615-d354-486d-8b0c-87672d73fc21.jpg)
+
 - For example…
 
-```jsx
+```js
 board.wire(path(
   pt(-0.100, 0.100),
   pt(-0.2, 0.1),
@@ -239,14 +239,14 @@ board.wire(path(
     - the word “pad” +  
     - the name of the pad in parenthesis and surrounded by quotes   
 - Ex: To specify the “**GND**” pad for the “**SAMD11C**” component, you would write…  
-```jsx
+```js
 SAMD.pad("GND")
 
 ```
 
 - **Pad Names** can also be used as **Reference Coordinates** for a **WIRE** vertex point ****to align with…by using **padX** and **.padY**…instead of just **.pad**  
 - Ex: To specify the **Y-coordinate** of the “**GND**” pad for the “**SAMD11C**” component as a reference point, you would write…  
-```jsx
+```js
 SAMD.padY("GND)
 ```
 - Ex: To create a 3-point for a wire between the SAMD “**GND**” pad and the R1 “**1**” pad, you may write something like this..  
@@ -254,13 +254,13 @@ SAMD.padY("GND)
     - R1 “1”…as the end point  
     - ..and an intermediate point that references the SAMD “GND” pad’s y-coordinate and R1 “1” pad’s x-coordinate  
 
-```jsx
+```js
 board.wire(path(SAMD.pad("GND"), //starting point, GND pad of SAMD11C
                pt(R1.padX("1"), SAMD.padY("GND")), //Intermediate point referencing the X-position of the resistor pad 1 and Y-position of the SAMD GND pad
                R1.pad("1")), 0.03); //end point, resistor 1 pad 1 & wire width of 0.03
 ```
 
-![Alt text](exampleWire.jpg)
+![exampleWire](https://user-images.githubusercontent.com/27078897/222631067-1da7d37a-2119-43d7-bdf9-3c2fa6598e61.jpg)
 
 **Note: Pad Names** can be edited or changed in the component description in the **DECLARE COMPONENTS** section  (but do this with great care!)
 
