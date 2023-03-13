@@ -490,10 +490,10 @@ Tip: Use component pad names to create constrained
 connections between component pads
 */
 
-board.wire(path(), 0.03);
+board.wire(path(), 0.03); //copy and paste this generic wire command to make a new wire connection
 
 /* -- RENDER_PCB -- */
-// Define the size and shape of the export boundary
+// Define the size and shape of the export boundary...should be slightly bigger than and fully enclose your PCB design
 
 const limit0 = pt(-0.55, -0.55);
 const limit1 = pt(0.55, 0.55);
