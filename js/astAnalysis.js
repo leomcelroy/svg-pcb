@@ -97,15 +97,13 @@ function makeTree(cursor, getValue, func = null) {
 
 function getComponentDeclarations(string, ast) {
   const componentDeclarations = [];
-
-
-  const cursor = ast.cursor()
+  const cursor = ast.cursor();
   const getValue = () => string.slice(cursor.from, cursor.to);
-
-  cursor.moveTo(0);
-
   const re = /(const|let)(.*)=(.*)\.add\(([^,]*),(.*)\)/;
-
+  
+  // Reset cursor as there might be another analysis pass before this.
+  cursor.moveTo(0);
+  
   do {
     const start = cursor.from;
 
@@ -121,7 +119,7 @@ function getComponentDeclarations(string, ast) {
       };
     }
 
-  } while (cursor.next())
+  } while (cursor.next());
   
   return componentDeclarations;
 }
@@ -134,11 +132,10 @@ export function astAnalysis(string, ast) {
   const componentDeclarations = getComponentDeclarations(string, ast);
   let layers = [];
 
-
-  const cursor = ast.cursor()
+  const cursor = ast.cursor();
   const getValue = () => string.slice(cursor.from, cursor.to);
 
-
+  // Reset cursor as there might be another analysis pass before this.
   cursor.moveTo(0);
 
   do {
@@ -200,8 +197,6 @@ export function astAnalysis(string, ast) {
       } catch (err) { }
       
     }
-
-
 
     if (cursor.name === "CallExpression" && value.slice(0, 9) === "renderPCB") {
       while (getValue() !== "layerColors" && cursor.next()) cursor.next();
