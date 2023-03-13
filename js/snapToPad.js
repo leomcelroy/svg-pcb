@@ -1,7 +1,7 @@
 import { global_state } from "./global_state.js";
 
 export const snapToPad = function(pt) {
-  if (!global_state.snapPad) return pt;
+  if (!global_state.snapToPad) return pt;
 
   pt.snapped = false;
 
@@ -17,8 +17,9 @@ export const snapToPad = function(pt) {
       const dx = Math.abs(pt.x - p[0]);
       const dy = Math.abs(pt.y - p[1]);
 
-      // this selection area is off
-      if (Math.sqrt(dx**2 + dy**2) < 0.02) {
+      // This selection area is off.
+      // Best would be to compare against the actual shape of the pad.
+      if (Math.sqrt(dx**2 + dy**2) < global_state.snapToPadRadius) {
 
         pt.x = parseFloat(p[0]).toFixed(3);
         pt.y = parseFloat(p[1]).toFixed(3);
