@@ -20,8 +20,6 @@ export const snapToPad = function(pt) {
       // this selection area is off
       if (Math.sqrt(dx**2 + dy**2) < 0.01) {
 
-        console.log(refDes, pad);
-
         pt.x = parseFloat(p[0]).toFixed(3);
         pt.y = parseFloat(p[1]).toFixed(3);
 

@@ -64,9 +64,11 @@ export function addPathManipulation(state, svgListener) {
       start--;
     }
 
+    const textStart = `${(ch === "," || ch === "(") ? "" : ","}\n  `;
+
     const text = pt.snapped
-      ? `${(ch === "," || ch === "(") ? "" : ","}\n  ${pt.padRef},`
-      : `${(ch === "," || ch === "(") ? "" : ","}\n  pt(${pt.x}, ${pt.y}),`;
+      ? `${textStart}${pt.padRef},`
+      : `${textStart}pt(${pt.x}, ${pt.y}),`;
 
     state.codemirror.view.dispatch({
       changes: {
