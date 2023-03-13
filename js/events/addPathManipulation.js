@@ -45,12 +45,12 @@ export function addPathManipulation(state, svgListener) {
 
     const targetPoint = svgPoint(clickedPoint);
 
-    let pt = {
-      x: snapToGrid(targetPoint.x),
-      y: snapToGrid(targetPoint.y)
-    }
+    const pt = snapToPad(targetPoint);
 
-    pt = snapToPad(pt);
+    if (!pt.snapped) {
+      pt.x = snapToGrid(pt.x);
+      pt.y = snapToGrid(pt.y);
+    }
 
     const doc = state.codemirror.view.state.doc;
     const string = doc.toString();
@@ -64,12 +64,9 @@ export function addPathManipulation(state, svgListener) {
       start--;
     }
 
-    let text = "";
-    if (pt.ref === undefined) {
-      text = `${(ch === "," || ch === "(") ? "" : ","}\n  pt(${pt.x}, ${pt.y}),`
-    } else {
-      text = text = `${(ch === "," || ch === "(") ? "" : ","}\n  ${pt.ref},`
-    }
+    const text = pt.snapped
+      ? `${(ch === "," || ch === "(") ? "" : ","}\n  ${pt.padRef},`
+      : `${(ch === "," || ch === "(") ? "" : ","}\n  pt(${pt.x}, ${pt.y}),`;
 
     state.codemirror.view.dispatch({
       changes: {

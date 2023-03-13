@@ -37,8 +37,6 @@ export const global_state = {
 
   componentMenu: false,
   componentSearch: "",
-  componentCounter: 0,
-  componentVarNames: [],
 
   name: "",
   error: ""

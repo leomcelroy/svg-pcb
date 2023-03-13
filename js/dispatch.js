@@ -120,8 +120,6 @@ const ACTIONS = {
 		state.inputs = [];
 		state.pts = [];
 		state.error = "";
-		state.componentCounter = 0;
-		state.componentVarNames = [];
 
 		const doc = state.codemirror.view.state.doc;
 	  let string = doc.toString();
@@ -129,7 +127,7 @@ const ACTIONS = {
 	  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
 		try {
-			const { pts, paths, footprints, layers, inputs } = astAnalysis(string, ast);
+			const { pts, paths, footprints, layers, inputs, componentDeclarations } = astAnalysis(string, ast);
 			state.footprints = footprints;
 			state.layers = layers;
 
@@ -163,6 +161,9 @@ const ACTIONS = {
 				changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
 			});
 
+			componentDeclarations.forEach(x => {
+				changes.push({ from: x.indexCurly+1, insert: `refDes:"${x.variableName}",` });
+			})
 
 			string = modifyAST(string, changes);
 

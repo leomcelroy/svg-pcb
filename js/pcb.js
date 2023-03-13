@@ -1,27 +1,23 @@
 import { makeComponent } from "./pcb_helpers.js";
 import { getPathData, expand, scale, outline, union, xor, path, path2, offset, offset2, boolean } from "/geogram/index.js";
-import { global_state } from "./global_state.js";
 
 export class PCB {
   constructor() {
     this.layers = {}; // maybe should just store shapes, get layer contents on demand
     this.components = [];
+    this.refDeses = [];
   }
 
   add(footprint, ops = {}) {
     // ops = { translate, rotate, padLabelSize, componentLabelSize, value? }
     const name = ops.name || "";
 
-    // Get variable name if any
-    const compVarName = global_state.componentVarNames[global_state.componentCounter] || "";
-
     const options = {
       translate: ops.translate || [0, 0],
       rotate: ops.rotate || 0,
       padLabelSize: ops.padLabelSize || 0.02,
       componentLabelSize: ops.componentLabelSize || 0.025,
-      flip: ops.flip || false,
-      varName: compVarName
+      flip: ops.flip || false
     };
 
     const newComp = makeComponent(footprint, options);
@@ -45,7 +41,7 @@ export class PCB {
     }
 
     this.components.push(newComp);
-    global_state.componentCounter++;
+    this.refDeses.push(ops.refDes || "");
 
     return newComp;
   }

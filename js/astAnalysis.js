@@ -1,5 +1,4 @@
 import { makeFootprintGeometry } from "./getSemanticInfo.js";
-import { global_state } from "./global_state.js";
 
 const FOOTPRINTS = {};
 
@@ -96,15 +95,51 @@ function makeTree(cursor, getValue, func = null) {
   return final;
 }
 
+function getComponentDeclarations(string, ast) {
+  const componentDeclarations = [];
+
+
+  const cursor = ast.cursor()
+  const getValue = () => string.slice(cursor.from, cursor.to);
+
+  cursor.moveTo(0);
+
+  const re = /(const|let)(.*)=(.*)\.add\(([^,]*),(.*)\)/;
+
+  do {
+    const start = cursor.from;
+
+    if (cursor.name === "VariableDeclaration") {
+      const val = getValue();
+      const match = val.match(re);
+      if (match !== null) {
+        const variableName = match[2].trim();
+        const options = match[5];
+        const indexCurly = val.indexOf(options) + start + 1;
+
+        componentDeclarations.push({ variableName, indexCurly })
+      };
+    }
+
+  } while (cursor.next())
+  
+  return componentDeclarations;
+}
+
 export function astAnalysis(string, ast) {
   const pts = [];
   const paths = [];
   const footprints = [];
   const inputs = [];
+  const componentDeclarations = getComponentDeclarations(string, ast);
   let layers = [];
+
 
   const cursor = ast.cursor()
   const getValue = () => string.slice(cursor.from, cursor.to);
+
+
+  cursor.moveTo(0);
 
   do {
     // console.log(`Node ${cursor.name} from ${cursor.from} to ${cursor.to} with value ${string.slice(cursor.from, cursor.to)}`, cursor);
@@ -112,19 +147,6 @@ export function astAnalysis(string, ast) {
     const startFrom = cursor.from;
 
     checkfootprint: if (cursor.name === "VariableDeclaration") {
-
-      // We want to know the variable names of components added via PCB.add()
-      if (value.includes(".add(")){
-
-        // Find variable name of the component to be added via PCB.add()
-        cursor.firstChild();
-        cursor.next();
-        const varName = getValue();
-
-        // Add component variable name at a position defined by CallExpression statement
-        global_state.componentVarNames[global_state.componentCounter] = varName;
-        break checkfootprint;
-      }
 
       cursor.firstChild();
       cursor.next();
@@ -178,6 +200,8 @@ export function astAnalysis(string, ast) {
       } catch (err) { }
       
     }
+
+
 
     if (cursor.name === "CallExpression" && value.slice(0, 9) === "renderPCB") {
       while (getValue() !== "layerColors" && cursor.next()) cursor.next();
@@ -237,15 +261,8 @@ export function astAnalysis(string, ast) {
       });
     }
 
-    // Increase component counter for each PCB.add() call.
-    if (cursor.name === "CallExpression" && value.includes(".add(")) {
-      global_state.componentCounter++;
-    }
-
   } while (cursor.next());
 
-  // Reset component counter before PCB.add() calls start coming in
-  global_state.componentCounter = 0;
   const fps = [];
 
   for (const fp in FOOTPRINTS) {
@@ -270,6 +287,7 @@ export function astAnalysis(string, ast) {
     paths, 
     footprints: fps, 
     layers, 
-    inputs 
+    inputs,
+    componentDeclarations
   };
 }
