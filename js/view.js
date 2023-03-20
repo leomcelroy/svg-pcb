@@ -1,5 +1,5 @@
 import { dispatch } from "./dispatch.js";
-import { html, svg } from "lit-html";
+import { html } from "lit-html";
 // import "code-mirror";
 import "./codemirror/codemirror.js";
 import { files } from "./components-names.js";
@@ -195,6 +195,14 @@ const menu = state => html`
 	</div>
 `;
 
+function getLayerList(layerMap){
+	const list = [];
+	layerMap.forEach((val, key) => {
+		list.push(key);
+	});
+	return list;
+}
+
 const modal_download_gerber = state => html`
 <div id="modal_download_gerber" class="modal hidden">
 	<div class="modal-content">
@@ -208,7 +216,30 @@ const modal_download_gerber = state => html`
 				}}>&times;</span>
 		</div>
 		<div class="modal-body">
-			<p>Download options show up here...</p>
+			<table>
+				<thead>
+					<tr>
+						<th colspan="2">Include Layers</td>
+					</tr>
+				</thead>
+				<tbody>
+					${
+						getLayerList(state.downloadGerberOptions.layers).map((l) => {
+						return html`
+						<tr>
+							<td><input 
+								type="checkbox"
+								.checked=${state.downloadGerberOptions.layers.get(l)}
+								@change=${(e) => {
+									state.downloadGerberOptions.layers.set(l, e.target.checked);
+								}}></td>
+							<td>${l}</td>
+						</tr>
+						`
+					})}
+					
+				</tbody>
+			</table>
 		</div>
 		<div class="modal-footer">
 			<button 

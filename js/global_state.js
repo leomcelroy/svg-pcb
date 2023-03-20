@@ -39,6 +39,19 @@ export const global_state = {
   componentSearch: "",
 
   name: "",
-  error: ""
+  error: "",
   // how do you know what point values are and how they map to concrete syntax tree
+
+  downloadGerberOptions: {
+    layers: new Map([
+      ["F.Cu", true],
+      ["B.Cu", false],
+      ["F.Mask", true],
+      ["B.Mask", false],
+      ["F.Silkscreen", true],
+      ["B.Silkscreen", false],
+      ["Edge.Cuts", true],
+      ["Drills", true]
+    ])
+  }
 }
