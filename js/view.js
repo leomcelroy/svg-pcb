@@ -52,6 +52,8 @@ export function view(state) {
 			<div id="vertical-bar"></div>
 			${drawComponentMenu(files)}
 		</div>
+
+		${dialog_export_gerber(state)}
 	`
 }
 
@@ -81,7 +83,10 @@ const menu = state => html`
 						js
 					</div class="menu-item">
 					<div class="menu-item"
-						@click=${() => downloadGerber(state)}>
+						@click=${(e) => {
+							const dialog = document.getElementById("dialog_export_gerber");
+							dialog.classList.remove("hidden");
+						}}>
 						gerber (WIP)
 					</div class="menu-item">
 					<input 
@@ -188,5 +193,30 @@ const menu = state => html`
 			<i class="fa fa-github" style="font-size:24px"></i>
 		</a>
 	</div>
-`
+`;
+
+const dialog_export_gerber = state => html`
+<div id="dialog_export_gerber" class="overlay hidden">
+	<div class="dialog">
+		<div class="dialog_header"><h3 class="dialog_title">Export Gerber Options</h3></div>
+		<div class="dialog_body"><p>Export options show up here...</p></div>
+		<div class="dialog_footer">
+			<button 
+				type="button" 
+				class="dialog_choice"
+				@click=${(e) => {
+					const dialog = document.getElementById("dialog_export_gerber");
+					dialog.classList.add("hidden");
+				}}>Export</button>
+			<button 
+				type="button" 
+				class="dialog_choice"
+				@click=${(e) => {
+					const dialog = document.getElementById("dialog_export_gerber");
+					dialog.classList.add("hidden");
+				}}>Cancel</button>
+		</div>
+	</div>
+</div>
+`;
 

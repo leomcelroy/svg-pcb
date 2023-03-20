@@ -536,3 +536,44 @@ input {
 	font-weight: bold;
 }
 
+.overlay {
+	background-color: rgba(0, 0, 0, 0.5);
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 999999;
+	text-align: center;
+}
+
+.dialog {
+	display: inline-block;
+	background-color: white;
+	padding: 10px;
+	position:fixed;
+    left: 50%;
+    top: 50%;
+    -ms-transform: translate(-50%,-50%);
+    -moz-transform:translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+
+.dialog_title {
+	margin: 0;
+	text-align: left;
+	font-size: 16px;
+	line-height: 1;
+}
+
+.dialog_body {
+	text-align: left;
+	font-size: 12px;
+}
+
+.dialog_footer {
+	text-align: right;
+}
+
+.hidden {
+	display: none;
+}
