@@ -66,6 +66,10 @@ function format(x) {
   return s;
 }
 
+export function exportGerber(state) {
+  alert("Exporting Gerber!");
+}
+
 export function downloadGerber(state) {
   const layers = state.pcb.layers;
 

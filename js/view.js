@@ -3,7 +3,7 @@ import { html, svg } from "lit-html";
 // import "code-mirror";
 import "./codemirror/codemirror.js";
 import { files } from "./components-names.js";
-import { downloadSVG, downloadText, downloadGerber, downloadPNG } from "./events/download.js"
+import { downloadSVG, downloadText, downloadGerber, downloadPNG, exportGerber } from "./events/download.js"
 import { drawImportItems } from "./views/drawImportItems.js";
 import { drawComponentMenu } from "./views/drawComponentMenu.js";
 import { layersColorPicker } from "./views/layersColorPicker.js";
@@ -53,7 +53,7 @@ export function view(state) {
 			${drawComponentMenu(files)}
 		</div>
 
-		${dialog_export_gerber(state)}
+		${modal_export_gerber(state)}
 	`
 }
 
@@ -84,8 +84,8 @@ const menu = state => html`
 					</div class="menu-item">
 					<div class="menu-item"
 						@click=${(e) => {
-							const dialog = document.getElementById("dialog_export_gerber");
-							dialog.classList.remove("hidden");
+							const modal = document.getElementById("modal_export_gerber");
+							modal.classList.remove("hidden");
 						}}>
 						gerber (WIP)
 					</div class="menu-item">
@@ -195,26 +195,37 @@ const menu = state => html`
 	</div>
 `;
 
-const dialog_export_gerber = state => html`
-<div id="dialog_export_gerber" class="overlay hidden">
-	<div class="dialog">
-		<div class="dialog_header"><h3 class="dialog_title">Export Gerber Options</h3></div>
-		<div class="dialog_body"><p>Export options show up here...</p></div>
-		<div class="dialog_footer">
+const modal_export_gerber = state => html`
+<div id="modal_export_gerber" class="modal hidden">
+	<div class="modal_content">
+		<div class="modal_header">
+			<h3 class="modal_title">Export Gerber Options</h3>
+			<span 
+				class="close"
+				@click=${(e) => {
+					const modal = document.getElementById("modal_export_gerber");
+					modal.classList.add("hidden");
+				}}>&times;</span>
+		</div>
+		<div class="modal_body">
+			<p>Export options show up here...</p>
+		</div>
+		<div class="modal_footer">
 			<button 
 				type="button" 
-				class="dialog_choice"
+				class="modal_choice"
 				@click=${(e) => {
-					const dialog = document.getElementById("dialog_export_gerber");
-					dialog.classList.add("hidden");
-				}}>Export</button>
-			<button 
-				type="button" 
-				class="dialog_choice"
-				@click=${(e) => {
-					const dialog = document.getElementById("dialog_export_gerber");
-					dialog.classList.add("hidden");
+					const modal = document.getElementById("modal_export_gerber");
+					modal.classList.add("hidden");
 				}}>Cancel</button>
+			<button 
+				type="button" 
+				class="modal_choice primary"
+				@click=${(e) => {
+					const modal = document.getElementById("modal_export_gerber");
+					modal.classList.add("hidden");
+					exportGerber(state);
+				}}>Export</button>
 		</div>
 	</div>
 </div>
