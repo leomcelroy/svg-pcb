@@ -550,7 +550,7 @@ input {
 	overflow: auto;
 }
 
-.modal_content {
+.modal-content {
 	display: inline-block;
 	background-color: white;
 	padding: 15px;
@@ -565,7 +565,7 @@ input {
     transform: translate(-50%,-50%);
 }
 
-.modal_header {
+.modal-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -573,19 +573,19 @@ input {
 	padding: 10px;
 }
 
-.modal_body {
+.modal-body {
 	text-align: left;
 	font-size: 12px;
 	padding: 10px;
 }
 
-.modal_footer {
+.modal-footer {
 	text-align: right;
 	border-top: 1px solid #ddd;
 	padding: 10px;
 }
 
-.modal_title {
+.modal-title {
 	margin: 0;
 	text-align: left;
 	font-size: 16px;

@@ -66,11 +66,10 @@ function format(x) {
   return s;
 }
 
-export function exportGerber(state) {
-  alert("Exporting Gerber!");
-}
-
 export function downloadGerber(state) {
+  alert("Downloading Gerber!");
+  return;
+
   const layers = state.pcb.layers;
 
   const expandWire = w => offset2(
