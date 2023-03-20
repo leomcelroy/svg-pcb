@@ -20,17 +20,10 @@ export const snapToPad = function(pt) {
       // This selection area is off.
       // Best would be to compare against the actual shape of the pad.
       if (Math.sqrt(dx**2 + dy**2) < global_state.snapToPadRadius) {
-
         pt.x = parseFloat(p[0]).toFixed(3);
         pt.y = parseFloat(p[1]).toFixed(3);
         pt.snapped = true;
-
-        if (refDes !== "") {
-          pt.padRef = `${refDes}.pad("${pad}")`;
-        } else {
-          pt.padRef = `pt(${pt.x}, ${pt.y})`;
-        }
-        
+        pt.padRef = (refDes !== "") ? `${refDes}.pad("${pad}")` : `pt(${pt.x}, ${pt.y})`;
         break;
       }
     }
