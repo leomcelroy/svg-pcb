@@ -3,7 +3,8 @@ import { html } from "lit-html";
 // import "code-mirror";
 import "./codemirror/codemirror.js";
 import { files } from "./components-names.js";
-import { downloadSVG, downloadText, downloadGerber, downloadPNG } from "./events/download.js"
+import { downloadSVG, downloadText, downloadPNG } from "./events/download.js"
+import { downloadGerber } from "./events/downloadGerber.js"
 import { drawImportItems } from "./views/drawImportItems.js";
 import { drawComponentMenu } from "./views/drawComponentMenu.js";
 import { layersColorPicker } from "./views/layersColorPicker.js";
