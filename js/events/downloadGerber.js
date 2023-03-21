@@ -57,8 +57,13 @@ export function downloadGerber(state) {
   
     // this is a list of polylines
     const frontCopper = layers["F.Cu"].map( x => {
-      if (x.type === "wire") return expandWire(x);
-      else return x;
+        if (x.type === "wire") return expandWire(x);
+        else return x;
+    }).flat();
+
+    const backCopper = layers["B.Cu"].map( x => {
+        if (x.type === "wire") return expandWire(x);
+        else return x;
     }).flat();
   
     const drill = (layers["drill"] ? layers["drill"] : []).flat().map( x => {
@@ -92,6 +97,7 @@ export function downloadGerber(state) {
     console.log({
       drill,
       frontCopper,
+      backCopper,
       interior
     })
   
@@ -173,6 +179,7 @@ export function downloadGerber(state) {
                 zip.file(`${state.name === "" ? "anon" : state.name}-F_Cu.gbr`, makeFile(frontCopper));
                 break;
             case "B.Cu":
+                zip.file(`${state.name === "" ? "anon" : state.name}-B_Cu.gbr`, makeFile(backCopper));
                 break;
             case "F.Mask":
                 break;
