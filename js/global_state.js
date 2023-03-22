@@ -45,13 +45,14 @@ export const global_state = {
   downloadGerberOptions: {
     layers: new Map([
       ["F.Cu", true],
-      ["B.Cu", false],
-      ["F.Mask", true],
+      ["B.Cu", true],
+      ["F.Mask", false],
       ["B.Mask", false],
-      ["F.Silkscreen", true],
+      ["F.Silkscreen", false],
       ["B.Silkscreen", false],
       ["Edge.Cuts", true],
       ["Drills", true]
-    ])
+    ]),
+    includeEdgeCuts: true // Include Edge.Cuts in all layers
   }
 }
