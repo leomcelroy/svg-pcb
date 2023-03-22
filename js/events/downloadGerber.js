@@ -126,12 +126,100 @@ export function downloadGerber(state) {
       return str;
     };
 
+    // Circle aperture only for now
+    const getGerberDefineAperture = (apertureID, diameter) => { 
+      return "%ADD" + apertureID.toString() +  "C," + diameter.toString() + "*%\n"; 
+    }; 
+    
+    // Select predefined aperture
+    const getGerberSelectAperture = (apertureID) => {
+      return "D" + apertureID.toString() + "*\n";
+    };
+
     const getGerberPolarityDark = () => { return "%LPD*%\n"; }
     const getGerberLinearInerpolation = () => { return "G01*\n"; }
     const getGerberEndOfFile = () => { return "M02*"; }
 
     /* END: reusable gerber macro functions */
     /* START: gerber file generators */
+
+    const makeGerberFile = (layer) => {
+      let apertureCounter = 10;
+      let str = '';
+      str += getGerberHeader();
+
+      // Add zero aperture for polygon shapes
+      const zeroApertureID = apertureCounter;
+      apertureCounter++;
+      str +="%ADD" + zeroApertureID.toString() +  "C,0.0*%\n";
+  
+      // 1ST PASS
+      // Loop through layer and set up apertures for different wire thicknesses and pads.
+      let wireApertureDiameters = [];
+      let wires = [];
+      let shapes = [];
+      layer.map( el => {
+        if (el.type === "wire") {
+          const wireThickness = toMM(el.thickness).toFixed(3);
+          
+          // Add aperture only if it does not exist yet
+          if (!wireApertureDiameters.includes(wireThickness)) {
+            wireApertureDiameters.push(wireThickness);
+            const apertureID = apertureCounter;
+            apertureCounter++;
+            str += getGerberDefineAperture(apertureID, wireThickness);
+          }
+
+          // Add modified wire object to array
+          el.gerberAperture = wireApertureDiameters.indexOf(wireThickness) + (apertureCounter - wireApertureDiameters.length);
+          wires.push(el);
+        } else {
+          // Everything else is a random shape and we define a macro aperture for each.
+          // We do need to do some data transformation here. 
+          // It would be nice to run this data through some kind of analyzer to detect 
+          // a possible shape primitive.
+          el = {
+            shape: el,
+            type: "shape"
+          };
+
+          shapes.push(el);
+        }
+      });
+
+      // Set us up for drawing
+      str += getGerberPolarityDark(); // layer dark
+      str += getGerberLinearInerpolation(); // linear interpolation
+
+      // 2ND PASS
+      // Now we should be able to find aperture indices and draw wires using them
+      // As well as the pads, of course
+      wires.map( el => {
+        // Draw the wire using an aperture
+        str += getGerberSelectAperture(el.gerberAperture);
+        for (let i = 0; i < el.shape[0].length; i++) {
+          const x = format( toMM(el.shape[0][i][0]) );
+          const y = format( toMM(el.shape[0][i][1]) );
+          str += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
+        }
+      });
+
+      // Here we draw plain polygons
+      shapes.map( el => {
+        str += getGerberSelectAperture(zeroApertureID);
+        str += "G36*\n"; 
+        for (let i = 0; i < el.shape[0].length; i++) {
+          const x = format( toMM(el.shape[0][i][0]) );
+          const y = format( toMM(el.shape[0][i][1]) );
+          str += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
+        }
+        str += "G37*\n";
+      });
+
+      str += getGerberEndOfFile();
+  
+      return str;
+    };
   
     const makeFile = (layer, interior = undefined) => {
       let apertureCounter = 10;
@@ -145,7 +233,9 @@ export function downloadGerber(state) {
       apertureCounter++;
       str +="%ADD" + zeroApertureID.toString() +  "C,0.0*%\n";
       str += "D" + zeroApertureID.toString() + "*\n";
-      
+
+      // Figure out difference between pads and traces
+
       const strs = layer.map( pts => {
         let ptsString = pts.reduce((acc, cur, i) => `${acc}X${format( toMM(cur[0]) )}Y${format( toMM(cur[1]) )}D0${i === 0 ? 2 : 1}*\n`, "G36*\n")
         ptsString += "G37*\n"; 
@@ -224,20 +314,16 @@ export function downloadGerber(state) {
       
       switch (key) {
         case "F.Cu":
-          const frontCopper = layers["F.Cu"].map( x => {
-              if (x.type === "wire") return expandWire(x);
-              else return x;
-          }).flat();
-          zip.file(`${state.name === "" ? "anon" : state.name}-F_Cu.gbr`, makeFile(frontCopper, 
-            (global_state.downloadGerberOptions.includeEdgeCuts ? interior : undefined) ));
+          zip.file(`${state.name === "" ? "anon" : state.name}-F_Cu.gbr`, makeGerberFile(layers["F.Cu"]) );
           break;
         case "B.Cu":
-          const backCopper = layers["B.Cu"].map( x => {
-            if (x.type === "wire") return expandWire(x);
-            else return x;
-          }).flat();
-          zip.file(`${state.name === "" ? "anon" : state.name}-B_Cu.gbr`, makeFile(backCopper, 
-            (global_state.downloadGerberOptions.includeEdgeCuts ? interior : undefined) ));
+          //const backCopper = layers["B.Cu"].map( x => {
+          //  if (x.type === "wire") return expandWire(x);
+          //  else return x;
+          //}).flat();
+          zip.file(`${state.name === "" ? "anon" : state.name}-B_Cu.gbr`, makeGerberFile(layers["B.Cu"]) );
+          //zip.file(`${state.name === "" ? "anon" : state.name}-B_Cu.gbr`, makeFile(backCopper, 
+          //  (global_state.downloadGerberOptions.includeEdgeCuts ? interior : undefined) ));
           break;
         case "F.Mask":
           // To make this possible we need to get the front layer pads and offset them a bit.
