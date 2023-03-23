@@ -118,6 +118,8 @@ class GerberBuilder {
     const apertureDiameter = offset ? offset * 2 : 0;
     const apertureID = this.#getApertureID();
 
+    this.#body += "G04 Begin pads*";
+
     // Define aperture
     this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
 
@@ -130,16 +132,28 @@ class GerberBuilder {
     // Draw pads as polygons
     layer.map( el => {
       if (el.type === "wire") return;
-      
       this.#body += "G36*\n"; 
-      
       for (let i = 0; i < el[0].length; i++) {
         const x = this.#format( inchesToMM(el[0][i][0]) );
         const y = this.#format( inchesToMM(el[0][i][1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
       }
-      
       this.#body += "G37*\n";
+    });
+
+    // Stop here if offset is 0
+    if (offset === 0) return;
+
+    this.#body += "G04 Begin pad offsets*";
+
+    // Offset polygon with an outline that is 2x the offset
+    layer.map( el => {
+      if (el.type === "wire") return;
+      for (let i = 0; i < el[0].length; i++) {
+        const x = this.#format( inchesToMM(el[0][i][0]) );
+        const y = this.#format( inchesToMM(el[0][i][1]) );
+        this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
+      }
     });
   }
 
