@@ -4,6 +4,14 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { global_state } from "../global_state.js";
 
+// Some Gerber tips.
+// Include outline in all layers to avoid align issues.
+// Use flashed pads wherever possible.
+// X2 Attributes (meta information):
+// %TF.FileFunction,Soldermask,Top*% (TODO)
+// Gerber files containing attribute commands (TF, TA, TO, TD) are called Gerber X2 files
+// We want Gerber X2 (at least) out of the box.
+
 // This should be a global function
 function inchesToMM(inches){
   return inches * 25.4;
@@ -84,9 +92,7 @@ class GerberBuilder {
   }
 
   plotWires(layer) {
-    // Declare apertures
     let wires = [];
-
     this.#body += this.#getComment("Begin wires");
 
     layer.map( el => {
@@ -198,27 +204,6 @@ class GerberBuilder {
 }
 
 export function downloadGerber(state) {
-    // Some Gerber tips.
-    // Include outline in all layers to avoid align issues.
-    // Use flashed pads wherever possible.
-    // X2 Attributes (meta information):
-    // %TF.FileFunction,Soldermask,Top*%
-    // Gerber files containing attribute commands (TF, TA, TO, TD) are called Gerber X2 files
-    // We want Gerber X2 (at least) out of the box.
-    // Set polarity to dark: %LPD*% 
-    // Define aperture: %ADD10C,0.010*%
-    // Select aperture: D10*
-    // End of file: M02*
-    
-    // Apertures
-    // - Standard apertures. They are pre-defined: the circle (C), rectangle (R), obround (O) and
-    //   regular polygon (P). See 4.4.
-    // - Macro apertures. They are created with the AM (Aperture Macro) command. Any shape
-    //   and parametrization can be created. They are identified by their given name. (See 4.4.6).
-
-    // Complex shapes, such as pads that are polygons, not circles anymore:
-    // See page 63 in the Gerber Spec.
-
     const layers = state.pcb.layers;
   
     const drill = (layers["drill"] ? layers["drill"] : []).flat().map( x => {
