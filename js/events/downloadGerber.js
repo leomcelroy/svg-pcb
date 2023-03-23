@@ -72,6 +72,10 @@ class GerberBuilder {
     return "M02*";
   }
 
+  #getComment(comment) {
+    return "G04 " + comment + "*\n";
+  }
+
   // Helper function to automate aperture ID counting
   #getApertureID() {
     const apertureID = this.#apertureConter;
@@ -82,6 +86,9 @@ class GerberBuilder {
   plotWires(layer) {
     // Declare apertures
     let wires = [];
+
+    this.#body += this.#getComment("Begin wires");
+
     layer.map( el => {
       if (el.type !== "wire") return;
 
@@ -118,7 +125,7 @@ class GerberBuilder {
     const apertureDiameter = offset ? offset * 2 : 0;
     const apertureID = this.#getApertureID();
 
-    this.#body += "G04 Begin pads*";
+    this.#body += this.#getComment("Begin pads");
 
     // Define aperture
     this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
@@ -144,7 +151,7 @@ class GerberBuilder {
     // Stop here if offset is 0
     if (offset === 0) return;
 
-    this.#body += "G04 Begin pad offsets*";
+    this.#body += this.#getComment("Begin pad offsets");
 
     // Offset polygon with an outline that is 2x the offset
     layer.map( el => {
@@ -170,7 +177,9 @@ class GerberBuilder {
     // Enable linear interpolation 
     this.#body += "G01*\n";
       
-    // Plot outling
+    // Plot outline
+    this.#body += this.#getComment("Begin outline");
+
     layer.map( el => {
       for (let i = 0; i < el[0].length; i++) {
         const x = this.#format( inchesToMM(el[0][i][0]) );
