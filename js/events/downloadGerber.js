@@ -228,6 +228,41 @@ class GerberBuilder {
   }
 }
 
+class ExcellonBuilder {
+/*
+M48
+; DRILL file {KiCad 7.0.1-3b83917a11~171~ubuntu22.04.1} date Thu 23 Mar 2023 19:41:38 EET
+; FORMAT={-:-/ absolute / inch / decimal}
+; #@! TF.CreationDate,2023-03-23T19:41:38+02:00
+; #@! TF.GenerationSoftware,Kicad,Pcbnew,7.0.1-3b83917a11~171~ubuntu22.04.1
+; #@! TF.FileFunction,MixedPlating,1,2
+FMAT,2
+INCH
+; #@! TA.AperFunction,Plated,PTH,ComponentDrill
+T1C0.0315
+%
+G90
+G05
+T1
+X5.4Y-3.6
+X5.4Y-3.7
+X5.4Y-3.8
+X5.4Y-3.9
+X5.4Y-4.0
+X5.4Y-4.1
+X5.4Y-4.2
+X5.9998Y-3.6
+X5.9998Y-3.7
+X5.9998Y-3.8
+X5.9998Y-3.9
+X5.9998Y-4.0
+X5.9998Y-4.1
+X5.9998Y-4.2
+T0
+M30
+*/
+}
+
 export function downloadGerber(state) {
     const layers = state.pcb.layers;
   
@@ -270,15 +305,15 @@ export function downloadGerber(state) {
       str += "VER,1\n" // version 1
       str += "FMAT,2\n" // format 2
       for (const tool in tools) {
-        str += 'T'+ tool + 'C'+ tool + "\n"; // +'C'+tool+"\n" // define tools
+        str += 'T' + tool.replace(".", "") + 'C'+ tool + "\n"; // +'C'+tool+"\n" // define tools
       }
       str += "M95\n" // end of header
       str += "G05\n" // drill mode
       for (const tool in tools) {
-         str += 'T'+tool+'\n' // tool selection
+         str += 'T' + tool.replace(".", "") + '\n'; // tool selection
          for (var i = 0; i < tools[tool].length; i++) {
             const hole = tools[tool][i];
-            str += 'X'+format(hole[0])+'Y'+format(hole[1])+'\n'
+            str += 'X' + hole[0].toFixed(4) + 'Y' + hole[1].toFixed(4) + '\n';
          }
       }
       
