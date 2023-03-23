@@ -242,11 +242,11 @@ const modal_download_gerber = state => html`
 					<tr>
 						<td><input 
 							type="checkbox"
-							.checked=${state.downloadGerberOptions.includeEdgeCuts}
+							.checked=${state.downloadGerberOptions.includeOutline}
 							@change=${(e) => {
-								state.downloadGerberOptions.includeEdgeCuts = e.target.checked;
+								state.downloadGerberOptions.includeOutline = e.target.checked;
 							}}></td>
-						<td>Inclue Edge.Cuts in all (selected) layers</td>
+						<td>Inclue outline in all layers</td>
 					</tr>
 					
 				</tbody>

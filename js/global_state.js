@@ -46,13 +46,13 @@ export const global_state = {
     layers: new Map([
       ["F.Cu", true],
       ["B.Cu", true],
-      ["F.Mask", false],
-      ["B.Mask", false],
-      ["F.Silkscreen", false],
-      ["B.Silkscreen", false],
-      ["Edge.Cuts", true],
+      ["F.Mask", true],
+      ["B.Mask", true],
+      //["F.Silkscreen", false],
+      //["B.Silkscreen", false],
+      ["Outline", true],
       ["Drills", true]
     ]),
-    includeEdgeCuts: true // Include Edge.Cuts in all layers
+    includeOutline: true // Include outline in all layers
   }
 }

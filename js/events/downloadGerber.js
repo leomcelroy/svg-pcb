@@ -1,5 +1,3 @@
-import { changeDpiDataUrl } from "./changeDPI.js";
-import { offset2 } from "../../geogram/index.js";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { global_state } from "../global_state.js";
@@ -35,7 +33,7 @@ function format(x) {
 
 class GerberBuilder {
   #body = '';
-  #apertureConter = 10; // use getApertureID() not this directly
+  #apertureConter = 10; // use #getApertureID() not this directly
   #wireThicknesses = [];
   
   constructor() {}
@@ -297,7 +295,7 @@ export function downloadGerber(state) {
           let frontCopper = new GerberBuilder();
           frontCopper.plotPads(layers["F.Cu"]);
           frontCopper.plotWires(layers["F.Cu"]);
-          if (global_state.downloadGerberOptions.includeEdgeCuts) {
+          if (global_state.downloadGerberOptions.includeOutline) {
             frontCopper.plotOutline(layers["interior"]);
           }
           zip.file(`${state.name === "" ? "anon" : state.name}-F_Cu.gbr`, frontCopper.toString() );
@@ -306,7 +304,7 @@ export function downloadGerber(state) {
           let backCopper = new GerberBuilder();
           backCopper.plotPads(layers["B.Cu"]);
           backCopper.plotWires(layers["B.Cu"]);
-          if (global_state.downloadGerberOptions.includeEdgeCuts) {
+          if (global_state.downloadGerberOptions.includeOutline) {
             backCopper.plotOutline(layers["interior"]);
           }
           zip.file(`${state.name === "" ? "anon" : state.name}-B_Cu.gbr`, backCopper.toString() );
@@ -314,7 +312,7 @@ export function downloadGerber(state) {
         case "F.Mask":
           let frontMask = new GerberBuilder();
           frontMask.plotPads(layers["F.Cu"], 0.1);
-          if (global_state.downloadGerberOptions.includeEdgeCuts) {
+          if (global_state.downloadGerberOptions.includeOutline) {
             frontMask.plotOutline(layers["interior"]);
           }
           zip.file(`${state.name === "" ? "anon" : state.name}-F_Mask.gbr`, frontMask.toString() );
@@ -322,15 +320,16 @@ export function downloadGerber(state) {
         case "B.Mask":
           let backMask = new GerberBuilder();
           backMask.plotPads(layers["B.Cu"], 0.1);
-          if (global_state.downloadGerberOptions.includeEdgeCuts) {
+          if (global_state.downloadGerberOptions.includeOutline) {
             backMask.plotOutline(layers["interior"]);
           }
           zip.file(`${state.name === "" ? "anon" : state.name}-B_Mask.gbr`, backMask.toString() );
           break;
         case "F.Silkscreen":
+          // Warning: this is still Work In Progress
           let frontSilkscreen = new GerberBuilder();
           frontSilkscreen.plotSilkscreen(layers["componentLabels"]);
-          if (global_state.downloadGerberOptions.includeEdgeCuts) {
+          if (global_state.downloadGerberOptions.includeOutline) {
             frontSilkscreen.plotOutline(layers["interior"]);
           }
           zip.file(`${state.name === "" ? "anon" : state.name}-F_Silkscreen.gbr`, frontSilkscreen.toString() );
@@ -338,13 +337,13 @@ export function downloadGerber(state) {
         case "B.Silkscreen":
           // No graphics on the back for now
           break;
-        case "Edge.Cuts":
+        case "Outline":
           let outline = new GerberBuilder();
           outline.plotOutline(layers["interior"]);
           zip.file(`${state.name === "" ? "anon" : state.name}-Outline.gbr`, outline.toString() );
           break;
         case "Drills":
-          // There is probably no need to include edge cuts in the drill file 
+          // There is probably no need to include outline in the drill file 
           // even though it could be a gerber file as well. 
           zip.file(`${state.name === "" ? "anon" : state.name}-Drill.xln`, makeFileDrill(drill));
           break;
