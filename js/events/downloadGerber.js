@@ -170,6 +170,33 @@ class GerberBuilder {
     });
   }
 
+  plotSilkscreen(layer) {
+    console.log(layer);
+
+    this.#body += this.#getComment("Begin silkscreen");
+
+    layer.map( el => {
+      // We deal with text only for now
+      if (el.type !== "text") return;
+
+      const text = el.value;
+      const textSize = inchesToMM(el.size);
+      const textPosition = el.translate;
+      const textRotation = el.rotation;
+      const textFont = "Courier"; // Let's see what we use in SvgPcb currently
+
+      // Generate Gerber X2 text object to maintain text information
+      // Gerber Spec p. 147
+      this.#body += "%TA.FlashText," + text.replace(/\n/g, "\\n") + ",C,R," + textFont + "," + textSize + ",*%\n"
+
+      // TODO: And now the shapes
+      // At the moment it would be possible to do it with SVG.js,
+      // but it would be so much easier if SvgPcb would make use of a SVG font,
+      // that then could be used to create labels along with other graphics
+      // on the silk layer.
+    });
+  }
+
   plotOutline(layer) {
     const apertureDiameter = 0.1;
     const apertureID = this.#getApertureID();
@@ -301,10 +328,15 @@ export function downloadGerber(state) {
           zip.file(`${state.name === "" ? "anon" : state.name}-B_Mask.gbr`, backMask.toString() );
           break;
         case "F.Silkscreen":
-          // It would be good to have more options in terms of element placement here.
+          let frontSilkscreen = new GerberBuilder();
+          frontSilkscreen.plotSilkscreen(layers["componentLabels"]);
+          if (global_state.downloadGerberOptions.includeEdgeCuts) {
+            frontSilkscreen.plotOutline(layers["interior"]);
+          }
+          zip.file(`${state.name === "" ? "anon" : state.name}-F_Silkscreen.gbr`, frontSilkscreen.toString() );
           break;
         case "B.Silkscreen":
-          // It would be good to have more options in terms of element placement here.
+          // No graphics on the back for now
           break;
         case "Edge.Cuts":
           let outline = new GerberBuilder();
