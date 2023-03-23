@@ -33,7 +33,7 @@ function format(x) {
 
 class GerberBuilder {
   #body = '';
-  #apertureConter = 10; // use #getApertureID() not this directly
+  #apertureConter = 10; // 0-9 is reserved in Gerber. Use #getApertureID() not this directly.
   #wireThicknesses = [];
   
   constructor() {}
@@ -229,53 +229,56 @@ class GerberBuilder {
 }
 
 class ExcellonBuilder {
-/*
-M48
-; DRILL file {KiCad 7.0.1-3b83917a11~171~ubuntu22.04.1} date Thu 23 Mar 2023 19:41:38 EET
-; FORMAT={-:-/ absolute / inch / decimal}
-; #@! TF.CreationDate,2023-03-23T19:41:38+02:00
-; #@! TF.GenerationSoftware,Kicad,Pcbnew,7.0.1-3b83917a11~171~ubuntu22.04.1
-; #@! TF.FileFunction,MixedPlating,1,2
-FMAT,2
-INCH
-; #@! TA.AperFunction,Plated,PTH,ComponentDrill
-T1C0.0315
-%
-G90
-G05
-T1
-X5.4Y-3.6
-X5.4Y-3.7
-X5.4Y-3.8
-X5.4Y-3.9
-X5.4Y-4.0
-X5.4Y-4.1
-X5.4Y-4.2
-X5.9998Y-3.6
-X5.9998Y-3.7
-X5.9998Y-3.8
-X5.9998Y-3.9
-X5.9998Y-4.0
-X5.9998Y-4.1
-X5.9998Y-4.2
-T0
-M30
-*/
-}
-
-export function downloadGerber(state) {
-    const layers = state.pcb.layers;
+  // Excellon file format reference: https://gist.github.com/katyo/5692b935abc085b1037e
+  #body = '';
+  #toolCounter = 1; // 0 is reserved 
   
-    const drill = (layers["drill"] ? layers["drill"] : []).flat().map( x => {
+  constructor() {}
+
+  #getHeader() {
+    let str = "M48\n"; // Start of the header
+      
+    // Add date and time of generation.
+    const dateTime = new Date().toISOString();
+    str += "; DRILL file {SvgPcb v0.1} date " + dateTime + "\n";
+    str += "; FORMAT={-:-/ absolute / inch / decimal}\n";
+    str += "; #@! TF.CreationDate," + dateTime + "\n";
+    str += "; #@! TF.GenerationSoftware,SvgPcb v0.1\n";
+    str += "; #@! TF.FileFunction,MixedPlating,1,2\n";
+    str += "FMAT,2\n";
+    str += "INCH\n"; // TODO: change to metric
+
+    return str;
+  }
+
+  #getFooter() {
+    let str = "T0\n";
+    str += "M30\n";
+    return str;
+  }
+
+  // Helper function to automate aperture ID counting
+  #getToolID() {
+    const toolID = this.#toolCounter;
+    this.#toolCounter++;
+    return toolID;
+  }
+
+  plotDrills(layer) {
+    this.#body += "; #@! TA.AperFunction,Plated,PTH,ComponentDrill\n"; // Borrowed from KiCad export
+    
+    // Extract drill positions and sizes
+    const drills = layer.flat().map( x => {
       const getCenter = (pts) => {
         let totalX = 0;
         let totalY = 0;
+        
         pts.forEach(pt => {
           totalX += pt[0];
           totalY += pt[1];
         })
   
-        return [ totalX/pts.length, totalY/pts.length ];
+        return [ totalX / pts.length, totalY / pts.length ];
       }
   
       const getDistance = (pt0, pt1) => Math.sqrt((pt1[0] - pt0[0])**2+(pt1[1] - pt0[1])**2);
@@ -288,38 +291,46 @@ export function downloadGerber(state) {
       };
     });
 
-    // What format drills here? One could use Gerber for drills too.
-    const makeFileDrill = (drills) => {
-      const tools = {};
-      drills.forEach( ({ dist, center }) => {
-        if (dist in tools) {
-          tools[dist].push(center);
-        } else {
-          tools[dist] = [ center ];
-        }
-      })
-  
-      let str = "";
-      str += "M48\n" // start of header
-      str += "INCH,LZ\n" // inch units with leading zeros
-      str += "VER,1\n" // version 1
-      str += "FMAT,2\n" // format 2
-      for (const tool in tools) {
-        str += 'T' + tool.replace(".", "") + 'C'+ tool + "\n"; // +'C'+tool+"\n" // define tools
+    // Extract tools and drill points
+    const tools = {};
+    drills.forEach( ({ dist, center }) => {
+      if (dist in tools) {
+        tools[dist].drillPoints.push(center); 
+      } else {
+        tools[dist] = {};
+        tools[dist].toolID = this.#getToolID();
+        tools[dist].drillPoints = [ center ];
       }
-      str += "M95\n" // end of header
-      str += "G05\n" // drill mode
-      for (const tool in tools) {
-         str += 'T' + tool.replace(".", "") + '\n'; // tool selection
-         for (var i = 0; i < tools[tool].length; i++) {
-            const hole = tools[tool][i];
-            str += 'X' + hole[0].toFixed(4) + 'Y' + hole[1].toFixed(4) + '\n';
-         }
-      }
-      
-      str += "M30\n"; // end of program
-      return str;
-    };
+    });
+
+    // Define tools
+    for ( const tool in tools ) {
+      this.#body += "T" + tools[tool].toolID + "C" + tool + "\n";
+    }
+
+    this.#body += "%\n"; // Rewind
+    this.#body += "G90\n"; // Absolute mode
+    this.#body += "G05\n"; // Drill mode
+
+    // Loop through tools, select them, and drill
+    for ( const tool in tools ) {
+      this.#body += "T" + tools[tool].toolID + "\n"; // Select tool
+      tools[tool].drillPoints.forEach( dp => {
+        this.#body += "X" + dp[0].toFixed(3) + "Y" + dp[1].toFixed(3) + "\n";
+      });
+    }
+  }
+
+  toString() {
+    let str = this.#getHeader();
+    str += this.#body;
+    str += this.#getFooter();
+    return str;
+  }
+}
+
+export function downloadGerber(state) {
+    const layers = state.pcb.layers;
    
     var zip = new JSZip();
     global_state.downloadGerberOptions.layers.forEach((val, key) => {
@@ -380,7 +391,9 @@ export function downloadGerber(state) {
         case "Drills":
           // There is probably no need to include outline in the drill file 
           // even though it could be a gerber file as well. 
-          zip.file(`${state.name === "" ? "anon" : state.name}-Drill.xln`, makeFileDrill(drill));
+          let drills = new ExcellonBuilder();
+          drills.plotDrills( layers["drill"] ? layers["drill"] : [] );
+          zip.file(`${state.name === "" ? "anon" : state.name}-Drill.xln`, drills.toString());
           break;
       }
     });
