@@ -85,6 +85,7 @@ const menu = state => html`
 					</div class="menu-item">
 					<div class="menu-item"
 						@click=${(e) => {
+							setDownloadGerberLayerVisibility(state);
 							const modal = document.getElementById("modal_download_gerber");
 							modal.classList.remove("hidden");
 						}}>
@@ -202,6 +203,16 @@ function getLayerList(layerMap){
 		list.push(key);
 	});
 	return list;
+}
+
+function setDownloadGerberLayerVisibility(state){
+	// Set layer visiblity based on what layers exist
+	state.downloadGerberOptions.layers.set("F.Cu", state.pcb.layers["F.Cu"] === undefined ? false : true);
+	state.downloadGerberOptions.layers.set("B.Cu", state.pcb.layers["B.Cu"] === undefined ? false : true);
+	state.downloadGerberOptions.layers.set("F.Mask", state.pcb.layers["F.Cu"] === undefined ? false : true);
+	state.downloadGerberOptions.layers.set("B.Mask", state.pcb.layers["B.Cu"] === undefined ? false : true);
+	state.downloadGerberOptions.layers.set("Outline", state.pcb.layers["interior"] === undefined ? false : true);
+	state.downloadGerberOptions.layers.set("Drills", state.pcb.layers["drill"] === undefined ? false : true);
 }
 
 const modal_download_gerber = state => html`
