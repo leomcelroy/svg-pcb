@@ -550,11 +550,34 @@ input {
 	overflow: auto;
 }
 
+.modal, 
+.modal h3,
+.modal h4 {
+	font-size: 12;
+}
+
+.modal h4 {
+	margin: 15px 0 7px 0;
+}
+
+.modal h4:first-of-type {
+	margin-top: 0;
+}
+
+.modal h4:last-of-type {
+	margin-bottom: 0;
+}
+
+.modal input {
+	margin: 0;
+	vertical-align: top;
+	line-height: 1;
+}
+
 .modal-content {
 	display: inline-block;
-	background-color: white;
-	padding: 15px;
-	border-radius: 10px;
+	background-color: #fafafa;
+	padding: 3px;
 	width: 50%;
 	position:fixed;
     left: 50%;
@@ -567,10 +590,17 @@ input {
 
 .modal-header {
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	align-items: left;
 	border-bottom: 1px solid #ddd;
-	padding: 10px;
+	background-color: blue;
+	color: #fafafa;
+	padding: 5px;
+}
+
+.modal-header .icon {
+	width: 20px;
+	height: auto;
+	vertical-align: top;
 }
 
 .modal-body {
@@ -588,38 +618,95 @@ input {
 .modal-title {
 	margin: 0;
 	text-align: left;
-	font-size: 16px;
-	line-height: 1;
+	font-size: 12px;
+	line-height: 20px;
+	margin-left: 5px;
+	display: inline-block;
+}
+
+.modal-line {
+	margin: 7px 0 7px 0;
 }
 
 .hidden {
 	display: none;
 }
 
-button {
-	padding: 10px;
-	border-radius: 5px;
+.btn {
+	height: 30px;
+	padding: 7px;
 	border: none;
 	background-color: #cccccc;
+	display: inline-block;
+	line-height: 1;
+	font-size: 12px;
+	color: #121212;
 }
 
-button:hover, 
-button:focus {
-	background-color: #343434;
-	color: #cccccc;
+.btn:hover, 
+.btn:focus {
+	background-color: #ababab;
 	cursor: pointer;
+}
+
+.btn-primary {
+	background-color: blue;
+	color: #fafafa;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+	background-color: navy;
+	color: #fafafa;
 }
 
 .close {
 	color: #aaa;
-	float: right;
-	font-size: 28px;
+	position: relative;
+	right: 0;
+	font-size: 24px;
 	font-weight: bold;
+	line-height: 0;
 }
   
 .close:hover,
 .close:focus {
-	color: black;
+	opacity: 75%;
 	text-decoration: none;
 	cursor: pointer;
+}
+
+/* Grid */
+
+.col-25,
+.col-33,
+.col-50,
+.col-75 {
+	display: table-cell;
+}
+
+.col-25 {
+	width: 25%;
+}
+
+.col-33 {
+	width: 33.3%;
+}
+
+.col-50 {
+	width: 50%;
+}
+
+.col-75 {
+	width: 75%;
+}
+
+/* Utility */
+
+.align-left {
+	text-align: left;
+}
+
+.align-right {
+	text-align: right;
 }

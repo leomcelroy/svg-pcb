@@ -208,93 +208,96 @@ const modal_download_gerber = state => html`
 <div id="modal_download_gerber" class="modal hidden">
 	<div class="modal-content">
 		<div class="modal-header">
-			<h3 class="modal-title">Download Gerber Options</h3>
-			<span 
-				class="close"
-				@click=${(e) => {
-					const modal = document.getElementById("modal_download_gerber");
-					modal.classList.add("hidden");
-				}}>&times;</span>
+			<div class="col-75 align-left">
+				<img class="icon" src="assets/icons/export.svg" alt="Export Icon">
+				<h3 class="modal-title">Download Gerber Options</h3>
+			</div>
+			<div class="col-25 align-right">
+				<span 
+					class="close"
+					@click=${(e) => {
+						const modal = document.getElementById("modal_download_gerber");
+						modal.classList.add("hidden");
+					}}><img class="icon" src="assets/icons/close.svg" alt="Close Icon"></span>
+			</div>
 		</div>
 		<div class="modal-body">
-			<table>
-				<thead>
-					<tr>
-						<th colspan="2">Include Layers</td>
-					</tr>
-				</thead>
-				<tbody>
-					${
-						getLayerList(state.downloadGerberOptions.layers).map((l) => {
-						return html`
-						<tr>
-							<td><input 
-								type="checkbox"
-								.checked=${state.downloadGerberOptions.layers.get(l)}
-								@change=${(e) => {
-									state.downloadGerberOptions.layers.set(l, e.target.checked);
-								}}></td>
-							<td>${l}</td>
-						</tr>
-						`
-					})}
-
-					<tr>
-						<td><input 
+			<div class="col-50">
+				<h4>Include Layers</h4>
+				${
+					getLayerList(state.downloadGerberOptions.layers).map((l) => {
+					return html`
+					<div class="modal-line">
+						<input 
 							type="checkbox"
-							.checked=${state.downloadGerberOptions.includeOutline}
+							id="input-${l}"
+							.checked=${state.downloadGerberOptions.layers.get(l)}
 							@change=${(e) => {
-								state.downloadGerberOptions.includeOutline = e.target.checked;
-							}}></td>
-						<td>Inclue outline in all layers</td>
-					</tr>
-					<tr>
-						<td colspan=2>Excellon Drill Units</td>
-					</tr>
-					<tr>
-						<td><input 
-							type="radio"
-							name="excellonUnits"
-							.checked=${state.downloadGerberOptions.excellonMetric}
-							@change=${(e) => {
-								state.downloadGerberOptions.excellonMetric = e.target.checked;
-							}}> mm 
-							
-						</td>
-						<td><input 
-							type="radio"
-							name="excellonUnits"
-							.checked=${!state.downloadGerberOptions.excellonMetric}
-							@change=${(e) => {
-								state.downloadGerberOptions.excellonMetric = !e.target.checked;
-							}}> in
-						</td>
-					</tr>
-					<tr>
-						<td><input 
-							type="checkbox"
-							.checked=${state.downloadGerberOptions.protelFilenames}
-							@change=${(e) => {
-								state.downloadGerberOptions.protelFilenames = e.target.checked;
-							}}>
-						</td>
-						<td>Use Protel Filenames</td>
-					</tr>
+								state.downloadGerberOptions.layers.set(l, e.target.checked);
+							}}> 
+						<label for="input-${l}">${l}</label>
+					</div>
+					`
+				})}
+			</div> <!-- /.col-50 -->
+			<div class="col-50">
+				<h4>Excellon Drill Units</h4>
+				<div class="modal-line">	
+					<input 
+						type="radio"
+						id="input-excellonMM"
+						name="excellonUnits"
+						.checked=${state.downloadGerberOptions.excellonMetric}
+						@change=${(e) => {
+							state.downloadGerberOptions.excellonMetric = e.target.checked;
+						}}>
+					<label for="input-excellonMM">mm</label>
+					&nbsp;
+					<input 
+						type="radio"
+						id="input-excellonIN"
+						name="excellonUnits"
+						.checked=${!state.downloadGerberOptions.excellonMetric}
+						@change=${(e) => {
+							state.downloadGerberOptions.excellonMetric = !e.target.checked;
+						}}>
+					<label for="input-excellonIN">in</label>
+				</div> <!-- /.modal-line -->
 
-				</tbody>
-			</table>
-		</div>
+				<h4>Additional Options</h4>
+				<div class="modal-line">
+					<input 
+						type="checkbox"
+						id="input-outlineAllLayers"
+						.checked=${state.downloadGerberOptions.includeOutline}
+						@change=${(e) => {
+							state.downloadGerberOptions.includeOutline = e.target.checked;
+						}}> 
+					<label for="input-outlineAllLayers">Inclue outline in all layers</label>
+				</div>
+				<div class="modal-line">
+					<input 
+						type="checkbox"
+						id="input-protelFilenames"
+						.checked=${state.downloadGerberOptions.protelFilenames}
+						@change=${(e) => {
+							state.downloadGerberOptions.protelFilenames = e.target.checked;
+						}}> 
+					<label for="input-protelFilenames">Use Protel Filenames</label>
+				</div>
+			</div> <!-- /.col-50 -->
+		</div> <!-- /.modal-body -->
 		<div class="modal-footer">
 			<button 
 				type="button" 
-				class="modal-choice"
+				class="btn"
 				@click=${(e) => {
 					const modal = document.getElementById("modal_download_gerber");
 					modal.classList.add("hidden");
 				}}>Cancel</button>
 			<button 
 				type="button" 
-				class="modal-choice primary"
+				class="btn btn-primary"
 				@click=${(e) => {
 					const modal = document.getElementById("modal_download_gerber");
 					modal.classList.add("hidden");
