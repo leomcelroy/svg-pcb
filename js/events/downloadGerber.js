@@ -374,6 +374,10 @@ export function downloadGerber(state) {
       
       switch (key) {
         case "F.Cu":
+          if (layers["F.Cu"] === undefined) {
+            console.log("Layer F.Cu does not exist");
+            break;
+          }
           let frontCopper = new GerberBuilder();
           frontCopper.plotPads(layers["F.Cu"]);
           frontCopper.plotWires(layers["F.Cu"]);
@@ -383,6 +387,10 @@ export function downloadGerber(state) {
           zip.file( getFilename(state, "F.Cu"), frontCopper.toString() );
           break;
         case "B.Cu":
+          if (layers["B.Cu"] === undefined) {
+            console.log("Layer B.Cu does not exist");
+            break;
+          }
           let backCopper = new GerberBuilder();
           backCopper.plotPads(layers["B.Cu"]);
           backCopper.plotWires(layers["B.Cu"]);
@@ -392,6 +400,10 @@ export function downloadGerber(state) {
           zip.file( getFilename(state, "B.Cu"), backCopper.toString() );
           break;
         case "F.Mask":
+          if (layers["F.Cu"] === undefined) {
+            console.log("Cannot create F.Mask: F.Cu does not exist");
+            break;
+          }
           let frontMask = new GerberBuilder();
           frontMask.plotPads(layers["F.Cu"], 0.1);
           if (state.downloadGerberOptions.includeOutline) {
@@ -400,6 +412,10 @@ export function downloadGerber(state) {
           zip.file( getFilename(state, "F.Mask"), frontMask.toString() );
           break;
         case "B.Mask":
+          if (layers["B.Cu"] === undefined) {
+            console.log("Cannot create B.Mask: B.Cu does not exist");
+            break;
+          }
           let backMask = new GerberBuilder();
           backMask.plotPads(layers["B.Cu"], 0.1);
           if (state.downloadGerberOptions.includeOutline) {
@@ -408,6 +424,10 @@ export function downloadGerber(state) {
           zip.file( getFilename(state, "B.Mask"), backMask.toString() );
           break;
         case "F.Silkscreen":
+          if (layers["F.Silkscreen"] === undefined) {
+            console.log("Layer F.Silkscreen does not exist");
+            break;
+          }
           // Warning: this is still Work In Progress
           let frontSilkscreen = new GerberBuilder();
           frontSilkscreen.plotSilkscreen(layers["componentLabels"]);
@@ -417,14 +437,26 @@ export function downloadGerber(state) {
           zip.file( getFilename(state, "F.Silkscreen"), frontSilkscreen.toString() );
           break;
         case "B.Silkscreen":
+          if (layers["B.Silkscreen"] === undefined) {
+            console.log("Layer B.Silkscreen does not exist");
+            break;
+          }
           // No graphics on the back for now
           break;
         case "Outline":
+          if (layers["interior"] === undefined) {
+            console.log("Layer interior does not exist");
+            break;
+          }
           let outline = new GerberBuilder();
           outline.plotOutline(layers["interior"]);
           zip.file( getFilename(state, "Outline"), outline.toString() );
           break;
         case "Drills":
+          if (layers["drill"] === undefined) {
+            console.log("Layer drill does not exist");
+            break;
+          }
           // There is probably no need to include outline in the drill file 
           // even though it could be a gerber file as well. 
           let drills = new ExcellonBuilder(state);
