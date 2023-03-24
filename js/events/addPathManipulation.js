@@ -45,29 +45,12 @@ export function addPathManipulation(state, svgListener) {
 
     const targetPoint = svgPoint(clickedPoint);
 
-    // Make this mutable so we can use other filters later
-    let pt = {
-      x: snapToGrid(targetPoint.x),
-      y: snapToGrid(targetPoint.y)
-    }
+    const pt = snapToPad(targetPoint);
 
-    // BEGIN: Snap to pad
-    const components = state.pcb.components;
-    for (const comp in components) {
-      const pads = components[comp].pads;
-      for (const pad in pads) {
-        const p = pads[pad];
-        const dx = Math.abs(targetPoint.x - p[0]);
-        const dy = Math.abs(targetPoint.y - p[1]);
-        if (dx < 0.05 && dy < 0.05) {
-          console.log(`Nearby pad ${pad}`);
-          pt.x = snapToPad(p[0], pt.x);
-          pt.y = snapToPad(p[1], pt.y);
-          break;
-        }
-      }
+    if (!pt.snapped) {
+      pt.x = snapToGrid(pt.x);
+      pt.y = snapToGrid(pt.y);
     }
-    // END: Snap to pad
 
     const doc = state.codemirror.view.state.doc;
     const string = doc.toString();
@@ -81,7 +64,11 @@ export function addPathManipulation(state, svgListener) {
       start--;
     }
 
-    const text = `${(ch === "," || ch === "(") ? "" : ","}\n  pt(${pt.x}, ${pt.y}),`
+    const textStart = `${(ch === "," || ch === "(") ? "" : ","}\n  `;
+
+    const text = pt.snapped
+      ? `${textStart}${pt.padRef},`
+      : `${textStart}pt(${pt.x}, ${pt.y}),`;
 
     state.codemirror.view.dispatch({
       changes: {
@@ -91,7 +78,6 @@ export function addPathManipulation(state, svgListener) {
       }
     });
     
-
     dispatch("RUN");
   })
 }

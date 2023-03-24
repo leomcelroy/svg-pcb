@@ -5,12 +5,14 @@ export class PCB {
   constructor() {
     this.layers = {}; // maybe should just store shapes, get layer contents on demand
     this.components = [];
+    this.refDeses = [];
   }
 
   add(footprint, ops = {}) {
     // ops = { translate, rotate, padLabelSize, componentLabelSize, value? }
     const name = ops.name || "";
-    const transform = {
+
+    const options = {
       translate: ops.translate || [0, 0],
       rotate: ops.rotate || 0,
       padLabelSize: ops.padLabelSize || 0.02,
@@ -18,7 +20,7 @@ export class PCB {
       flip: ops.flip || false
     };
 
-    const newComp = makeComponent(footprint, transform);
+    const newComp = makeComponent(footprint, options);
 
     for ( const layer in newComp.layers) {
       newComp.layers[layer].forEach( data => {
@@ -27,18 +29,19 @@ export class PCB {
     }
 
     if (name !== "" && !name.includes("drill")) {
-      // let componentLabels = makeText(name, transform.componentLabelSize, transform.translate, 0);
+      // let componentLabels = makeText(name, options.componentLabelSize, options.translate, 0);
 
       this.addShape("componentLabels", {
         type: "text", 
         value: name,  
-        translate: transform.translate,
+        translate: options.translate,
         rotate: 0,
-        size: transform.componentLabelSize
+        size: options.componentLabelSize
       });
     }
 
     this.components.push(newComp);
+    this.refDeses.push(ops.refDes || "");
 
     return newComp;
   }

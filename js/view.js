@@ -138,18 +138,6 @@ const menu = state => html`
 							>
 						</input>
 					</div>
-					<div class="check-item"> 
-						<span>snapPad</span>
-						<input
-							type="checkbox"
-							.checked=${state.snapPad}
-							@change=${(e) => {
-								state.snapPad = e.target.checked;
-								dispatch("RENDER");
-							}}
-							>
-						</input>
-					</div>
 					<div class="input-item">
 						<span>grid size:</span>
 						<input
@@ -159,6 +147,31 @@ const menu = state => html`
 							.value=${state.gridSize}
 							@change=${e => {
 								state.gridSize = Number(e.target.value);
+								dispatch("RENDER");
+							}}>
+						</input>
+					</div>
+					<div class="check-item"> 
+						<span>snapToPad</span>
+						<input
+							type="checkbox"
+							.checked=${state.snapToPad}
+							@change=${(e) => {
+								state.snapToPad = e.target.checked;
+								dispatch("RENDER");
+							}}
+							>
+						</input>
+					</div>
+					<div class="check-item"> 
+						<span>snapToPad Radius</span>
+						<input
+							type="number"
+							step="0.005"
+							min="0"
+							.value=${state.snapToPadRadius}
+							@change=${e => {
+								state.snapToPadRadius = Number(e.target.value);
 								dispatch("RENDER");
 							}}>
 						</input>

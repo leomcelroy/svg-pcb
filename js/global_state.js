@@ -22,7 +22,8 @@ export const global_state = {
   grid: true,
   gridSize: 0.05,
   adaptiveGrid: false,
-  snapPad: false,
+  snapToPad: true,
+  snapToPadRadius: 0.025,
 
   viewHandles: true,
   selectedPath: null,
