@@ -241,12 +241,17 @@ class ExcellonBuilder {
     // Add date and time of generation.
     const dateTime = new Date().toISOString();
     str += "; DRILL file {SvgPcb v0.1} date " + dateTime + "\n";
-    str += "; FORMAT={-:-/ absolute / inch / decimal}\n";
+    str += "; FORMAT={-:-/ absolute / " + (global_state.downloadGerberOptions.excellonMetric ? "metric" : "inch") + " / decimal}\n";
     str += "; #@! TF.CreationDate," + dateTime + "\n";
     str += "; #@! TF.GenerationSoftware,SvgPcb v0.1\n";
     str += "; #@! TF.FileFunction,MixedPlating,1,2\n";
     str += "FMAT,2\n";
-    str += "INCH\n"; // TODO: change to metric
+
+    if (global_state.downloadGerberOptions.excellonMetric) {
+      str += "METRIC\n"; 
+    } else {
+      str += "INCH\n";   
+    }
 
     return str;
   }
@@ -282,8 +287,15 @@ class ExcellonBuilder {
       }
   
       const getDistance = (pt0, pt1) => Math.sqrt((pt1[0] - pt0[0])**2+(pt1[1] - pt0[1])**2);
-      const center = getCenter(x);
-      const dist = Math.round(1000*x.reduce((acc, cur) => acc + getDistance(center, cur), 0)/x.length)/1000;
+      
+      const center = getCenter(x);      
+      let dist = Math.round(1000*x.reduce((acc, cur) => acc + getDistance(center, cur), 0)/x.length)/1000; 
+      
+      if (global_state.downloadGerberOptions.excellonMetric) {
+        center[0] = inchesToMM(center[0]);
+        center[1] = inchesToMM(center[1]);
+        dist = inchesToMM(dist);
+      }
   
       return {
         center, 

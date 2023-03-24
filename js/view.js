@@ -248,6 +248,28 @@ const modal_download_gerber = state => html`
 							}}></td>
 						<td>Inclue outline in all layers</td>
 					</tr>
+					<tr>
+						<td colspan=2>Excellon Drill Units</td>
+					</tr>
+					<tr>
+						<td><input 
+							type="radio"
+							name="excellonUnits"
+							.checked=${state.downloadGerberOptions.excellonMetric}
+							@change=${(e) => {
+								state.downloadGerberOptions.excellonMetric = e.target.checked;
+							}}> mm 
+							
+						</td>
+						<td><input 
+							type="radio"
+							name="excellonUnits"
+							.checked=${!state.downloadGerberOptions.excellonMetric}
+							@change=${(e) => {
+								state.downloadGerberOptions.excellonMetric = !e.target.checked;
+							}}> in
+						</td>
+					</tr>
 					
 				</tbody>
 			</table>

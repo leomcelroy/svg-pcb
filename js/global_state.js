@@ -53,6 +53,7 @@ export const global_state = {
       ["Outline", true],
       ["Drills", true]
     ]),
-    includeOutline: true // Include outline in all layers
+    includeOutline: true, // Include outline in all layers
+    excellonMetric: true
   }
 }
