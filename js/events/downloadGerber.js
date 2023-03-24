@@ -438,7 +438,7 @@ export function downloadGerber(state) {
       .generateAsync({ type:"blob" })
       .then((content) => {
           // see FileSaver.js
-          saveAs(content, `${state.name === "" ? "anon" : state.name}-gerber.zip`);
+          saveAs(content, `${state.name === "" ? "Untitled" : state.name}-Gerbers.zip`);
       });
   
     // downloadText(`${state.name === "" ? "anon" : state.name}-F_Cu.gbr`, str);
