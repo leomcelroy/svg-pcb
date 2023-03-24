@@ -37,6 +37,7 @@ export const global_state = {
 
   componentMenu: false,
   componentSearch: "",
+  downloadGerberModal: false,
 
   name: "",
   error: "",
