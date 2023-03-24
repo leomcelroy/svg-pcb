@@ -241,6 +241,16 @@ const modal_download_gerber = state => html`
 				})}
 			</div> <!-- /.col-50 -->
 			<div class="col-50">
+				<h4><label for="projectName">Project Name</label></h4>
+				<div class="modal-line">
+					<input id="projectName" 
+						type="text" 
+						.value=${state.name === "" ? "Untitled" : state.name}
+						@input=${(e) => {
+							state.name = e.target.value;
+						}}>
+				</div>
+
 				<h4>Excellon Drill Units</h4>
 				<div class="modal-line">	
 					<input 

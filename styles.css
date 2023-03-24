@@ -574,6 +574,20 @@ input {
 	line-height: 1;
 }
 
+.modal input[type="text"] {
+	background-color: #fafafa;
+	font-size: 12px;
+	border-color: #121212;
+	border-collapse: collapse;
+	border-style: solid;
+	border-width: 1px;
+	padding: 3px;
+}
+
+.modal input[type="text"]:focus {	
+	outline: none;
+}
+
 .modal-content {
 	display: inline-block;
 	background-color: #fafafa;
