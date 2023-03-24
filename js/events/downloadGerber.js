@@ -1,6 +1,5 @@
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { global_state } from "../global_state.js";
 
 // Some Gerber tips.
 // Include outline in all layers to avoid align issues.
@@ -270,8 +269,11 @@ class ExcellonBuilder {
   // Excellon file format reference: https://gist.github.com/katyo/5692b935abc085b1037e
   #body = '';
   #toolCounter = 1; // 0 is reserved 
+  #state = {};
   
-  constructor() {}
+  constructor(state) {
+    this.#state = state;
+  }
 
   #getHeader() {
     let str = "M48\n"; // Start of the header
@@ -279,13 +281,13 @@ class ExcellonBuilder {
     // Add date and time of generation.
     const dateTime = new Date().toISOString();
     str += "; DRILL file {SvgPcb v0.1} date " + dateTime + "\n";
-    str += "; FORMAT={-:-/ absolute / " + (global_state.downloadGerberOptions.excellonMetric ? "metric" : "inch") + " / decimal}\n";
+    str += "; FORMAT={-:-/ absolute / " + (this.#state.downloadGerberOptions.excellonMetric ? "metric" : "inch") + " / decimal}\n";
     str += "; #@! TF.CreationDate," + dateTime + "\n";
     str += "; #@! TF.GenerationSoftware,SvgPcb v0.1\n";
     str += "; #@! TF.FileFunction,MixedPlating,1,2\n";
     str += "FMAT,2\n";
 
-    if (global_state.downloadGerberOptions.excellonMetric) {
+    if (this.#state.downloadGerberOptions.excellonMetric) {
       str += "METRIC\n"; 
     } else {
       str += "INCH\n";   
@@ -329,7 +331,7 @@ class ExcellonBuilder {
       const center = getCenter(x);      
       let dist = Math.round(1000*x.reduce((acc, cur) => acc + getDistance(center, cur), 0)/x.length)/1000; 
       
-      if (global_state.downloadGerberOptions.excellonMetric) {
+      if (this.#state.downloadGerberOptions.excellonMetric) {
         center[0] = inchesToMM(center[0]);
         center[1] = inchesToMM(center[1]);
         dist = inchesToMM(dist);
@@ -383,7 +385,7 @@ export function downloadGerber(state) {
     const layers = state.pcb.layers;
    
     var zip = new JSZip();
-    global_state.downloadGerberOptions.layers.forEach((val, key) => {
+    state.downloadGerberOptions.layers.forEach((val, key) => {
       if (!val) return;
       
       switch (key) {
@@ -391,7 +393,7 @@ export function downloadGerber(state) {
           let frontCopper = new GerberBuilder();
           frontCopper.plotPads(layers["F.Cu"]);
           frontCopper.plotWires(layers["F.Cu"]);
-          if (global_state.downloadGerberOptions.includeOutline) {
+          if (state.downloadGerberOptions.includeOutline) {
             frontCopper.plotOutline(layers["interior"]);
           }
           zip.file( getFilename(state, "F.Cu"), frontCopper.toString() );
@@ -400,7 +402,7 @@ export function downloadGerber(state) {
           let backCopper = new GerberBuilder();
           backCopper.plotPads(layers["B.Cu"]);
           backCopper.plotWires(layers["B.Cu"]);
-          if (global_state.downloadGerberOptions.includeOutline) {
+          if (state.downloadGerberOptions.includeOutline) {
             backCopper.plotOutline(layers["interior"]);
           }
           zip.file( getFilename(state, "B.Cu"), backCopper.toString() );
@@ -408,7 +410,7 @@ export function downloadGerber(state) {
         case "F.Mask":
           let frontMask = new GerberBuilder();
           frontMask.plotPads(layers["F.Cu"], 0.1);
-          if (global_state.downloadGerberOptions.includeOutline) {
+          if (state.downloadGerberOptions.includeOutline) {
             frontMask.plotOutline(layers["interior"]);
           }
           zip.file( getFilename(state, "F.Mask"), frontMask.toString() );
@@ -416,7 +418,7 @@ export function downloadGerber(state) {
         case "B.Mask":
           let backMask = new GerberBuilder();
           backMask.plotPads(layers["B.Cu"], 0.1);
-          if (global_state.downloadGerberOptions.includeOutline) {
+          if (state.downloadGerberOptions.includeOutline) {
             backMask.plotOutline(layers["interior"]);
           }
           zip.file( getFilename(state, "B.Mask"), backMask.toString() );
@@ -425,7 +427,7 @@ export function downloadGerber(state) {
           // Warning: this is still Work In Progress
           let frontSilkscreen = new GerberBuilder();
           frontSilkscreen.plotSilkscreen(layers["componentLabels"]);
-          if (global_state.downloadGerberOptions.includeOutline) {
+          if (state.downloadGerberOptions.includeOutline) {
             frontSilkscreen.plotOutline(layers["interior"]);
           }
           zip.file( getFilename(state, "F.Silkscreen"), frontSilkscreen.toString() );
@@ -441,7 +443,7 @@ export function downloadGerber(state) {
         case "Drills":
           // There is probably no need to include outline in the drill file 
           // even though it could be a gerber file as well. 
-          let drills = new ExcellonBuilder();
+          let drills = new ExcellonBuilder(state);
           drills.plotDrills( layers["drill"] ? layers["drill"] : [] );
           zip.file( getFilename(state, "Drills"), drills.toString());
           break;
