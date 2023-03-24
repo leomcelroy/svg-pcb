@@ -33,7 +33,7 @@ function format(x) {
 
 // This gives full file name according to user selected options
 function getFilename(state, layerName){
-  const projectName = state.name === "" ? "SvgPcb" : state.name;
+  const projectName = state.name === "" ? "Untitled" : state.name;
   const useProtel = state.downloadGerberOptions.protelFilenames;
   
   let fileName = projectName; // This is just the basename
