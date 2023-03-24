@@ -31,6 +31,44 @@ function format(x) {
   return s;
 }
 
+// This gives full file name according to user selected options
+function getFilename(state, layerName){
+  const projectName = state.name === "" ? "SvgPcb" : state.name;
+  const useProtel = state.downloadGerberOptions.protelFilenames;
+  
+  let fileName = projectName; // This is just the basename
+
+  // Here we finish the name based on user settings
+  switch (layerName) {
+    case "F.Cu":
+      fileName += useProtel ? ".GTL" : "-F_Cu.gbr";
+      break;
+    case "B.Cu":
+      fileName += useProtel ? ".GBL" : "-B_Cu.gbr";
+      break;
+    case "F.Mask":
+      fileName += useProtel ? ".GTS" : "-F_Mask.gbr";
+      break;
+    case "B.Mask":
+      fileName += useProtel ? ".GBS" : "-B_Mask.gbr";
+      break;
+    case "F.Silkscreen":
+      fileName += useProtel ? ".GTO" : "-F_Silkscreen.gbr";
+      break;
+    case "B.Silkscreen":
+      fileName += useProtel ? ".GBO" : "-B_Silkscreen.gbr";
+      break;
+    case "Outline":
+      fileName += useProtel ? ".GKO" : "-Outline.gbr";
+      break;
+    case "Drills":
+      fileName += useProtel ? ".XLN" : "-Drill.xln";
+      break;
+  }
+
+  return fileName;
+}
+
 class GerberBuilder {
   #body = '';
   #apertureConter = 10; // 0-9 is reserved in Gerber. Use #getApertureID() not this directly.
@@ -356,7 +394,7 @@ export function downloadGerber(state) {
           if (global_state.downloadGerberOptions.includeOutline) {
             frontCopper.plotOutline(layers["interior"]);
           }
-          zip.file(`${state.name === "" ? "anon" : state.name}-F_Cu.gbr`, frontCopper.toString() );
+          zip.file( getFilename(state, "F.Cu"), frontCopper.toString() );
           break;
         case "B.Cu":
           let backCopper = new GerberBuilder();
@@ -365,7 +403,7 @@ export function downloadGerber(state) {
           if (global_state.downloadGerberOptions.includeOutline) {
             backCopper.plotOutline(layers["interior"]);
           }
-          zip.file(`${state.name === "" ? "anon" : state.name}-B_Cu.gbr`, backCopper.toString() );
+          zip.file( getFilename(state, "B.Cu"), backCopper.toString() );
           break;
         case "F.Mask":
           let frontMask = new GerberBuilder();
@@ -373,7 +411,7 @@ export function downloadGerber(state) {
           if (global_state.downloadGerberOptions.includeOutline) {
             frontMask.plotOutline(layers["interior"]);
           }
-          zip.file(`${state.name === "" ? "anon" : state.name}-F_Mask.gbr`, frontMask.toString() );
+          zip.file( getFilename(state, "F.Mask"), frontMask.toString() );
           break;
         case "B.Mask":
           let backMask = new GerberBuilder();
@@ -381,7 +419,7 @@ export function downloadGerber(state) {
           if (global_state.downloadGerberOptions.includeOutline) {
             backMask.plotOutline(layers["interior"]);
           }
-          zip.file(`${state.name === "" ? "anon" : state.name}-B_Mask.gbr`, backMask.toString() );
+          zip.file( getFilename(state, "B.Mask"), backMask.toString() );
           break;
         case "F.Silkscreen":
           // Warning: this is still Work In Progress
@@ -390,7 +428,7 @@ export function downloadGerber(state) {
           if (global_state.downloadGerberOptions.includeOutline) {
             frontSilkscreen.plotOutline(layers["interior"]);
           }
-          zip.file(`${state.name === "" ? "anon" : state.name}-F_Silkscreen.gbr`, frontSilkscreen.toString() );
+          zip.file( getFilename(state, "F.Silkscreen"), frontSilkscreen.toString() );
           break;
         case "B.Silkscreen":
           // No graphics on the back for now
@@ -398,14 +436,14 @@ export function downloadGerber(state) {
         case "Outline":
           let outline = new GerberBuilder();
           outline.plotOutline(layers["interior"]);
-          zip.file(`${state.name === "" ? "anon" : state.name}-Outline.gbr`, outline.toString() );
+          zip.file( getFilename(state, "Outline"), outline.toString() );
           break;
         case "Drills":
           // There is probably no need to include outline in the drill file 
           // even though it could be a gerber file as well. 
           let drills = new ExcellonBuilder();
           drills.plotDrills( layers["drill"] ? layers["drill"] : [] );
-          zip.file(`${state.name === "" ? "anon" : state.name}-Drill.xln`, drills.toString());
+          zip.file( getFilename(state, "Drills"), drills.toString());
           break;
       }
     });

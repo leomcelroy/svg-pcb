@@ -54,6 +54,7 @@ export const global_state = {
       ["Drills", true]
     ]),
     includeOutline: true, // Include outline in all layers
-    excellonMetric: true
+    excellonMetric: true,
+    protelFilenames: true
   }
 }

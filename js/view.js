@@ -270,7 +270,17 @@ const modal_download_gerber = state => html`
 							}}> in
 						</td>
 					</tr>
-					
+					<tr>
+						<td><input 
+							type="checkbox"
+							.checked=${state.downloadGerberOptions.protelFilenames}
+							@change=${(e) => {
+								state.downloadGerberOptions.protelFilenames = e.target.checked;
+							}}>
+						</td>
+						<td>Use Protel Filenames</td>
+					</tr>
+
 				</tbody>
 			</table>
 		</div>
