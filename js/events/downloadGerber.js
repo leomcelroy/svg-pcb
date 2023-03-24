@@ -1,5 +1,6 @@
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import { MM_PER_INCH } from "../constants.js";
 
 // Some Gerber tips.
 // Include outline in all layers to avoid align issues.
@@ -11,7 +12,7 @@ import { saveAs } from "file-saver";
 
 // This should be a global function
 function inchesToMM(inches){
-  return inches * 25.4;
+  return inches * MM_PER_INCH;
 }
 
 // This gives full file name according to user selected options

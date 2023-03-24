@@ -1,3 +1,5 @@
+import { MM_PER_INCH } from "./constants";
+
 export const global_state = {
   codemirror: undefined,
   pcb: undefined,
@@ -15,7 +17,7 @@ export const global_state = {
     x: [0, 1],
     y: [0, 1]
   },
-  mm_per_unit: 25.4,
+  mm_per_unit: MM_PER_INCH,
   background: "#00000000",
 
   // -- grid --

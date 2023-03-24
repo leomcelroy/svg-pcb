@@ -2,6 +2,7 @@ import { changeDpiDataUrl } from "./changeDPI.js";
 import { offset2 } from "../../geogram/index.js";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import { MM_PER_INCH } from "../constants.js";
 
 export function downloadSVG(state) {
   const svgUrl = makeSVG(state);
@@ -78,7 +79,7 @@ export function downloadText(filename, text) {
 export function downloadPNG(state, dpi = 1000) {
   const src = makeSVG(state);
 
-  var units = 25.4;
+  var units = MM_PER_INCH;
 
   const w = (state.limits.x[1] - state.limits.x[0])*state.mm_per_unit;
   const h = (state.limits.y[1] - state.limits.y[0])*state.mm_per_unit;
@@ -93,7 +94,7 @@ export function downloadPNG(state, dpi = 1000) {
     const canvas = document.createElement("canvas");
     // const pixels = width+' x '+height+" (pixels)";
     // const inches = (width/dpi).toFixed(3)+' x '+(height/dpi).toFixed(3)+" (inches)";
-    // const mm = (25.4*width/dpi).toFixed(3)+' x '+(25.4*height/dpi).toFixed(3)+" (mm)";
+    // const mm = (MM_PER_INCH*width/dpi).toFixed(3)+' x '+(MM_PER_INCH*height/dpi).toFixed(3)+" (mm)";
     canvas.width = width
     canvas.height = height
     var ctx = canvas.getContext("2d");
