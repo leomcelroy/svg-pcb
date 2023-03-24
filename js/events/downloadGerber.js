@@ -135,11 +135,12 @@ class GerberBuilder {
     wires.map( el => {
       // Draw the wire using an aperture
       this.#body += "D" + el.gerberAperture.toString() + "*\n";
-      for (let i = 0; i < el.shape[0].length; i++) {
-        const x = this.#format( inchesToMM(el.shape[0][i][0]) );
-        const y = this.#format( inchesToMM(el.shape[0][i][1]) );
+      
+      el.shape.flat().forEach((pt, i) => {
+        const x = this.#format( inchesToMM(pt[0]) );
+        const y = this.#format( inchesToMM(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
-      }
+      });
     });
   } // End of GerberBuilder class
 
@@ -164,12 +165,14 @@ class GerberBuilder {
     // Draw pads as polygons
     layer.map( el => {
       if (el.type === "wire") return;
-      this.#body += "G36*\n"; 
-      for (let i = 0; i < el[0].length; i++) {
-        const x = this.#format( inchesToMM(el[0][i][0]) );
-        const y = this.#format( inchesToMM(el[0][i][1]) );
+      this.#body += "G36*\n";
+      
+      el.flat().forEach((pt, i) => {
+        const x = this.#format( inchesToMM(pt[0]) );
+        const y = this.#format( inchesToMM(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
-      }
+      });
+
       this.#body += "G37*\n";
     });
 
@@ -181,11 +184,12 @@ class GerberBuilder {
     // Offset polygon with an outline that is 2x the offset
     layer.map( el => {
       if (el.type === "wire") return;
-      for (let i = 0; i < el[0].length; i++) {
-        const x = this.#format( inchesToMM(el[0][i][0]) );
-        const y = this.#format( inchesToMM(el[0][i][1]) );
+
+      el.flat().forEach((pt, i) => {
+        const x = this.#format( inchesToMM(pt[0]) );
+        const y = this.#format( inchesToMM(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
-      }
+      });
     });
   }
 
@@ -233,11 +237,11 @@ class GerberBuilder {
     this.#body += this.#getComment("Begin outline");
 
     layer.map( el => {
-      for (let i = 0; i < el[0].length; i++) {
-        const x = this.#format( inchesToMM(el[0][i][0]) );
-        const y = this.#format( inchesToMM(el[0][i][1]) );
+      el.flat().forEach((pt, i) => {
+        const x = this.#format( inchesToMM(pt[0]) );
+        const y = this.#format( inchesToMM(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
-      }
+      });
     });
   }
 
