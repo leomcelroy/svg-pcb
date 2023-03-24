@@ -209,7 +209,7 @@ const modal_download_gerber = state => html`
 	<div class="modal-content">
 		<div class="modal-header">
 			<div class="col-75 align-left">
-				<img class="icon" src="assets/icons/export.svg" alt="Export Icon">
+				<i class="icon fa fa-arrow-circle-down"></i>
 				<h3 class="modal-title">Download Gerber Options</h3>
 			</div>
 			<div class="col-25 align-right">
@@ -218,7 +218,7 @@ const modal_download_gerber = state => html`
 					@click=${(e) => {
 						const modal = document.getElementById("modal_download_gerber");
 						modal.classList.add("hidden");
-					}}><img class="icon" src="assets/icons/close.svg" alt="Close Icon"></span>
+					}}><i class="fa fa-times"></i></span>
 			</div>
 		</div>
 		<div class="modal-body">

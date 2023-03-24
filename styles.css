@@ -612,8 +612,7 @@ input {
 }
 
 .modal-header .icon {
-	width: 20px;
-	height: auto;
+	font-size: 20px;
 	vertical-align: top;
 }
 
@@ -631,6 +630,7 @@ input {
 
 .modal-title {
 	margin: 0;
+	padding: 0;
 	text-align: left;
 	font-size: 12px;
 	line-height: 20px;
@@ -675,17 +675,17 @@ input {
 }
 
 .close {
-	color: #aaa;
+	color: #fafafa;
 	position: relative;
 	right: 0;
-	font-size: 24px;
+	font-size: 20px;
 	font-weight: bold;
 	line-height: 0;
 }
   
 .close:hover,
 .close:focus {
-	opacity: 75%;
+	color: #ababab;
 	text-decoration: none;
 	cursor: pointer;
 }
