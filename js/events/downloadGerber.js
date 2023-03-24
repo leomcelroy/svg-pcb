@@ -14,22 +14,6 @@ function inchesToMM(inches){
   return inches * 25.4;
 }
 
-// This is here only for the drills implementation
-function format(x) {
-  // Reduce decimal digits to 6 (0.123456)
-  let s = x.toFixed(6);
-
-  // Remove the floating point (0.123456 becomes 0123456)
-  s = s.replace(".", ""); 
-
-  // Remove leading zeroes for Gerberization
-  while (s.startsWith("0")) {
-    s = s.substr(1, s.length);
-  }
-
-  return s;
-}
-
 // This gives full file name according to user selected options
 function getFilename(state, layerName){
   const projectName = state.name === "" ? "Untitled" : state.name;
