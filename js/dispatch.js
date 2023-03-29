@@ -87,6 +87,7 @@ const ACTIONS = {
 
 		  const included = makeIncluded(flatten);
 		  // console.time("RUN")
+		  
 			const f = new Function(...Object.keys(included), string)
 			f(...Object.values(included));
 			// console.timeEnd("RUN")
