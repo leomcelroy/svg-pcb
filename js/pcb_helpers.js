@@ -114,6 +114,7 @@ function makeComponent(comp, options = {}) {
   let rotate = options.rotate || 0;
   let padLabelSize = options.padLabelSize || 0.02;
   let flip = options.flip || false;
+  // add flip
 
   const [xOff, yOff] = translate;
   const rad = (rotate * Math.PI) / 180;

@@ -95,23 +95,57 @@ function makeTree(cursor, getValue, func = null) {
   return final;
 }
 
+function getComponentDeclarations(string, ast) {
+  const componentDeclarations = [];
+  const cursor = ast.cursor();
+  const getValue = () => string.slice(cursor.from, cursor.to);
+
+  cursor.moveTo(0);
+
+  const re = /(const|let|var)(.*)=(.*)\.add\(([^,]*),(.*)\)/;
+  // (const|let)(.*)=(.*)\.add\(([^,]*),{(.*)}\)
+
+  do {
+    const start = cursor.from;
+
+    if (cursor.name === "VariableDeclaration") {
+      const val = getValue();
+      const match = val.match(re);
+      if (match !== null) {
+        const variableName = match[2].trim();
+        const options = match[5];
+        const indexCurly = val.indexOf(options) + start + 1;
+
+        componentDeclarations.push({ variableName, indexCurly })
+      };
+    }
+
+  } while (cursor.next());
+  
+  return componentDeclarations;
+}
+
 export function astAnalysis(string, ast) {
   const pts = [];
   const paths = [];
   const footprints = [];
   const inputs = [];
+  const componentDeclarations = getComponentDeclarations(string, ast);
   let layers = [];
 
-  const cursor = ast.cursor()
+  const cursor = ast.cursor();
   const getValue = () => string.slice(cursor.from, cursor.to);
+
+  // Reset cursor as there might be another analysis pass before this.
+  cursor.moveTo(0);
 
   do {
     // console.log(`Node ${cursor.name} from ${cursor.from} to ${cursor.to} with value ${string.slice(cursor.from, cursor.to)}`, cursor);
     const value = getValue();
     const startFrom = cursor.from;
 
-
     checkfootprint: if (cursor.name === "VariableDeclaration") {
+
       cursor.firstChild();
       cursor.next();
       const name = getValue();
@@ -252,6 +286,7 @@ export function astAnalysis(string, ast) {
     paths, 
     footprints: fps, 
     layers, 
-    inputs 
+    inputs,
+    componentDeclarations
   };
 }
