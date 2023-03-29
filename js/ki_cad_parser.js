@@ -29,7 +29,8 @@ export function kicadToObj(data) {
       let at = line[4].slice(1).map(x => Number(x)*scale);
       at[1] = -at[1]; // negative Y axis
 
-      let layers = line[line.length - 1];
+      const layersIndex = line.findIndex(entry => Array.isArray(entry) && entry[0] === "layers");
+      let layers = line[layersIndex];
       layers = layers ? layers.slice(1) : [];
       layers = convertLayers(layers);
 
@@ -47,7 +48,8 @@ export function kicadToObj(data) {
           // roundCorners(_);
           return _;
         },
-        "circle": () => circle(...size),
+        "circle": () => circle(...size.map(x => x/2)),
+        "oval": () => circle(...size.map(x => x/2)),
         // "ellipse": () => circle(...size), 
       }
 
@@ -59,10 +61,10 @@ export function kicadToObj(data) {
       if (padsToAdd[name] === undefined) padsToAdd[name] = [{ pos: at, shape: shapeTurtle, layers }];
       else padsToAdd[name].push({ pos: at, shape: shapeTurtle, layers });
 
-      const drill = line[line.length - 2] ? line[line.length - 2][0] === "drill" : false;
+      const drillIndex = line.findIndex(entry => Array.isArray(entry) && entry[0] === "drill");
 
-      if (drill) {
-        let drillDia = Number(line[line.length - 2][1])/25.4;
+      if (drillIndex !== -1) {
+        let drillDia = Number(line[drillIndex][1])*scale/2;
         let l = { 
           pos: at, 
           shape: circle(drillDia),
@@ -70,7 +72,7 @@ export function kicadToObj(data) {
         }
 
         if (padsToAdd[`${name}_drill`] === undefined) padsToAdd[`${name}_drill`] = [l];
-        else  padsToAdd[`${name}_drill`].push(l);
+        else padsToAdd[`${name}_drill`].push(l);
       }
     }
   }
@@ -89,8 +91,6 @@ export function kicadToObj(data) {
     return acc;
   }, {});
 
-  // TODO: BUGS?
-
   Object.keys(result).forEach(k => {
     let d = "";
     const shape = result[k].shape;
@@ -103,8 +103,6 @@ export function kicadToObj(data) {
     })
 
     result[k].shape = d;
-    // TODO: FIX BUG HERE
-    result[k].layers = ["F.Cu"];
   })
 
   return result;
