@@ -102,7 +102,7 @@ function getComponentDeclarations(string, ast) {
 
   cursor.moveTo(0);
 
-  const re = /(const|let|var)(.*)=(.*)\.add\((.*),\s*{(.*)}\s*/;
+  const re = /(const|let|var)(.*)=(.*)\.add\s*\(.*,\s*({.*})\)/;
   // (const|let)(.*)=(.*)\.add\(([^,]*),{(.*)}\)
 
   do {
@@ -113,7 +113,7 @@ function getComponentDeclarations(string, ast) {
       const match = val.match(re);
       if (match !== null) {
         const variableName = match[2].trim();
-        const options = match[5];
+        const options = match[4];
         const indexCurly = val.indexOf(options) + start;
 
         componentDeclarations.push({ variableName, indexCurly })
