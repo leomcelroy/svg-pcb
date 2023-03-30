@@ -1,5 +1,6 @@
 # TODO
 
+- add visual cue to menu tab
 - export
 	- [ ] gerber
 	- [ ] kicad

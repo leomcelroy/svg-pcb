@@ -13,6 +13,9 @@ function pathDeco(view) {
       if (node.name == "CallExpression") {
         const isPath = view.state.doc.sliceString(node.from, node.from+5) == "path(";
         if (!isPath) return;
+        const start = node.from;
+        node.next();
+        node.next();
         const pathMark = Decoration.mark({ 
           attributes: {
             "data-path-start": node.from,
@@ -20,7 +23,7 @@ function pathDeco(view) {
           },
           class: "cm-path-button" 
         });
-        builder.add(node.from, node.from+4, pathMark);
+        builder.add(start, start+4, pathMark);
       }
     }
 

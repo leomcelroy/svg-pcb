@@ -71,24 +71,9 @@ export function addPathManipulation(state, svgListener) {
     state.codemirror.view.dispatch({
       changes: {
         from: start+1, 
-        // to: startIndex, 
         insert: text
       }
     });
-
-    // console.log(
-    //   state.selectedPath, 
-    //   text, 
-    //   text.length, 
-    //   state.selectedPath.target.dataset.pathStart, 
-    //   state.selectedPath.target.dataset.pathEnd
-    // );
-
-    // state.selectedPath.pathStart = Number(state.selectedPath.target.dataset.pathStart);
-    // state.selectedPath.pathEnd = Number(state.selectedPath.target.dataset.pathEnd);
-    // console.log(string.slice(state.selectedPath.pathStart, state.selectedPath.pathEnd))
-    
-    state.selectedPath.pathEnd += text.length;
 
     dispatch("RUN");
   })

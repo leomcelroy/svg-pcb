@@ -43,13 +43,14 @@ export const makeIncluded = (flatten) => ({
   path: (args, staticInfo) => {
     const pts = geo.path2(...args);
 
-    // if selected path then add pts info to selected path
+    const doc = global_state.codemirror.view.state.doc;
+    const string = doc.toString();
 
-    // console.log(global_state.selectedPath, staticInfo);
+    if (!global_state.selectedPath) return pts;
 
-    // if (global_state.selectedPath && staticInfo.from === global_state.selectedPath.pathStart) {
-    //  staticInfo.pts = pts;
-    // }
+    if (global_state.selectedPath.pathStart === staticInfo.from) {
+      global_state.selectedPath.pathEnd = staticInfo.to;
+    }
 
     return pts;
   },
