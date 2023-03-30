@@ -82,7 +82,7 @@ function getComponentDeclarations(string, ast) {
 
   cursor.moveTo(0);
 
-  const re = /(const|let|var)([\s\S]*)=(.*)\.add\((.*),\s*{([\s\S]*)}\s*\)/;
+  const re = /(const|let|var)([\s\S]*)=(.*)\.add\((.*),\s*({[\s\S]*})\s*\)/;
 
   do {
     const start = cursor.from;

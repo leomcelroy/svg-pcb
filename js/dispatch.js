@@ -73,6 +73,8 @@ const ACTIONS = {
 
 			string = modifyAST(string, changes);
 
+			console.log(string);
+
 		  const included = makeIncluded(flatten);
 		  
 			const f = new Function(...Object.keys(included), string)
