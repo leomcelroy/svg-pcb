@@ -20,44 +20,44 @@ export class PCB {
       flip: ops.flip || false
     };
 
-    if (typeof footprint === "string") {
-      const textFootprint = {
-        type: "text",
-        silkscreen: true,
-        value: footprint,
-        translate: ops.translate,
-        rotate: ops.rotate,
-        flip: ops.flip,
-        size: Math.max(ops.size, 0)
-      }
+    // if (typeof footprint === "string") {
+    //   const textFootprint = {
+    //     type: "text",
+    //     silkscreen: true,
+    //     value: footprint,
+    //     translate: ops.translate,
+    //     rotate: ops.rotate,
+    //     flip: ops.flip,
+    //     size: Math.max(ops.size, 0)
+    //   }
 
-      const layer = ops.flip
-        ? "B.Silkscreen"
-        : "F.Silkscreen"
+    //   const layer = ops.flip
+    //     ? "B.Silkscreen"
+    //     : "F.Silkscreen"
 
-      this.addShape(layer, textFootprint);
+    //   this.addShape(layer, textFootprint);
 
-      return {
-        pad() {
-          return undefined;
-        },
-        padX() {
-          return undefined;
-        },
-        padY() {
-          return undefined;
-        },
-        get pos() {
-          return ops.translate;
-        },
-        get posX() {
-          return ops.translate[0];
-        },
-        get posY() {
-          return ops.translate[1];
-        }
-      };
-    }
+    //   return {
+    //     pad() {
+    //       return undefined;
+    //     },
+    //     padX() {
+    //       return undefined;
+    //     },
+    //     padY() {
+    //       return undefined;
+    //     },
+    //     get pos() {
+    //       return ops.translate;
+    //     },
+    //     get posX() {
+    //       return ops.translate[0];
+    //     },
+    //     get posY() {
+    //       return ops.translate[1];
+    //     }
+    //   };
+    // }
 
 
     const newComp = makeComponent(footprint, options);
