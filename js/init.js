@@ -3,7 +3,7 @@ import { addEvents } from "./events.js";
 import { dispatch } from "./dispatch.js";
 import { urlToCode } from "./urlToCode.js";
 import { initCodeMirror } from "./codemirror/codemirror.js"
-import { ensureSyntaxTree } from "@codemirror/language";
+import { defaultText, basicSetup } from "./defaultText.js";
 
 export function init() {
   dispatch("RENDER");
@@ -39,7 +39,7 @@ export function init() {
   } else { // should check before running this
     const saved = window.localStorage.getItem("svg-pcb");
     global_state.codemirror.view.dispatch({
-      changes: {from: 0, insert: saved ?? ""}
+      changes: {from: 0, insert: saved ?? defaultText }
     });
 
 

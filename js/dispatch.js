@@ -6,7 +6,7 @@ import { modifyAST } from "./modifyAST.js";
 import { getFileSection } from "./getFileSection.js"
 import { makeIncluded } from "./makeIncluded.js";
 import { global_state } from "./global_state.js";
-import { defaultText } from "./defaultText.js";
+import { defaultText, basicSetup } from "./defaultText.js";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { logError } from "./logError.js";
 import { createWorker } from "./createWorker.js";
@@ -105,7 +105,7 @@ const ACTIONS = {
 
 	},
 	NEW_FILE(args, state) {
-	  dispatch("UPLOAD_JS", { text: defaultText });
+	  dispatch("UPLOAD_JS", { text: basicSetup });
 	},
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");

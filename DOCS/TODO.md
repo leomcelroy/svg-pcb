@@ -2,7 +2,7 @@
 
 - add visual cue to menu tab
 - export
-	- [ ] gerber
+	- [x] gerber
 	- [ ] kicad
 	- [ ] kicad component
 - import
@@ -44,7 +44,9 @@
 
 - BUGS
 	- [ ] fix ast analysis bug (slice checking)
-	- ? svg export
+	- [ ] "string" to add
+- [x] soldering masks
+- [x] back layer component adding
 
 ---------------------------------------
 
