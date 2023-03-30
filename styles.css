@@ -91,6 +91,18 @@ input {
 	height: 100%;
 }
 
+.cm-path-button {
+	background: #c0fdc0d1;
+	padding-left: 3px;
+	padding-right: 3px;
+	border-radius: 5px;
+}
+
+.cm-path-button:hover {
+	cursor: pointer;
+	background: #2ef72ecf;
+}
+
 .error-log {
 	background: #c92a2a;
   color: #ffffff;
@@ -537,6 +549,30 @@ input {
 }
 
 /* ------------------ */
+
+.drop-modal {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  border: 3px dashed black;
+  background: #8bf6dfd9;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  z-index: 9999999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.drop-info {
+	font-size: 1.4em;
+  text-align: center;
+}
+
+.hidden {
+	display: none;
+}
 
 .modal {
 	background-color: rgba(0, 0, 0, 0.5);

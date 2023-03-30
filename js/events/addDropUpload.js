@@ -100,12 +100,19 @@ export function addDropUpload(state, bodyListener) {
     let dt = evt.dataTransfer;
     let files = dt.files;
 
+    document.querySelector(".drop-modal").classList.add("hidden");   
+
     upload(files);
 
     pauseEvent(evt);
   });
 
-  bodyListener("dragover", "", function(evt) {    
+  bodyListener("dragover", "", function(evt) {
+    document.querySelector(".drop-modal").classList.remove("hidden");   
     pauseEvent(evt);
+  });
+
+  bodyListener("mouseleave", "", function(evt) {
+    document.querySelector(".drop-modal").classList.add("hidden");   
   });
 }

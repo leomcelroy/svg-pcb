@@ -1,6 +1,213 @@
-import { makeFootprintGeometry } from "./getSemanticInfo.js";
+import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
+
+export function astAnalysis(string, ast) {
+  const pts = [];
+  const paths = [];
+  const inputs = [];
+
+  const footprints = getFootprints(string, ast);
+  const componentDeclarations = getComponentDeclarations(string, ast);
+  const layers = getLayers(string, ast);
+
+  const cursor = ast.cursor();
+  const getValue = () => string.slice(cursor.from, cursor.to);
+
+  // Reset cursor as there might be another analysis pass before this.
+  cursor.moveTo(0);
+
+  do {
+    const value = getValue();
+
+    // TODO: BUG this will trigger for any function starting with string
+    if (cursor.name === "CallExpression" && value.slice(0, 2) === "pt") {
+      cursor.next();
+      cursor.next();
+      pts.push({
+        from: cursor.from,
+        to: cursor.to,
+        snippet: getValue()
+      });
+    }
+
+    // TODO: BUG this will trigger for any function starting with string
+    if (cursor.name === "CallExpression" && value.slice(0, 5) === "input") {
+      cursor.next();
+      cursor.next();
+      const start = cursor.from;
+      const end = cursor.to;
+      cursor.next();
+      cursor.next();
+      const tree = makeTree(cursor, getValue)[0];
+      tree.slice(1).forEach(node => {
+        const propKey = node[1][0];
+        if (propKey.value === "value") {
+          const propValue = node[2][0];
+          const valueIndices = { 
+            from: propValue.from, 
+            to: propValue.to,
+            start,
+            end
+          }
+          inputs.push(valueIndices);
+        }
+      })
+    }
+
+    // TODO: BUG this will trigger for any function starting with string
+    if (cursor.name === "CallExpression" && value.slice(0, 4) === "path") {
+      cursor.next();
+      cursor.next();
+      paths.push({
+        from: cursor.from,
+        to: cursor.to,
+      });
+    }
+
+  } while (cursor.next());
+
+  return { 
+    pts, 
+    paths, 
+    footprints, 
+    layers, 
+    inputs,
+    componentDeclarations
+  };
+}
+
+function getComponentDeclarations(string, ast) {
+  const componentDeclarations = [];
+  const cursor = ast.cursor();
+  const getValue = () => string.slice(cursor.from, cursor.to);
+
+  cursor.moveTo(0);
+
+  const re = /(const|let|var)([\s\S]*)=(.*)\.add\((.*),\s*{([\s\S]*)}\s*\)/;
+
+  do {
+    const start = cursor.from;
+
+    if (cursor.name === "VariableDeclaration") {
+      const val = getValue();
+      const match = val.match(re);
+      if (match !== null) {
+        const variableName = match[2].trim();
+        const options = match[5];
+        const indexCurly = val.indexOf(options) + start;
+
+        componentDeclarations.push({ variableName, indexCurly })
+      };
+    }
+
+  } while (cursor.next());
+  
+  return componentDeclarations;
+}
 
 const FOOTPRINTS = {};
+
+function getFootprints(string, ast) {
+  const footprints = [];
+  const cursor = ast.cursor();
+  const getValue = () => string.slice(cursor.from, cursor.to);
+
+  cursor.moveTo(0);
+
+  do {
+
+    if (cursor.name === "VariableDeclaration") {
+
+      cursor.firstChild();
+      cursor.next();
+      const name = getValue();
+
+      cursor.next();
+      cursor.next();
+
+      if (cursor.name !== "ObjectExpression") continue;
+
+      const footprintString = getValue();
+
+      cursor.firstChild();
+      cursor.next();
+      cursor.firstChild();
+      cursor.next();
+      cursor.next();
+
+      if (cursor.name !== "ObjectExpression") continue;
+
+      const props = getObjKeys(cursor, getValue);
+
+      if (!["shape", "pos", "layers"].every(key => props.includes(key))) continue;
+
+      footprints.push(name);
+
+      if (name in FOOTPRINTS && FOOTPRINTS[name].footprintString === footprintString) continue;
+
+      try {
+        const footprintObj = JSON.parse(footprintString);
+        const footprint = {
+          name,
+          footprintString,
+          footprintObj,
+          geo: makeFootprintGeometry(footprintObj)
+        }
+
+        FOOTPRINTS[name] = footprint;
+      } catch (err) { }
+      
+    }
+
+  } while (cursor.next());
+
+  const fps = [];
+
+  for (const fp in FOOTPRINTS) {
+    if (!footprints.includes(fp)) {
+      delete FOOTPRINTS[fp];
+      continue;
+    }
+
+    const value = FOOTPRINTS[fp];
+
+    fps.push([
+      fp,
+      value.footprintObj,
+      value.geo
+    ])
+  }
+  
+  return fps;
+}
+
+function getLayers(string, ast) {
+  
+  const footprints = [];
+  const cursor = ast.cursor();
+  const getValue = () => string.slice(cursor.from, cursor.to);
+
+  // const start = string.indexOf("renderPCB");
+  // cursor.moveTo(start);
+
+  cursor.moveTo(0);
+
+  let layers = [];
+
+  do {
+    const value = getValue();
+    // BUG: This causes infinite loop when layerColors not present
+    if (cursor.name === "CallExpression" && value.slice(0, 9) === "renderPCB" && value.includes("layerColors")) {
+     
+      while (getValue() !== "layerColors" && cursor.next()) cursor.next();
+
+      const tree = makeTree(cursor, getValue);
+
+      layers = tree[1].slice(1);
+    }
+  } while (cursor.next());
+
+  return layers;
+}
 
 const getObjKeys = (cursor, getValue) => {
   const props = [];

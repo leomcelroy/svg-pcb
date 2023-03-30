@@ -1,5 +1,6 @@
 # TODO
 
+- add visual cue to menu tab
 - export
 	- [x] gerber
 	- [ ] kicad
@@ -9,6 +10,9 @@
 - [x] background color
 - [ ] silkscreen
 - [ ] path drawing gui
+	- [x] path selection
+	- https://github.com/hackclub/sprig/blob/main/codemirror/editors.js
+	- https://codemirror.net/examples/decoration/
 - [ ] handle infinite loops
 	- https://blog.replit.com/infinite-loops
 	- https://github.com/facebook/react/blob/main/scripts/babel/transform-prevent-infinite-loops.js
@@ -17,6 +21,8 @@
 		- [ ] json
 		- [ ] kicad_module
 		- [ ] svg
+			- [ ] options for setting scale of svg
+			- [ ] choose to import as svg or component
 	- file import
 		- [ ] js
 - [ ] svg export flipping
@@ -24,12 +30,23 @@
 	- [ ] silkscreen
 	- [ ] better componentLabels
 	- [ ] better padLabels
+	- [ ] if "string" is passed to add make it text
+- [ ] soldering masks
+- [ ] back layer component adding
+- [ ] add transform widget for selected components
+	- [ ] translate
+	- [ ] rotate
+	- [ ] flip
+- [ ] publish rico's documentation
+- [ ] add versioning
+	- publish old versions
+	- add metadata to top of file
+
+- BUGS
+	- [ ] fix ast analysis bug (slice checking)
 	- [ ] "string" to add
 - [x] soldering masks
 - [x] back layer component adding
-- BUGS
-	- [x] fix ast analysis bug
-	- ? svg export
 
 ---------------------------------------
 

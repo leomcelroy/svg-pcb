@@ -6,6 +6,7 @@ import { addSelectBox } from "./events/addSelectBox.js";
 import { addNumberDragging } from "./events/addNumberDragging.js";
 import { addImportDrag } from "./events/addImportDrag.js";
 import { addPathManipulation } from "./events/addPathManipulation.js";
+import { addPathSelection } from "./events/addPathSelection.js";
 
 import { dispatch } from "./dispatch.js";
 
@@ -46,9 +47,17 @@ export function addEvents(state) {
 	addDropUpload(state, listenBody);
 	addNumberDragging(state, listenBody);
 	addVerticalBarDrag(state, listenBody);
+	addPathSelection(state, listenBody);
 
 	listenBody("keydown", "", (e) => {
 		let code = event.code;
+		
+		const isTypingCode = e.target.classList.contains("cm-content");
+		if (isTypingCode) {
+			state.selectedPath = null;
+			dispatch("RENDER");
+		}
+
 		if (code === "Enter" && event.shiftKey) {
 		  event.preventDefault();
 		  dispatch("RUN");
@@ -60,6 +69,25 @@ export function addEvents(state) {
 	window.addEventListener("unload", () => {
 		const string = state.codemirror.view.state.doc.toString();
 		window.localStorage.setItem("svg-pcb", string);
+	})
+
+	window.addEventListener("wheel", () => {
+		function getBaseLog(x, y) {
+	      return Math.log(y) / Math.log(x);
+	    }
+
+	    if (!state.panZoomParams) return;
+
+	    const corners = state.panZoomParams.corners();
+
+	    const xLimits = [corners.lt.x, corners.rt.x];
+	    const xRange = Math.abs(xLimits[1] - xLimits[0]);
+	    const yLimits = [corners.lb.y, corners.lt.y];
+	    const yRange = Math.abs(yLimits[1] - yLimits[0]);
+
+	    const order = Math.round(getBaseLog(5, Math.max(xRange, yRange)));
+	    const stepSize = state.adaptiveGrid ? (5**(order))/20 : state.gridSize;
+	    state.gridSize = stepSize;
 	})
 }
 

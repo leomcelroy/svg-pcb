@@ -9,15 +9,21 @@ const drawPt = ({ pt, start, end, text }, i, scale) => svg`
     class="draggable-pt"
     cx=${pt[0]}
     cy=${pt[1]}
-    r=${false ? 0.015 / (scale * 0.0015) : 0.015}
+    r=${true ? 0.01 / (scale * 0.0015) : 0.01}
     data-index=${i}
     data-start=${start}
     data-end=${end}
     data-text=${text}></circle>
 `
 
-const drawP = ({ d, stroke, strokeWidth, fill }) => svg`
-  <path d=${d} stroke=${stroke} stroke-width=${strokeWidth} fill=${fill}></path>
+const drawP = ({ d, stroke, strokeWidth, fill, strokeLinecap, strokeLinejoin }) => svg`
+  <path 
+    d=${d} 
+    stroke=${stroke} 
+    stroke-linecap=${strokeLinecap}
+    stroke-linejoin=${strokeLinejoin}
+    stroke-width=${strokeWidth} 
+    fill=${fill}></path>
 `
 export const svgViewer = (state) => {
   const corners = state.panZoomParams?.corners();
@@ -31,6 +37,16 @@ export const svgViewer = (state) => {
 
   return svg`
     <svg id="viewer" style="width: 100%; height: 100%; transform: scale(1, -1);">
+      ${state.panZoomParams && state.gridSize > 0 && state.grid
+        ? drawPattern(
+                state.panZoomParams.x(), 
+                state.panZoomParams.y(), 
+                state.panZoomParams.scale(),
+                state.panZoomParams.corners(),
+                state.gridSize
+              )
+        : ""}
+
       <g class="transform-group">
           <rect 
             x=${state.limits.x[0]} 
@@ -55,7 +71,10 @@ export const svgViewer = (state) => {
           <g class="paths">${paths}</g>
 
 
-        ${state.panZoomParams && state.gridSize > 0 && state.grid ? drawGrid(state.panZoomParams.corners(), state.gridSize) : ""}
+        ${state.panZoomParams && state.gridSize > 0 && state.grid && false
+          ? drawGrid(state.panZoomParams.corners(), state.gridSize)
+          : ""
+        }
 
         <rect
           class="limits no-download"
@@ -68,5 +87,48 @@ export const svgViewer = (state) => {
       </g>
 
     </svg>
+  `
+}
+
+function drawPattern(x, y, scale, corners, gridSize) {
+  const xLimits = [corners.lt.x, corners.rt.x];
+  const xRange = Math.abs(xLimits[1] - xLimits[0]);
+  const yLimits = [corners.lb.y, corners.lt.y];
+  const yRange = Math.abs(yLimits[1] - yLimits[0]);
+
+  return svg`
+    <defs>
+      <pattern
+        id="grid"
+        x="${x}"
+        y="${y}"
+        width="${scale*gridSize}"
+        height="${scale*gridSize}"
+        patternUnits="userSpaceOnUse">
+        <line stroke="black" stroke-width=".2" x1="0" y1="0" x2="${scale*gridSize}" y2="0"></line>
+        <line stroke="black" stroke-width=".2" x1="0" y1="0" x2="0" y2="${scale*gridSize}"></line>
+      </pattern>
+    </defs>
+    <rect
+      width="100%"
+      height="100%"
+      fill="url(#grid)">
+    </rect>
+    <line 
+      stroke="black" 
+      stroke-width=".6" 
+      x1=${(scale*corners.lt.x + x)} 
+      y1=${y} 
+      x2=${scale*corners.rt.x + x} 
+      y2=${y}>
+      </line>
+    <line 
+      stroke="black" 
+      stroke-width=".6" 
+      x1=${x} 
+      y1=${(scale*corners.lb.y + y)} 
+      x2=${x} 
+      y2=${(scale*corners.lt.y + y)}>
+      </line>
   `
 }
