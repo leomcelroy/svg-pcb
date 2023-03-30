@@ -10,7 +10,7 @@ import { global_state } from "./global_state.js";
 import { renderShapes } from "./renderShapes.js";
 import { renderPath } from "./renderPath.js";
 import { renderPCB } from "./renderPCB.js";
-import { defaultText } from "./defaultText.js";
+import { defaultText, basicSetup } from "./defaultText.js";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { logError } from "./logError.js";
 import { getPoints } from "./getPoints.js";
@@ -185,7 +185,7 @@ const ACTIONS = {
 
 	},
 	NEW_FILE(args, state) {
-	  dispatch("UPLOAD_JS", { text: defaultText });
+	  dispatch("UPLOAD_JS", { text: basicSetup });
 	},
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");
