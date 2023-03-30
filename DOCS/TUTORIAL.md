@@ -206,7 +206,7 @@ board.wire(path(), 0.03)
 - In between the parenthesis following the ‘**path**’ command…you will specify the **starting point, intermediate point(s)** and **end point** of the line.
 - These **POINTs** (RED dots) for a polyline will be specified using the **pt(x-coordinate, y-coordinate)** command  
 - To make it possible to draw a polyline **WIRE** graphically in the **Drawing Window…**
-    - Click in **between the parenthesis** following the **PATH** command…i.e. place the blinking cursor there...and this will make 'drawing' the path graphically possible  
+    - Click on `path` which should appear in green.  
     
     ![2023-02-23_16_07_44-SVG_PCB](https://user-images.githubusercontent.com/27078897/222631004-10ee2b8d-e7de-48e6-b8fd-aea5f3205b73.jpg)
 
