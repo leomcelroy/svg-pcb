@@ -9,7 +9,6 @@ import { global_state } from "./global_state.js";
 import { defaultText, basicSetup } from "./defaultText.js";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { logError } from "./logError.js";
-import { createWorker } from "./createWorker.js";
 
 const getProgramString = () => global_state.codemirror.view.state.doc.toString();
 
@@ -17,16 +16,6 @@ const r = () => {
 	render(view(global_state), document.getElementById("root"));
 	requestAnimationFrame(r);
 }
-
-// let worker = createWorker();
-const checkWorker = () => {
-	if (!worker.running) return null;
-	console.log("Terminating worker.");
-	worker.terminate();
-	worker = createWorker();
-}
-
-let lastCheck = null;
 
 const ACTIONS = {
 	RUN({ dragging = false, flatten = false } = {}, state) {
@@ -83,26 +72,17 @@ const ACTIONS = {
 			})
 
 			string = modifyAST(string, changes);
-			// console.timeEnd("modify")
 
 		  const included = makeIncluded(flatten);
-		  // console.time("RUN")
 		  
 			const f = new Function(...Object.keys(included), string)
 			f(...Object.values(included));
-			// console.timeEnd("RUN")
 		} catch (err) {
 			// console.error("prog erred", err);
 			logError(err);
 		}
 
 		dispatch("RENDER");
-
-		// checkWorker();
-		// worker.run({ flatten, string });
-		// if (lastCheck) clearTimeout(lastCheck);
-		// lastCheck = setTimeout(checkWorker, 5000)
-
 	},
 	NEW_FILE(args, state) {
 	  dispatch("UPLOAD_JS", { text: basicSetup });
@@ -169,9 +149,7 @@ const ACTIONS = {
 export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];
 	if (trigger) {
-		// console.time(action);
 		const result = trigger(args, global_state);
-		// console.timeEnd(action);
 		return result;
 	}
 	else console.log("Action not recongnized:", action);

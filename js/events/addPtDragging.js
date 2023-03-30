@@ -1,6 +1,4 @@
-// import esprima from '/libs/esprima.js';
 import * as esprima from 'esprima';
-// import acorn from 'acorn';
 import { dispatch } from "../dispatch.js";
 import { syntaxTree } from "@codemirror/language";
 import { walk } from "../walk.js";
