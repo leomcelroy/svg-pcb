@@ -1,7 +1,8 @@
 import { global_state } from "./global_state.js";
+import { getPathData } from "../geogram/index.js";
 
 export function renderPath(path) {
-  const d = path.d ?? "";
+  const d = (Array.isArray(path.d) ? getPathData(path.d) : path.d) ?? "";
   const stroke = path.stroke ?? "black";
   const fill = path.fill ?? "none";
   const strokeWidth = path.strokeWidth ?? 0.03;
