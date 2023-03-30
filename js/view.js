@@ -1,9 +1,9 @@
 import { dispatch } from "./dispatch.js";
-import { html, svg } from "lit-html";
+import { html } from "lit-html";
 // import "code-mirror";
 import "./codemirror/codemirror.js";
 import { files } from "./components-names.js";
-import { downloadSVG, downloadText, downloadGerber, downloadPNG } from "./events/download.js"
+import { downloadSVG, downloadText, downloadPNG } from "./events/download.js"
 import { drawImportItems } from "./views/drawImportItems.js";
 import { drawComponentMenu } from "./views/drawComponentMenu.js";
 import { layersColorPicker } from "./views/layersColorPicker.js";
@@ -14,6 +14,7 @@ import { clearSelectedPath } from "./clearSelectedPath.js";
 import logoURL from '../logo.svg'
 import { inputRenderers } from "./views/inputRenderers.js";
 import { initCodeMirror } from "./codemirror/codemirror.js";
+import { drawDownloadGerberModal } from "./views/drawDownloadGerberModal.js";
 
 export function view(state) {
 	return html`
@@ -55,6 +56,7 @@ export function view(state) {
 		<div class="drop-modal hidden">
 			<div class="drop-info">Upload JS file, KiCAD Component Module, SVG Component, or JSON Component</div>
 		</div>
+		${drawDownloadGerberModal(state)}
 	`
 }
 
@@ -84,7 +86,9 @@ const menu = state => html`
 						js
 					</div class="menu-item">
 					<div class="menu-item"
-						@click=${() => downloadGerber(state)}>
+						@click=${(e) => {
+							state.downloadGerberModal = true;
+						}}>
 						gerber (WIP)
 					</div class="menu-item">
 					<input 
@@ -204,5 +208,4 @@ const menu = state => html`
 			<i class="fa fa-github" style="font-size:24px"></i>
 		</a>
 	</div>
-`
-
+`;

@@ -574,3 +574,185 @@ input {
 	display: none;
 }
 
+.modal {
+	background-color: rgba(0, 0, 0, 0.5);
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 999999;
+	text-align: center;
+	overflow: auto;
+}
+
+.modal, 
+.modal h3,
+.modal h4 {
+	font-size: 12;
+}
+
+.modal h4 {
+	margin: 15px 0 7px 0;
+}
+
+.modal h4:first-of-type {
+	margin-top: 0;
+}
+
+.modal h4:last-of-type {
+	margin-bottom: 0;
+}
+
+.modal input {
+	margin: 0;
+	vertical-align: top;
+	line-height: 1;
+}
+
+.modal input[type="text"] {
+	background-color: #fafafa;
+	font-size: 12px;
+	border-color: #121212;
+	border-collapse: collapse;
+	border-style: solid;
+	border-width: 1px;
+	padding: 3px;
+}
+
+.modal input[type="text"]:focus {	
+	outline: none;
+}
+
+.modal-content {
+	display: inline-block;
+	background-color: #fafafa;
+	padding: 3px;
+	width: 50%;
+	position:fixed;
+    left: 50%;
+    top: 50%;
+    -ms-transform: translate(-50%,-50%);
+    -moz-transform:translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+
+.modal-header {
+	display: flex;
+	align-items: left;
+	border-bottom: 1px solid #ddd;
+	background-color: blue;
+	color: #fafafa;
+	padding: 5px;
+}
+
+.modal-header .icon {
+	font-size: 20px;
+	vertical-align: top;
+}
+
+.modal-body {
+	text-align: left;
+	font-size: 12px;
+	padding: 10px;
+}
+
+.modal-footer {
+	text-align: right;
+	border-top: 1px solid #ddd;
+	padding: 10px;
+}
+
+.modal-title {
+	margin: 0;
+	padding: 0;
+	text-align: left;
+	font-size: 12px;
+	line-height: 20px;
+	margin-left: 5px;
+	display: inline-block;
+}
+
+.modal-line {
+	margin: 7px 0 7px 0;
+}
+
+.btn {
+	height: 30px;
+	padding: 7px;
+	border: none;
+	background-color: #cccccc;
+	display: inline-block;
+	line-height: 1;
+	font-size: 12px;
+	color: #121212;
+}
+
+.btn:hover, 
+.btn:focus {
+	background-color: #ababab;
+	cursor: pointer;
+}
+
+.btn-primary {
+	background-color: blue;
+	color: #fafafa;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+	background-color: navy;
+	color: #fafafa;
+}
+
+.close {
+	color: #fafafa;
+	position: relative;
+	right: 0;
+	font-size: 20px;
+	font-weight: bold;
+	line-height: 0;
+}
+  
+.close:hover,
+.close:focus {
+	color: #ababab;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+/* Grid */
+
+.col-25,
+.col-33,
+.col-50,
+.col-75 {
+	display: table-cell;
+}
+
+.col-25 {
+	width: 25%;
+}
+
+.col-33 {
+	width: 33.3%;
+}
+
+.col-50 {
+	width: 50%;
+}
+
+.col-75 {
+	width: 75%;
+}
+
+/* Utility */
+
+.align-left {
+	text-align: left;
+}
+
+.align-right {
+	text-align: right;
+}
