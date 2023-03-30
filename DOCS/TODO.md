@@ -1,7 +1,7 @@
 # TODO
 
 - export
-	- [ ] gerber
+	- [x] gerber
 	- [ ] kicad
 	- [ ] kicad component
 - import
@@ -25,10 +25,10 @@
 	- [ ] better componentLabels
 	- [ ] better padLabels
 	- [ ] "string" to add
-- [ ] soldering masks
-- [ ] back layer component adding
+- [x] soldering masks
+- [x] back layer component adding
 - BUGS
-	- [ ] fix ast analysis bug
+	- [x] fix ast analysis bug
 	- ? svg export
 
 ---------------------------------------
