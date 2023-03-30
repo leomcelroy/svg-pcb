@@ -1,3 +1,5 @@
+import { MM_PER_INCH } from "./constants";
+
 export const global_state = {
   codemirror: undefined,
   pcb: undefined,
@@ -15,7 +17,7 @@ export const global_state = {
     x: [0, 1],
     y: [0, 1]
   },
-  mm_per_unit: 25.4,
+  mm_per_unit: MM_PER_INCH,
   background: "#00000000",
 
   // -- grid --
@@ -38,8 +40,25 @@ export const global_state = {
 
   componentMenu: false,
   componentSearch: "",
+  downloadGerberModal: false,
 
   name: "",
-  error: ""
+  error: "",
   // how do you know what point values are and how they map to concrete syntax tree
+
+  downloadGerberOptions: {
+    layers: new Map([
+      ["F.Cu", true],
+      ["B.Cu", true],
+      ["F.Mask", true],
+      ["B.Mask", true],
+      //["F.Silkscreen", false],
+      //["B.Silkscreen", false],
+      ["Outline", true],
+      ["Drills", true]
+    ]),
+    includeOutline: true, // Include outline in all layers
+    excellonMetric: true,
+    protelFilenames: false
+  }
 }

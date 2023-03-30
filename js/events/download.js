@@ -2,7 +2,7 @@ import { changeDpiDataUrl } from "./changeDPI.js";
 import { offset2 } from "../../geogram/index.js";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-
+import { MM_PER_INCH } from "../constants.js";
 
 export function downloadSVG(state) {
   const svgUrl = makeSVG(state);
@@ -66,126 +66,6 @@ function format(x) {
   return s;
 }
 
-export function downloadGerber(state) {
-  const layers = state.pcb.layers;
-
-  const expandWire = w => offset2(
-    w.shape, 
-    w.thickness/2, 
-    {
-      endType: "etOpenRound", 
-      jointType:"jtRound", 
-    }
-  );
-
-  // this is a list of polylines
-  const frontCopper = layers["F.Cu"].map( x => {
-    if (x.type === "wire") return expandWire(x);
-    else return x;
-  }).flat();
-
-  const drill = (layers["drill"] ? layers["drill"] : []).flat().map( x => {
-
-    const getCenter = (pts) => {
-      let totalX = 0;
-      let totalY = 0;
-      pts.forEach(pt => {
-        totalX += pt[0];
-        totalY += pt[1];
-      })
-
-      return [ totalX/pts.length, totalY/pts.length ];
-    }
-
-    const getDistance = (pt0, pt1) => Math.sqrt((pt1[0] - pt0[0])**2+(pt1[1] - pt0[1])**2);
-
-    const center = getCenter(x);
-    const dist = Math.round(1000*x.reduce((acc, cur) => acc + getDistance(center, cur), 0)/x.length)/1000;
-
-    return {
-      center, 
-      dist
-    };
-  });
-
-  const interior = layers["interior"].map( x => {
-    return x;
-  }).flat();;
-
-  console.log({
-    drill,
-    frontCopper,
-    interior
-  })
-
-  const makeFile = (layer) => {
-    let str = ''
-    str += "%MOIN*%\n" // inch units
-    str += "%LPD*%\n" // layer dark
-    str += "%FSLAX66Y66*%\n" // format absolute 6.6
-    str += "G01*\n" // linear interpolation
-
-    const strs = layer.map( pts => {
-      let ptsString = pts.reduce((acc, cur, i) => `${acc}X${format(cur[0])}Y${format(cur[1])}D0${i === 0 ? 2 : 1}*\n`, "G36*\n")
-      ptsString += "G37*\n";
-
-      return ptsString;
-    });
-
-    str += strs.join("") + "M02*";
-
-    return str;
-  }
-
-  const makeFileDrill = (drills) => {
-    const tools = {};
-    drills.forEach( ({ dist, center }) => {
-      if (dist in tools) {
-        tools[dist].push(center);
-      } else {
-        tools[dist] = [ center ];
-      }
-    })
-
-    let str = "";
-    str += "M48\n" // start of header
-    str += "INCH,LZ\n" // inch units with leading zeros
-    str += "VER,1\n" // version 1
-    str += "FMAT,2\n" // format 2
-    for (const tool in tools) {
-      str += 'T'+ tool + 'C'+ tool + "\n"; // +'C'+tool+"\n" // define tools
-    }
-    str += "M95\n" // end of header
-    str += "G05\n" // drill mode
-    for (const tool in tools) {
-       str += 'T'+tool+'\n' // tool selection
-       for (var i = 0; i < tools[tool].length; i++) {
-          const hole = tools[tool][i];
-          str += 'X'+format(hole[0])+'Y'+format(hole[1])+'\n'
-       }
-    }
-    
-    str += "M30\n" // end of program
-
-    return str;
-  }
-  
-
-  var zip = new JSZip();
-  zip.file(`${state.name === "" ? "anon" : state.name}-F_Cu.gbr`, makeFile(frontCopper));
-  zip.file(`${state.name === "" ? "anon" : state.name}-Edge_Cuts.gbr`, makeFile(interior));
-  zip.file(`${state.name === "" ? "anon" : state.name}-Drill.xln`, makeFileDrill(drill));
-
-  zip
-    .generateAsync({ type:"blob" })
-    .then((content) => {
-        // see FileSaver.js
-        saveAs(content, `${state.name === "" ? "anon" : state.name}-gerber.zip`);
-    });
-
-  // downloadText(`${state.name === "" ? "anon" : state.name}-F_Cu.gbr`, str);
-}
-
 export function downloadText(filename, text) {
   const blob = new Blob([text], { type: "text/plain" });
 
@@ -199,7 +79,7 @@ export function downloadText(filename, text) {
 export function downloadPNG(state, dpi = 1000) {
   const src = makeSVG(state);
 
-  var units = 25.4;
+  var units = MM_PER_INCH;
 
   const w = (state.limits.x[1] - state.limits.x[0])*state.mm_per_unit;
   const h = (state.limits.y[1] - state.limits.y[0])*state.mm_per_unit;
@@ -214,7 +94,7 @@ export function downloadPNG(state, dpi = 1000) {
     const canvas = document.createElement("canvas");
     // const pixels = width+' x '+height+" (pixels)";
     // const inches = (width/dpi).toFixed(3)+' x '+(height/dpi).toFixed(3)+" (inches)";
-    // const mm = (25.4*width/dpi).toFixed(3)+' x '+(25.4*height/dpi).toFixed(3)+" (mm)";
+    // const mm = (MM_PER_INCH*width/dpi).toFixed(3)+' x '+(MM_PER_INCH*height/dpi).toFixed(3)+" (mm)";
     canvas.width = width
     canvas.height = height
     var ctx = canvas.getContext("2d");
