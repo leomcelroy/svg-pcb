@@ -207,7 +207,7 @@ board.wire(path(), 0.03)
 - These **POINTs** (RED dots) for a polyline will be specified using the **pt(x-coordinate, y-coordinate)** command  
 - To make it possible to draw a polyline **WIRE** graphically in the **Drawing Window…**
     - Click on `path` which should appear in green.  
-    - 
+    
     ![Screen Shot 2023-03-30 at 8 02 15 PM](https://user-images.githubusercontent.com/27078897/228990655-f9171db8-d8b7-4222-8101-84bdd4a12a4f.png)
 
     - In the **Drawing Window**…click on the locations of the start, intermediates and end **POINTs**  
