@@ -1,8 +1,4 @@
 import { dispatch } from "../dispatch.js";
-import { getFileSection } from "../getFileSection.js";
-import { ensureSyntaxTree } from "@codemirror/language";
-import { astAnalysis } from "../astAnalysis.js";
-import { global_state } from "../global_state.js";
 import { snapToGrid } from "../snapToGrid.js";
 import { snapToPad } from "../snapToPad.js";
 

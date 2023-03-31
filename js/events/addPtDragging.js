@@ -1,6 +1,5 @@
 import * as esprima from 'esprima';
 import { dispatch } from "../dispatch.js";
-import { syntaxTree } from "@codemirror/language";
 import { walk } from "../walk.js";
 import { snapToGrid } from "../snapToGrid.js";
 import { snapToPad } from "../snapToPad.js";
