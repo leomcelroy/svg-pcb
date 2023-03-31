@@ -1,6 +1,5 @@
 import { dispatch } from "./dispatch.js";
 import { html } from "lit-html";
-// import "code-mirror";
 import "./codemirror/codemirror.js";
 import { files } from "./components-names.js";
 import { downloadSVG, downloadText, downloadPNG } from "./events/download.js"
@@ -88,6 +87,7 @@ const menu = state => html`
 					<div class="menu-item"
 						@click=${(e) => {
 							state.downloadGerberModal = true;
+							dispatch("RENDER");
 						}}>
 						gerber (WIP)
 					</div class="menu-item">

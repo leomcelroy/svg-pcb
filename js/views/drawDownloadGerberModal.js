@@ -1,5 +1,6 @@
 import { html } from "lit-html";
 import { downloadGerber } from "../events/downloadGerber.js";
+import { dispatch } from "../dispatch.js";
 
 function getLayerList(layerMap){
 	const list = [];
@@ -38,6 +39,7 @@ export const drawDownloadGerberModal = state => {
     					@click=${(e) => {
     						const modal = document.getElementById("modal_download_gerber");
     						state.downloadGerberModal = false;
+    						dispatch("RENDER");
     					}}><i class="fa fa-times"></i></span>
     			</div>
     		</div>
@@ -123,6 +125,7 @@ export const drawDownloadGerberModal = state => {
     				class="btn"
     				@click=${(e) => {
     					state.downloadGerberModal = false;
+    					dispatch("RENDER");
     				}}>Cancel</button>
     			<button 
     				type="button" 
@@ -130,6 +133,7 @@ export const drawDownloadGerberModal = state => {
     				@click=${(e) => {
     					state.downloadGerberModal = false;
     					downloadGerber(state);
+    					dispatch("RENDER");
     				}}>Download</button>
     		</div>
     	</div>
