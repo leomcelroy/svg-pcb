@@ -74,7 +74,7 @@ Let's take a tour around the **SVG-PCB** Board Design interface!
         ![2023-02-23_12_55_13-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630637-6d123973-45de-41ad-841a-757f2367ee00.jpg)
         
         - Shapes and component control **handles** Visible/Invisible  
-        - **Grid** and snap-to-grid ON/OFF  
+        - **Grid** and snap-to-grid ON/OFF  gr
         - **Adaptive Grid** ON/OFF  
         - **SnapPad** ON/OFF  
         - **Grid Size** define  
@@ -208,7 +208,7 @@ board.wire(path(), 0.03)
 - To make it possible to draw a polyline **WIRE** graphically in the **Drawing Window…**
     - Click on `path` which should appear in green.  
     
-    ![2023-02-23_16_07_44-SVG_PCB](https://user-images.githubusercontent.com/27078897/222631004-10ee2b8d-e7de-48e6-b8fd-aea5f3205b73.jpg)
+    ![Screen Shot 2023-03-30 at 8 02 15 PM](https://user-images.githubusercontent.com/27078897/228990655-f9171db8-d8b7-4222-8101-84bdd4a12a4f.png)
 
     - In the **Drawing Window**…click on the locations of the start, intermediates and end **POINTs**  
     <br>
