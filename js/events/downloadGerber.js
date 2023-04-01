@@ -2,6 +2,12 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { MM_PER_INCH } from "../constants.js";
 
+// Some things TODO here:
+// - Simplify file naming
+// - Apperture attributes maybe
+// - Silkscreen layers
+// - Revisit drills
+
 // This should be a global function
 function inchesToMM(inches){
   return inches * MM_PER_INCH;
