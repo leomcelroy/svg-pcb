@@ -78,14 +78,17 @@ class GerberBuilder {
 
   #getHeader() {
     let str = '';
-      
+    
+    // Add a header comment at the top to indicate the generator.
+    // This could make use of predefined global constants later.
+    str += "%TF.GenerationSoftware,Leo McElroy & Contributors,SvgPcb,v0.1*%\n";
+
     // Add date and time of generation.
     const dateTime = new Date().toISOString();
     str += "%TF.CreationDate," + dateTime + "*%\n";
 
-    // Add a header comment at the top to indicate the generator.
-    // This could make use of predefined global constants later.
-    str += "%TF.GenerationSoftware,Leo McElroy & Contributors,SvgPcb,v0.1*%\n";
+    // Same Coordinates
+    str += "%TF.SameCoordinates,Original*%\n";
 
     // File Function
     if (this.#fileFunction !== "") {
