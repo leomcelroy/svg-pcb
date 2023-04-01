@@ -25,28 +25,28 @@ function getFilename(state, layerName){
   // Here we finish the name based on user settings
   switch (layerName) {
     case "F.Cu":
-      fileName += useProtel ? ".GTL" : "-F_Cu.gbr";
+      fileName += "-F_Cu" + (useProtel ? ".GTL" : ".gbr");
       break;
     case "B.Cu":
-      fileName += useProtel ? ".GBL" : "-B_Cu.gbr";
+      fileName += "-B_Cu" + (useProtel ? ".GBL" : ".gbr");
       break;
     case "F.Mask":
-      fileName += useProtel ? ".GTS" : "-F_Mask.gbr";
+      fileName += "-F_Mask" + (useProtel ? ".GTS" : ".gbr");
       break;
     case "B.Mask":
-      fileName += useProtel ? ".GBS" : "-B_Mask.gbr";
+      fileName += "-B_Mask" + (useProtel ? ".GBS" : ".gbr");
       break;
     case "F.Silkscreen":
-      fileName += useProtel ? ".GTO" : "-F_Silkscreen.gbr";
+      fileName += "-F_Silkscreen" + (useProtel ? ".GTO" : ".gbr");
       break;
     case "B.Silkscreen":
-      fileName += useProtel ? ".GBO" : "-B_Silkscreen.gbr";
+      fileName += "-B_Silkscreen" + (useProtel ? ".GBO" : ".gbr");
       break;
     case "Outline":
-      fileName += useProtel ? ".GM1" : "-Outline.gbr";
+      fileName += "-Edge_Cuts" + (useProtel ? ".GM1" : ".gbr");
       break;
     case "Drills":
-      fileName += useProtel ? ".XLN" : "-Drill.xln";
+      fileName += "-Drill" + (useProtel ? ".XLN" : ".xln");
       break;
   }
 
