@@ -237,11 +237,17 @@ class GerberBuilder {
     // Plot outline
     this.#body += this.#getComment("Begin outline");
 
+    // Here we have to deal with array of paths.
+    // Each path contains an array of points.
+    // For each first point of the path we need to use the D02 or move instruction.
+    // So instead of using .flat(), we go nested loops here.
     layer.map( el => {
-      el.flat().forEach((pt, i) => {
-        const x = this.#format( inchesToMM(pt[0]) );
-        const y = this.#format( inchesToMM(pt[1]) );
-        this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
+      el.forEach((path, i) => {
+        path.forEach((pt, i) => {
+          const x = this.#format( inchesToMM(pt[0]) );
+          const y = this.#format( inchesToMM(pt[1]) );
+          this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
+        });
       });
     });
   }
