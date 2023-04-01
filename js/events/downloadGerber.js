@@ -43,7 +43,7 @@ function getFilename(state, layerName){
       fileName += useProtel ? ".GBO" : "-B_Silkscreen.gbr";
       break;
     case "Outline":
-      fileName += useProtel ? ".GKO" : "-Outline.gbr";
+      fileName += useProtel ? ".GM1" : "-Outline.gbr";
       break;
     case "Drills":
       fileName += useProtel ? ".XLN" : "-Drill.xln";
