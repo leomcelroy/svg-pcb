@@ -2,14 +2,6 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { MM_PER_INCH } from "../constants.js";
 
-// Some Gerber tips.
-// Include outline in all layers to avoid align issues.
-// Use flashed pads wherever possible.
-// X2 Attributes (meta information):
-// %TF.FileFunction,Soldermask,Top*% (TODO)
-// Gerber files containing attribute commands (TF, TA, TO, TD) are called Gerber X2 files
-// We want Gerber X2 (at least) out of the box.
-
 // This should be a global function
 function inchesToMM(inches){
   return inches * MM_PER_INCH;
