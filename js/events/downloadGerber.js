@@ -58,6 +58,7 @@ class GerberBuilder {
   #apertureConter = 10; // 0-9 is reserved in Gerber. Use #getApertureID() not this directly.
   #wireThicknesses = [];
   #fileFunction = "";
+  #filePolarity = "";
   
   constructor() {}
 
@@ -95,6 +96,11 @@ class GerberBuilder {
       str += "%TF.FileFunction," + this.#fileFunction + "*%\n";
     }
 
+    // File Polarity
+    if (this.#filePolarity !== "") {
+      str += "%TF.FilePolarity," + this.#filePolarity + "*%\n";
+    }
+
     // It is recommended to use metric. Imperial is there for historic reasons only 
     // and will be deprecated at a future date. Source: Gerber Spec. p. 46.
     str += "%MOMM*%\n";
@@ -124,6 +130,11 @@ class GerberBuilder {
   // Example: topLayer.setFileFunction("Copper", ["L1", "Top"]);
   setFileFunction(func) {
     this.#fileFunction = func;
+  }
+
+  // Set file polarity, has to be negative for solder mask layers
+  setFilePolarity(polty) {
+    this.#filePolarity = polty;
   }
 
   plotWires(layer) {
@@ -406,6 +417,7 @@ export function downloadGerber(state) {
           }
           let frontCopper = new GerberBuilder();
           frontCopper.setFileFunction("Copper,L1,Top");
+          frontCopper.setFilePolarity("Positive");
           frontCopper.plotPads(layers["F.Cu"]);
           frontCopper.plotWires(layers["F.Cu"]);
           if (state.downloadGerberOptions.includeOutline) {
@@ -420,6 +432,7 @@ export function downloadGerber(state) {
           }
           let backCopper = new GerberBuilder();
           backCopper.setFileFunction("Copper,L2,Bot");
+          backCopper.setFilePolarity("Positive");
           backCopper.plotPads(layers["B.Cu"]);
           backCopper.plotWires(layers["B.Cu"]);
           if (state.downloadGerberOptions.includeOutline) {
@@ -434,6 +447,7 @@ export function downloadGerber(state) {
           }
           let frontMask = new GerberBuilder();
           frontMask.setFileFunction("Soldermask,Top");
+          frontMask.setFilePolarity("Negative");
           frontMask.plotPads(layers["F.Cu"], 0.1);
           if (state.downloadGerberOptions.includeOutline) {
             frontMask.plotOutline(layers["interior"]);
@@ -447,6 +461,7 @@ export function downloadGerber(state) {
           }
           let backMask = new GerberBuilder();
           backMask.setFileFunction("Soldermask,Bot");
+          backMask.setFilePolarity("Negative");
           backMask.plotPads(layers["B.Cu"], 0.1);
           if (state.downloadGerberOptions.includeOutline) {
             backMask.plotOutline(layers["interior"]);
@@ -461,6 +476,7 @@ export function downloadGerber(state) {
           // Warning: this is still Work In Progress
           let frontSilkscreen = new GerberBuilder();
           frontSilkscreen.setFileFunction("Legend,Top");
+          frontSilkscreen.setFilePolarity("Negative");
           frontSilkscreen.plotSilkscreen(layers["componentLabels"]);
           if (state.downloadGerberOptions.includeOutline) {
             frontSilkscreen.plotOutline(layers["interior"]);
