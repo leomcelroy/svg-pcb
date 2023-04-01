@@ -57,6 +57,7 @@ class GerberBuilder {
   #body = '';
   #apertureConter = 10; // 0-9 is reserved in Gerber. Use #getApertureID() not this directly.
   #wireThicknesses = [];
+  #fileFunction = "";
   
   constructor() {}
 
@@ -86,6 +87,11 @@ class GerberBuilder {
     // This could make use of predefined global constants later.
     str += "%TF.GenerationSoftware,Leo McElroy & Contributors,SvgPcb,v0.1*%\n";
 
+    // File Function
+    if (this.#fileFunction !== "") {
+      str += "%TF.FileFunction," + this.#fileFunction + "*%\n";
+    }
+
     // It is recommended to use metric. Imperial is there for historic reasons only 
     // and will be deprecated at a future date. Source: Gerber Spec. p. 46.
     str += "%MOMM*%\n";
@@ -109,6 +115,12 @@ class GerberBuilder {
     const apertureID = this.#apertureConter;
     this.#apertureConter++;
     return apertureID;
+  }
+
+  // Based on Gerber X2 spec p. 130, very basic implementation here
+  // Example: topLayer.setFileFunction("Copper", ["L1", "Top"]);
+  setFileFunction(func) {
+    this.#fileFunction = func;
   }
 
   plotWires(layer) {
@@ -390,6 +402,7 @@ export function downloadGerber(state) {
             break;
           }
           let frontCopper = new GerberBuilder();
+          frontCopper.setFileFunction("Copper,L1,Top");
           frontCopper.plotPads(layers["F.Cu"]);
           frontCopper.plotWires(layers["F.Cu"]);
           if (state.downloadGerberOptions.includeOutline) {
@@ -403,6 +416,7 @@ export function downloadGerber(state) {
             break;
           }
           let backCopper = new GerberBuilder();
+          backCopper.setFileFunction("Copper,L2,Bot");
           backCopper.plotPads(layers["B.Cu"]);
           backCopper.plotWires(layers["B.Cu"]);
           if (state.downloadGerberOptions.includeOutline) {
@@ -416,6 +430,7 @@ export function downloadGerber(state) {
             break;
           }
           let frontMask = new GerberBuilder();
+          frontMask.setFileFunction("Soldermask,Top");
           frontMask.plotPads(layers["F.Cu"], 0.1);
           if (state.downloadGerberOptions.includeOutline) {
             frontMask.plotOutline(layers["interior"]);
@@ -428,6 +443,7 @@ export function downloadGerber(state) {
             break;
           }
           let backMask = new GerberBuilder();
+          backMask.setFileFunction("Soldermask,Bot");
           backMask.plotPads(layers["B.Cu"], 0.1);
           if (state.downloadGerberOptions.includeOutline) {
             backMask.plotOutline(layers["interior"]);
@@ -441,6 +457,7 @@ export function downloadGerber(state) {
           }
           // Warning: this is still Work In Progress
           let frontSilkscreen = new GerberBuilder();
+          frontSilkscreen.setFileFunction("Legend,Top");
           frontSilkscreen.plotSilkscreen(layers["componentLabels"]);
           if (state.downloadGerberOptions.includeOutline) {
             frontSilkscreen.plotOutline(layers["interior"]);
@@ -460,6 +477,7 @@ export function downloadGerber(state) {
             break;
           }
           let outline = new GerberBuilder();
+          outline.setFileFunction("Profile,NP");
           outline.plotOutline(layers["interior"]);
           zip.file( getFilename(state, "Outline"), outline.toString() );
           break;
