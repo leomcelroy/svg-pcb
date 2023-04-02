@@ -14,6 +14,7 @@ import logoURL from '../logo.svg'
 import { inputRenderers } from "./views/inputRenderers.js";
 import { initCodeMirror } from "./codemirror/codemirror.js";
 import { drawDownloadGerberModal } from "./views/drawDownloadGerberModal.js";
+import { drawDownloadKiCadModal } from "./views/drawDownloadKiCadModal.js";
 
 export function view(state) {
 	return html`
@@ -78,6 +79,7 @@ export function view(state) {
 			<div class="drop-info">Upload JS file, KiCAD Component Module, SVG Component, or JSON Component</div>
 		</div>
 		${drawDownloadGerberModal(state)}
+		${drawDownloadKiCadModal(state)}
 	`
 }
 
@@ -113,7 +115,14 @@ const menu = state => html`
 						}}>
 						gerber (WIP)
 					</div class="menu-item">
-					<input
+					<div class="menu-item"
+						@click=${(e) => {
+							state.downloadKiCadModal = true;
+							dispatch("RENDER");
+						}}>
+						kicad (WIP)
+					</div>
+					<input 
 						class="input-item"
 						style="margin: 3px;"
 						.value=${state.name}

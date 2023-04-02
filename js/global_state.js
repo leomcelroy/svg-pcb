@@ -53,6 +53,7 @@ export const global_state = {
   componentMenu: false,
   componentSearch: "",
   downloadGerberModal: false,
+  downloadKiCadModal: false,
 
   name: "",
   error: "",
