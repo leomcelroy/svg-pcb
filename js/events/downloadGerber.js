@@ -272,6 +272,13 @@ class GerberBuilder {
           const y = this.#format( inchesToMM(pt[1]) );
           this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
         });
+
+        // Add a copy of first point to close the shape if needed.
+        if (path[0][0] !== path[path.length-1][0] || path[0][1] !== path[path.length-1][1]) {
+          const x = this.#format( inchesToMM(path[0][0]) );
+          const y = this.#format( inchesToMM(path[0][1]) );
+          this.#body += "X" + x + "Y" + y + "D01*\n";
+        }
       });
     });
   }
