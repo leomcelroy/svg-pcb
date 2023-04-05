@@ -72,6 +72,11 @@ class GerberBuilder {
       s = s.substr(1, s.length);
     }
 
+    // If the value is 0, we want to leave one 0 still.
+    if (s === "") {
+      s = "0";
+    }
+
     return s;
   }
 
