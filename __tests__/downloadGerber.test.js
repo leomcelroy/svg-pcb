@@ -34,11 +34,20 @@ test('GerberBuilder.toString() return value should contain file attributes when 
   expect(result).toContain('%TF.FilePolarity,' + filePolarity + '*%\n');
 });
 
+test('GerberBuilder.format() should never return empty string', () => {
+  const result = GerberBuilder.format(0);
+  expect(result).toBe("0");
+});
+
+test('GerberBuilder.format() should return value without leading zeroes', () => {
+  const result = GerberBuilder.format(0.01);
+  expect(result).toBe("10000");
+});
+
 /*
 
 TODO: 
 
-- Check if 0 values do not end in empty string
 - Check if outline shapes are closed
 
 */

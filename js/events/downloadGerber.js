@@ -60,7 +60,7 @@ export class GerberBuilder {
   
   constructor() {}
 
-  #format(x) {
+  static format(x) {
     // Reduce decimal digits to 6 (0.123456)
     let s = x.toFixed(6);
 
@@ -167,8 +167,8 @@ export class GerberBuilder {
       this.#body += "D" + el.gerberAperture.toString() + "*\n";
       
       el.shape.flat().forEach((pt, i) => {
-        const x = this.#format( inchesToMM(pt[0]) );
-        const y = this.#format( inchesToMM(pt[1]) );
+        const x = this.constructor.format( inchesToMM(pt[0]) );
+        const y = this.constructor.format( inchesToMM(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
       });
     });
@@ -198,8 +198,8 @@ export class GerberBuilder {
       this.#body += "G36*\n";
       
       el.flat().forEach((pt, i) => {
-        const x = this.#format( inchesToMM(pt[0]) );
-        const y = this.#format( inchesToMM(pt[1]) );
+        const x = this.constructor.format( inchesToMM(pt[0]) );
+        const y = this.constructor.format( inchesToMM(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
       });
 
@@ -216,8 +216,8 @@ export class GerberBuilder {
       if (el.type === "wire") return;
 
       el.flat().forEach((pt, i) => {
-        const x = this.#format( inchesToMM(pt[0]) );
-        const y = this.#format( inchesToMM(pt[1]) );
+        const x = this.constructor.format( inchesToMM(pt[0]) );
+        const y = this.constructor.format( inchesToMM(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
       });
     });
@@ -273,15 +273,15 @@ export class GerberBuilder {
     layer.map( el => {
       el.forEach((path, i) => {
         path.forEach((pt, i) => {
-          const x = this.#format( inchesToMM(pt[0]) );
-          const y = this.#format( inchesToMM(pt[1]) );
+          const x = this.constructor.format( inchesToMM(pt[0]) );
+          const y = this.constructor.format( inchesToMM(pt[1]) );
           this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
         });
 
         // Add a copy of first point to close the shape if needed.
         if (path[0][0] !== path[path.length-1][0] || path[0][1] !== path[path.length-1][1]) {
-          const x = this.#format( inchesToMM(path[0][0]) );
-          const y = this.#format( inchesToMM(path[0][1]) );
+          const x = this.constructor.format( inchesToMM(path[0][0]) );
+          const y = this.constructor.format( inchesToMM(path[0][1]) );
           this.#body += "X" + x + "Y" + y + "D01*\n";
         }
       });
