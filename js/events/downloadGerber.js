@@ -51,7 +51,7 @@ function getFilename(state, layerName){
   return fileName;
 }
 
-class GerberBuilder {
+export class GerberBuilder {
   #body = '';
   #apertureConter = 10; // 0-9 is reserved in Gerber. Use #getApertureID() not this directly.
   #wireThicknesses = [];
