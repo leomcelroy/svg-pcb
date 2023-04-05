@@ -2,13 +2,11 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { MM_PER_INCH } from "../constants.js";
 
-// Some Gerber tips.
-// Include outline in all layers to avoid align issues.
-// Use flashed pads wherever possible.
-// X2 Attributes (meta information):
-// %TF.FileFunction,Soldermask,Top*% (TODO)
-// Gerber files containing attribute commands (TF, TA, TO, TD) are called Gerber X2 files
-// We want Gerber X2 (at least) out of the box.
+// Some things TODO here:
+// - Simplify file naming
+// - Apperture attributes maybe
+// - Silkscreen layers
+// - Revisit drills
 
 // This should be a global function
 function inchesToMM(inches){
@@ -25,28 +23,28 @@ function getFilename(state, layerName){
   // Here we finish the name based on user settings
   switch (layerName) {
     case "F.Cu":
-      fileName += useProtel ? ".GTL" : "-F_Cu.gbr";
+      fileName += "-F_Cu" + (useProtel ? ".GTL" : ".gbr");
       break;
     case "B.Cu":
-      fileName += useProtel ? ".GBL" : "-B_Cu.gbr";
+      fileName += "-B_Cu" + (useProtel ? ".GBL" : ".gbr");
       break;
     case "F.Mask":
-      fileName += useProtel ? ".GTS" : "-F_Mask.gbr";
+      fileName += "-F_Mask" + (useProtel ? ".GTS" : ".gbr");
       break;
     case "B.Mask":
-      fileName += useProtel ? ".GBS" : "-B_Mask.gbr";
+      fileName += "-B_Mask" + (useProtel ? ".GBS" : ".gbr");
       break;
     case "F.Silkscreen":
-      fileName += useProtel ? ".GTO" : "-F_Silkscreen.gbr";
+      fileName += "-F_Silkscreen" + (useProtel ? ".GTO" : ".gbr");
       break;
     case "B.Silkscreen":
-      fileName += useProtel ? ".GBO" : "-B_Silkscreen.gbr";
+      fileName += "-B_Silkscreen" + (useProtel ? ".GBO" : ".gbr");
       break;
     case "Outline":
-      fileName += useProtel ? ".GKO" : "-Outline.gbr";
+      fileName += "-Edge_Cuts" + (useProtel ? ".GM1" : ".gbr");
       break;
     case "Drills":
-      fileName += useProtel ? ".XLN" : "-Drill.xln";
+      fileName += "-Drill" + (useProtel ? ".XLN" : ".xln");
       break;
   }
 
@@ -57,6 +55,8 @@ class GerberBuilder {
   #body = '';
   #apertureConter = 10; // 0-9 is reserved in Gerber. Use #getApertureID() not this directly.
   #wireThicknesses = [];
+  #fileFunction = "";
+  #filePolarity = "";
   
   constructor() {}
 
@@ -77,14 +77,27 @@ class GerberBuilder {
 
   #getHeader() {
     let str = '';
-      
+    
+    // Add a header comment at the top to indicate the generator.
+    // This could make use of predefined global constants later.
+    str += "%TF.GenerationSoftware,Leo McElroy & Contributors,SvgPcb,v0.1*%\n";
+
     // Add date and time of generation.
     const dateTime = new Date().toISOString();
     str += "%TF.CreationDate," + dateTime + "*%\n";
 
-    // Add a header comment at the top to indicate the generator.
-    // This could make use of predefined global constants later.
-    str += "%TF.GenerationSoftware,Leo McElroy & Contributors,SvgPcb,v0.1*%\n";
+    // Same Coordinates
+    str += "%TF.SameCoordinates,Original*%\n";
+
+    // File Function
+    if (this.#fileFunction !== "") {
+      str += "%TF.FileFunction," + this.#fileFunction + "*%\n";
+    }
+
+    // File Polarity
+    if (this.#filePolarity !== "") {
+      str += "%TF.FilePolarity," + this.#filePolarity + "*%\n";
+    }
 
     // It is recommended to use metric. Imperial is there for historic reasons only 
     // and will be deprecated at a future date. Source: Gerber Spec. p. 46.
@@ -109,6 +122,17 @@ class GerberBuilder {
     const apertureID = this.#apertureConter;
     this.#apertureConter++;
     return apertureID;
+  }
+
+  // Based on Gerber X2 spec p. 130, very basic implementation here
+  // Example: topLayer.setFileFunction("Copper", ["L1", "Top"]);
+  setFileFunction(func) {
+    this.#fileFunction = func;
+  }
+
+  // Set file polarity, has to be negative for solder mask layers
+  setFilePolarity(polty) {
+    this.#filePolarity = polty;
   }
 
   plotWires(layer) {
@@ -237,11 +261,17 @@ class GerberBuilder {
     // Plot outline
     this.#body += this.#getComment("Begin outline");
 
+    // Here we have to deal with array of paths.
+    // Each path contains an array of points.
+    // For each first point of the path we need to use the D02 or move instruction.
+    // So instead of using .flat(), we go nested loops here.
     layer.map( el => {
-      el.flat().forEach((pt, i) => {
-        const x = this.#format( inchesToMM(pt[0]) );
-        const y = this.#format( inchesToMM(pt[1]) );
-        this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
+      el.forEach((path, i) => {
+        path.forEach((pt, i) => {
+          const x = this.#format( inchesToMM(pt[0]) );
+          const y = this.#format( inchesToMM(pt[1]) );
+          this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
+        });
       });
     });
   }
@@ -384,6 +414,8 @@ export function downloadGerber(state) {
             break;
           }
           let frontCopper = new GerberBuilder();
+          frontCopper.setFileFunction("Copper,L1,Top");
+          frontCopper.setFilePolarity("Positive");
           frontCopper.plotPads(layers["F.Cu"]);
           frontCopper.plotWires(layers["F.Cu"]);
           if (state.downloadGerberOptions.includeOutline) {
@@ -397,6 +429,8 @@ export function downloadGerber(state) {
             break;
           }
           let backCopper = new GerberBuilder();
+          backCopper.setFileFunction("Copper,L2,Bot");
+          backCopper.setFilePolarity("Positive");
           backCopper.plotPads(layers["B.Cu"]);
           backCopper.plotWires(layers["B.Cu"]);
           if (state.downloadGerberOptions.includeOutline) {
@@ -410,6 +444,8 @@ export function downloadGerber(state) {
             break;
           }
           let frontMask = new GerberBuilder();
+          frontMask.setFileFunction("Soldermask,Top");
+          frontMask.setFilePolarity("Negative");
           frontMask.plotPads(layers["F.Cu"], 0.1);
           if (state.downloadGerberOptions.includeOutline) {
             frontMask.plotOutline(layers["interior"]);
@@ -422,6 +458,8 @@ export function downloadGerber(state) {
             break;
           }
           let backMask = new GerberBuilder();
+          backMask.setFileFunction("Soldermask,Bot");
+          backMask.setFilePolarity("Negative");
           backMask.plotPads(layers["B.Cu"], 0.1);
           if (state.downloadGerberOptions.includeOutline) {
             backMask.plotOutline(layers["interior"]);
@@ -435,6 +473,8 @@ export function downloadGerber(state) {
           }
           // Warning: this is still Work In Progress
           let frontSilkscreen = new GerberBuilder();
+          frontSilkscreen.setFileFunction("Legend,Top");
+          frontSilkscreen.setFilePolarity("Negative");
           frontSilkscreen.plotSilkscreen(layers["componentLabels"]);
           if (state.downloadGerberOptions.includeOutline) {
             frontSilkscreen.plotOutline(layers["interior"]);
@@ -454,6 +494,7 @@ export function downloadGerber(state) {
             break;
           }
           let outline = new GerberBuilder();
+          outline.setFileFunction("Profile,NP");
           outline.plotOutline(layers["interior"]);
           zip.file( getFilename(state, "Outline"), outline.toString() );
           break;
