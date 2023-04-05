@@ -323,7 +323,7 @@ class ExcellonBuilder {
       if (this.#state.downloadGerberOptions.excellonMetric) {
         center[0] = inchesToMM(center[0]);
         center[1] = inchesToMM(center[1]);
-        dist = inchesToMM(dist);
+        dist = inchesToMM(dist)*2; // TODO: Is this radius or diameter?
       }
   
       return {
