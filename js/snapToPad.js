@@ -2,6 +2,7 @@ import { global_state } from "./global_state.js";
 
 export const snapToPad = function(pt) {
   if (!global_state.snapToPad) return pt;
+  if (!global_state.pcb) return pt;
 
   pt.snapped = false;
 
