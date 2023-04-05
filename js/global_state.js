@@ -1,6 +1,7 @@
 import { MM_PER_INCH } from "./constants";
 
 export const global_state = {
+  version: "v0.0.1",
   codemirror: undefined,
   pcb: undefined,
 

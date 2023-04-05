@@ -1,5 +1,29 @@
 # DEV LOG
 
+### April 5, 2023
+
+- discussed footprint pad format
+```
+{
+  padName: {
+    pos: [0, 0],
+    shape: "pathDataString",
+    layers: ["F.Cu", "B.Cu"],
+    drill: {
+      diameter: 0.02, // or radius
+      start: "F.Cu",
+      end: "B.Cu",
+      plated: false
+    },
+    index: 1,
+    ? maskOffset: .03 // if not present then cover
+  }
+}
+```
+- interior does specify direction of shape in a way outline doesn't
+- implicit assumption of layer names in gerber export?
+- making a typeface (single line font?) for text
+
 ### March 30th, 2023
 
 Spoke with Kris about
@@ -62,7 +86,16 @@ Spoke with Kris about
     padName: {
       pos: [0, 0],
       shape: "pathDataString",
-      layers: ["F.Cu", "drill"], // drill is a special layer type
+      layers: ["F.Cu", "B.Cu"], // drill is a special layer type
+      ? drill: // or should this be a list
+        {
+          diameter: 0.02, // or radius
+          ? hole: 0.01, // drill diameter
+          top: "F.Cu",
+          bottom: "B.Cu",
+          plated: false
+        },
+      ,
       index: 1,
       ? plated: true | false // relevant if drill|hole
       ? maskOffset: 0.03

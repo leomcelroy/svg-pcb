@@ -122,6 +122,22 @@ const ACTIONS = {
 
 		dispatch("RUN");
 		document.querySelector(".center-button").click()
+
+		const programString = global_state
+	    .codemirror
+	    .view
+	    .state
+	    .doc
+	    .toString();
+
+	  const version = programString.match(/@version\s*:\s*(v[\S]+)/);
+	  if (version) {
+	    const uploadedVersion = version[1];
+	    const currentProgramVersion = global_state.version;
+	    // if mismatch then do something
+	    if (uploadedVersion !== currentProgramVersion) logError(`Version mismatch:\nFile expects version ${uploadedVersion}.\nEditor is version ${currentProgramVersion}`);
+	  }
+
 	},
 	ADD_IMPORT({ text, name }, state) {
 		const alreadyImported = state.footprints.map(x => x[0]);

@@ -3,6 +3,7 @@ import { offset2 } from "../../geogram/index.js";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { MM_PER_INCH } from "../constants.js";
+import { global_state as STATE } from "../global_state.js";
 
 export function downloadSVG(state) {
   const svgUrl = makeSVG(state);
@@ -67,6 +68,12 @@ function format(x) {
 }
 
 export function downloadText(filename, text) {
+
+  if (!text.match(/@version\s*:\s*(v[\S]+)/)) {
+    const version = STATE.version;
+    text = `// @version: ${version}\n${text}`;
+  }
+
   const blob = new Blob([text], { type: "text/plain" });
 
   var link = document.createElement("a"); // Or maybe get it from the current document

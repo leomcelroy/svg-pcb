@@ -4,6 +4,7 @@ import { dispatch } from "./dispatch.js";
 import { urlToCode } from "./urlToCode.js";
 import { initCodeMirror } from "./codemirror/codemirror.js"
 import { defaultText, basicSetup } from "./defaultText.js";
+import { logError } from "./logError.js";
 
 export function init() {
   dispatch("RENDER");
@@ -46,6 +47,21 @@ export function init() {
     if (!dontRun) dispatch("RUN")
 
     document.querySelector(".center-button").click();
+  }
+
+  const programString = global_state
+    .codemirror
+    .view
+    .state
+    .doc
+    .toString();
+
+  const version = programString.match(/@version\s*:\s*(v[\S]+)/);
+  if (version) {
+    const uploadedVersion = version[1];
+    const currentProgramVersion = global_state.version;
+    // if mismatch then do something
+    if (uploadedVersion !== currentProgramVersion) logError(`Version mismatch:\nFile expects version ${uploadedVersion}.\nEditor is version ${currentProgramVersion}`);
   }
 
   dispatch("RENDER");
