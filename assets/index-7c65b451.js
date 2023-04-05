@@ -337,7 +337,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 `,t+=`%FSLAX46Y46*%
 `,t},Ba=new WeakSet,lg=function(){return"M02*"},In=new WeakSet,Ar=function(t){return"G04 "+t+`*
 `},Xr=new WeakSet,Go=function(){const t=ie(this,$r);return Dl(this,$r)._++,t};var Vi,$s,ir,Na,hg,Fa,ug,$a,cg;class ab{constructor(t){pi(this,Na);pi(this,Fa);pi(this,$a);pi(this,Vi,"");pi(this,$s,1);pi(this,ir,{});ye(this,ir,t)}plotDrills(t){ye(this,Vi,ie(this,Vi)+`; #@! TA.AperFunction,Plated,PTH,ComponentDrill
-`);const e=t.flat().map(r=>{const o=u=>{let c=0,d=0;return u.forEach(p=>{c+=p[0],d+=p[1]}),[c/u.length,d/u.length]},s=(u,c)=>Math.sqrt((c[0]-u[0])**2+(c[1]-u[1])**2),a=o(r);let l=Math.round(1e3*r.reduce((u,c)=>u+s(a,c),0)/r.length)/1e3;return ie(this,ir).downloadGerberOptions.excellonMetric&&(a[0]=Ai(a[0]),a[1]=Ai(a[1]),l=Ai(l)),{center:a,dist:l}}),n={};e.forEach(({dist:r,center:o})=>{r in n?n[r].drillPoints.push(o):(n[r]={},n[r].toolID=Me(this,$a,cg).call(this),n[r].drillPoints=[o])});for(const r in n)ye(this,Vi,ie(this,Vi)+("T"+n[r].toolID+"C"+r+`
+`);const e=t.flat().map(r=>{const o=u=>{let c=0,d=0;return u.forEach(p=>{c+=p[0],d+=p[1]}),[c/u.length,d/u.length]},s=(u,c)=>Math.sqrt((c[0]-u[0])**2+(c[1]-u[1])**2),a=o(r);let l=Math.round(1e3*r.reduce((u,c)=>u+s(a,c),0)/r.length)/1e3;return ie(this,ir).downloadGerberOptions.excellonMetric&&(a[0]=Ai(a[0]),a[1]=Ai(a[1]),l=Ai(l)*2),{center:a,dist:l}}),n={};e.forEach(({dist:r,center:o})=>{r in n?n[r].drillPoints.push(o):(n[r]={},n[r].toolID=Me(this,$a,cg).call(this),n[r].drillPoints=[o])});for(const r in n)ye(this,Vi,ie(this,Vi)+("T"+n[r].toolID+"C"+r+`
 `));ye(this,Vi,ie(this,Vi)+`%
 `),ye(this,Vi,ie(this,Vi)+`G90
 `),ye(this,Vi,ie(this,Vi)+`G05
