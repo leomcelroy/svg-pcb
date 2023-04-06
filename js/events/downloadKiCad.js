@@ -6,19 +6,22 @@ import { MM_PER_INCH } from "../constants.js";
 // https://dev-docs.kicad.org/en/file-formats/sexpr-pcb/
 
 /* TODO:
-- [ ] Create basic .kicad_pcb for download
+- [x] Create basic .kicad_pcb for download
 - [ ] Add wires
 - [ ] Add footprint references
 - [ ] Create footprints
 - [ ] Add tests
 */
 
+export const BOARD_THICKNESS = 1.6; // This is in millimeters according to KiCad spec
+export const PAPER_SIZE = 'A4';
+
 // This should be a global function
-function inchesToMM(inches){
+export function inchesToMM(inches){
   return inches * MM_PER_INCH;
 }
 
-function getVersionYYYYMMDD() {
+export function getVersionYYYYMMDD() {
   const date = new Date();
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -27,7 +30,7 @@ function getVersionYYYYMMDD() {
   return `${year}${month}${day}`;
 }
 
-class BoardFileBuilder {
+export class KiCadBoardFileBuilder {
   #body = ";; contents of board file...\n";
   #header = "(kicad_pcb\n  (version " + getVersionYYYYMMDD() + ")\n  (generator SvgPcb)\n";
   #footer = ")";
@@ -39,14 +42,39 @@ class BoardFileBuilder {
       
     // Add date and time of generation.
     const version = getVersionYYYYMMDD();
-    str += `  (version ${version})\n`;
-    str += `  (generator SvgPcb)\n`;
+    str += `(version ${version})\n`;
+    str += `(generator SvgPcb)\n`;
+
+    // Add general section with board thickness
+    str += `(general\n`;
+    str += `(thickness ${BOARD_THICKNESS})\n`;
+    str += `) ;; general\n`; // Add comment after closing bracket for ease of testing
+
+    // Add page settings, paper size
+    str += `(paper "${PAPER_SIZE}") ;; paper\n`;
+
+    // Add layers
+    str += `(layers\n`;
+    str += `(0 "F.Cu" signal)\n`;
+    str += `(31 "B.Cu" signal)\n`;
+    str += `(38 "B.Mask" user)\n`;
+    str += `(39 "F.Mask" user)\n`;
+    str += `(44 "Edge.Cuts" user)\n`;
+    str += `) ;; layers\n`;
+
+    // Add setup section
+    str += `(setup\n`;
+    str += `(pad_to_mask_clearance 0)\n`;
+    str += `) ;; setup\n`;
+
+    // Add nets section
+    str += `(net 0 "")\n`;
 
     return str;
   }
 
   #getFooter() {
-    return ")";
+    return ") ;; kicad_pcb";
   }
 
   toString() {
@@ -59,7 +87,7 @@ class BoardFileBuilder {
 
 export function downloadKiCad(state) {
   const zip = new JSZip();
-  const boardFile = new BoardFileBuilder();
+  const boardFile = new KiCadBoardFileBuilder();
   const projectName = (state.name === "" ? "Untitled" : state.name);
 
   zip.file( `${projectName}.kicad_pcb`, boardFile.toString() );
