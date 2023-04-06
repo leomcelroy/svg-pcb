@@ -9,6 +9,7 @@ import { global_state } from "./global_state.js";
 import { defaultText, basicSetup } from "./defaultText.js";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { logError } from "./logError.js";
+import * as esprima from 'esprima';
 
 const getProgramString = () => global_state.codemirror.view.state.doc.toString();
 
@@ -31,41 +32,51 @@ const ACTIONS = {
 
 		try {
 
-			const { pts, paths, footprints, layers, inputs, componentDeclarations } = astAnalysis(string, ast);
+			const { inserts, inputs, footprints, layers, componentDeclarations } = astAnalysis(string, ast);
 
 			state.footprints = footprints;
 			state.layers = layers;
 
 			const changes = [];
 
-			pts.forEach(x => {
+
+			inserts.forEach(x => {
 				changes.push({ from: x.from+1, insert: `[` });
 				changes.push({ from: x.to-1, insert: `]` });
 
-				let snippet = "";
-				const src = x.snippet.slice(1, -1);
-				for ( let i = 0; i< src.length; i++) {
-					const ch = src[i];
+				const changeFuncs = {
+					"pt": () => {
+						let snippet = "";
+						const src = x.snippet.slice(1, -1);
+						for ( let i = 0; i< src.length; i++) {
+							const ch = src[i];
 
-					if (["\"", "'", "`"].includes(ch)) snippet += `\\${ch}`;
-					else snippet += ch;
+							if (["\"", "'", "`"].includes(ch)) snippet += `\\${ch}`;
+							else snippet += ch;
+						}
+
+						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, snippet:\`${snippet}\`}` });
+					},
+					"input": () => {
+						const tree = esprima.parse(x.snippet, { range: true, comment: true }).body[0];
+						const entries = tree.expression.properties;
+						const value = entries.find(entry => {
+							return entry.key.name === "value"
+						});
+
+						const valueRangeFrom = value.value.range[0] + x.from;
+						const valueRangeTo = value.value.range[1] + x.from;
+
+						changes.push({ from: x.to-1, insert: `,{from:${valueRangeFrom}, to:${valueRangeTo}}` });
+					}
+					// "path":
 				}
 
-				changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, snippet:"${snippet}"}` });
+				if (x.functionName in changeFuncs) changeFuncs[x.functionName]();
+				else {
+					changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
+				}
 			});
-
-			inputs.forEach(x => {
-				changes.push({ from: x.start+1, insert: "[" });
-				changes.push({ from: x.end-1, insert: "]" });
-				changes.push({ from: x.end-1, insert: `,{from:${x.from}, to:${x.to}}` });
-			});
-
-			paths.forEach(x => {
-				changes.push({ from: x.from+1, insert: "[" });
-				changes.push({ from: x.to-1, insert: "]" });
-				changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
-			});
-
 
 			componentDeclarations.forEach(x => {
 				changes.push({ from: x.indexCurly+1, insert: `refDes:"${x.variableName}",` });

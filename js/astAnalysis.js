@@ -1,9 +1,14 @@
 import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
 
+const FUNCTIONS_STATIC_INFO = [
+  "pt", 
+  "path", 
+  "input", 
+  // "footprint"
+];
+
 export function astAnalysis(string, ast) {
-  const pts = [];
-  const paths = [];
-  const inputs = [];
+  const inserts = [];
 
   const footprints = getFootprints(string, ast);
   const componentDeclarations = getComponentDeclarations(string, ast);
@@ -18,59 +23,47 @@ export function astAnalysis(string, ast) {
   do {
     const value = getValue();
 
-    // TODO: BUG this will trigger for any function starting with string
-    if (cursor.name === "CallExpression" && value.slice(0, 2) === "pt") {
-      cursor.next();
-      cursor.next();
-      pts.push({
-        from: cursor.from,
-        to: cursor.to,
-        snippet: getValue()
-      });
-    }
+    // if (cursor.name === "CallExpression") {
+    //   const p0 = performance.now();
+    //   const tree = makeTree(cursor, getValue)[0];
+    //   const p1 = performance.now();
+    //   treeMakingTime += (p1-p0);
+    //   const functionName = tree[1][0].value;
+    //   if (FUNCTIONS_STATIC_INFO.includes(functionName)) {
+    //     const argList = tree[2][0];
+    //     inserts.push({
+    //       functionName,
+    //       tree,
+    //       from: argList.from,
+    //       to: argList.to,
+    //       snippet: argList.value
+    //     });
+    //   }
 
-    // TODO: BUG this will trigger for any function starting with string
-    if (cursor.name === "CallExpression" && value.slice(0, 5) === "input") {
-      cursor.next();
-      cursor.next();
-      const start = cursor.from;
-      const end = cursor.to;
-      cursor.next();
-      cursor.next();
-      const tree = makeTree(cursor, getValue)[0];
-      tree.slice(1).forEach(node => {
-        const propKey = node[1][0];
-        if (propKey.value === "value") {
-          const propValue = node[2][0];
-          const valueIndices = { 
-            from: propValue.from, 
-            to: propValue.to,
-            start,
-            end
-          }
-          inputs.push(valueIndices);
-        }
-      })
-    }
+    // }
 
-    // TODO: BUG this will trigger for any function starting with string
-    if (cursor.name === "CallExpression" && value.slice(0, 4) === "path") {
-      cursor.next();
-      cursor.next();
-      paths.push({
-        from: cursor.from,
-        to: cursor.to,
-      });
+    if (cursor.name === "CallExpression") {
+      // const p0 = performance.now();
+      const [ name, args, from, to ] = getCall(cursor, getValue);
+      // const p1 = performance.now();
+      // treeMakingTime += (p1-p0);
+      if (FUNCTIONS_STATIC_INFO.includes(name)) {
+        inserts.push({
+          functionName: name,
+          from: from,
+          to: to,
+          snippet: args
+        });
+      }
+
     }
 
   } while (cursor.next());
 
   return { 
-    pts, 
-    paths, 
+    inserts,
     footprints, 
     layers, 
-    inputs,
     componentDeclarations
   };
 }
@@ -209,6 +202,20 @@ function getLayers(string, ast) {
   return layers;
 }
 
+function getCall(cursor, getValue) {
+  const start = cursor.from;
+  cursor.next();
+  const name = getValue();
+  cursor.next();
+  const args = getValue();
+  const from = cursor.from;
+  const to = cursor.to;
+
+  cursor.moveTo(start, 1);
+
+  return [name, args, from, to];
+}
+
 const getObjKeys = (cursor, getValue) => {
   const props = [];
 
@@ -298,6 +305,5 @@ function makeTree(cursor, getValue, func = null) {
   cursor.iterate(enter, leave);
 
   cursor.moveTo(start, 1);
-
   return final;
 }

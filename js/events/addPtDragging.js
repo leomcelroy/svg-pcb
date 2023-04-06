@@ -35,7 +35,6 @@ export function addPtDragging(state, svgListener) {
     const change_y_0 = createGetAdditiveConstant(initialOffset, 1);
     walk(yNode, n => change_y_0(n));
 
-
     dragPt = (x, y, i) => {
       const pt = state.pts[i];
       const [xSnippet, ySnippet] = pt.text.split(",");
@@ -71,8 +70,6 @@ export function addPtDragging(state, svgListener) {
 
     pt.x = round(snapToGrid(currentPoint.x) - xOffset, 3);
     pt.y = round(snapToGrid(currentPoint.y) - yOffset, 3);
-
-    pt = snapToPad(pt);
     
     dragPt(pt.x, pt.y, index);
   })

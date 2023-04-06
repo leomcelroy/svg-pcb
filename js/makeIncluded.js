@@ -22,7 +22,12 @@ export const makeIncluded = (flatten) => ({
   localStorage: null,
   Function: null,
   eval: null,
+  footprint: ([ json ], staticInfo ) => {
+
+    return json;
+  },
   pt: ([x, y], staticInfo) => { 
+
     const start = staticInfo.from || -1;
     const end = staticInfo.to || -1;
 
@@ -50,6 +55,8 @@ export const makeIncluded = (flatten) => ({
 
     if (global_state.selectedPath.pathStart === staticInfo.from) {
       global_state.selectedPath.pathEnd = staticInfo.to;
+      const str = string.slice(staticInfo.from, staticInfo.to);
+      console.log("selectedPath", args, staticInfo, str);
     }
 
     return pts;

@@ -25,6 +25,7 @@ export const snapToPad = function(pt) {
         pt.y = parseFloat(p[1]).toFixed(3);
         pt.snapped = true;
         pt.padRef = (refDes !== "") ? `${refDes}.pad("${pad}")` : `pt(${pt.x}, ${pt.y})`;
+        console.log(pad, comp);
         break;
       }
     }
