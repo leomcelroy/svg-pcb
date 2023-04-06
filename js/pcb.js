@@ -6,6 +6,7 @@ export class PCB {
     this.layers = {}; // maybe should just store shapes, get layer contents on demand
     this.components = [];
     this.refDeses = [];
+    this._netList = [];
   }
 
   add(footprint, ops = {}) {
@@ -17,7 +18,8 @@ export class PCB {
       rotate: ops.rotate || 0,
       padLabelSize: ops.padLabelSize || 0.02,
       componentLabelSize: ops.componentLabelSize || 0.025,
-      flip: ops.flip || false
+      flip: ops.flip || false,
+      refDes: ops.refDes || "",
     };
 
     const newComp = makeComponent(footprint, options);
@@ -41,7 +43,7 @@ export class PCB {
     }
 
     this.components.push(newComp);
-    this.refDeses.push(ops.refDes || "");
+    this.refDeses.push(options.refDes);
 
     return newComp;
   }
@@ -114,6 +116,11 @@ export class PCB {
           ...texts,
           ...wires
         ]
+  }
+
+  netList(...newNetList) {
+    // console.log("")
+    this._netList = newNetList;
   }
 
   wire(pts, thickness, layer = "F.Cu") {
