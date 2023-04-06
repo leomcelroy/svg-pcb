@@ -1,6 +1,6 @@
 # TODO
 
-- input is broken
+- [x] input is broken
 - add visual cue to menu tab
 - footprint processing is slow
 	- currently generate shapes with ast analysis

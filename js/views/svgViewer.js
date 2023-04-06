@@ -29,10 +29,6 @@ export const svgViewer = (state) => {
   const corners = state.panZoomParams?.corners();
   const scale = state.panZoomParams?.scale();
 
-  const shapes = state.shapes.map(drawPath);
-  const paths = state.paths.map(drawP);
-  const pts = state.pts.map((pt, i) => drawPt(pt, i, scale));
-
   const drills = [];
 
   const visibleLayers = state.layers
@@ -52,6 +48,24 @@ export const svgViewer = (state) => {
         `)
     })
   })
+
+  const drillLayer = svg`
+    <g class="drills">${interiorVisible ? drills : ""}</g>
+  `
+  
+  const labels = state.shapes.filter(x => ["componentLabels", "padLabels"].includes(x.groupId));
+  const notLabels = state.shapes.filter(x => !["componentLabels", "padLabels"].includes(x.groupId));
+  
+
+  const shapes = [
+    ...notLabels.map(drawPath),
+    drillLayer,
+    ...labels.map(drawPath),
+  ]
+
+  const paths = state.paths.map(drawP);
+  const pts = state.pts.map((pt, i) => drawPt(pt, i, scale));
+
 
 
   return svg`
@@ -88,7 +102,6 @@ export const svgViewer = (state) => {
 
           <g class="shapes">${shapes}</g>
           <g class="paths">${paths}</g>
-          <g class="drills">${interiorVisible ? drills : ""}</g>
 
 
         ${state.panZoomParams && state.gridSize > 0 && state.grid && false

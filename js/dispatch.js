@@ -39,7 +39,6 @@ const ACTIONS = {
 
 			const changes = [];
 
-
 			inserts.forEach(x => {
 				changes.push({ from: x.from+1, insert: `[` });
 				changes.push({ from: x.to-1, insert: `]` });
@@ -68,6 +67,9 @@ const ACTIONS = {
 						const valueRangeTo = value.value.range[1] + x.from;
 
 						changes.push({ from: x.to-1, insert: `,{from:${valueRangeFrom}, to:${valueRangeTo}}` });
+					},
+					footprint: () => {
+						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, snippet:\`${x.snippet}\`}` });
 					}
 					// "path":
 				}

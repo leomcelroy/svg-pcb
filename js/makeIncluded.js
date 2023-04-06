@@ -6,6 +6,8 @@ import { renderPath } from "./renderPath.js";
 import { renderPCB } from "./renderPCB.js";
 import { global_state } from "./global_state.js";
 
+const cachedFootprint = {};
+
 export const makeIncluded = (flatten) => ({
   // kicadToObj, // FIXME: remove references to
   geo,
@@ -23,6 +25,21 @@ export const makeIncluded = (flatten) => ({
   Function: null,
   eval: null,
   footprint: ([ json ], staticInfo ) => {
+
+    const key = `${staticInfo.from},${staticInfo.to}`;
+    const { snippet } = staticInfo
+    const cached = key in cachedFootprint;
+    if (cached && cachedFootprint[key] === snippet) {
+    } else {
+      cachedFootprint[key] = snippet;
+      console.log("saved footprint in", key);
+    }
+
+    // here I could optimize by
+    // - generating geometry from pathD string
+    // - generating mask geometry
+    // - generating footprint preview geometry
+    // and caching all of the above
 
     return json;
   },

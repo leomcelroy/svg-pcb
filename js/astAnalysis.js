@@ -4,7 +4,7 @@ const FUNCTIONS_STATIC_INFO = [
   "pt", 
   "path", 
   "input", 
-  // "footprint"
+  "footprint"
 ];
 
 export function astAnalysis(string, ast) {
@@ -23,30 +23,8 @@ export function astAnalysis(string, ast) {
   do {
     const value = getValue();
 
-    // if (cursor.name === "CallExpression") {
-    //   const p0 = performance.now();
-    //   const tree = makeTree(cursor, getValue)[0];
-    //   const p1 = performance.now();
-    //   treeMakingTime += (p1-p0);
-    //   const functionName = tree[1][0].value;
-    //   if (FUNCTIONS_STATIC_INFO.includes(functionName)) {
-    //     const argList = tree[2][0];
-    //     inserts.push({
-    //       functionName,
-    //       tree,
-    //       from: argList.from,
-    //       to: argList.to,
-    //       snippet: argList.value
-    //     });
-    //   }
-
-    // }
-
     if (cursor.name === "CallExpression") {
-      // const p0 = performance.now();
       const [ name, args, from, to ] = getCall(cursor, getValue);
-      // const p1 = performance.now();
-      // treeMakingTime += (p1-p0);
       if (FUNCTIONS_STATIC_INFO.includes(name)) {
         inserts.push({
           functionName: name,
