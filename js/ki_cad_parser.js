@@ -38,10 +38,6 @@ export function kicadToObj(data) {
   
       let size = line[5].slice(1).map(x => Number(x)*scale);
 
-      // let shapeTurtle = shape === "rect"
-      //   ? rectangle(...size)
-      //   : circle(size[0]);
-
       const shapeCases = {
         "rect": () => rectangle(...size),
         "roundrect": () => {
@@ -54,27 +50,32 @@ export function kicadToObj(data) {
         // "ellipse": () => circle(...size), 
       }
 
-      let shapeTurtle = 
+      let shapeGeometry = 
         (shape in shapeCases) 
         ? shapeCases[shape]()
         : [];
-     
-      if (padsToAdd[name] === undefined) padsToAdd[name] = [{ pos: at, shape: shapeTurtle, layers }];
-      else padsToAdd[name].push({ pos: at, shape: shapeTurtle, layers });
+
+      const footprint = { 
+        pos: at, 
+        shape: shapeGeometry, 
+        layers 
+      }
 
       const drillIndex = line.findIndex(entry => Array.isArray(entry) && entry[0] === "drill");
 
       if (drillIndex !== -1) {
-        let drillDia = Number(line[drillIndex][1])*scale/2;
-        let l = { 
-          pos: at, 
-          shape: circle(drillDia),
-          layers: ["drill"]
+        let drillDia = Number(line[drillIndex][1])*scale;
+        footprint.drill = {
+          diameter: drillDia,
+          start: "F.Cu", // this should come from layers
+          end: "B.Cu",
+          plated: true // hmm how does kicad module do this
         }
-
-        if (padsToAdd[`${name}_drill`] === undefined) padsToAdd[`${name}_drill`] = [l];
-        else padsToAdd[`${name}_drill`].push(l);
       }
+     
+      if (padsToAdd[name] === undefined) padsToAdd[name] = [footprint];
+      else padsToAdd[name].push(footprint);
+
     }
   }
 

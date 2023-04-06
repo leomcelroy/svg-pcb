@@ -33,6 +33,25 @@ export const svgViewer = (state) => {
   const paths = state.paths.map(drawP);
   const pts = state.pts.map((pt, i) => drawPt(pt, i, scale));
 
+  const drills = [];
+
+  const visibleLayers = state.layers
+    ? state.layers.reduce((acc, cur) => cur.length === 3 ? [...acc, cur[1][0].value] : acc, [])
+    : [];
+
+  const interiorVisible = visibleLayers.some(layer => layer.includes("interior"));
+
+  if (state.pcb) state.pcb.components.forEach(component => {
+    component.drills.forEach(x => {
+      drills.push(svg`
+        <circle
+          fill="white"
+          cx=${x.pos[0]}
+          cy=${x.pos[1]}
+          r=${x.diameter/2}/>
+        `)
+    })
+  })
 
 
   return svg`
@@ -69,6 +88,7 @@ export const svgViewer = (state) => {
 
           <g class="shapes">${shapes}</g>
           <g class="paths">${paths}</g>
+          <g class="drills">${interiorVisible ? drills : ""}</g>
 
 
         ${state.panZoomParams && state.gridSize > 0 && state.grid && false

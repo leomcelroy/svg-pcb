@@ -8,7 +8,7 @@
   padName: {
     pos: [0, 0],
     shape: "pathDataString",
-    layers: ["F.Cu", "B.Cu"],
+    layers: ["F.Cu", "B.Cu", "F.Mask", "B.Mask"],
     drill: {
       diameter: 0.02, // or radius
       start: "F.Cu",
@@ -16,13 +16,24 @@
       plated: false
     },
     index: 1,
-    ? maskOffset: .03 // if not present then cover
+    // solder_mask_margin
+    // solderMaskMargin
+    // maskMargin: 0
+    // maskOffset: .03 // if not present then cover or if mask is in layer
   }
 }
 ```
 - interior does specify direction of shape in a way outline doesn't
 - implicit assumption of layer names in gerber export?
 - making a typeface (single line font?) for text
+- how to render drills?
+  - render with color of layers it connects
+- fix gerber drill export
+- solder masks
+  - when to calculate mask offset?
+  - first step is to not render mask
+  - next is...
+- supporting stars in layers eg `*.Mask` 
 
 ### March 30th, 2023
 

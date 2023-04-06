@@ -6,6 +6,9 @@ export class PCB {
     this.layers = {}; // maybe should just store shapes, get layer contents on demand
     this.components = [];
     this.refDeses = [];
+
+    // this.holes = [];
+    // this.masks = [];
   }
 
   add(footprint, ops = {}) {
@@ -28,7 +31,7 @@ export class PCB {
       })
     }
 
-    if (name !== "" && !name.includes("drill")) {
+    if (name !== "") {
       // let componentLabels = makeText(name, options.componentLabelSize, options.translate, 0);
 
       this.addShape("componentLabels", {
