@@ -9,7 +9,7 @@ import { MM_PER_INCH } from "../constants.js";
 // - Revisit drills
 
 // This should be a global function
-function inchesToMM(inches){
+export function inchesToMM(inches){
   return inches * MM_PER_INCH;
 }
 
