@@ -5,6 +5,7 @@ import { urlToCode } from "./urlToCode.js";
 import { initCodeMirror } from "./codemirror/codemirror.js"
 import { defaultText, basicSetup } from "./defaultText.js";
 import { logError } from "./logError.js";
+import { downloadText } from "./events/download.js";
 
 export function init() {
   dispatch("RENDER");
@@ -65,6 +66,36 @@ export function init() {
   }
 
   dispatch("RENDER");
+
+  // for lingdong
+  window.exportNet = exportNet;
+}
+
+function exportNet() {
+  if (!global_state.pcb) {
+    console.log("No pcb in state.");
+    return;
+  }
+
+  const pcb = global_state.pcb;
+
+  const components = {};
+
+  pcb.components.map(x => {
+    if (x.refDes === "") {
+      console.log("Assign board.add(...) to variable or pass refDes in object parameters.")
+    }
+
+    components[x.refDes] = { pads: x.padShapes };
+  });
+
+  const obj = { components, netList: pcb._netList };
+
+  const string = JSON.stringify(obj);
+
+  console.log(obj);
+
+  downloadText("netList.json", string, false);
 }
 
 

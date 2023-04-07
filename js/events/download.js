@@ -67,9 +67,9 @@ function format(x) {
   return s;
 }
 
-export function downloadText(filename, text) {
+export function downloadText(filename, text, version = true) {
 
-  if (!text.match(/@version\s*:\s*(v[\S]+)/)) {
+  if (version && !text.match(/@version\s*:\s*(v[\S]+)/)) {
     const version = STATE.version;
     text = `// @version: ${version}\n${text}`;
   }
