@@ -102,6 +102,77 @@ export class KiCadBoardFileBuilder {
     });
   }
 
+  plotComponents(componentData) {
+    console.log(componentData);
+
+    // Gather all the data we need to add footprint entries to KiCad board file
+    const components = [];
+    componentData.forEach((comp) => {
+      const component = {
+        position: comp.pads.center,
+        layers: ['"F.Cu"'],
+        pads: []
+      }
+
+      // Combine pad name, shape and location into KiCad compat pad object
+      const padDataArr = [];
+      Object.entries(comp.pads).forEach(([key, val], i) => {
+        if (key === 'center') return;
+        const padInfo = {
+          number: i + 1,
+          label: key,
+          position: val,
+          shapes: comp.layers["F.Cu"][i]
+        };
+        component.pads.push(padInfo);
+      });
+
+      components.push(component);
+    });
+
+    console.log(components);
+
+    // Add footprint entrie to KiCad board file
+    components.forEach((component) => {
+      const footprintName = getUUID(); // No linkage to original footprint, thats why a random uuid
+      const footprintTstamp = getUUID();
+
+      this.#body += `(footprint "${APP_NAME}:${footprintName}" (layer "F.Cu")\n`;
+      this.#body += `(tstamp ${footprintTstamp})\n`;
+      this.#body += `(attr smd)\n`; // For now all footprints are surface mount
+
+      component.pads.forEach((pad) => {
+        const padPos = {
+          x: inchesToMM(pad.position[0]).toFixed(3),
+          y: -inchesToMM(pad.position[1]).toFixed(3)
+        };
+        const padSize = {
+          w: 0.1,
+          h: 0.1
+        };
+        const padTstamp = getUUID();
+        
+        const padPrimitives = [];
+        pad.shapes.forEach((shape) => {
+          let primitive = `(gr_poly (pts`;
+          shape.forEach((pt) => {
+            const pos = {
+              x: inchesToMM(pt[0]).toFixed(3) - padPos.x,
+              y: -inchesToMM(pt[1]).toFixed(3) - padPos.y
+            }
+            primitive += ` (xy ${pos.x} ${pos.y})`;
+          });
+          primitive += `) (width 0) (fill yes))`;
+          padPrimitives.push(primitive);
+        });
+
+        this.#body += `(pad "${pad.number}" smd custom (at ${padPos.x} ${padPos.y}) (size ${padSize.w} ${padSize.h}) (layers ${component.layers.join(' ')}) (pinfunction "${pad.label}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${padPrimitives.join(' ')}))\n`;
+      });
+
+      this.#body += `)\n`; // Closing footprint definition
+    });
+  }
+
   plotFootprints(footprintData) {
     console.log(footprintData);
 
@@ -191,8 +262,11 @@ export function downloadKiCad(state) {
   const layers = state.pcb.layers;
   boardFile.plotWires(layers["F.Cu"], "F.Cu");
 
-  const footprints = state.footprints;
-  boardFile.plotFootprints(footprints);
+  //const footprints = state.footprints;
+  //boardFile.plotFootprints(footprints);
+
+  const components = state.pcb.components;
+  boardFile.plotComponents(components);
 
   zip.file( `${projectName}.kicad_pcb`, boardFile.toString() );
   zip
