@@ -11,6 +11,8 @@ import { APP_NAME, MM_PER_INCH } from "../constants.js";
 - [ ] Add footprint references
 - [ ] Create footprints
 - [ ] Add tests
+- [ ] Add bool option for pads as polygons or primitive shapes
+- [ ] Add bool option for primitive shape pads as circles or rects
 */
 
 export const BOARD_THICKNESS = 1.6; // This is in millimeters according to KiCad spec
@@ -123,7 +125,8 @@ export class KiCadBoardFileBuilder {
           x: inchesToMM(val.pos[0]).toFixed(3), 
           y: inchesToMM(val.pos[1]).toFixed(3)
         };
-        const padSize = {w: 1, h: 1}; // TODO calculate this based on polygon data
+
+        
         const pinFunction = key;
         const padTstamp = getUUID();
         const padLayers = [];
@@ -133,21 +136,30 @@ export class KiCadBoardFileBuilder {
           console.log(layerStr);
         });
         const padClearance = 'outline';
-        const padAnchor = 'rect';
+        const padAnchor = 'circle';
         const padPrimitives = [];
         
         // We need to get real values out of SVG shape
+        // .. also, calculate pad size
         const pts = [];
         const re = /(M|L)[^0-9-.]*(-?[0-9.]+),(-?[0-9.]+)/gm;
         const match = val.shape.match(re);
+        let min = {x: 0, y: 0}; // these are to calculate the pad size
+        let max = {x: 0, y: 0};
         match.forEach((pt) => {
           const re = /(M|L)[^0-9-.]*(-?[0-9.]+),(-?[0-9.]+)/;
           const match = pt.match(re);
           const x = inchesToMM(parseFloat(match[2])).toFixed(3);
+          min.x = x < min.x ? x : min.x;
+          max.x = x > max.x ? x : max.x; 
           const y = inchesToMM(parseFloat(match[3])).toFixed(3);
+          min.y = y < min.y ? y : min.y;
+          max.y = y > max.y ? y : max.y;
           pts.push({x: x, y: y});
         });
-        
+        const size = Math.min(max.x - min.x, max.y - min.y);
+        const padSize = {w: size, h: size}; 
+
         // Here we plot the custom polygon shape for current pad we are looping over
         let primitive = `(gr_poly (pts`;
         pts.forEach((pt) => {
