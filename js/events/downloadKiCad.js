@@ -16,6 +16,7 @@ import { MM_PER_INCH } from "../constants.js";
 export const BOARD_THICKNESS = 1.6; // This is in millimeters according to KiCad spec
 export const PAPER_SIZE = 'A4';
 export const KICAD_PCB_VERSION = '20221018';
+export const PAD_TO_MASK_CLEARANCE = 0;
 
 // This should be a global function
 export function inchesToMM(inches){
@@ -59,7 +60,7 @@ export class KiCadBoardFileBuilder {
 
     // Add setup section
     str += `(setup\n`;
-    str += `(pad_to_mask_clearance 0)\n`;
+    str += `(pad_to_mask_clearance ${PAD_TO_MASK_CLEARANCE})\n`;
     str += `)\n`;
 
     // Add nets section
@@ -93,7 +94,6 @@ export class KiCadBoardFileBuilder {
           const endX = inchesToMM(polyline[i+1][0]).toFixed(3);
           const endY = inchesToMM(-polyline[i+1][1]).toFixed(3);
           const tstamp = getUUID();
-
           this.#body += `(segment (start ${startX} ${startY}) (end ${endX} ${endY}) (width ${width}) (layer "${layer}") (net ${net}) (tstamp ${tstamp}))\n`;
         }
       });

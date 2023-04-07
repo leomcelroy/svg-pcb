@@ -1,149 +1,171 @@
-import { BOARD_THICKNESS, KiCadBoardFileBuilder, PAPER_SIZE, getVersionYYYYMMDD } from "../js/events/downloadKiCad";
-import { global_state } from "../js/global_state";
+import { BOARD_THICKNESS, 
+  KICAD_PCB_VERSION, 
+  KiCadBoardFileBuilder, 
+  PAPER_SIZE, 
+  PAD_TO_MASK_CLEARANCE } from "../js/events/downloadKiCad";
+import { APP_NAME } from "../js/constants";
 
-test('Version should match YYYYMMDD format', () => {
-  const version = getVersionYYYYMMDD();
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
+// Some helper functions such as a basic sexpression parser here
+function getSection(sectionName) {
 
-  expect(version.length).toBe(8);
-  expect(version.substring(0, 4)).toBe(year.toString());
-  expect(version.substring(4, 6)).toBe(month.toString());
-  expect(version.substring(6, 8)).toBe(day.toString());
+  // Look for the beginning of the section
+  let re = new RegExp('\\(' + sectionName);
+  let match = result.search(re);
+
+  // Prepare some basic variables for capturing the hierarchy
+  let depth = 1; // We have one opening ( already
+  let content = '(';
+  let index = match + 1;
+
+  while (depth > 0) {
+    const str = result.substring(index, index + 1);
+    content += str;
+
+    if (str === '(') {
+      depth++;
+    } else if (str === ')') {
+      depth--;
+    }
+
+    index++;
+  }
+
+  return content;
+}
+
+const board = new KiCadBoardFileBuilder();
+let result = board.toString();
+
+test('Board file should have an closing bracked for each opening one', () => {
+  const reOpen = /\(/gm;
+  const reClose = /\)/gm;
+  const matchOpen = result.match(reOpen);
+  const matchClose = result.match(reClose);
+  expect(matchOpen.length).toBe(matchClose.length);
 });
 
-test('File should contain header and footer', () => {
-  const board = new KiCadBoardFileBuilder();
-  const result = board.toString();
-
-  expect(result).toBeTruthy();
-  expect(result.startsWith('(kicad_pcb')).toBeTruthy();
-  expect(result.endsWith(') ;; kicad_pcb')).toBeTruthy();
-
-  // Check if version is present
-  const reVersion = /\(version\s[0-9]{8}\)/gm;
-  const maVersion = result.match(reVersion);
-  expect(maVersion.length).toBe(1);
-
-  // Check if generator is present
-  const reGenerator = /\(generator SvgPcb\)/gm;
-  const maGenerator = result.match(reGenerator);
-  expect(maGenerator.length).toBe(1);
-});
-
-test('File should contain the general section with attributes', () => {
-  const board = new KiCadBoardFileBuilder();
-  const result = board.toString();
-
-  // Match globaly, we expect only one match here
-  let re = /(\(general)([^\#]+)(\) ;; general)/g;
+test('KiCad PCB version should appear only once', () => {
+  let re = /\(version ([0-9]{8})\)/gm;
   let match = result.match(re);
   expect(match.length).toBe(1);
+});
 
-  // Match locally and return groups for eval
-  re = /(\(general)([^\#]+)(\) ;; general)/;
-  match = result.match(re);
-  expect(match[2].trim()).toBe(`(thickness ${BOARD_THICKNESS})`);
+test('KiCad PCB version should match the KICAD_PCB_VERSION constant', () => {
+  const re = /\(version ([0-9]{8})\)/;
+  const match = result.match(re);
+  expect(match[1].length).toBe(8);
+  expect(match[1]).toBe(KICAD_PCB_VERSION);
+});
+
+test('KiCad PCB generator token should appear only once', () => {
+  const re = /\(generator (.+)\)/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(1);
+});
+
+test('KiCad PCB generator token attribute should match APP_NAME constant', () => {
+  const re = /\(generator (.+)\)/;
+  const match = result.match(re);
+  expect(match[1]).toBe(APP_NAME);
+});
+
+// Tests like these could be more sophisticated if a simple parser would be involved
+test('KiCad board file should contain a general section', () => {
+  const re = /\(general/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(1);
+});
+
+test('KiCad board general section should contain a thickness token', () => {
+  const re = /\(general[^]*\(thickness[^0-9]+([0-9\.]+)\)/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(1);
+});
+
+test('KiCad board thickness token attribute should match BOARD_THICKNESS constant', () => {
+  const re = /\(general[^]*\(thickness[^0-9]+([0-9\.]+)\)/;
+  const match = result.match(re);
+  expect(parseFloat(match[1])).toBe(BOARD_THICKNESS);
 });
 
 test('Board thickness should be 1.6 mm', () => {
   expect(BOARD_THICKNESS.toString()).toBe('1.6');
 });
 
-test('Page settings should be present', () => {
-  const board = new KiCadBoardFileBuilder();
-  const result = board.toString();
-
-  // Match globally to check if we have one instance only
-  let re = /(\(paper)([^\#]+)(\) ;; paper)/g;
-  let match = result.match(re);
-  expect(match.length).toBe(1);
-
-  // Match locally to see if we get the expected paper size
-  re =  /(\(paper)([^\#]+)(\) ;; paper)/;
-  match = result.match(re);
-  expect(match[2].trim()).toBe(`"${PAPER_SIZE}"`);
+test('KiCad board page size constant should be A4', () => {
+  expect(PAPER_SIZE).toBe('A4');
 });
 
-test('Layers section should be present', () => {
-  const board = new KiCadBoardFileBuilder();
-  const result = board.toString();
-
-  // Check for layers section globally, there should be only one block
-  let re = /(\(layers)([^\#]+)(\) ;; layers)/gm;
-  let match = result.match(re);
+test('Page size should be in KiCad board file', () => {
+  const re = /\(paper "(.+)"\)/gm;
+  const match = result.match(re);
   expect(match.length).toBe(1);
-
-  // Check if there are actual layers present
-  re = /(\(layers)([^\#]+)(\) ;; layers)/;
-  match = result.match(re);
-  expect(match[2].trim().length).not.toBe(0);
-
-  // Now we take only the layer list part and match that globally
-  re = /\(([0-9]{1,2}) ("[^"]+") (jumper|mixed|power|signal|user)\)/g;
-  const layers = match[2].match(re);
-  expect(layers.length).not.toBe(0);
-
-  // Use this to match individual layers and get their attribute
-  re = /\(([0-9]{1,2}) ("[^"]+") (jumper|mixed|power|signal|user)\)/;
-
-  // Check if all required layers are present
-  let foundFCu = false;
-  let foundBCu = false;
-  let foundFMask = false;
-  let foundBMask = false;
-  let foundEdgeCuts = false;
-  layers.forEach((layer) => {
-    const ma = layer.match(re);
-    const ordinal = parseInt(ma[1]);
-    const name = ma[2].replace(/"/g, '');
-    const type = ma[3];
-    if (ordinal === 0 && name === `F.Cu` && type === `signal`) {
-      foundFCu = true;
-    }
-    if (ordinal === 31 && name === `B.Cu` && type === `signal`) {
-      foundBCu = true;
-    }
-    if (ordinal === 38 && name === `B.Mask` && type === `user`) {
-      foundBMask = true;
-    }
-    if (ordinal === 39 && name === `F.Mask` && type === `user`) {
-      foundFMask = true;
-    }
-    if (ordinal === 44 && name === `Edge.Cuts` && type === `user`) {
-      foundEdgeCuts = true;
-    }
-  });
-  expect(foundFCu).toBeTruthy();
-  expect(foundBCu).toBeTruthy();
-  expect(foundFMask).toBeTruthy();
-  expect(foundBMask).toBeTruthy();
-  expect(foundEdgeCuts).toBeTruthy();
 });
 
-test('Setup section should be present', () => {
-  const board = new KiCadBoardFileBuilder();
-  const result = board.toString();
+test('KiCad board page size should match PAGE_SIZE constant', () => {
+  const re = /\(paper "(.+)"\)/;
+  const match = result.match(re);
+  expect(match[1]).toBe(PAPER_SIZE);
+})
 
-  // We need one only setup section
-  const reSetupGlobal = /\(setup([^]+)\) ;; setup/gm;
-  const matchSetupGlobal = result.match(reSetupGlobal);
-  expect(matchSetupGlobal.length).toBe(1);
+test('KiCad board file should contain a layers section', () => {
+  const re = /\(layers/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(1);
+});
 
-  // Extract contents of setup section
-  const reSetup = /\(setup([^]+)\) ;; setup/;
-  const matchSetup = result.match(reSetup);
-  expect(matchSetup.length).not.toBe(0);
+test('Board file should contain 5 layer definitions', () => {
+  const re = /\(([0-9]{1,2})[^"]+"([^"]+)[^a-z]+(jumper|mixed|power|signal|user)\)/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(5);
+});
+
+test('Board should contain F.Cu layer definition', () => {
+  const re = /\(([0-9]{1,2})[^"]+"F\.Cu"[^a-z]+signal\)/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(1);
+});
+
+test('Board should contain B.Cu layer definition', () => {
+  const re = /\(([0-9]{1,2})[^"]+"B\.Cu"[^a-z]+signal\)/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(1);
+});
+
+test('Board should contain F.Mask layer definition', () => {
+  const re = /\(([0-9]{1,2})[^"]+"F\.Mask"[^a-z]+user\)/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(1);
+});
+
+test('Board should contain B.Mask layer definition', () => {
+  const re = /\(([0-9]{1,2})[^"]+"B\.Mask"[^a-z]+user\)/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(1);
+});
+
+test('Board should contain Edge.Cuts layer definition', () => {
+  const re = /\(([0-9]{1,2})[^"]+"Edge\.Cuts"[^a-z]+user\)/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(1);
+});
+
+test('Board file should have a setup section', () => {
+  const re = /\(setup/gm;
+  const match = result.match(re);
+  expect(match.length).toBe(1);
+});
+
+test('The body of the setup section should contain pad to mask clearance', () => {
+  const content = getSection('setup');
   
-  const setupContent = matchSetup[1];
-  expect(setupContent.length).not.toBe(0);
+  let re = /\(pad_to_mask_clearance ([0-9]+)\)/gm;
+  let match = content.match(re);
+  expect(match.length).toBe(1);
 
-  // Look for pad to mask clearance
-  const reClearance = /\(pad_to_mask_clearance 0\)/gm;
-  const matchClearance = setupContent.match(reClearance);
-  expect(matchClearance.length).toBe(1);
+  re = /\(pad_to_mask_clearance ([0-9]+)\)/;
+  match = content.match(re);
+  expect(parseInt(match[1])).toBe(PAD_TO_MASK_CLEARANCE);
 });
 
 test('There should be only one empty nets section at the moment', () => {
