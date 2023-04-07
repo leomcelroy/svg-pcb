@@ -1,6 +1,6 @@
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { MM_PER_INCH } from "../constants.js";
+import { APP_NAME, MM_PER_INCH } from "../constants.js";
 
 // KiCad Board File Format reference
 // https://dev-docs.kicad.org/en/file-formats/sexpr-pcb/
@@ -100,6 +100,69 @@ export class KiCadBoardFileBuilder {
     });
   }
 
+  plotFootprints(footprintData) {
+    console.log(footprintData);
+
+    footprintData.forEach((el) => {
+      const footprintName = el[0];
+      const tstamp = getUUID();
+
+      this.#body += `(footprint "${APP_NAME}:${footprintName}" (layer "F.Cu")\n`;
+      this.#body += `(tstamp ${tstamp})\n`;
+      this.#body += `(attr smd)\n`; // For now all footprints are surface mount
+      
+      // Add pads
+      const padInfo = el[1];
+      const padGraphics = el[2];
+      
+      Object.entries(padInfo).forEach(([key, val], i) => {
+        const padNumber = val.index;
+        const padType = 'smd'; // We consider all pads as smd at this point
+        const padShape = 'custom'; // All shapes are custom for now
+        const padPos = {
+          x: inchesToMM(val.pos[0]).toFixed(3), 
+          y: inchesToMM(val.pos[1]).toFixed(3)
+        };
+        const padSize = {w: 1, h: 1}; // TODO calculate this based on polygon data
+        const pinFunction = key;
+        const padTstamp = getUUID();
+        const padLayers = [];
+        val.layers.forEach((layer) => {
+          const layerStr = `"${layer}"`;
+          padLayers.push(layerStr);
+          console.log(layerStr);
+        });
+        const padClearance = 'outline';
+        const padAnchor = 'rect';
+        const padPrimitives = [];
+        
+        // We need to get real values out of SVG shape
+        const pts = [];
+        const re = /(M|L)[^0-9-.]*(-?[0-9.]+),(-?[0-9.]+)/gm;
+        const match = val.shape.match(re);
+        match.forEach((pt) => {
+          const re = /(M|L)[^0-9-.]*(-?[0-9.]+),(-?[0-9.]+)/;
+          const match = pt.match(re);
+          const x = inchesToMM(parseFloat(match[2])).toFixed(3);
+          const y = inchesToMM(parseFloat(match[3])).toFixed(3);
+          pts.push({x: x, y: y});
+        });
+        
+        // Here we plot the custom polygon shape for current pad we are looping over
+        let primitive = `(gr_poly (pts`;
+        pts.forEach((pt) => {
+          primitive += ` (xy ${pt.x} ${pt.y})`;
+        });
+        primitive += `) (width 0) (fill yes))`;
+        padPrimitives.push(primitive);
+        
+        this.#body += `(pad "${padNumber}" ${padType} ${padShape} (at ${padPos.x} ${padPos.y}) (size ${padSize.w} ${padSize.h}) (layers ${padLayers.join(' ')}) (pinfunction "${pinFunction}") (tstamp ${padTstamp}) (options (clearance ${padClearance}) (anchor ${padAnchor}) ) (primitives ${padPrimitives.join(' ')}))\n`;
+      });
+      
+      this.#body += `)\n`;
+    });
+  }
+
   toString() {
     let str = this.#getHeader();
     str += this.#body;
@@ -115,6 +178,9 @@ export function downloadKiCad(state) {
 
   const layers = state.pcb.layers;
   boardFile.plotWires(layers["F.Cu"], "F.Cu");
+
+  const footprints = state.footprints;
+  boardFile.plotFootprints(footprints);
 
   zip.file( `${projectName}.kicad_pcb`, boardFile.toString() );
   zip
