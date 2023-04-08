@@ -147,31 +147,38 @@ export class KiCadBoardFileBuilder {
           x: inchesToMM(pad.position[0]).toFixed(3),
           y: -inchesToMM(pad.position[1]).toFixed(3)
         };
-        const padOffset = {
-          x: 0,
-          y: 0
-        }
-        const padSize = {
-          w: 0.1,
-          h: 0.1
-        };
-        const padTstamp = getUUID();
         
+        const padTstamp = getUUID();
+        const min = {x: 0, y: 0}; // For pad size calculation
+        const max = {x: 0, y: 0};
         const padPrimitives = [];
+        
         pad.shapes.forEach((shape) => {
           let primitive = `(gr_poly (pts`;
+          
           shape.forEach((pt) => {
             const pos = {
               x: inchesToMM(pt[0]).toFixed(3) - padPos.x,
               y: -inchesToMM(pt[1]).toFixed(3) - padPos.y
             }
+            
+            min.x = pos.x < min.x ? pos.x : min.x; // We need to determine max extents of the pad
+            min.y = pos.y < min.y ? pos.y : min.y;
+            max.x = pos.x > max.x ? pos.x : max.x;
+            max.y = pos.y > max.y ? pos.y : max.y;
             primitive += ` (xy ${pos.x} ${pos.y})`;
           });
+          
           primitive += `) (width 0) (fill yes))`;
           padPrimitives.push(primitive);
         });
 
-        this.#body += `(pad "${pad.number}" smd custom (at ${padPos.x - footprintPos.x} ${padPos.y - footprintPos.y}) (size ${padSize.w} ${padSize.h}) (layers ${component.layers.join(' ')}) (pinfunction "${pad.label}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${padPrimitives.join(' ')}))\n`;
+        const padSize = {
+          w: Math.abs(max.x - min.x),
+          h: Math.abs(max.y - min.y)
+        }
+
+        this.#body += `(pad "${pad.number}" smd custom (at ${padPos.x - footprintPos.x} ${padPos.y - footprintPos.y}) (size ${Math.min(padSize.w, padSize.h)} ${Math.min(padSize.w, padSize.h)}) (layers ${component.layers.join(' ')}) (pinfunction "${pad.label}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${padPrimitives.join(' ')}))\n`;
       });
 
       this.#body += `)\n`; // Closing footprint definition
