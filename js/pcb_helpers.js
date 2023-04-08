@@ -182,7 +182,7 @@ function makeComponent(comp, options = {}) {
     drills,
     pos: translate,
     padShapes,
-    refDes: options.refDes
+    refDes: refDes
   })
 }
 

@@ -11,7 +11,6 @@ export class PCB {
   }
 
   add(footprint, ops = {}) {
-    // ops = { translate, rotate, padLabelSize, componentLabelSize, value? }
     const name = ops.name || "";
 
     const options = {
@@ -120,7 +119,14 @@ export class PCB {
   }
 
   netList(...newNetList) {
-    // console.log("")
+    newNetList.forEach(group => {
+      group.forEach(item => {
+        const [ comp, pad ] = item;
+        const constructor = comp.constructor.name;
+        if (constructor === "Component") item[0] = comp.refDes;
+      })
+    })
+    
     this._netList = newNetList;
   }
 
@@ -134,7 +140,4 @@ export class PCB {
     }
     this.addShape(layer, newWire);
   }
-
-  // components({ name: obj })
-  // renderPCB -> render()
 }
