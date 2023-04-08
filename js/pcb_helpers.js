@@ -220,8 +220,10 @@ function makeComponent(comp, options = {}) {
   return new Component({
     pads,
     layers: results,
+    footprint: comp,
+    pos: translate,
     padShapes,
-    refDes: options.refDes
+    refDes: refDes
   })
 }
 
