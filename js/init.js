@@ -86,7 +86,7 @@ function exportNet() {
       console.log("Assign board.add(...) to variable or pass refDes in object parameters.")
     }
 
-    components[x.refDes] = { pads: x.padShapes };
+    components[x.refDes] = { pads: x.padShapes, pos: x._pos };
   });
 
   const obj = { components, netList: pcb._netList };
