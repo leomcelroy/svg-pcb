@@ -24,12 +24,18 @@ export const drawDownloadKiCadModal = state => {
     		</div>
     		<div class="modal-body">
     			<div class="col-50">
-    				<h4>Some options here</h4>
-    				<p>...</p>
+					<h4><label for="projectName">Project Name</label></h4>
+					<div class="modal-line">
+						<input id="projectName" 
+							type="text" 
+							.value=${state.name === "" ? "Untitled" : state.name}
+							@input=${(e) => {
+								state.name = e.target.value;
+							}}>
+					</div>
     			</div> <!-- /.col-50 -->
     			<div class="col-50">
-    				<h4>Some options there</h4>
-    				<p>...</p>
+    				<!-- TBD -->
     			</div> <!-- /.col-50 -->
     		</div> <!-- /.modal-body -->
     		<div class="modal-footer">
