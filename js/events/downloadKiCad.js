@@ -102,9 +102,7 @@ export class KiCadBoardFileBuilder {
   }
 
   plotComponents(componentData) {
-
-    // Gather all the data we need to add footprint entries to KiCad board file
-    const components = [];
+    const components = []; // Gather all the data we need to add footprint entries to KiCad board file
     componentData.forEach((comp) => {
       const component = {
         position: comp.pads.center,
@@ -185,6 +183,35 @@ export class KiCadBoardFileBuilder {
     });
   }
 
+  plotOutline(outlineLayer) {
+    const shapes = outlineLayer[0];
+    shapes.forEach((shape) => {
+      const ptFirst = shape[0];
+      const ptLast = shape[shape.length-1];
+      
+      if (ptFirst[0] !== ptLast[0] || ptFirst[1] !== ptLast[1]) {
+        shape.push(ptFirst); // Add first point as last if it is not like that already
+      }
+
+      for (let i = 0; i < shape.length - 1; i++) {
+        const ptStart = shape[i];
+        const ptEnd = shape[i+1];
+        const lineStart = {
+          x: inchesToMM(ptStart[0]).toFixed(3),
+          y: inchesToMM(-ptStart[1]).toFixed(3)
+        }
+        const lineEnd = {
+          x: inchesToMM(ptEnd[0]).toFixed(3),
+          y: inchesToMM(-ptEnd[1]).toFixed(3)
+        }
+        const lineTstamp = getUUID();
+
+        this.#body += `(gr_line (start ${lineStart.x} ${lineStart.y}) (end ${lineEnd.x} ${lineEnd.y})\n`;
+        this.#body += `(stroke (width 0.1) (type default)) (layer "Edge.Cuts") (tstamp ${lineTstamp}))\n`;
+      }
+    });
+  }
+
   toString() {
     let str = this.#getHeader();
     str += this.#body;
@@ -200,6 +227,7 @@ export function downloadKiCad(state) {
 
   const layers = state.pcb.layers;
   boardFile.plotWires(layers["F.Cu"], "F.Cu");
+  boardFile.plotOutline(layers["interior"]);
 
   const components = state.pcb.components;
   boardFile.plotComponents(components);
