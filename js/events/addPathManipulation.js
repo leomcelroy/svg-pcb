@@ -13,8 +13,6 @@ const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 export function addPathManipulation(state, svgListener) {
   let clickedPoint = null;
 
-  // setInterval(() => updateSelectedPath(state), 300);
-
   const svg = document.querySelector("svg");
   const svgPoint = svg.panZoomParams.svgPoint;
 
@@ -25,6 +23,21 @@ export function addPathManipulation(state, svgListener) {
     
     clickedPoint = {x: e.offsetX, y: e.offsetY };
     
+  })
+
+  svgListener("mousemove", "", e => {
+    const currentPoint = { x: e.offsetX, y: e.offsetY };
+    const targetPoint = svgPoint(currentPoint);
+    const pt = snapToPad(targetPoint);
+
+    if (!pt.snapped) {
+      pt.x = snapToGrid(pt.x);
+      pt.y = snapToGrid(pt.y);
+    }
+
+    state.preview = [ pt.x, pt.y ];
+
+    dispatch("RENDER");
   })
 
   svgListener("mouseup", "", e => {
@@ -62,7 +75,7 @@ export function addPathManipulation(state, svgListener) {
 
     const text = pt.snapped
       ? `${textStart}${pt.padRef},`
-      : `${textStart}pt(${pt.x}, ${pt.y}),`;
+      : `${textStart}[${pt.x}, ${pt.y}],`;
 
     state.codemirror.view.dispatch({
       changes: {

@@ -73,7 +73,8 @@ export const makeIncluded = (flatten) => ({
     if (global_state.selectedPath.pathStart === staticInfo.from) {
       global_state.selectedPath.pathEnd = staticInfo.to;
       const str = string.slice(staticInfo.from, staticInfo.to);
-      console.log("selectedPath", args, staticInfo, str);
+      // console.log("selectedPath", args, staticInfo, str);
+      global_state.selectedPath.args = args;
     }
 
     return pts;

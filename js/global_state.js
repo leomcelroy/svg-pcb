@@ -33,6 +33,8 @@ export const global_state = {
   panZoomParams: undefined,
   previewFootprint: null,
   vimMode: false,
+
+  preview: null,
   
   paths: [],
   pts: [], 

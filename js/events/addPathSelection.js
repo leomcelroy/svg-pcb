@@ -14,6 +14,6 @@ export function addPathSelection(state, listener) {
       str,
     }
 
-    dispatch("RENDER");
+    dispatch("RUN");
   })
 }

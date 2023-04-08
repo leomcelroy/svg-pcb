@@ -1,5 +1,5 @@
 import { html, svg } from "lit-html";
-
+import { pathToCubics } from "../path.js";
 import { drawGrid } from "./drawGrid.js";
 import { drawPath } from "./drawPath.js";
 import { drawHandles } from "./drawHandles.js";
@@ -102,6 +102,7 @@ export const svgViewer = (state) => {
 
           <g class="shapes">${shapes}</g>
           <g class="paths">${paths}</g>
+          ${renderSelectedPath(state, scale)}
 
 
         ${state.panZoomParams && state.gridSize > 0 && state.grid && false
@@ -165,3 +166,195 @@ function drawPattern(x, y, scale, corners, gridSize) {
       </line>
   `
 }
+
+function renderSelectedPath(state, scale) {
+  const path = state.selectedPath;
+  if (!path) return "";
+  if (!path.args) return "";
+
+  return [
+    renderPath(pathToCubics(path.args).cubics, path.pathStart),
+    drawPreview(state),
+    renderPts(path.args, scale),
+  ]
+}
+
+function renderPath(path, from) {
+  let d = "";
+
+  path.forEach((cmd, cmdIndex) => {
+    const [p0, h0, h1, p1] = cmd;
+    const start = cmdIndex === 0 ? `M ${p0[0]} ${p0[1]}` : "";
+    d += `${start} C ${h0[0]} ${h0[1]}, ${h1[0]} ${h1[1]}, ${p1[0]} ${p1[1]} `;
+  });
+
+  return svg`
+    <path
+      d=${d}
+      @click=${() => {
+        // const pathButton = document.querySelector(`[data-path-start="${from}"]`);
+        // console.log(pathButton);
+
+      }}
+      stroke="orange"
+      stroke-width="5"
+      vector-effect="non-scaling-stroke"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+      >
+    </path>
+  `;
+};
+
+function cmdType(cmd) {
+  if (typeof cmd[0] === "number") return "point";
+  else return cmd[0];
+}
+
+function ptToCircle(pt, scale, ops = {}) { 
+  return svg`
+    <circle
+      cx=${pt[0]}
+      cy=${pt[1]}
+      class="path-pt"
+      r=${0.01 / (scale * 0.0015)}
+      display=${ops.display ?? "inherit"}
+      fill=${ops.fill ?? "black"}
+      stroke-width="0.15"
+      vector-effect="non-scaling-stroke"
+      stroke="black"
+      data-index=${ops.index}
+      data-type=${ops.type}
+    >`;
+}
+
+function renderPts(path, scale) {
+  let result = [];
+
+  const pointDisplay = "inherit";
+  // global_state["viewMode"] === "none" ? "none" : "inherit";
+  const handleDisplay = "inherit";
+  // global_state["viewMode"] === "handles" ? "inherit" : "none";
+
+  path.forEach((cmd, cmdIndex) => {
+    const pathcmd = `${cmdIndex}`;
+    const type = cmdType(cmd);
+
+    if (type === "point") {
+      // Draw just a point
+      result.push(
+        ptToCircle(cmd, scale, {
+          display: pointDisplay,
+          index: pathcmd,
+          type: "point",
+        })
+      );
+    }
+
+    if (type === "fillet" || type === "fillet") {
+      const [_, r, p ] = cmd;
+
+      result.push(
+        ptToCircle(p, scale, {
+          display: pointDisplay,
+          index: pathcmd,
+          type: "point",
+        })
+      );
+    }
+
+    if (type === "cubic") {
+      // Draw a point and handles
+      const [_, h0, p0, h1] = cmd;
+
+      const lineStyle = `
+        stroke: red;
+        stroke-width: 7;
+        vector-effect: non-scaling-stroke;
+        stroke-dasharray: 7;
+        opacity: .7;
+      `;
+
+      if (cmdIndex !== 0)
+        result.push(svg`
+        <path display=${handleDisplay} style="${lineStyle}" d="M ${h0.join(
+          " "
+        )} L ${p0.join(" ")}">
+      `);
+
+      if (cmdIndex !== path.length - 1)
+        result.push(svg`
+        <path display=${handleDisplay} style="${lineStyle}" d="M ${h1.join(
+          " "
+        )} L ${p0.join(" ")}">
+      `);
+
+      // draw a handle (h0)
+      if (cmdIndex !== 0)
+        result.push(
+          ptToCircle(h0, scale, {
+            display: handleDisplay,
+            fill: "blue",
+            index: `${pathcmd},1`,
+            type: "cubic",
+          })
+        );
+
+      // draw point on path (p0)
+      result.push(
+        ptToCircle(p0, scale, {
+          display: pointDisplay,
+          index: `${pathcmd},2`,
+          fill: "purple",
+          type: "cubic",
+        })
+      );
+
+      // draw a handle (h1)
+      if (cmdIndex !== path.length - 1)
+        result.push(
+          ptToCircle(h1, scale, {
+            display: handleDisplay,
+            fill: "blue",
+            index: `${pathcmd},3`,
+            type: "cubic",
+          })
+        );
+    }
+
+  });
+
+  return result;
+};
+
+function drawPreview(state) {
+  if (!state.selectedPath) return "";
+  if (!state.selectedPath.args) return "";
+
+  const lastCommand = state.selectedPath.args.at(-1);
+
+  const lastPoint =
+    cmdType(lastCommand) === "cubic" ? lastCommand[2] : lastCommand;
+
+  const renderPreviewLine = (start, end) => {
+    if (!start || !end) return "";
+
+    const d = `M ${start[0]} ${start[1]} L ${end[0]} ${end[1]}`;
+
+    return svg`
+      <path
+        d=${d}
+        stroke="orange"
+        stroke-width="5"
+        vector-effect="non-scaling-stroke"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"
+        >
+     </path>
+    `;
+  };
+
+  return renderPreviewLine(lastPoint, state.preview);
+};
