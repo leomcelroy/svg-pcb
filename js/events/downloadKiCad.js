@@ -71,7 +71,7 @@ export class KiCadBoardFileBuilder {
   }
 
   #getFooter() {
-    return ") ;; kicad_pcb";
+    return ")";
   }
 
   plotWires(layerData, layerName) {
@@ -142,8 +142,12 @@ export class KiCadBoardFileBuilder {
 
       component.pads.forEach((pad) => {
         const padPos = {
-          x: inchesToMM(pad.position[0]).toFixed(3),
-          y: -inchesToMM(pad.position[1]).toFixed(3)
+          x: (inchesToMM(pad.position[0]) - footprintPos.x).toFixed(3),
+          y: (-inchesToMM(pad.position[1]) - footprintPos.y).toFixed(3)
+        };
+        const ptOffset = {
+          x: inchesToMM(pad.position[0]),
+          y: -inchesToMM(pad.position[1])
         };
         
         const padTstamp = getUUID();
@@ -156,8 +160,8 @@ export class KiCadBoardFileBuilder {
           
           shape.forEach((pt) => {
             const pos = {
-              x: inchesToMM(pt[0]).toFixed(3) - padPos.x,
-              y: -inchesToMM(pt[1]).toFixed(3) - padPos.y
+              x: (inchesToMM(pt[0]) - ptOffset.x).toFixed(3),
+              y: (-inchesToMM(pt[1]) - ptOffset.y).toFixed(3)
             }
             
             min.x = pos.x < min.x ? pos.x : min.x; // We need to determine max extents of the pad
@@ -176,7 +180,7 @@ export class KiCadBoardFileBuilder {
           h: Math.abs(max.y - min.y)
         }
 
-        this.#body += `(pad "${pad.number}" smd custom (at ${padPos.x - footprintPos.x} ${padPos.y - footprintPos.y}) (size ${Math.min(padSize.w, padSize.h)} ${Math.min(padSize.w, padSize.h)}) (layers ${component.layers.join(' ')}) (pinfunction "${pad.label}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${padPrimitives.join(' ')}))\n`;
+        this.#body += `(pad "${pad.number}" smd custom (at ${padPos.x} ${padPos.y}) (size ${Math.min(padSize.w, padSize.h)} ${Math.min(padSize.w, padSize.h)}) (layers ${component.layers.join(' ')}) (pinfunction "${pad.label}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${padPrimitives.join(' ')}))\n`;
       });
 
       this.#body += `)\n`; // Closing footprint definition
