@@ -125,8 +125,8 @@ export class PCB {
         if (constructor === "Component") item[0] = comp.refDes;
       })
     })
+    
     this._netList = newNetList;
-    console.log(this._netList);
   }
 
   wire(pts, thickness, layer = "F.Cu") {
