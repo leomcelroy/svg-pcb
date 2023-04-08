@@ -8,7 +8,7 @@ import { APP_NAME, MM_PER_INCH } from "../constants.js";
 /* TODO:
 - [x] Create basic .kicad_pcb for download
 - [x] Add wires
-- [ ] Add footprints
+- [x] Add footprints
 - [ ] Add tests
 - [ ] Add bool option for pads as polygons or primitive shapes
 - [ ] Add bool option for primitive shape pads as circles or rects
