@@ -152,8 +152,7 @@ export class KiCadBoardFileBuilder {
     });
 
     // Wrangle components before adding to KiCad file
-    const components = [];
-    Object.entries(compData).forEach(([key, val], i) => {
+    const components = Object.values(compData).map((val) => {
       const component = {
         reference: val.refDes,
         position: {
@@ -176,7 +175,7 @@ export class KiCadBoardFileBuilder {
           return pad;
         })
       }
-      components.push(component);
+      return component;
     });
 
     // Add footprint entries to KiCad board file
