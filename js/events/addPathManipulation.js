@@ -11,6 +11,12 @@ const step = (num, stepSize) => Math.round(num/stepSize)*stepSize;
 const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
 const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 
+// BUG: if I edit text in some way then state.selectedPath.from needs to update
+// selected path needs to be mark by an index not a range
+// range is always retrieved when evaled
+// when `path` button is clicked I do what?
+
+
 export function addPathManipulation(state, svgListener) {
 
   // --- POINT MANIPULATION ---
