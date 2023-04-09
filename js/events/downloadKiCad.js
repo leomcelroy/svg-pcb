@@ -151,9 +151,6 @@ export class KiCadBoardFileBuilder {
       }
     });
 
-    console.log('components:', compData);
-    console.log('vias:', viaData);
-
     // Wrangle components before adding to KiCad file
     const components = [];
     Object.entries(compData).forEach(([key, val], i) => {
@@ -182,9 +179,7 @@ export class KiCadBoardFileBuilder {
       components.push(component);
     });
 
-    console.log(components);
-
-    // Add footprint entrie to KiCad board file
+    // Add footprint entries to KiCad board file
     components.forEach((component) => {
       const footprintName = getUUID(); // No linkage to original footprint, thats why a random uuid
       const footprintTstamp = getUUID();
@@ -219,6 +214,24 @@ export class KiCadBoardFileBuilder {
       });
 
       this.#body += `)\n`; // Closing footprint definition
+    });
+
+    // Wrangle vias
+    const vias = Object.values(viaData).map((comp) => {
+      const via = {
+        position: {
+          x: inchesToMM(comp.pos[0]).toFixed(3),
+          y: inchesToMM(-comp.pos[1]).toFixed(3)
+        }, 
+        size: this.#getSizeFromPoints(this.#svgToPoints(comp.footprint.F.shape)).w,
+        drill: this.#getSizeFromPoints(this.#svgToPoints(comp.footprint.drill.shape)).w,
+        tstamp: getUUID()
+      };
+      return via;
+    });
+
+    vias.forEach((via) => {
+      this.#body += `(via (at ${via.position.x} ${via.position.y}) (size ${via.size}) (drill ${via.drill}) (layers "F.Cu" "B.Cu") (net 0) (tstamp ${via.tstamp}))\n`;
     });
   }
 
