@@ -54,6 +54,8 @@ export class KiCadBoardFileBuilder {
     str += `(layers\n`;
     str += `(0 "F.Cu" signal)\n`;
     str += `(31 "B.Cu" signal)\n`;
+    str += `(36 "B.SilkS" user)\n`;
+    str += `(37 "F.SilkS" user)\n`;
     str += `(38 "B.Mask" user)\n`;
     str += `(39 "F.Mask" user)\n`;
     str += `(44 "Edge.Cuts" user)\n`;
@@ -72,6 +74,40 @@ export class KiCadBoardFileBuilder {
 
   #getFooter() {
     return ")";
+  }
+
+  #svgToPoints(svgString) {
+    const re = /(M|L)[^0-9-.]*(-?[0-9.]+),(-?[0-9.]+)/gm;
+    const points = svgString.match(re);
+
+    const shape = points.map((ptString) => {
+      const re = /(M|L)[^0-9-.]*(-?[0-9.]+),(-?[0-9.]+)/;
+      const match = ptString.match(re);
+      const point = {
+        x: inchesToMM(match[2]).toFixed(3),
+        y: inchesToMM(match[3]).toFixed(3)
+      }
+      return point;
+    });
+    
+    return shape;
+  }
+
+  #getSizeFromPoints(points) {
+    const min = { x: 0, y: 0 };
+    const max = { x: 0, y: 0 };
+    points.forEach((pt) => {
+      min.x = pt.x < min.x ? pt.x : min.x;
+      min.y = pt.y < min.y ? pt.y : min.y;
+      max.x = pt.x > max.x ? pt.x : max.x;
+      max.y = pt.y > max.y ? pt.y : max.y
+    });
+    const size = {
+      w: Math.abs(max.x - min.x),
+      h: Math.abs(max.y - min.y)
+    
+    }
+    return size;
   }
 
   plotWires(layerData, layerName) {
@@ -102,85 +138,84 @@ export class KiCadBoardFileBuilder {
   }
 
   plotComponents(componentData) {
-    const components = []; // Gather all the data we need to add footprint entries to KiCad board file
-    componentData.forEach((comp) => {
-      const component = {
-        position: comp.pads.center,
-        layers: ['"F.Cu"'],
-        pads: []
+
+    // Separate vias from components
+    const compData = []; 
+    const viaData = [];
+    Object.values(componentData).forEach((comp) => {
+      const keys = Object.keys(comp.footprint);
+      if (keys.includes('F') && keys.includes('B') && keys.includes('drill')) {
+        viaData.push(comp);
+      } else {
+        compData.push(comp);
       }
+    });
 
-      // Combine pad name, shape and location into KiCad compat pad object
-      const padDataArr = [];
-      Object.entries(comp.pads).forEach(([key, val], i) => {
-        if (key === 'center') return;
-        const padInfo = {
-          number: i + 1,
-          label: key,
-          position: val,
-          shapes: comp.layers["F.Cu"][i]
-        };
-        component.pads.push(padInfo);
-      });
+    console.log('components:', compData);
+    console.log('vias:', viaData);
 
+    // Wrangle components before adding to KiCad file
+    const components = [];
+    Object.entries(compData).forEach(([key, val], i) => {
+      const component = {
+        reference: val.refDes,
+        position: {
+          x: inchesToMM(val.pads.center[0]).toFixed(3),
+          y: inchesToMM(-val.pads.center[1]).toFixed(3)
+        },
+        layer: Object.values(val.footprint)[0].layers[0],
+        pads: Object.entries(val.footprint).map(([key, val]) => {
+          const pad = {
+            number: val.index,
+            name: key,
+            position: {
+              x: inchesToMM(val.pos[0]).toFixed(3),
+              y: inchesToMM(-val.pos[1]).toFixed(3)
+            },
+            shape: this.#svgToPoints(val.shape),
+            layers: val.layers,
+            size: this.#getSizeFromPoints(this.#svgToPoints(val.shape))
+          };
+          return pad;
+        })
+      }
       components.push(component);
     });
+
+    console.log(components);
 
     // Add footprint entrie to KiCad board file
     components.forEach((component) => {
       const footprintName = getUUID(); // No linkage to original footprint, thats why a random uuid
       const footprintTstamp = getUUID();
-      const footprintPos = {
-        x: inchesToMM(component.position[0]).toFixed(3),
-        y: -inchesToMM(component.position[1]).toFixed(3)
-      }
+      const footprintPos = component.position;
 
-      this.#body += `(footprint "${APP_NAME}:${footprintName}" (layer "F.Cu")\n`;
+      this.#body += `(footprint "${APP_NAME}:${footprintName}" (layer "${component.layer}")\n`;
       this.#body += `(tstamp ${footprintTstamp})\n`;
-      this.#body += `(at ${footprintPos.x} ${footprintPos.y})`; // Footprint center, I suppose
+      this.#body += `(at ${footprintPos.x} ${footprintPos.y})`; 
       this.#body += `(attr smd)\n`; // For now all footprints are surface mount
 
+      // Add reference designator
+      const refDesTstamp = getUUID();
+      this.#body += `(fp_text reference "${component.reference}" (at 0 0) (layer "F.SilkS")(effects (font (size 1 1) (thickness 0.15))) (tstamp ${refDesTstamp}))`;
+
       component.pads.forEach((pad) => {
-        const padPos = {
-          x: (inchesToMM(pad.position[0]) - footprintPos.x).toFixed(3),
-          y: (-inchesToMM(pad.position[1]) - footprintPos.y).toFixed(3)
-        };
-        const ptOffset = {
-          x: inchesToMM(pad.position[0]),
-          y: -inchesToMM(pad.position[1])
-        };
-        
         const padTstamp = getUUID();
-        const min = {x: 0, y: 0}; // For pad size calculation
-        const max = {x: 0, y: 0};
-        const padPrimitives = [];
-        
-        pad.shapes.forEach((shape) => {
-          let primitive = `(gr_poly (pts`;
-          
-          shape.forEach((pt) => {
-            const pos = {
-              x: (inchesToMM(pt[0]) - ptOffset.x).toFixed(3),
-              y: (-inchesToMM(pt[1]) - ptOffset.y).toFixed(3)
-            }
-            
-            min.x = pos.x < min.x ? pos.x : min.x; // We need to determine max extents of the pad
-            min.y = pos.y < min.y ? pos.y : min.y;
-            max.x = pos.x > max.x ? pos.x : max.x;
-            max.y = pos.y > max.y ? pos.y : max.y;
-            primitive += ` (xy ${pos.x} ${pos.y})`;
-          });
-          
-          primitive += `) (width 0) (fill yes))`;
-          padPrimitives.push(primitive);
+        const padLayers = pad.layers.map((layer) => {
+          return `"${layer}"`;
         });
 
-        const padSize = {
-          w: Math.abs(max.x - min.x),
-          h: Math.abs(max.y - min.y)
-        }
+        // Add additional layers for KiCad
+        padLayers.push(`"F.Mask"`);
+        padLayers.push(`"F.Paste"`);
 
-        this.#body += `(pad "${pad.number}" smd custom (at ${padPos.x} ${padPos.y}) (size ${Math.min(padSize.w, padSize.h)} ${Math.min(padSize.w, padSize.h)}) (layers ${component.layers.join(' ')}) (pinfunction "${pad.label}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${padPrimitives.join(' ')}))\n`;
+        let primitive = `(gr_poly (pts`; 
+        pad.shape.forEach((pt) => {
+          primitive += ` (xy ${pt.x} ${pt.y})`;
+        });
+          
+        primitive += `) (width 0) (fill yes))`;
+        this.#body += `(pad "${pad.number}" smd custom (at ${pad.position.x} ${pad.position.y}) (size ${Math.min(pad.size.w, pad.size.h)} ${Math.min(pad.size.w, pad.size.h)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${primitive}))\n`;
       });
 
       this.#body += `)\n`; // Closing footprint definition
@@ -230,8 +265,18 @@ export function downloadKiCad(state) {
   const projectName = (state.name === "" ? "Untitled" : state.name);
 
   const layers = state.pcb.layers;
-  boardFile.plotWires(layers["F.Cu"], "F.Cu");
-  boardFile.plotOutline(layers["interior"]);
+
+  if (layers["F.Cu"]) { 
+    boardFile.plotWires(layers["F.Cu"], "F.Cu");
+  }
+  
+  if (layers["B.Cu"]) {
+    boardFile.plotWires(layers["B.Cu"], "B.Cu");
+  }
+
+  if (layers["interior"]) {
+    boardFile.plotOutline(layers["interior"]);
+  }
 
   const components = state.pcb.components;
   boardFile.plotComponents(components);
