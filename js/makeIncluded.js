@@ -65,6 +65,8 @@ export const makeIncluded = (flatten) => ({
   path: (args, staticInfo) => {
     const pts = geo.path2(...args);
 
+    global_state.selectablePaths[staticInfo.from] = args;
+
     const doc = global_state.codemirror.view.state.doc;
     const string = doc.toString();
 

@@ -756,3 +756,21 @@ input {
 .align-right {
 	text-align: right;
 }
+
+
+/* selectable paths */
+.selectable-path {
+	stroke: #00000000;
+}
+
+.selectable-path:hover {
+	stroke-width: 10;
+	stroke: #fdc81d;
+}
+
+
+
+
+
+
+

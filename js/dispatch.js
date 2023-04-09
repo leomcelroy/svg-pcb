@@ -21,6 +21,7 @@ const r = () => {
 const ACTIONS = {
 	RUN({ dragging = false, flatten = false } = {}, state) {
 		state.paths = [];
+		state.selectablePaths = [];
 		state.inputs = [];
 		state.pts = [];
 		state.error = "";

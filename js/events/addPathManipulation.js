@@ -11,12 +11,56 @@ const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
 const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 
 export function addPathManipulation(state, svgListener) {
+
+  // TODO: clean this up it is messy
+  // issue is I don't want to add points if I've just selected a path
+  
+
+  // --- POINT MANIPULATION ---
+
+  // addPointManipulation()
+  // svgListener("mousedown", ".path-pt", e => {
+  //   console.log(e.target);
+  // })
+
+
+  // addCubicManipulation()
+  // addFilletManipulation()
+
+  // --- POINT CONVERSION ---
+
+
+  // --- PATH SELECTION ---
+  let pauseEvent = { ref: false };
+
+  svgListener("mousedown", ".selectable-path", e => {
+    console.log(e.target, ".selectable-path");
+    const start = [...e.target.classList].find(x => x.match(/pathStart-\d+/)).split("-")[1];
+    
+    const pathButton = document.querySelector(`[data-path-start="${start}"]`);
+    pathButton.click();
+    // TODO: scroll to this button in code, highlight perhaps
+
+    pauseEvent.ref = true;
+  })
+
+  svgListener("mouseup", "", () => {
+    pauseEvent.ref = false;
+  })
+
+  // --- POINT ADDING ---
+  addPointAdding(state, svgListener, pauseEvent);
+}
+
+function addPointAdding(state, svgListener, pauseEvent) {
   let clickedPoint = null;
 
   const svg = document.querySelector("svg");
   const svgPoint = svg.panZoomParams.svgPoint;
 
   svgListener("mousedown", "", e => {
+    if (pauseEvent.ref) return;
+
     const isPt = e.composedPath().some(el => el.classList?.contains("draggable-pt"));
     if (isPt || state.selectedPath === null) return;
 
@@ -88,6 +132,13 @@ export function addPathManipulation(state, svgListener) {
   })
 }
 
+function pauseEvent(e) {
+    if(e.stopPropagation) e.stopPropagation();
+    if(e.preventDefault) e.preventDefault();
+    e.cancelBubble=true;
+    e.returnValue=false;
+    return false;
+}
 
 
 

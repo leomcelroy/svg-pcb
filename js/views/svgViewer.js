@@ -56,7 +56,6 @@ export const svgViewer = (state) => {
   const labels = state.shapes.filter(x => ["componentLabels", "padLabels"].includes(x.groupId));
   const notLabels = state.shapes.filter(x => !["componentLabels", "padLabels"].includes(x.groupId));
   
-
   const shapes = [
     ...notLabels.map(drawPath),
     drillLayer,
@@ -66,7 +65,19 @@ export const svgViewer = (state) => {
   const paths = state.paths.map(drawP);
   const pts = state.pts.map((pt, i) => drawPt(pt, i, scale));
 
+  const selectablePaths = [];
 
+  for (const key in state.selectablePaths) {
+    const path = state.selectablePaths[key];
+    if (path.length <= 1) continue;
+
+    const ops = {
+      "class": [`selectable-path`, `pathStart-${key}`]
+    }
+
+    const template = renderPath(pathToCubics(path).cubics, key, ops);
+    selectablePaths.push(template);
+  }
 
   return svg`
     <svg id="viewer" style="width: 100%; height: 100%; transform: scale(1, -1);">
@@ -81,6 +92,14 @@ export const svgViewer = (state) => {
         : ""}
 
       <g class="transform-group">
+          <rect
+            class="limits no-download"
+            width="${state.limits.x[1] - state.limits.x[0]}"
+            height="${state.limits.y[1] - state.limits.y[0]}"
+            stroke="black" fill="transparent" stroke-width="1"
+            vector-effect="non-scaling-stroke"
+            transform="translate(${state.limits.x[0]}, ${state.limits.y[0]})"/>
+
           <rect 
             x=${state.limits.x[0]} 
             y=${state.limits.y[0]} 
@@ -102,21 +121,15 @@ export const svgViewer = (state) => {
 
           <g class="shapes">${shapes}</g>
           <g class="paths">${paths}</g>
+          <g class="selectable-paths">${selectablePaths}</g>
           ${renderSelectedPath(state, scale)}
 
+          ${state.panZoomParams && state.gridSize > 0 && state.grid && false
+            ? drawGrid(state.panZoomParams.corners(), state.gridSize)
+            : ""
+          }
 
-        ${state.panZoomParams && state.gridSize > 0 && state.grid && false
-          ? drawGrid(state.panZoomParams.corners(), state.gridSize)
-          : ""
-        }
 
-        <rect
-          class="limits no-download"
-          width="${state.limits.x[1] - state.limits.x[0]}"
-          height="${state.limits.y[1] - state.limits.y[0]}"
-          stroke="black" fill="transparent" stroke-width="1"
-          vector-effect="non-scaling-stroke"
-          transform="translate(${state.limits.x[0]}, ${state.limits.y[0]})"/>
         <g class="pts no-download">${state.viewHandles ? pts : ""}</g>
       </g>
 
@@ -179,7 +192,19 @@ function renderSelectedPath(state, scale) {
   ]
 }
 
-function renderPath(path, from) {
+function renderPath(path, from, attributes = {}) {
+  const attributesDefault = {
+    "stroke": "plum",
+    "stroke-width": "5",
+    "vector-effect": "non-scaling-stroke",
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    "fill": "none",
+    "class": []
+  }
+
+  attributes = {...attributesDefault, ...attributes};
+
   let d = "";
 
   path.forEach((cmd, cmdIndex) => {
@@ -188,22 +213,24 @@ function renderPath(path, from) {
     d += `${start} C ${h0[0]} ${h0[1]}, ${h1[0]} ${h1[1]}, ${p1[0]} ${p1[1]} `;
   });
 
+  let attributesString = "";
+
+  for (const attribute in attributes) {
+    const value = attributes[attribute];
+    attributesString += `${attribute}="${value}" `
+  }
+
   return svg`
     <path
       d=${d}
-      @click=${() => {
-        // const pathButton = document.querySelector(`[data-path-start="${from}"]`);
-        // console.log(pathButton);
-
-      }}
-      stroke="orange"
-      stroke-width="5"
-      vector-effect="non-scaling-stroke"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      fill="none"
-      >
-    </path>
+      class=${attributes["class"].join(" ")}
+      stroke=${attributes["stroke"]}
+      stroke-width=${attributes["stroke-width"]}
+      vector-effect=${attributes["vector-effect"]}
+      stroke-linecap=${attributes["stroke-linecap"]}
+      stroke-linejoin=${attributes["stroke-linejoin"]}
+      fill=${attributes["fill"]}
+      />
   `;
 };
 
@@ -331,6 +358,7 @@ function renderPts(path, scale) {
 function drawPreview(state) {
   if (!state.selectedPath) return "";
   if (!state.selectedPath.args) return "";
+  if (state.selectedPath.args.length < 2) return "";
 
   const lastCommand = state.selectedPath.args.at(-1);
 
@@ -345,8 +373,9 @@ function drawPreview(state) {
     return svg`
       <path
         d=${d}
-        stroke="orange"
+        stroke="plum"
         stroke-width="5"
+        stroke-dasharray="10"
         vector-effect="non-scaling-stroke"
         stroke-linecap="round"
         stroke-linejoin="round"

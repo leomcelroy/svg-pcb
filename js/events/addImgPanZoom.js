@@ -57,8 +57,9 @@ export function addImgPanZoom(state, listen) {
     let xs = (e.offsetX - pointX) / scale;
     let ys = (e.offsetY - pointY) / scale;
 
-    if (Math.sign(e.deltaY) < 0) scale *= 1.03;
-    else scale /= 1.03;
+    const ZOOM_SCALE = 1.05;
+    if (Math.sign(e.deltaY) < 0) scale *= ZOOM_SCALE;
+    else scale /= ZOOM_SCALE;
 
     pointX = e.offsetX - xs * scale;
     pointY = e.offsetY - ys * scale;

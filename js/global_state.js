@@ -36,7 +36,11 @@ export const global_state = {
 
   preview: null,
   
+  // these are added through renderpath
   paths: [],
+
+  // these are added through path(...)
+  selectablePaths: [],
   pts: [], 
   layers: [],
   inputs: [],
