@@ -7,7 +7,7 @@ import { addNumberDragging } from "./events/addNumberDragging.js";
 import { addImportDrag } from "./events/addImportDrag.js";
 import { addPathManipulation } from "./events/addPathManipulation.js";
 import { addPathSelection } from "./events/addPathSelection.js";
-
+import { clearSelectedPath } from "./clearSelectedPath.js";
 import { dispatch } from "./dispatch.js";
 
 function pauseEvent(e) {
@@ -53,10 +53,7 @@ export function addEvents(state) {
 		let code = event.code;
 		
 		const isTypingCode = e.target.classList.contains("cm-content");
-		if (isTypingCode) {
-			state.selectedPath = null;
-			dispatch("RENDER");
-		}
+		if (isTypingCode) clearSelectedPath();
 
 		if (code === "Enter" && event.shiftKey) {
 		  event.preventDefault();

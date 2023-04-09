@@ -38,6 +38,7 @@ export const global_state = {
   // these are added through renderpath
   paths: [],
 
+  selectedPathIndex: -1,
   selectedPath: null, // { from, to, args }
   // these are added through path(...)
   selectablePaths: [],

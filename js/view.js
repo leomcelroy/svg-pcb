@@ -26,7 +26,7 @@ export function view(state) {
 			</div>
 			<div class="right-side" @mousedown=${() => dispatch("RUN", { flatten: false })}>
 				${svgViewer(state)}
-				${state.selectedPath !== null ? html`<div class="path-selected" @click=${clearSelectedPath}>unselect path</div>` : ""}
+				${state.selectedPathIndex >= 0 ? html`<div class="path-selected" @click=${clearSelectedPath}>unselect path</div>` : ""}
 				<div class="footprint-toolbox">
 					${state.inputs.length > 0 ? html`<div class="toolbox-title">Inputs:</div>` : ""}
 					<div class="input-panel">

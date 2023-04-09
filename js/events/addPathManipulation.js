@@ -17,7 +17,9 @@ export function addPathManipulation(state, svgListener) {
 
   // addPointManipulation()
   svgListener("mousedown", ".path-pt", e => {
-    const index = Number(e.target.dataset.index);
+    console.log(e.target);
+    const index = Number(e.target.dataset.index.split(",")[0]);
+    console.log(index);
     const { from, to, args } = state.selectedPath;
     const code = state.codemirror.view.state.doc.toString();
     const snippet = code.slice(from, to);
@@ -48,10 +50,10 @@ export function addPathManipulation(state, svgListener) {
   // --- PATH SELECTION ---
   svgListener("mousedown", ".selectable-path", e => {
     const start = [...e.target.classList].find(x => x.match(/pathStart-\d+/)).split("-")[1];
-    
-    state.selectedPath = {
-      from: Number(start)
-    }
+    const index = [...e.target.classList].find(x => x.match(/pathIndex-\d+/)).split("-")[1];
+
+    state.selectedPathIndex = Number(index);
+    dispatch("RUN");
 
     // TODO: scroll to this button in code, highlight perhaps
   })
@@ -69,6 +71,7 @@ function addPointAdding(state, svgListener) {
   svgListener("mousedown", "", e => {
     if (e.target.classList.contains("selectable-path")) return;
     if (e.target.classList.contains("path-pt")) return;
+    if (state.selectedPathIndex < 0) return;
     const isPt = e.composedPath().some(el => el.classList?.contains("draggable-pt"));
     if (isPt || state.selectedPath === null) return;
 

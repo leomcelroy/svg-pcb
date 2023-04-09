@@ -67,18 +67,21 @@ export const svgViewer = (state) => {
 
   const selectablePaths = [];
 
-  for (const key in state.selectablePaths) {
-    const path = state.selectablePaths[key];
-    if (path.length <= 1) continue;
-    if (state.selectedPath) break;
+  state.selectablePaths.forEach( ([key, path], i) => {
+    if (path.length <= 1) return;
+    if (state.selectedPathIndex >= 0) return;
 
     const ops = {
-      "class": [`selectable-path`, `pathStart-${key}`]
+      "class": [
+        `selectable-path`, 
+        `pathStart-${key}`,
+        `pathIndex-${i}`
+      ]
     }
 
-    const template = renderPath(pathToCubics(path).cubics, key, ops);
+    const template = renderPath(pathToCubics(path).cubics, ops);
     selectablePaths.push(template);
-  }
+  })
 
   return svg`
     <svg id="viewer" style="width: 100%; height: 100%; transform: scale(1, -1);">
@@ -183,17 +186,15 @@ function drawPattern(x, y, scale, corners, gridSize) {
 
 function renderSelectedPath(state, scale) {
   const path = state.selectedPath;
-  if (!path) return "";
-  if (!path.args) return "";
-
+  if (state.selectedPathIndex < 0 || !path || !path.args) return "";
   return [
-    renderPath(pathToCubics(path.args).cubics, path.pathStart),
+    renderPath(pathToCubics(path.args).cubics),
     drawPreview(state),
     renderPts(path.args, scale),
   ]
 }
 
-function renderPath(path, from, attributes = {}) {
+function renderPath(path, attributes = {}) {
   const attributesDefault = {
     "stroke": "plum",
     "stroke-width": "5",

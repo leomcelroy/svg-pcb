@@ -65,13 +65,17 @@ export const makeIncluded = (flatten) => ({
   path: (args, staticInfo) => {
     const pts = geo.path2(...args);
 
-    global_state.selectablePaths[staticInfo.from] = args;
+    const index = global_state.selectablePaths.length;
+    global_state.selectablePaths.push([staticInfo.from, args]);
 
-    if (!global_state.selectedPath) return pts;
+    if (global_state.selectedPathIndex < 0) return pts;
 
-    if (global_state.selectedPath.from === staticInfo.from) {
-      global_state.selectedPath.to = staticInfo.to;
-      global_state.selectedPath.args = args;
+    if (global_state.selectedPathIndex === index) {
+      global_state.selectedPath = {
+        from: staticInfo.from,
+        to: staticInfo.to,
+        args: args
+      }
     }
 
     return pts;
