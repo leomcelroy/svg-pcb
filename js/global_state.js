@@ -29,7 +29,6 @@ export const global_state = {
   snapToPadRadius: 0.025,
 
   viewHandles: true,
-  selectedPath: null,
   panZoomParams: undefined,
   previewFootprint: null,
   vimMode: false,
@@ -39,6 +38,7 @@ export const global_state = {
   // these are added through renderpath
   paths: [],
 
+  selectedPath: null, // { from, to, args }
   // these are added through path(...)
   selectablePaths: [],
   pts: [], 

@@ -70,6 +70,7 @@ export const svgViewer = (state) => {
   for (const key in state.selectablePaths) {
     const path = state.selectablePaths[key];
     if (path.length <= 1) continue;
+    if (state.selectedPath) break;
 
     const ops = {
       "class": [`selectable-path`, `pathStart-${key}`]
@@ -358,7 +359,7 @@ function renderPts(path, scale) {
 function drawPreview(state) {
   if (!state.selectedPath) return "";
   if (!state.selectedPath.args) return "";
-  if (state.selectedPath.args.length < 2) return "";
+  if (state.selectedPath.args.length < 1) return "";
 
   const lastCommand = state.selectedPath.args.at(-1);
 

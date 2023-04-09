@@ -1,6 +1,7 @@
 import { dispatch } from "../dispatch.js";
 import { snapToGrid } from "../snapToGrid.js";
 import { snapToPad } from "../snapToPad.js";
+import * as esprima from 'esprima';
 
 const sigFigs = num => num.includes(".")
   ? num.split(".")[1].length
@@ -12,16 +13,30 @@ const isDigit = (ch) => /[0-9]/i.test(ch) || ch === ".";
 
 export function addPathManipulation(state, svgListener) {
 
-  // TODO: clean this up it is messy
-  // issue is I don't want to add points if I've just selected a path
-  
-
   // --- POINT MANIPULATION ---
 
   // addPointManipulation()
-  // svgListener("mousedown", ".path-pt", e => {
-  //   console.log(e.target);
-  // })
+  svgListener("mousedown", ".path-pt", e => {
+    const index = Number(e.target.dataset.index);
+    const { from, to, args } = state.selectedPath;
+    const code = state.codemirror.view.state.doc.toString();
+    const snippet = code.slice(from, to);
+    console.log(snippet);
+    const ast = esprima.parse(`hack${snippet}`, { range: true, comment: true }).body[0];
+    const parsedArg = ast.expression.arguments[index];
+    parsedArg.range = [
+      parsedArg.range[0] - 4 + from,
+      parsedArg.range[1] - 4 + from,
+    ]
+
+    console.log(parsedArg, code.slice(...parsedArg.range));
+
+    state.transforming = true;
+  })
+
+  svgListener("mouseup", "", e => {
+    state.transforming = false;
+  })
 
 
   // addCubicManipulation()
@@ -31,42 +46,35 @@ export function addPathManipulation(state, svgListener) {
 
 
   // --- PATH SELECTION ---
-  let pauseEvent = { ref: false };
-
   svgListener("mousedown", ".selectable-path", e => {
-    console.log(e.target, ".selectable-path");
     const start = [...e.target.classList].find(x => x.match(/pathStart-\d+/)).split("-")[1];
     
-    const pathButton = document.querySelector(`[data-path-start="${start}"]`);
-    pathButton.click();
+    state.selectedPath = {
+      from: Number(start)
+    }
+
     // TODO: scroll to this button in code, highlight perhaps
-
-    pauseEvent.ref = true;
-  })
-
-  svgListener("mouseup", "", () => {
-    pauseEvent.ref = false;
   })
 
   // --- POINT ADDING ---
-  addPointAdding(state, svgListener, pauseEvent);
+  addPointAdding(state, svgListener);
 }
 
-function addPointAdding(state, svgListener, pauseEvent) {
+function addPointAdding(state, svgListener) {
   let clickedPoint = null;
 
   const svg = document.querySelector("svg");
   const svgPoint = svg.panZoomParams.svgPoint;
 
   svgListener("mousedown", "", e => {
-    if (pauseEvent.ref) return;
-
+    if (e.target.classList.contains("selectable-path")) return;
+    if (e.target.classList.contains("path-pt")) return;
     const isPt = e.composedPath().some(el => el.classList?.contains("draggable-pt"));
     if (isPt || state.selectedPath === null) return;
 
-    
     clickedPoint = {x: e.offsetX, y: e.offsetY };
     
+    dispatch("RUN"); // set proper indices
   })
 
   svgListener("mousemove", "", e => {
@@ -106,7 +114,7 @@ function addPointAdding(state, svgListener, pauseEvent) {
     const doc = state.codemirror.view.state.doc;
     const string = doc.toString();
 
-    let start = state.selectedPath.pathEnd-2;
+    let start = state.selectedPath.to-2;
     const chs = [" ", "\t", "\n"];
     let ch = " ";
     while (start > 0) {

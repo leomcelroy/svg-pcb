@@ -67,15 +67,10 @@ export const makeIncluded = (flatten) => ({
 
     global_state.selectablePaths[staticInfo.from] = args;
 
-    const doc = global_state.codemirror.view.state.doc;
-    const string = doc.toString();
-
     if (!global_state.selectedPath) return pts;
 
-    if (global_state.selectedPath.pathStart === staticInfo.from) {
-      global_state.selectedPath.pathEnd = staticInfo.to;
-      const str = string.slice(staticInfo.from, staticInfo.to);
-      // console.log("selectedPath", args, staticInfo, str);
+    if (global_state.selectedPath.from === staticInfo.from) {
+      global_state.selectedPath.to = staticInfo.to;
       global_state.selectedPath.args = args;
     }
 
