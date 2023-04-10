@@ -35,12 +35,13 @@ const vector_rotate = ([x, y], angle) => [
 
 
 class Component {
-  constructor({ pads, layers, drills, footprint, pos, padShapes, refDes }) {
+  constructor({ pads, layers, drills, footprint, pos, padShapes, refDes, rotation }) {
     this.pads = pads;
     this.layers = layers;
     this.footprint = footprint;
     this.drills = drills;
     this._pos = pos;
+    this.rotation = rotation;
     this.padShapes = padShapes;
     this.refDes = refDes;
   }
@@ -182,7 +183,8 @@ function makeComponent(comp, options = {}) {
     drills,
     pos: translate,
     padShapes,
-    refDes: refDes
+    refDes: refDes,
+    rotate
   })
 }
 

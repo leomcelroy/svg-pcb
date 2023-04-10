@@ -49,7 +49,7 @@ export function addEvents(state) {
 	addVerticalBarDrag(state, listenBody);
 	addPathSelection(state, listenBody);
 
-	listenBody("keydown", "", (e) => {
+	window.addEventListener("keydown", (e) => {
 		const code = event.code;
 
 		state.heldKeys.add(code);
@@ -65,9 +65,10 @@ export function addEvents(state) {
     	}
 	})
 
-	listenBody("keyup", "", e => {
+	window.addEventListener("keyup", e => {
 		const code = event.code;
 		state.heldKeys.delete(code);
+		console.log(state.heldKeys);
 	})
 
 	window.addEventListener("unload", () => {

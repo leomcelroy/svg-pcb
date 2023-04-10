@@ -1,5 +1,20 @@
 # DEV LOG
 
+### Aril 10, 2023
+
+- change to drill api
+- mask and mask margin
+- netLists
+- path gui
+- footprint function
+- hole rendering
+  - done with interior now
+
+sorting out
+  - refDes (maybe should be called id)
+  - name (label)
+  - type?
+
 ### April 5, 2023
 
 - discussed footprint pad format
