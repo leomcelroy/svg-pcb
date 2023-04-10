@@ -50,7 +50,9 @@ export function addEvents(state) {
 	addPathSelection(state, listenBody);
 
 	listenBody("keydown", "", (e) => {
-		let code = event.code;
+		const code = event.code;
+
+		state.heldKeys.add(code);
 		
 		const isTypingCode = e.target.classList.contains("cm-content");
 		if (isTypingCode) clearSelectedPath();
@@ -61,6 +63,11 @@ export function addEvents(state) {
 		} else if (code === "KeyT" && event.shiftKey) { // test something
       
     	}
+	})
+
+	listenBody("keyup", "", e => {
+		const code = event.code;
+		state.heldKeys.delete(code);
 	})
 
 	window.addEventListener("unload", () => {

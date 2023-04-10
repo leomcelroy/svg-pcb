@@ -68,7 +68,6 @@ export const svgViewer = (state) => {
   const selectablePaths = [];
 
   state.selectablePaths.forEach( ([key, path], i) => {
-    if (path.length <= 1) return;
     if (state.selectedPathIndex >= 0) return;
 
     const ops = {
@@ -281,14 +280,14 @@ function renderPts(path, scale) {
       );
     }
 
-    if (type === "fillet" || type === "fillet") {
+    if (type === "fillet" || type === "chamfer") {
       const [_, r, p ] = cmd;
 
       result.push(
         ptToCircle(p, scale, {
           display: pointDisplay,
           index: pathcmd,
-          type: "point",
+          type: "filletOrChamfer",
         })
       );
     }
@@ -364,8 +363,13 @@ function drawPreview(state) {
 
   const lastCommand = state.selectedPath.args.at(-1);
 
-  const lastPoint =
-    cmdType(lastCommand) === "cubic" ? lastCommand[2] : lastCommand;
+  let lastPoint = {
+    "cubic": lastCommand[2],
+    "fillet": lastCommand[2],
+    "chamfer": lastCommand[2],
+  }[cmdType(lastCommand)];
+
+  if (!lastPoint) lastPoint = lastCommand;
 
   const renderPreviewLine = (start, end) => {
     if (!start || !end) return "";

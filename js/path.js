@@ -218,8 +218,7 @@ export function pathToCubics(cmds) {
       throw new Error(`Unknown command used in path(...)`);
     }
    
-  }
-  
+  }  
 
   return { cubics, filletsAndChamfers };
 }

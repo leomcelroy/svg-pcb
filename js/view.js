@@ -26,7 +26,29 @@ export function view(state) {
 			</div>
 			<div class="right-side" @mousedown=${() => dispatch("RUN", { flatten: false })}>
 				${svgViewer(state)}
-				${state.selectedPathIndex >= 0 ? html`<div class="path-selected" @click=${clearSelectedPath}>unselect path</div>` : ""}
+				${state.selectedPathIndex >= 0 
+					? html`
+						<div class="path-selected">
+							<div 
+								class="clear-selected-path" 
+								@click=${clearSelectedPath}>
+								unselect path
+							</div>
+							<select 
+								.value=${state.cubicHandleManipulation} 
+								@input=${e => {
+									state.cubicHandleManipulation = e.target.value;
+									dispatch("RENDER");
+								}}>
+							  <option value="symmetric">symmetric</option>
+							  <option value="colinear">colinear</option>
+							  <option value="broken">broken</option>
+							</select>
+							<div>hold z to toggle junction type</div>
+							<div>hold x to delete point</div>
+						</div>
+						` 
+					: ""}
 				<div class="footprint-toolbox">
 					${state.inputs.length > 0 ? html`<div class="toolbox-title">Inputs:</div>` : ""}
 					<div class="input-panel">

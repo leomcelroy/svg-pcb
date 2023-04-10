@@ -4,7 +4,7 @@ export const global_state = {
   version: "v0.0.1",
   codemirror: undefined,
   pcb: undefined,
-
+  heldKeys: new Set(),
   transforming: false,
   transformUpdate: () => {},
   
@@ -37,6 +37,8 @@ export const global_state = {
   
   // these are added through renderpath
   paths: [],
+
+  cubicHandleManipulation: "symmetric",
 
   selectedPathIndex: -1,
   selectedPath: null, // { from, to, args }
