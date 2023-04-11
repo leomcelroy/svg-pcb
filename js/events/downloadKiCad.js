@@ -139,6 +139,8 @@ export class KiCadBoardFileBuilder {
 
   plotComponents(componentData) {
 
+    console.log(componentData);
+  
     // Separate vias from components
     const compData = []; 
     const viaData = [];
@@ -156,8 +158,8 @@ export class KiCadBoardFileBuilder {
       const component = {
         reference: val.refDes,
         position: {
-          x: inchesToMM(val.pads.center[0]).toFixed(3),
-          y: inchesToMM(-val.pads.center[1]).toFixed(3)
+          x: inchesToMM(val._pos[0]).toFixed(3),
+          y: inchesToMM(-val._pos[1]).toFixed(3)
         },
         layer: Object.values(val.footprint)[0].layers[0],
         pads: Object.entries(val.footprint).map(([key, val]) => {
