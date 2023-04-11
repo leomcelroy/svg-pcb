@@ -61,7 +61,7 @@ function getComponentDeclarations(string, ast) {
 
   cursor.moveTo(0);
 
-  const boardNameRe = /(const|let|var)([^=]*)=\s*new\s+PCB\(\)/;
+  const boardNameRe = /(const|let|var)([^=]*)=\s*new\s+PCB\s*\(\s*\)/;
 
   let boardName = string.match(boardNameRe);
   boardName = boardName ? boardName[2].trim() : "";

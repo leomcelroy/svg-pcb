@@ -97,7 +97,7 @@ const width = 1;
 const height = 1;
 
 /* -- ADD_COMPONENTS -- */
-const ic = board.add(SAMD11C, { translate: pt(-0.2, 0.050), rotate: 0, name: "SAMD11C" })
+const ic = board.add(SAMD11C, { translate: pt(-0.2, 0.050), rotate: 0, label: "SAMD11C" })
 
 /* -- BOARD_SIZE_SHAPE -- */
 const interior = path(
