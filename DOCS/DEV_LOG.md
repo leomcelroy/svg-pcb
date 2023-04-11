@@ -15,6 +15,22 @@ sorting out
   - name (label)
   - type?
 
+change
+  refDes -> id (automatically generated)
+  name -> label
+  add mask layers
+  drills
+    {
+      diameter: 0.02,
+      start: "F.Cu",
+      end: "B.Cu",
+      plated: false
+    }
+  add footprint function
+
+svg import -> footprint(json)
+add text
+
 ### April 5, 2023
 
 - discussed footprint pad format

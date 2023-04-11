@@ -40,6 +40,7 @@ export function addPathManipulation(state, svgListener) {
     const ast = esprima.parse(`hack${snippet}`, { range: true, comment: true }).body[0];
     
     let pt = svgPoint({x: e.offsetX, y: e.offsetY});
+
     pt = snapToPad(pt);
     if (!pt.snapped) {
       pt.x = snapToGrid(pt.x);
@@ -266,6 +267,7 @@ export function addPathManipulation(state, svgListener) {
     const index = [...e.target.classList].find(x => x.match(/pathIndex-\d+/)).split("-")[1];
 
     state.selectedPathIndex = Number(index);
+    state.heldKeys = new Set();
     dispatch("RUN");
 
     // TODO: scroll to this button in code, highlight perhaps

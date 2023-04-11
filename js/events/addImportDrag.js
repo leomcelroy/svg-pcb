@@ -60,7 +60,7 @@ export function addImportDrag(state, listener) {
       if (start !== null) {
         const name = state.previewFootprint[0][0];
 
-        const text = `board.add(${name}, { translate: pt(${pos.x}, ${pos.y}), rotate: 0, name: "${name}" })\n`
+        const text = `board.add(${name}, { translate: pt(${pos.x}, ${pos.y}), rotate: 0, label: "${name}" })\n`
 
         state.codemirror.view.dispatch({
           changes: {from: start, insert: text}

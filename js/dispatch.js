@@ -70,8 +70,8 @@ const ACTIONS = {
 						changes.push({ from: x.to-1, insert: `,{from:${valueRangeFrom}, to:${valueRangeTo}}` });
 					},
 					footprint: () => {
-						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, snippet:\`${x.snippet}\`}` });
-					}
+						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, variableName:\`${x.variableName}\`, snippet:\`${x.snippet}\`}` });
+					},
 					// "path":
 				}
 
@@ -82,11 +82,13 @@ const ACTIONS = {
 			});
 
 			componentDeclarations.forEach(x => {
-				changes.push({ from: x.indexCurly+1, insert: `refDes:"${x.variableName}",` });
+				changes.push({ from: x.from+1, insert: `[` });
+				changes.push({ from: x.to-1, insert: `]` });
+				changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, variableName:\`${x.variableName}\`}`});
 			})
 
 			string = modifyAST(string, changes);
-
+			
 		  const included = makeIncluded(flatten);
 		  
 			const f = new Function(...Object.keys(included), string)

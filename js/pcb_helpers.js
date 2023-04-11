@@ -35,7 +35,7 @@ const vector_rotate = ([x, y], angle) => [
 
 
 class Component {
-  constructor({ pads, layers, drills, footprint, pos, padShapes, refDes, rotation }) {
+  constructor({ pads, layers, drills, footprint, pos, padShapes, id, rotation }) {
     this.pads = pads;
     this.layers = layers;
     this.footprint = footprint;
@@ -43,7 +43,7 @@ class Component {
     this._pos = pos;
     this.rotation = rotation;
     this.padShapes = padShapes;
-    this.refDes = refDes;
+    this.id = id;
   }
 
   pad(name) {
@@ -76,7 +76,7 @@ function makeComponent(comp, options = {}) {
   let rotate = options.rotate || 0;
   let padLabelSize = options.padLabelSize || 0.02;
   let flip = options.flip || false;
-  let refDes = options.refDes || "";
+  let id = options.id || crypto.randomUUID();
 
   const [xOff, yOff] = translate;
   const rad = (rotate * Math.PI) / 180;
@@ -183,7 +183,7 @@ function makeComponent(comp, options = {}) {
     drills,
     pos: translate,
     padShapes,
-    refDes: refDes,
+    id: id,
     rotate
   })
 }

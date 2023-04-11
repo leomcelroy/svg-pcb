@@ -8,10 +8,28 @@ import { global_state } from "./global_state.js";
 
 const cachedFootprint = {};
 
+class IncludedPCB extends PCB {
+  constructor(...args) {
+    super(...args);
+
+    global_state.idToName = {};
+  }
+
+  add([footprint, ops], staticInfo) {
+    const comp = super.add(footprint, ops);
+    const { variableName } = staticInfo;
+    if (variableName !== "") {
+      global_state.idToName[comp.id] = variableName;
+    } 
+
+    return comp;
+  }
+}
+
 export const makeIncluded = (flatten) => ({
   // kicadToObj, // FIXME: remove references to
   geo,
-  PCB,
+  PCB: IncludedPCB,
   via,
   renderPCB: obj => {
     // console.log(obj.layerColors);
@@ -26,13 +44,15 @@ export const makeIncluded = (flatten) => ({
   eval: null,
   footprint: ([ json ], staticInfo ) => {
 
+    // console.log(staticInfo);
+
     const key = `${staticInfo.from},${staticInfo.to}`;
     const { snippet } = staticInfo
     const cached = key in cachedFootprint;
     if (cached && cachedFootprint[key] === snippet) {
     } else {
       cachedFootprint[key] = snippet;
-      console.log("saved footprint in", key);
+      // console.log("saved footprint in", key);
     }
 
     // here I could optimize by

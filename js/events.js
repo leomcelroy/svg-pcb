@@ -68,7 +68,6 @@ export function addEvents(state) {
 	window.addEventListener("keyup", e => {
 		const code = event.code;
 		state.heldKeys.delete(code);
-		console.log(state.heldKeys);
 	})
 
 	window.addEventListener("unload", () => {

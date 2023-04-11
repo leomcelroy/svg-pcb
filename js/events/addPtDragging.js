@@ -2,7 +2,6 @@ import * as esprima from 'esprima';
 import { dispatch } from "../dispatch.js";
 import { walk } from "../walk.js";
 import { snapToGrid } from "../snapToGrid.js";
-import { snapToPad } from "../snapToPad.js";
 
 export function addPtDragging(state, svgListener) {
   const svg = document.querySelector("svg");

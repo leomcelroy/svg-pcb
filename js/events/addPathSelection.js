@@ -17,6 +17,7 @@ export function addPathSelection(state, listener) {
     const index = [...selectablePath.classList].find(x => x.match(/pathIndex-\d+/)).split("-")[1];
 
     state.selectedPathIndex = Number(index);
+    state.heldKeys = new Set();
     dispatch("RUN");
   })
 }

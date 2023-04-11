@@ -1,10 +1,11 @@
 import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
+import * as esprima from 'esprima';
 
 const FUNCTIONS_STATIC_INFO = [
   "pt", 
   "path", 
   "input", 
-  "footprint"
+  "footprint",
 ];
 
 export function astAnalysis(string, ast) {
@@ -26,11 +27,21 @@ export function astAnalysis(string, ast) {
     if (cursor.name === "CallExpression") {
       const [ name, args, from, to ] = getCall(cursor, getValue);
       if (FUNCTIONS_STATIC_INFO.includes(name)) {
+        let variableName = "";
+        cursor.prev();
+        if (cursor.name === "Equals") {
+          cursor.prev();
+          variableName = getValue();
+          cursor.next();
+        }
+        cursor.next();
+
         inserts.push({
           functionName: name,
           from: from,
           to: to,
-          snippet: args
+          snippet: args,
+          variableName
         });
       }
 
@@ -53,21 +64,57 @@ function getComponentDeclarations(string, ast) {
 
   cursor.moveTo(0);
 
-  const re = /(const|let|var)([\s\S]*)=(.*)\.add\((.*),\s*({[\s\S]*})\s*\)/;
+  const boardNameRe = /(const|let|var)([\s\S]*)=\s*new\s+PCB\(\)/;
+
+  let boardName = string.match(boardNameRe);
+  boardName = boardName ? boardName[2].trim() : "";
+
+  if (boardName === "") return [];
+
+  const callRegExAssign = new RegExp(String.raw`(const|let|var)([\s\S]*)=\s*${boardName}\s*\.\s*add\s*(\([\s\S]*\))`);
+  const callRegEx = new RegExp(String.raw`${boardName}\.\s*add\s*(\([\s\S]*\))`);
 
   do {
     const start = cursor.from;
 
     if (cursor.name === "VariableDeclaration") {
-      const val = getValue();
-      const match = val.match(re);
-      if (match !== null) {
-        const variableName = match[2].trim();
-        const options = match[5];
-        const indexCurly = val.indexOf(options) + start;
+      const snippet = getValue();
+      const match = snippet.match(callRegExAssign);
+      if (!match) continue;
+      const variableName = match[2].trim();
+      const args = match[3];
+      const index = snippet.indexOf(args);
+      const from = index + start;
+      const to = index + args.length + start;
 
-        componentDeclarations.push({ variableName, indexCurly })
-      };
+      componentDeclarations.push({
+        from,
+        to,
+        variableName
+      })
+
+      // make next if not trigger
+      cursor.next();
+      cursor.next();
+      cursor.next();
+      cursor.next();
+      cursor.next();
+    }
+
+    if (cursor.name === "CallExpression") {
+      const snippet = getValue();
+      const match = snippet.match(callRegEx);
+      if (!match) continue;
+      const args = match[1];
+      const index = snippet.indexOf(args);
+      const from = index + start;
+      const to = index + args.length + start;
+
+      componentDeclarations.push({
+        from,
+        to,
+        variableName: ""
+      })
     }
 
   } while (cursor.next());

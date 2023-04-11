@@ -1,7 +1,7 @@
 import { MM_PER_INCH } from "./constants";
 
 export const global_state = {
-  version: "v0.0.1",
+  version: "v0.1.0",
   codemirror: undefined,
   pcb: undefined,
   heldKeys: new Set(),
@@ -13,6 +13,8 @@ export const global_state = {
   footprints: [],
   wires: [],
   shapes: [],
+
+  idToName: {},
 
   limits: {
     x: [0, 1],
