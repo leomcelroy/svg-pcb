@@ -89,18 +89,15 @@ const ACTIONS = {
 			})
 
 			string = modifyAST(string, changes);
+
+			for (const key in global_state.footprints) {
+				if (!currentFootprints.includes(key)) delete global_state.footprints[key];
+			}
 			
 		  const included = makeIncluded(flatten);
 		  
 			const f = new Function(...Object.keys(included), string)
 			f(...Object.values(included));
-
-			const newFootprints = {};
-			currentFootprints.forEach(x => {
-				newFootprints[x] = global_state.footprints[x];
-			})
-
-			global_state.footprints = newFootprints;
 
 		} catch (err) {
 			// console.error("prog erred", err);
@@ -115,7 +112,7 @@ const ACTIONS = {
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");
 		text = JSON.stringify(kicadToObj(text));
-		text = `const ${"temp_name"} = ${text}\n`
+		text = `const ${"temp_name"} = footprint(${text});\n`
 
 		const string = state.codemirror.view.state.doc.toString();
 		const startIndex = getFileSection("DECLARE_COMPONENTS", string) ?? 0;

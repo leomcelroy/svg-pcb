@@ -13,7 +13,7 @@ export function snapToPad(pt) {
 
     // get variable name
     const id = ids[i];
-    const refDes = global_state.idToName[id];
+    const refDes = global_state.idToName[id] || "";
 
     const pads = comp.pads;
     for (const pad in pads) {
@@ -27,7 +27,7 @@ export function snapToPad(pt) {
         pt.x = p[0];
         pt.y = p[1];
         pt.snapped = true;
-        pt.padRef = (refDes !== "") ? `${refDes}.pad("${pad}")` : `pt(${pt.x.toFixed(3)}, ${pt.y.toFixed(3)})`;
+        pt.padRef = (refDes !== "") ? `${refDes}.pad("${pad}")` : `[${pt.x.toFixed(3)}, ${pt.y.toFixed(3)}]`;
         break;
       }
     }

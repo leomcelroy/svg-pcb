@@ -16,6 +16,7 @@ class IncludedPCB extends PCB {
   }
 
   add(...args) {
+    // if passing staticInfo, as is case when in VariableDeclaration
     if (Array.isArray(args[0])) {
       const [[footprint, ops], staticInfo] = args;
       const comp = super.add(footprint, ops);
@@ -37,20 +38,15 @@ export const makeIncluded = (flatten) => ({
   geo,
   PCB: IncludedPCB,
   via,
+  renderShapes,
+  renderPath,
   renderPCB: obj => {
     // console.log(obj.layerColors);
     return renderPCB(flatten)(obj);
   },
-  renderShapes,
-  renderPath,
-  document: null,
-  window: null,
-  localStorage: null,
-  Function: null,
-  eval: null,
   footprint: ([ json ], staticInfo ) => {
     const cachedFootprint = global_state.footprints;
-    // console.log(staticInfo);
+    
 
     const key = staticInfo.variableName;
     const { snippet } = staticInfo
@@ -62,16 +58,7 @@ export const makeIncluded = (flatten) => ({
         name: key,
         svgView: makeFootprintGeometry(json)
       };
-
-      console.log(cachedFootprint);
-      // console.log("saved footprint in", key);
     }
-
-    // here I could optimize by
-    // - generating geometry from pathD string
-    // - generating mask geometry
-    // - generating footprint preview geometry
-    // and caching all of the above
 
     return json;
   },
@@ -122,7 +109,12 @@ export const makeIncluded = (flatten) => ({
     }
 
     return ops.value;
-  }
+  },
+  document: null,
+  window: null,
+  localStorage: null,
+  Function: null,
+  eval: null,
   // pipe: (x, ...fns) => fns.reduce((v, f) => f(v), x)
   // "import": null,
 })
