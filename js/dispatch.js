@@ -33,11 +33,11 @@ const ACTIONS = {
 
 		try {
 
-			const { inserts, inputs, footprints, layers, componentDeclarations } = astAnalysis(string, ast);
-
-			state.footprints = footprints;
+			const { inserts, inputs, layers, componentDeclarations } = astAnalysis(string, ast);
+			
 			state.layers = layers;
 
+			const currentFootprints = [];
 			const changes = [];
 
 			inserts.forEach(x => {
@@ -70,6 +70,7 @@ const ACTIONS = {
 						changes.push({ from: x.to-1, insert: `,{from:${valueRangeFrom}, to:${valueRangeTo}}` });
 					},
 					footprint: () => {
+						currentFootprints.push(x.variableName);
 						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, variableName:\`${x.variableName}\`, snippet:\`${x.snippet}\`}` });
 					},
 					// "path":
@@ -93,6 +94,14 @@ const ACTIONS = {
 		  
 			const f = new Function(...Object.keys(included), string)
 			f(...Object.values(included));
+
+			const newFootprints = {};
+			currentFootprints.forEach(x => {
+				newFootprints[x] = global_state.footprints[x];
+			})
+
+			global_state.footprints = newFootprints;
+
 		} catch (err) {
 			// console.error("prog erred", err);
 			logError(err);
@@ -156,13 +165,13 @@ const ACTIONS = {
 
 	},
 	ADD_IMPORT({ text, name }, state) {
-		const alreadyImported = state.footprints.map(x => x[0]);
+		const alreadyImported = Object.keys(state.footprints);
 		if (alreadyImported.includes(name)) return;
 
 		const string = state.codemirror.view.state.doc.toString();
 		const startIndex = getFileSection("DECLARE_COMPONENTS", string) ?? 0;
 
-		text = `const ${name} = ${text}\n`
+		text = `const ${name} = footprint(${text});\n`
 		state.codemirror.view.dispatch({
 		  changes: {from: startIndex, insert: text}
 		});

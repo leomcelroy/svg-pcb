@@ -62,7 +62,7 @@ export function view(state) {
 		        }}>import</div>
 		      </div>
 					<div class="component-list">
-						${state.footprints.map(renderFootprint)}
+						${Object.values(state.footprints).map(renderFootprint)}
 					</div>
 					${layersColorPicker(state)}
 					<div class="nub" @click=${() => {

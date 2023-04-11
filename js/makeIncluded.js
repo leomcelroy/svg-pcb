@@ -4,9 +4,9 @@ import { via } from "./pcb_helpers.js";
 import { renderShapes } from "./renderShapes.js";
 import { renderPath } from "./renderPath.js";
 import { renderPCB } from "./renderPCB.js";
+import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
 import { global_state } from "./global_state.js";
 
-const cachedFootprint = {};
 
 class IncludedPCB extends PCB {
   constructor(...args) {
@@ -15,14 +15,20 @@ class IncludedPCB extends PCB {
     global_state.idToName = {};
   }
 
-  add([footprint, ops], staticInfo) {
-    const comp = super.add(footprint, ops);
-    const { variableName } = staticInfo;
-    if (variableName !== "") {
-      global_state.idToName[comp.id] = variableName;
-    } 
+  add(...args) {
+    if (Array.isArray(args[0])) {
+      const [[footprint, ops], staticInfo] = args;
+      const comp = super.add(footprint, ops);
+      const { variableName } = staticInfo;
+      if (variableName !== "") {
+        global_state.idToName[comp.id] = variableName;
+      } 
 
-    return comp;
+      return comp;
+    } else {
+      return super.add(...args);
+    }
+
   }
 }
 
@@ -43,15 +49,21 @@ export const makeIncluded = (flatten) => ({
   Function: null,
   eval: null,
   footprint: ([ json ], staticInfo ) => {
-
+    const cachedFootprint = global_state.footprints;
     // console.log(staticInfo);
 
-    const key = `${staticInfo.from},${staticInfo.to}`;
+    const key = staticInfo.variableName;
     const { snippet } = staticInfo
     const cached = key in cachedFootprint;
-    if (cached && cachedFootprint[key] === snippet) {
+    if (cached && cachedFootprint[key].snippet === snippet) {
     } else {
-      cachedFootprint[key] = snippet;
+      cachedFootprint[key] = {
+        snippet,
+        name: key,
+        svgView: makeFootprintGeometry(json)
+      };
+
+      console.log(cachedFootprint);
       // console.log("saved footprint in", key);
     }
 

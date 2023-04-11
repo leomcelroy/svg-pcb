@@ -1,4 +1,3 @@
-import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
 import * as esprima from 'esprima';
 
 const FUNCTIONS_STATIC_INFO = [
@@ -11,7 +10,6 @@ const FUNCTIONS_STATIC_INFO = [
 export function astAnalysis(string, ast) {
   const inserts = [];
 
-  const footprints = getFootprints(string, ast);
   const componentDeclarations = getComponentDeclarations(string, ast);
   const layers = getLayers(string, ast);
 
@@ -51,7 +49,6 @@ export function astAnalysis(string, ast) {
 
   return { 
     inserts,
-    footprints, 
     layers, 
     componentDeclarations
   };
@@ -92,29 +89,6 @@ function getComponentDeclarations(string, ast) {
         to,
         variableName
       })
-
-      // make next if not trigger
-      cursor.next();
-      cursor.next();
-      cursor.next();
-      cursor.next();
-      cursor.next();
-    }
-
-    if (cursor.name === "CallExpression") {
-      const snippet = getValue();
-      const match = snippet.match(callRegEx);
-      if (!match) continue;
-      const args = match[1];
-      const index = snippet.indexOf(args);
-      const from = index + start;
-      const to = index + args.length + start;
-
-      componentDeclarations.push({
-        from,
-        to,
-        variableName: ""
-      })
     }
 
   } while (cursor.next());
@@ -122,90 +96,10 @@ function getComponentDeclarations(string, ast) {
   return componentDeclarations;
 }
 
-const FOOTPRINTS = {};
-
-function getFootprints(string, ast) {
-  const footprints = [];
-  const cursor = ast.cursor();
-  const getValue = () => string.slice(cursor.from, cursor.to);
-
-  cursor.moveTo(0);
-
-  do {
-
-    if (cursor.name === "VariableDeclaration") {
-
-      cursor.firstChild();
-      cursor.next();
-      const name = getValue();
-
-      cursor.next();
-      cursor.next();
-
-      if (cursor.name !== "ObjectExpression") continue;
-
-      const footprintString = getValue();
-
-      cursor.firstChild();
-      cursor.next();
-      cursor.firstChild();
-      cursor.next();
-      cursor.next();
-
-      if (cursor.name !== "ObjectExpression") continue;
-
-      const props = getObjKeys(cursor, getValue);
-
-      if (!["shape", "pos", "layers"].every(key => props.includes(key))) continue;
-
-      footprints.push(name);
-
-      if (name in FOOTPRINTS && FOOTPRINTS[name].footprintString === footprintString) continue;
-
-      try {
-        const footprintObj = JSON.parse(footprintString);
-        const footprint = {
-          name,
-          footprintString,
-          footprintObj,
-          geo: makeFootprintGeometry(footprintObj)
-        }
-
-        FOOTPRINTS[name] = footprint;
-      } catch (err) { }
-      
-    }
-
-  } while (cursor.next());
-
-  const fps = [];
-
-  for (const fp in FOOTPRINTS) {
-    if (!footprints.includes(fp)) {
-      delete FOOTPRINTS[fp];
-      continue;
-    }
-
-    const value = FOOTPRINTS[fp];
-
-    fps.push([
-      fp,
-      value.footprintObj,
-      value.geo
-    ])
-  }
-  
-  return fps;
-}
-
 function getLayers(string, ast) {
   
-  const footprints = [];
   const cursor = ast.cursor();
   const getValue = () => string.slice(cursor.from, cursor.to);
-
-  // const start = string.indexOf("renderPCB");
-  // cursor.moveTo(start);
 
   cursor.moveTo(0);
 
@@ -241,68 +135,6 @@ function getCall(cursor, getValue) {
   return [name, args, from, to];
 }
 
-const getObjKeys = (cursor, getValue) => {
-  const props = [];
-
-  const start = cursor.from;
-
-  cursor.firstChild();
-  cursor.nextSibling();
-  cursor.firstChild();
-  const prop0 = getValue();
-
-  props.push({ key: prop0, from: cursor.from, to: cursor.to });
-
-  while (
-    cursor.parent() 
-    && cursor.nextSibling() 
-    && cursor.nextSibling()
-    && cursor.firstChild()) props.push({ key: getValue(), from: cursor.from, to: cursor.to });
-
-  cursor.moveTo(start, 1);
-  
-  // props will be wrapped in "..."
-  return props.map(x => x.key.trim().slice(1, -1));
-}
-
-const getObj = (cursor, getValue) => {
-  const obj = [];
-
-  const start = cursor.from;
-  cursor.firstChild();
-  cursor.nextSibling();
-  cursor.firstChild();
-  const key = getValue();
-  const keyFrom = cursor.from;
-  const keyTo = cursor.to;
-  cursor.nextSibling();
-  cursor.nextSibling();
-  const value = getValue();
-  const valueFrom = cursor.from;
-  const valueTo = cursor.to;
-
-  obj.push({ key, value, keyFrom, keyTo, valueFrom, valueTo });
-
-  while (
-    cursor.parent() 
-    && cursor.nextSibling() 
-    && cursor.nextSibling()
-    && cursor.firstChild()) {
-      const key = getValue();
-      const keyFrom = cursor.from;
-      const keyTo = cursor.to;
-      cursor.nextSibling();
-      cursor.nextSibling();
-      const value = getValue();
-      const valueFrom = cursor.from;
-      const valueTo = cursor.to;
-      obj.push({ key, value, keyFrom, keyTo, valueFrom, valueTo });
-  }
-
-  cursor.moveTo(start, 1);
-  
-  return obj;
-}
 
 function makeTree(cursor, getValue, func = null) {
   const start = cursor.from;

@@ -4,7 +4,7 @@ import { getPathData } from "/geogram/index.js";
 
 
 
-export const renderFootprint = ([name, footprint, svgView], i) => {
+export const renderFootprint = ({ name, svgView }, i) => {
       // <svg width="30" height="30">
       //  <circle cx="15" cy="15" r="10" stroke="grey" stroke-width="4" fill="yellow" />
       // </svg>
@@ -15,6 +15,7 @@ export const renderFootprint = ([name, footprint, svgView], i) => {
     <path
       class="path-footprint"
       data-index=${i}
+      data-key=${name}
       d="${getPathData([pts])}"
       fill-rule="nonzero"
       />
@@ -33,6 +34,7 @@ export const renderFootprint = ([name, footprint, svgView], i) => {
     <div class="footprint-item">
       <svg
         data-index=${i}
+        data-key=${name}
         class="footprint-svg footprint-${i}"
         width="50px"
         height="50px"
