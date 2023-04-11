@@ -61,15 +61,14 @@ function getComponentDeclarations(string, ast) {
 
   cursor.moveTo(0);
 
-  const boardNameRe = /(const|let|var)([\s\S]*)=\s*new\s+PCB\(\)/;
+  const boardNameRe = /(const|let|var)([[^=]\s\S]*)=\s*new\s+PCB\(\)/;
 
   let boardName = string.match(boardNameRe);
   boardName = boardName ? boardName[2].trim() : "";
 
   if (boardName === "") return [];
 
-  const callRegExAssign = new RegExp(String.raw`(const|let|var)([\s\S]*)=\s*${boardName}\s*\.\s*add\s*(\([\s\S]*\))`);
-  const callRegEx = new RegExp(String.raw`${boardName}\.\s*add\s*(\([\s\S]*\))`);
+  const callRegExAssign = new RegExp(String.raw`(const|let|var)([[^=]\s\S]*)=\s*${boardName}\s*\.\s*add\s*(\([\s\S]*\))`);
 
   do {
     const start = cursor.from;

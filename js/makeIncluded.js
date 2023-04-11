@@ -2,7 +2,7 @@ import * as geo from "/geogram/index.js";
 import { PCB } from "./pcb.js";
 import { via } from "./pcb_helpers.js";
 import { renderShapes } from "./renderShapes.js";
-import { renderPath } from "./renderPath.js";
+import { renderShape } from "./renderShape.js";
 import { renderPCB } from "./renderPCB.js";
 import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
 import { global_state } from "./global_state.js";
@@ -38,7 +38,7 @@ export const makeIncluded = (flatten) => ({
   PCB: IncludedPCB,
   via,
   renderShapes,
-  renderPath,
+  renderShape,
   renderPCB: obj => {
     // console.log(obj.layerColors);
     return renderPCB(flatten)(obj);

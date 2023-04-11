@@ -5,5 +5,5 @@ const round = (num, sigFigs) => Math.round(num*10**sigFigs)/(10**sigFigs);
 
 export const snapToGrid = (n) => 
   global_state.gridSize === 0 || !global_state.grid 
-    ? n 
+    ? round(n, 3)
     : round(step(n, global_state.gridSize), 3);
