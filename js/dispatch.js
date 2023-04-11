@@ -125,7 +125,7 @@ const ACTIONS = {
 	},
 	UPLOAD_COMP_OBJ({ obj }, state) {
 		let text = JSON.stringify(obj);
-		text = `const temp_name = ${text}\n`
+		text = `const temp_name = footprint(${text});\n`
 
 		const string = state.codemirror.view.state.doc.toString();
 		const startIndex = getFileSection("DECLARE_COMPONENTS", string) ?? 0;
