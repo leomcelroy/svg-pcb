@@ -34,7 +34,6 @@ class IncludedPCB extends PCB {
 }
 
 export const makeIncluded = (flatten) => ({
-  // kicadToObj, // FIXME: remove references to
   geo,
   PCB: IncludedPCB,
   via,
@@ -47,7 +46,6 @@ export const makeIncluded = (flatten) => ({
   footprint: ([ json ], staticInfo ) => {
     const cachedFootprint = global_state.footprints;
     
-
     const key = staticInfo.variableName;
     const { snippet } = staticInfo
     const cached = key in cachedFootprint;

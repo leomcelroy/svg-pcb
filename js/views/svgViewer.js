@@ -96,7 +96,7 @@ export const svgViewer = (state) => {
 
       <g class="transform-group">
           <rect
-            class="limits no-download"
+            class="limits"
             width="${state.limits.x[1] - state.limits.x[0]}"
             height="${state.limits.y[1] - state.limits.y[0]}"
             stroke="black" fill="transparent" stroke-width="1"
@@ -104,6 +104,7 @@ export const svgViewer = (state) => {
             transform="translate(${state.limits.x[0]}, ${state.limits.y[0]})"/>
 
           <rect 
+            class="background"
             x=${state.limits.x[0]} 
             y=${state.limits.y[0]} 
             fill=${state.background} 
@@ -133,7 +134,7 @@ export const svgViewer = (state) => {
           }
 
 
-        <g class="pts no-download">${state.viewHandles ? pts : ""}</g>
+        <g class="pts">${state.viewHandles ? pts : ""}</g>
       </g>
 
     </svg>

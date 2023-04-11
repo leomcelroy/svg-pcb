@@ -67,7 +67,7 @@ export const drawGrid = (corners, gridSize) => {
     // console.log(getMarkVals(yLimits, stepSize));
 
     return svg`
-        <g class="grid no-download">
+        <g class="grid">
             ${lineToMark(.6)(originX)}
             ${lineToMark(.6)(originY)}
             ${hMarks}
