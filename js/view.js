@@ -26,16 +26,16 @@ export function view(state) {
 			</div>
 			<div class="right-side" @mousedown=${() => dispatch("RUN", { flatten: false })}>
 				${svgViewer(state)}
-				${state.selectedPathIndex >= 0 
+				${state.selectedPathIndex >= 0
 					? html`
 						<div class="path-selected">
-							<div 
-								class="clear-selected-path" 
+							<div
+								class="clear-selected-path"
 								@click=${clearSelectedPath}>
 								unselect path
 							</div>
-							<select 
-								.value=${state.cubicHandleManipulation} 
+							<select
+								.value=${state.cubicHandleManipulation}
 								@input=${e => {
 									state.cubicHandleManipulation = e.target.value;
 									dispatch("RENDER");
@@ -47,7 +47,7 @@ export function view(state) {
 							<div>hold z to toggle junction type</div>
 							<div>hold x to delete point</div>
 						</div>
-						` 
+						`
 					: ""}
 				<div class="footprint-toolbox">
 					${state.inputs.length > 0 ? html`<div class="toolbox-title">Inputs:</div>` : ""}
@@ -113,10 +113,10 @@ const menu = state => html`
 						}}>
 						gerber (WIP)
 					</div class="menu-item">
-					<input 
+					<input
 						class="input-item"
 						style="margin: 3px;"
-						.value=${state.name} 
+						.value=${state.name}
 						placeholder="name-here"
 						@input=${(e) => {state.name = e.target.value}}/>
 				</div>
@@ -131,7 +131,7 @@ const menu = state => html`
 			<div class="menu-item dropdown-container">
 				options
 				<div class="dropdown-content">
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>handles</span>
 						<input
 							type="checkbox"
@@ -143,7 +143,7 @@ const menu = state => html`
 							class="handles-checkbox">
 						</input>
 					</div>
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>grid</span>
 						<input
 							type="checkbox"
@@ -155,7 +155,7 @@ const menu = state => html`
 							>
 						</input>
 					</div>
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>adaptiveGrid</span>
 						<input
 							type="checkbox"
@@ -180,7 +180,7 @@ const menu = state => html`
 							}}>
 						</input>
 					</div>
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>snapToPad</span>
 						<input
 							type="checkbox"
@@ -192,7 +192,7 @@ const menu = state => html`
 							>
 						</input>
 					</div>
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>snapToPad Radius</span>
 						<input
 							type="number"
@@ -205,7 +205,7 @@ const menu = state => html`
 							}}>
 						</input>
 					</div>
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>vim mode</span>
 						<input
 							type="checkbox"

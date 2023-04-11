@@ -7,7 +7,7 @@ export const global_state = {
   heldKeys: new Set(),
   transforming: false,
   transformUpdate: () => {},
-  
+
   selectBox: {},
 
   footprints: {},
@@ -36,7 +36,7 @@ export const global_state = {
   vimMode: false,
 
   preview: null,
-  
+
   // these are added through renderpath
   paths: [],
 
@@ -46,7 +46,7 @@ export const global_state = {
   selectedPath: null, // { from, to, args }
   // these are added through path(...)
   selectablePaths: [],
-  pts: [], 
+  pts: [],
   layers: [],
   inputs: [],
 
