@@ -16,10 +16,11 @@ function pathDeco(view) {
         const start = node.from;
         node.next();
         node.next();
+
+        // need some other way to identify path triggers
         const pathMark = Decoration.mark({ 
           attributes: {
             "data-path-start": node.from,
-            "data-path-end": node.to
           },
           class: "cm-path-button" 
         });

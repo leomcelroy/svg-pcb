@@ -1,18 +1,20 @@
 import { MM_PER_INCH } from "./constants";
 
 export const global_state = {
-  version: "v0.0.1",
+  version: "v0.1.0",
   codemirror: undefined,
   pcb: undefined,
-
+  heldKeys: new Set(),
   transforming: false,
   transformUpdate: () => {},
-  
+
   selectBox: {},
 
-  footprints: [],
+  footprints: {},
   wires: [],
   shapes: [],
+
+  idToName: {},
 
   limits: {
     x: [0, 1],
@@ -29,13 +31,22 @@ export const global_state = {
   snapToPadRadius: 0.025,
 
   viewHandles: true,
-  selectedPath: null,
   panZoomParams: undefined,
   previewFootprint: null,
   vimMode: false,
-  
+
+  preview: null,
+
+  // these are added through renderpath
   paths: [],
-  pts: [], 
+
+  cubicHandleManipulation: "symmetric",
+
+  selectedPathIndex: -1,
+  selectedPath: null, // { from, to, args }
+  // these are added through path(...)
+  selectablePaths: [],
+  pts: [],
   layers: [],
   inputs: [],
 

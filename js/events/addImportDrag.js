@@ -6,10 +6,12 @@ export function addImportDrag(state, listener) {
 
   let clicked = false;
   let index = null;
+  let key = null;
 
   listener("mousedown", ".footprint-svg, .path-footprint", e => {
     clicked = true;
     index = e.target.dataset.index;
+    key = e.target.dataset.key;
 
     // pauseEvent(e);
   })
@@ -35,7 +37,7 @@ export function addImportDrag(state, listener) {
     const y = e.clientY - rect.top;
 
     state.previewFootprint = [
-      state.footprints[index],
+      state.footprints[key],
       [ x, y ]
     ];
 
@@ -58,9 +60,9 @@ export function addImportDrag(state, listener) {
       const start = getFileSection("ADD_COMPONENTS", string);
 
       if (start !== null) {
-        const name = state.previewFootprint[0][0];
+        const name = state.previewFootprint[0].name;
 
-        const text = `board.add(${name}, { translate: pt(${pos.x}, ${pos.y}), rotate: 0, name: "${name}" })\n`
+        const text = `board.add(${name}, { translate: pt(${pos.x}, ${pos.y}), rotate: 0, label: "${name}" })\n`
 
         state.codemirror.view.dispatch({
           changes: {from: start, insert: text}

@@ -11,27 +11,20 @@ import {
 
 const length = ([x1, y1], [x2, y2]) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
 
-const via = (rv, rp) => {
-  return {
-    "F": {
-      "pos": [0, 0],
-      "shape": getPathData(circle(rp)),
-      "layers": ["F.Cu"],
-      "index": 1
+const via = (diameterHole, diameterCopper, layers = ["F.Cu", "B.Cu"]) => ({
+  "via": {
+    pos: [0, 0],
+    layers: layers,
+    shape: getPathData(circle(diameterCopper/2)),
+    drill: {
+      diameter: diameterHole,
+      start: layers[0],
+      end: layers[1],
+      plated: true
     },
-    "B": {
-      "pos": [0, 0],
-      "shape": getPathData(circle(rp)),
-      "layers": ["B.Cu"],
-      "index": 2
-    },
-    "drill": {
-      "pos": [0, 0],
-      "shape": getPathData(circle(rv)),
-      "layers": ["drill"]
-    }
-  };
-}
+  }
+})
+
 
 const vector_add = ([x, y], [dx, dy]) => [x + dx, y + dy];
 const dot = ([x0, y0], [x1, y1]) => x0*x1 + y0*y1;
@@ -42,13 +35,15 @@ const vector_rotate = ([x, y], angle) => [
 
 
 class Component {
-  constructor({ pads, layers, footprint, pos, padShapes, refDes }) {
+  constructor({ pads, layers, drills, footprint, pos, padShapes, id, rotation }) {
     this.pads = pads;
     this.layers = layers;
     this.footprint = footprint;
+    this.drills = drills;
     this._pos = pos;
+    this.rotation = rotation;
     this.padShapes = padShapes;
-    this.refDes = refDes;
+    this.id = id;
   }
 
   pad(name) {
@@ -64,73 +59,44 @@ class Component {
   }
 
   get pos() {
-    return this.pads["center"]; // should store this somewhere else
+    return this._pos; // should store this somewhere else
   }
 
   get posX() {
-    return this.pads["center"][0]; // should store this somewhere else
+    return this._pos[0]; // should store this somewhere else
   }
 
   get posY() {
-    return this.pads["center"][1]; // should store this somewhere else
+    return this._pos[1]; // should store this somewhere else
   }
 }
-
-// let SWD_4_05 = {
-//   "RST": {
-//     "pos": [-0.072, -0.025],
-//     "shape": "M 0 0 L 90 90",
-//     "layers": ["F.Cu"]
-//   },
-//   "GND": {
-//     "pos": [0.072, -0.025],
-//     "shape": "M 0 0 L 90 90",
-//     "layers": ["F.Cu"]
-//   }
-// }
-
-// function makeText(text, height, pos, rotate) {
-//   let lines = text.split('\n');
-//   let t = new Turtle();
-
-//   for (let [i, txt] of lines.entries()) {
-//     if (txt.length == 0) {
-//       continue;
-//     }
-
-//     if (txt.localeCompare("A") == 0) {
-//         txt = "A ";
-//     }
-
-//     // TODO: render text better
-//     let t2 = new Turtle().text(txt).scale(0.01*height).originate().translate([0, i*height*1.5]);
-//     // let t2 = new Turtle();
-
-//     t.group(t2);
-//   }
-
-//   // return t.originate().translate(pos);
-//   return t.originate().translate(pos).rotate(rotate, pos);
-// }
 
 function makeComponent(comp, options = {}) {
   let translate = options.translate || [0, 0];
   let rotate = options.rotate || 0;
   let padLabelSize = options.padLabelSize || 0.02;
   let flip = options.flip || false;
-  let refDes = options.refDes || "";
-  // add flip
+  let id = options.id || crypto.randomUUID();
 
   const [xOff, yOff] = translate;
   const rad = (rotate * Math.PI) / 180;
 
-  const pads = {}; // name: pos
+  const pads = {};
   const padShapes = {};
   const padsLabels = [];
+  const drills = [];
   let results = {};
 
   for (const pad in comp) {
-    let { pos, shape, layers, origin } = comp[pad];
+    let { pos, shape, layers, origin, drill } = comp[pad];
+    // is origin ever used?
+
+    if (drill) {
+      drills.push({
+        pos: [ pos[0]+translate[0], pos[1]+translate[1] ],
+        ...drill
+      });
+    }
 
     if (flip) layers = layers.map(layer => layer === "F.Cu" ? "B.Cu" : layer);
 
@@ -146,8 +112,6 @@ function makeComponent(comp, options = {}) {
     if (flip) scale(shape, [-1, 1], [0, 0]);
     trans(shape, translate);
     rot(shape, rotate, translate);
-
-
 
     let pad_pos = vector_add(vector_rotate(pos, rad), translate);
     pads[pad] = pad_pos;
@@ -195,17 +159,12 @@ function makeComponent(comp, options = {}) {
     textLoc = scalePt(textLoc, [flip ? -1 : 1, 1], translate);
     textLoc = rotatePt(textLoc, flip ? 2*rotate : 0, translate);
 
-    if (!pad.includes("drill")) {
-      // let text = makeText(pad, padLabelSize, pad_pos, rotate);
-      padsLabels.push({
-        type: "text",
-        value: pad,
-        translate: textLoc,
-        // rotate,
-        size: padLabelSize
-        // if flip need to rotate around
-      });
-    }
+    padsLabels.push({
+      type: "text",
+      value: pad,
+      translate: textLoc,
+      size: padLabelSize
+    });
 
     layers.forEach(l => {
       if (l in results) results[l].push(shape);
@@ -215,17 +174,17 @@ function makeComponent(comp, options = {}) {
     padShapes[pad] = shape;
   }
 
-  pads["center"] = translate;
-
   results.padLabels = padsLabels;
 
   return new Component({
     pads,
     layers: results,
     footprint: comp,
+    drills,
     pos: translate,
     padShapes,
-    refDes: refDes
+    id: id,
+    rotation: rotate
   })
 }
 

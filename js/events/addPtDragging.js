@@ -2,7 +2,6 @@ import * as esprima from 'esprima';
 import { dispatch } from "../dispatch.js";
 import { walk } from "../walk.js";
 import { snapToGrid } from "../snapToGrid.js";
-import { snapToPad } from "../snapToPad.js";
 
 export function addPtDragging(state, svgListener) {
   const svg = document.querySelector("svg");
@@ -34,7 +33,6 @@ export function addPtDragging(state, svgListener) {
     walk(xNode, n => change_x_0(n));
     const change_y_0 = createGetAdditiveConstant(initialOffset, 1);
     walk(yNode, n => change_y_0(n));
-
 
     dragPt = (x, y, i) => {
       const pt = state.pts[i];
@@ -71,8 +69,6 @@ export function addPtDragging(state, svgListener) {
 
     pt.x = round(snapToGrid(currentPoint.x) - xOffset, 3);
     pt.y = round(snapToGrid(currentPoint.y) - yOffset, 3);
-
-    pt = snapToPad(pt);
     
     dragPt(pt.x, pt.y, index);
   })

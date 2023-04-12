@@ -21,30 +21,20 @@ export function downloadSVG(state) {
 function makeSVG(state) {
   const serializer = new XMLSerializer();
   const svg = document.querySelector("svg").cloneNode(true);
-  const toRemove = svg.querySelectorAll(".no-download");
-  for (const item of toRemove) {
-    item.remove();
-  }
 
-  const tg = svg.querySelector(".transform-group");
-  // tg.style.background = "black"; // TODO
-  /*
-    add limits
-    rect with stroke = none, fill = background
-    <rect class="limits no-download" stroke="black" fill="transparent" stroke-width="1" vector-effect="non-scaling-stroke" width="2.7" height="1.4000000000000001" transform="translate(-0.1, -0.1)"></rect>
-  */
-  tg.style.transformOrigin = "";
-  tg.style.transform = "";
-  //const sg = svg.querySelector(".transform-group");
-  //sg.setAttribute("transform", "scale(1, -1)");
-  //tg.transform = "scale(1, -1)";
-  // tg.style.transformOrigin = `${0}px ${0}px`;
-  // tg.style.transform = "translate(" + 0 + "px, " + 0 + "px) scale(" + 1 + ")";
+  const shapes = svg.querySelector(".shapes");
+  const paths = svg.querySelector(".paths");
+  const background = svg.querySelector(".background");
+
+  svg.innerHTML = "";
+  svg.append(background);
+  svg.append(shapes);
+  svg.append(paths);
 
   const width = (state.limits.x[1] - state.limits.x[0]);
   const height = (state.limits.y[1] - state.limits.y[0]);
 
-  tg.setAttribute("transform", `scale(1, -1) translate(0, ${-(state.limits.y[0]+state.limits.y[1])})`);
+  svg.setAttribute("transform", `scale(1, -1) translate(0, ${-(state.limits.y[0]+state.limits.y[1])})`);
   svg.setAttribute("style", "");
   svg.setAttribute("width", `${width*state.mm_per_unit}mm`);
   svg.setAttribute("height", `${height*state.mm_per_unit}mm`);

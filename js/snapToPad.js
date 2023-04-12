@@ -1,16 +1,19 @@
 import { global_state } from "./global_state.js";
 
-export const snapToPad = function(pt) {
+export function snapToPad(pt) {
   if (!global_state.snapToPad) return pt;
   if (!global_state.pcb) return pt;
 
   pt.snapped = false;
 
   const components = global_state.pcb.components;
-  const refDeses = global_state.pcb.refDeses;
+  const ids = global_state.pcb.ids;
   for (let i = 0; i < components.length; i++) {
     const comp = components[i];
-    const refDes = refDeses[i];
+
+    // get variable name
+    const id = ids[i];
+    const refDes = global_state.idToName[id] || "";
 
     const pads = comp.pads;
     for (const pad in pads) {
@@ -21,10 +24,10 @@ export const snapToPad = function(pt) {
       // This selection area is off.
       // Best would be to compare against the actual shape of the pad.
       if (Math.sqrt(dx**2 + dy**2) < global_state.snapToPadRadius) {
-        pt.x = parseFloat(p[0]).toFixed(3);
-        pt.y = parseFloat(p[1]).toFixed(3);
+        pt.x = p[0];
+        pt.y = p[1];
         pt.snapped = true;
-        pt.padRef = (refDes !== "") ? `${refDes}.pad("${pad}")` : `pt(${pt.x}, ${pt.y})`;
+        pt.padRef = (refDes !== "") ? `${refDes}.pad("${pad}")` : `[${pt.x.toFixed(3)}, ${pt.y.toFixed(3)}]`;
         break;
       }
     }

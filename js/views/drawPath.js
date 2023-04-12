@@ -28,37 +28,20 @@ export const drawPath = ({ data, color, groupId = ""}) => {
         fill-opacity=${alpha}/>
   `
 
-  const renderText = s => 
-  // s.silkscreen
-  //   ? svg`
-  //       <text 
-  //         text-anchor="middle" 
-  //         x=${s.translate[0]} 
-  //         y=${s.translate[1] + s.size*0.5}
-  //         transform-origin=${`${s.translate[0]} ${s.translate[1]}`}
-  //         transform=${`scale(${s.flip ? -1 : 1}, -1) rotate(${s.flip ? -s.rotate : s.rotate})`}
-  //         style=${`font: ${s.size}pt sans-serif;`}
-  //         fill=${color.slice(0, -2)}
-  //         opacity=${alpha}
-  //         >
-  //         ${s.value}
-  //       </text>
-  //     `
-  //   : 
-      svg`
-        <text 
-          text-anchor="middle" 
-          x=${s.translate[0]} 
-          y=${-s.translate[1] + s.size*0.352778}
-          transform-origin=${`${s.translate[0]},${s.translate[1]}`}
-          transform=${`scale(1, -1)`}
-          style=${`font: ${s.size}pt sans-serif;`}
-          fill=${color.slice(0, -2)}
-          opacity=${alpha}
-          >
-          ${s.value}
-        </text>
-      `
+  const renderText = s => svg`
+    <text 
+      text-anchor="middle" 
+      x=${s.translate[0]} 
+      y=${-s.translate[1] + s.size*0.352778}
+      transform-origin=${`${s.translate[0]},${s.translate[1]}`}
+      transform=${`scale(1, -1)`}
+      style=${`font: ${s.size}pt sans-serif;`}
+      fill=${color.slice(0, -2)}
+      opacity=${alpha}
+      >
+      ${s.value}
+    </text>
+  `
 
   const renderWire = ({ data, thickness }) => svg`
     <path
@@ -74,6 +57,7 @@ export const drawPath = ({ data, color, groupId = ""}) => {
 
 
   const toRender = [];
+  const labels = [];
 
   data.forEach(d => {
     if (typeof d === "string") { // pathData
@@ -98,7 +82,7 @@ export const drawPath = ({ data, color, groupId = ""}) => {
       toRender.push(toAdd);
 
     } else if (d.type === "text") { 
-      toRender.push(renderText(d));
+      labels.push(renderText(d));
     } else if (d.type === "wire") {
       toRender.push(renderWire(d));
     }
@@ -107,6 +91,7 @@ export const drawPath = ({ data, color, groupId = ""}) => {
   return svg`
     <g id=${groupId}>
       ${toRender}
+      <g>${labels}</g>
     </g>
   `
 }

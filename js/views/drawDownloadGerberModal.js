@@ -17,7 +17,7 @@ function setDownloadGerberLayerVisibility(state){
 	state.downloadGerberOptions.layers.set("F.Mask", state.pcb.layers["F.Cu"] === undefined ? false : true);
 	state.downloadGerberOptions.layers.set("B.Mask", state.pcb.layers["B.Cu"] === undefined ? false : true);
 	state.downloadGerberOptions.layers.set("Outline", state.pcb.layers["interior"] === undefined ? false : true);
-	state.downloadGerberOptions.layers.set("Drills", state.pcb.layers["drill"] === undefined ? false : true);
+	state.downloadGerberOptions.layers.set("Drills", true);
 }
 
 export const drawDownloadGerberModal = state => {

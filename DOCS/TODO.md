@@ -1,6 +1,15 @@
 # TODO
 
+- [x] input is broken
 - add visual cue to menu tab
+- footprint processing is slow
+	- currently generate shapes with ast analysis
+	- turning pathdata string into points could help
+- generalize astAnalysis
+	- if name is being called restructures call as such
+	- name([old params], staticInfo)
+	- input: function names
+	- output: { from, to, snippet }
 - export
 	- [x] gerber
 	- [ ] kicad
@@ -13,6 +22,13 @@
 	- [x] path selection
 	- https://github.com/hackclub/sprig/blob/main/codemirror/editors.js
 	- https://codemirror.net/examples/decoration/
+	- handles for 
+		- cubics
+		- fillets
+		- chamfers
+		- points
+	- toggle between above
+	- cubic spline control point handling
 - [ ] handle infinite loops
 	- https://blog.replit.com/infinite-loops
 	- https://github.com/facebook/react/blob/main/scripts/babel/transform-prevent-infinite-loops.js

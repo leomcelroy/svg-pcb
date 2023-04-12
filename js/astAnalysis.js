@@ -1,12 +1,18 @@
-import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
+// import * as esprima from 'esprima';
+
+const FUNCTIONS_STATIC_INFO = [
+  "pt", 
+  "path", 
+  "input", 
+  "footprint",
+];
+
+const variableNameRegEx = /(const|let|var)([^=]+)/
+const callRegEx = /([^\(]+)/
 
 export function astAnalysis(string, ast) {
-  const pts = [];
-  const paths = [];
-  const inputs = [];
+  const inserts = [];
 
-  const footprints = getFootprints(string, ast);
-  const componentDeclarations = getComponentDeclarations(string, ast);
   const layers = getLayers(string, ast);
 
   const cursor = ast.cursor();
@@ -15,179 +21,69 @@ export function astAnalysis(string, ast) {
   // Reset cursor as there might be another analysis pass before this.
   cursor.moveTo(0);
 
+  const boardNameRe = /(const|let|var)([^=]*)=\s*new\s+PCB\s*\(\s*\)/;
+
+  let boardName = string.match(boardNameRe);
+  boardName = boardName ? boardName[2].trim() : null;
+
+  if (boardName) FUNCTIONS_STATIC_INFO.push(`${boardName}.add`);
+
   do {
     const value = getValue();
 
-    // TODO: BUG this will trigger for any function starting with string
-    if (cursor.name === "CallExpression" && value.slice(0, 2) === "pt") {
-      cursor.next();
-      cursor.next();
-      pts.push({
-        from: cursor.from,
-        to: cursor.to,
-        snippet: getValue()
-      });
-    }
+    if (cursor.name === "CallExpression") {
+     
+      // need to improve this to work with call being expression
+      const { name, args, from, to } = getCall(cursor, string);
 
-    // TODO: BUG this will trigger for any function starting with string
-    if (cursor.name === "CallExpression" && value.slice(0, 5) === "input") {
-      cursor.next();
-      cursor.next();
-      const start = cursor.from;
-      const end = cursor.to;
-      cursor.next();
-      cursor.next();
-      const tree = makeTree(cursor, getValue)[0];
-      tree.slice(1).forEach(node => {
-        const propKey = node[1][0];
-        if (propKey.value === "value") {
-          const propValue = node[2][0];
-          const valueIndices = { 
-            from: propValue.from, 
-            to: propValue.to,
-            start,
-            end
-          }
-          inputs.push(valueIndices);
+      if (FUNCTIONS_STATIC_INFO.includes(name)) {
+        let variableName = "";
+
+        const isVariableDeclaration = cursor.node?.parent?.name === "VariableDeclaration";
+
+        if (isVariableDeclaration) {
+          const parent = cursor.node.parent;
+
+          variableName = string
+            .slice(parent.from, parent.to)
+            .match(variableNameRegEx)
+            [2]
+            .trim();
         }
-      })
-    }
 
-    // TODO: BUG this will trigger for any function starting with string
-    if (cursor.name === "CallExpression" && value.slice(0, 4) === "path") {
-      cursor.next();
-      cursor.next();
-      paths.push({
-        from: cursor.from,
-        to: cursor.to,
-      });
+        // OLD GET VARIABLE NAME, BAD
+
+        // cursor.prev();
+        // if (cursor.name === "Equals") {
+        //   cursor.prev();
+        //   variableName = getValue();
+        //   cursor.next();
+        // }
+        // cursor.next();
+
+        inserts.push({
+          functionName: name === `${boardName}.add` ? "component" : name,
+          from: from,
+          to: to,
+          snippet: args,
+          variableName
+        });
+      }
+
     }
 
   } while (cursor.next());
 
   return { 
-    pts, 
-    paths, 
-    footprints, 
+    inserts,
     layers, 
-    inputs,
-    componentDeclarations
   };
-}
-
-function getComponentDeclarations(string, ast) {
-  const componentDeclarations = [];
-  const cursor = ast.cursor();
-  const getValue = () => string.slice(cursor.from, cursor.to);
-
-  cursor.moveTo(0);
-
-  const re = /(const|let|var)([\s\S]*)=(.*)\.add\((.*),\s*({[\s\S]*})\s*\)/;
-
-  do {
-    const start = cursor.from;
-
-    if (cursor.name === "VariableDeclaration") {
-      const val = getValue();
-      const match = val.match(re);
-      if (match !== null) {
-        const variableName = match[2].trim();
-        const options = match[5];
-        const indexCurly = val.indexOf(options) + start;
-
-        componentDeclarations.push({ variableName, indexCurly })
-      };
-    }
-
-  } while (cursor.next());
-  
-  return componentDeclarations;
-}
-
-const FOOTPRINTS = {};
-
-function getFootprints(string, ast) {
-  const footprints = [];
-  const cursor = ast.cursor();
-  const getValue = () => string.slice(cursor.from, cursor.to);
-
-  cursor.moveTo(0);
-
-  do {
-
-    if (cursor.name === "VariableDeclaration") {
-
-      cursor.firstChild();
-      cursor.next();
-      const name = getValue();
-
-      cursor.next();
-      cursor.next();
-
-      if (cursor.name !== "ObjectExpression") continue;
-
-      const footprintString = getValue();
-
-      cursor.firstChild();
-      cursor.next();
-      cursor.firstChild();
-      cursor.next();
-      cursor.next();
-
-      if (cursor.name !== "ObjectExpression") continue;
-
-      const props = getObjKeys(cursor, getValue);
-
-      if (!["shape", "pos", "layers"].every(key => props.includes(key))) continue;
-
-      footprints.push(name);
-
-      if (name in FOOTPRINTS && FOOTPRINTS[name].footprintString === footprintString) continue;
-
-      try {
-        const footprintObj = JSON.parse(footprintString);
-        const footprint = {
-          name,
-          footprintString,
-          footprintObj,
-          geo: makeFootprintGeometry(footprintObj)
-        }
-
-        FOOTPRINTS[name] = footprint;
-      } catch (err) { }
-      
-    }
-
-  } while (cursor.next());
-
-  const fps = [];
-
-  for (const fp in FOOTPRINTS) {
-    if (!footprints.includes(fp)) {
-      delete FOOTPRINTS[fp];
-      continue;
-    }
-
-    const value = FOOTPRINTS[fp];
-
-    fps.push([
-      fp,
-      value.footprintObj,
-      value.geo
-    ])
-  }
-  
-  return fps;
 }
 
 function getLayers(string, ast) {
   
-  const footprints = [];
   const cursor = ast.cursor();
   const getValue = () => string.slice(cursor.from, cursor.to);
-
-  // const start = string.indexOf("renderPCB");
-  // cursor.moveTo(start);
 
   cursor.moveTo(0);
 
@@ -209,68 +105,38 @@ function getLayers(string, ast) {
   return layers;
 }
 
-const getObjKeys = (cursor, getValue) => {
-  const props = [];
-
-  const start = cursor.from;
-
-  cursor.firstChild();
-  cursor.nextSibling();
-  cursor.firstChild();
-  const prop0 = getValue();
-
-  props.push({ key: prop0, from: cursor.from, to: cursor.to });
-
-  while (
-    cursor.parent() 
-    && cursor.nextSibling() 
-    && cursor.nextSibling()
-    && cursor.firstChild()) props.push({ key: getValue(), from: cursor.from, to: cursor.to });
-
-  cursor.moveTo(start, 1);
+function getCall(cursor, string) {
+  const node = cursor.node;
+  const fullCall = string.slice(node.from, node.to);
+  const name = fullCall.match(callRegEx)[1];
+  const from = node.from+name.length;
+  const to = node.to;
+  const args = string.slice(from, to);
+  const trimmedName = name.trim();
+  const trimmedArgs = args.trim(); 
   
-  // props will be wrapped in "..."
-  return props.map(x => x.key.trim().slice(1, -1));
-}
-
-const getObj = (cursor, getValue) => {
-  const obj = [];
-
-  const start = cursor.from;
-  cursor.firstChild();
-  cursor.nextSibling();
-  cursor.firstChild();
-  const key = getValue();
-  const keyFrom = cursor.from;
-  const keyTo = cursor.to;
-  cursor.nextSibling();
-  cursor.nextSibling();
-  const value = getValue();
-  const valueFrom = cursor.from;
-  const valueTo = cursor.to;
-
-  obj.push({ key, value, keyFrom, keyTo, valueFrom, valueTo });
-
-  while (
-    cursor.parent() 
-    && cursor.nextSibling() 
-    && cursor.nextSibling()
-    && cursor.firstChild()) {
-      const key = getValue();
-      const keyFrom = cursor.from;
-      const keyTo = cursor.to;
-      cursor.nextSibling();
-      cursor.nextSibling();
-      const value = getValue();
-      const valueFrom = cursor.from;
-      const valueTo = cursor.to;
-      obj.push({ key, value, keyFrom, keyTo, valueFrom, valueTo });
+  return {
+    name: trimmedName,
+    args: trimmedArgs,
+    from,
+    to
   }
+}
+
+function getCall0(cursor, getValue) {
+  const start = cursor.from;
+  cursor.next();
+  const name = getValue();
+  cursor.next();
+  const args = getValue();
+  const from = cursor.from;
+  const to = cursor.to;
 
   cursor.moveTo(start, 1);
-  
-  return obj;
+
+  return [name, args, from, to];
 }
+
 
 function makeTree(cursor, getValue, func = null) {
   const start = cursor.from;
@@ -298,6 +164,5 @@ function makeTree(cursor, getValue, func = null) {
   cursor.iterate(enter, leave);
 
   cursor.moveTo(start, 1);
-
   return final;
 }

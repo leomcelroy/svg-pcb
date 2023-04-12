@@ -5,12 +5,14 @@ export class PCB {
   constructor() {
     this.layers = {}; // maybe should just store shapes, get layer contents on demand
     this.components = [];
-    this.refDeses = [];
+    this.ids = [];
+
     this._netList = [];
   }
 
   add(footprint, ops = {}) {
-    const name = ops.name || "";
+    
+    const label = ops.label || "";
 
     const options = {
       translate: ops.translate || [0, 0],
@@ -18,7 +20,7 @@ export class PCB {
       padLabelSize: ops.padLabelSize || 0.02,
       componentLabelSize: ops.componentLabelSize || 0.025,
       flip: ops.flip || false,
-      refDes: ops.refDes || "",
+      id: ops.id || crypto.randomUUID(), // check id is unique if provided
     };
 
     const newComp = makeComponent(footprint, options);
@@ -29,12 +31,12 @@ export class PCB {
       })
     }
 
-    if (name !== "" && !name.includes("drill")) {
-      // let componentLabels = makeText(name, options.componentLabelSize, options.translate, 0);
+    if (label !== "") {
+      // let componentLabels = makeText(label, options.componentLabelSize, options.translate, 0);
 
       this.addShape("componentLabels", {
         type: "text", 
-        value: name,  
+        value: label,  
         translate: options.translate,
         rotate: 0,
         size: options.componentLabelSize
@@ -42,7 +44,7 @@ export class PCB {
     }
 
     this.components.push(newComp);
-    this.refDeses.push(options.refDes);
+    this.ids.push(options.id);
 
     return newComp;
   }
@@ -122,7 +124,7 @@ export class PCB {
       group.forEach(item => {
         const [ comp, pad ] = item;
         const constructor = comp.constructor.name;
-        if (constructor === "Component") item[0] = comp.refDes;
+        if (constructor === "Component") item[0] = comp.id;
       })
     })
     

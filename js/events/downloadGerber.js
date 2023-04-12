@@ -340,49 +340,39 @@ class ExcellonBuilder {
     return toolID;
   }
 
-  plotDrills(layer) {
+  plotDrills(pcb) {
     this.#body += "; #@! TA.AperFunction,Plated,PTH,ComponentDrill\n"; // Borrowed from KiCad export
     
     // Extract drill positions and sizes
-    const drills = layer.flat().map( x => {
-      const getCenter = (pts) => {
-        let totalX = 0;
-        let totalY = 0;
-        
-        pts.forEach(pt => {
-          totalX += pt[0];
-          totalY += pt[1];
-        })
-  
-        return [ totalX / pts.length, totalY / pts.length ];
-      }
-  
-      const getDistance = (pt0, pt1) => Math.sqrt((pt1[0] - pt0[0])**2+(pt1[1] - pt0[1])**2);
-      
-      const center = getCenter(x);      
-      let dist = Math.round(1000*x.reduce((acc, cur) => acc + getDistance(center, cur), 0)/x.length)/1000; 
-      
-      if (this.#state.downloadGerberOptions.excellonMetric) {
-        center[0] = inchesToMM(center[0]);
-        center[1] = inchesToMM(center[1]);
-        dist = inchesToMM(dist)*2; // TODO: Is this radius or diameter?
-      }
-  
-      return {
-        center, 
-        dist
-      };
-    });
+    const drills = pcb
+      .components
+      .map(comp => comp.drills)
+      .flat()
+      .map( x => { 
+        let center = x.pos;
+        let diameter = x.diameter;
+
+        if (this.#state.downloadGerberOptions.excellonMetric) {
+          center[0] = inchesToMM(center[0]);
+          center[1] = inchesToMM(center[1]);
+          diameter = inchesToMM(x.diameter); // TODO: Is this radius or diameter?
+        }
+    
+        return {
+          center, 
+          diameter
+        };
+      });
 
     // Extract tools and drill points
     const tools = {};
-    drills.forEach( ({ dist, center }) => {
-      if (dist in tools) {
-        tools[dist].drillPoints.push(center); 
+    drills.forEach( ({ diameter, center }) => {
+      if (diameter in tools) {
+        tools[diameter].drillPoints.push(center); 
       } else {
-        tools[dist] = {};
-        tools[dist].toolID = this.#getToolID();
-        tools[dist].drillPoints = [ center ];
+        tools[diameter] = {};
+        tools[diameter].toolID = this.#getToolID();
+        tools[diameter].drillPoints = [ center ];
       }
     });
 
@@ -414,6 +404,7 @@ class ExcellonBuilder {
 
 export function downloadGerber(state) {
     const layers = state.pcb.layers;
+    const pcb = state.pcb;
    
     var zip = new JSZip();
     state.downloadGerberOptions.layers.forEach((val, key) => {
@@ -511,14 +502,10 @@ export function downloadGerber(state) {
           zip.file( getFilename(state, "Outline"), outline.toString() );
           break;
         case "Drills":
-          if (layers["drill"] === undefined) {
-            console.log("Layer drill does not exist");
-            break;
-          }
           // There is probably no need to include outline in the drill file 
           // even though it could be a gerber file as well. 
           let drills = new ExcellonBuilder(state);
-          drills.plotDrills( layers["drill"] ? layers["drill"] : [] );
+          drills.plotDrills(pcb);
           zip.file( getFilename(state, "Drills"), drills.toString());
           break;
       }

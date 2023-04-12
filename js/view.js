@@ -26,7 +26,29 @@ export function view(state) {
 			</div>
 			<div class="right-side" @mousedown=${() => dispatch("RUN", { flatten: false })}>
 				${svgViewer(state)}
-				${state.selectedPath !== null ? html`<div class="path-selected" @click=${clearSelectedPath}>unselect path</div>` : ""}
+				${state.selectedPathIndex >= 0
+					? html`
+						<div class="path-selected">
+							<div
+								class="clear-selected-path"
+								@click=${clearSelectedPath}>
+								unselect path
+							</div>
+							<select
+								.value=${state.cubicHandleManipulation}
+								@input=${e => {
+									state.cubicHandleManipulation = e.target.value;
+									dispatch("RENDER");
+								}}>
+							  <option value="symmetric">symmetric</option>
+							  <option value="colinear">colinear</option>
+							  <option value="broken">broken</option>
+							</select>
+							<div>hold z to toggle junction type</div>
+							<div>hold x to delete point</div>
+						</div>
+						`
+					: ""}
 				<div class="footprint-toolbox">
 					${state.inputs.length > 0 ? html`<div class="toolbox-title">Inputs:</div>` : ""}
 					<div class="input-panel">
@@ -40,7 +62,7 @@ export function view(state) {
 		        }}>import</div>
 		      </div>
 					<div class="component-list">
-						${state.footprints.map(renderFootprint)}
+						${Object.values(state.footprints).map(renderFootprint)}
 					</div>
 					${layersColorPicker(state)}
 					<div class="nub" @click=${() => {
@@ -91,10 +113,10 @@ const menu = state => html`
 						}}>
 						gerber (WIP)
 					</div class="menu-item">
-					<input 
+					<input
 						class="input-item"
 						style="margin: 3px;"
-						.value=${state.name} 
+						.value=${state.name}
 						placeholder="name-here"
 						@input=${(e) => {state.name = e.target.value}}/>
 				</div>
@@ -109,7 +131,7 @@ const menu = state => html`
 			<div class="menu-item dropdown-container">
 				options
 				<div class="dropdown-content">
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>handles</span>
 						<input
 							type="checkbox"
@@ -121,7 +143,7 @@ const menu = state => html`
 							class="handles-checkbox">
 						</input>
 					</div>
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>grid</span>
 						<input
 							type="checkbox"
@@ -133,7 +155,7 @@ const menu = state => html`
 							>
 						</input>
 					</div>
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>adaptiveGrid</span>
 						<input
 							type="checkbox"
@@ -158,7 +180,7 @@ const menu = state => html`
 							}}>
 						</input>
 					</div>
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>snapToPad</span>
 						<input
 							type="checkbox"
@@ -170,7 +192,7 @@ const menu = state => html`
 							>
 						</input>
 					</div>
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>snapToPad Radius</span>
 						<input
 							type="number"
@@ -183,7 +205,7 @@ const menu = state => html`
 							}}>
 						</input>
 					</div>
-					<div class="check-item"> 
+					<div class="check-item">
 						<span>vim mode</span>
 						<input
 							type="checkbox"
