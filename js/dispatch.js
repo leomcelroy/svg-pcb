@@ -33,8 +33,8 @@ const ACTIONS = {
 
 		try {
 
-			const { inserts, inputs, layers, componentDeclarations } = astAnalysis(string, ast);
-			
+			const { inserts, inputs, layers } = astAnalysis(string, ast);
+
 			state.layers = layers;
 
 			const currentFootprints = [];
@@ -73,20 +73,18 @@ const ACTIONS = {
 						currentFootprints.push(x.variableName);
 						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, variableName:\`${x.variableName}\`, snippet:\`${x.snippet}\`}` });
 					},
-					// "path":
+					component: () => {
+						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, variableName:\`${x.variableName}\`}`});
+					},
+					path: () => {
+						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
+
+					}
 				}
 
 				if (x.functionName in changeFuncs) changeFuncs[x.functionName]();
-				else {
-					changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
-				}
+				else console.log("Unknown insertion requested.");
 			});
-
-			componentDeclarations.forEach(x => {
-				changes.push({ from: x.from+1, insert: `[` });
-				changes.push({ from: x.to-1, insert: `]` });
-				changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, variableName:\`${x.variableName}\`}`});
-			})
 
 			string = modifyAST(string, changes);
 

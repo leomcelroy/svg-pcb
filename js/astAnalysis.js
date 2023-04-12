@@ -1,4 +1,4 @@
-import * as esprima from 'esprima';
+// import * as esprima from 'esprima';
 
 const FUNCTIONS_STATIC_INFO = [
   "pt", 
@@ -7,10 +7,12 @@ const FUNCTIONS_STATIC_INFO = [
   "footprint",
 ];
 
+const variableNameRegEx = /(const|let|var)([^=]+)/
+const callRegEx = /([^\(]+)/
+
 export function astAnalysis(string, ast) {
   const inserts = [];
 
-  const componentDeclarations = getComponentDeclarations(string, ast);
   const layers = getLayers(string, ast);
 
   const cursor = ast.cursor();
@@ -19,23 +21,48 @@ export function astAnalysis(string, ast) {
   // Reset cursor as there might be another analysis pass before this.
   cursor.moveTo(0);
 
+  const boardNameRe = /(const|let|var)([^=]*)=\s*new\s+PCB\s*\(\s*\)/;
+
+  let boardName = string.match(boardNameRe);
+  boardName = boardName ? boardName[2].trim() : null;
+
+  if (boardName) FUNCTIONS_STATIC_INFO.push(`${boardName}.add`);
+
   do {
     const value = getValue();
 
     if (cursor.name === "CallExpression") {
-      const [ name, args, from, to ] = getCall(cursor, getValue);
+     
+      // need to improve this to work with call being expression
+      const { name, args, from, to } = getCall(cursor, string);
+
       if (FUNCTIONS_STATIC_INFO.includes(name)) {
         let variableName = "";
-        cursor.prev();
-        if (cursor.name === "Equals") {
-          cursor.prev();
-          variableName = getValue();
-          cursor.next();
+
+        const isVariableDeclaration = cursor.node?.parent?.name === "VariableDeclaration";
+
+        if (isVariableDeclaration) {
+          const parent = cursor.node.parent;
+
+          variableName = string
+            .slice(parent.from, parent.to)
+            .match(variableNameRegEx)
+            [2]
+            .trim();
         }
-        cursor.next();
+
+        // OLD GET VARIABLE NAME, BAD
+
+        // cursor.prev();
+        // if (cursor.name === "Equals") {
+        //   cursor.prev();
+        //   variableName = getValue();
+        //   cursor.next();
+        // }
+        // cursor.next();
 
         inserts.push({
-          functionName: name,
+          functionName: name === `${boardName}.add` ? "component" : name,
           from: from,
           to: to,
           snippet: args,
@@ -50,49 +77,7 @@ export function astAnalysis(string, ast) {
   return { 
     inserts,
     layers, 
-    componentDeclarations
   };
-}
-
-function getComponentDeclarations(string, ast) {
-  const componentDeclarations = [];
-  const cursor = ast.cursor();
-  const getValue = () => string.slice(cursor.from, cursor.to);
-
-  cursor.moveTo(0);
-
-  const boardNameRe = /(const|let|var)([^=]*)=\s*new\s+PCB\s*\(\s*\)/;
-
-  let boardName = string.match(boardNameRe);
-  boardName = boardName ? boardName[2].trim() : "";
-
-  if (boardName === "") return [];
-
-  const callRegExAssign = new RegExp(String.raw`(const|let|var)([^=]*)=\s*${boardName}\s*\.\s*add\s*(\([\s\S]*\))`);
-
-  do {
-    const start = cursor.from;
-
-    if (cursor.name === "VariableDeclaration") {
-      const snippet = getValue();
-      const match = snippet.match(callRegExAssign);
-      if (!match) continue;
-      const variableName = match[2].trim();
-      const args = match[3];
-      const index = snippet.indexOf(args);
-      const from = index + start;
-      const to = index + args.length + start;
-
-      componentDeclarations.push({
-        from,
-        to,
-        variableName
-      })
-    }
-
-  } while (cursor.next());
-  
-  return componentDeclarations;
 }
 
 function getLayers(string, ast) {
@@ -120,7 +105,25 @@ function getLayers(string, ast) {
   return layers;
 }
 
-function getCall(cursor, getValue) {
+function getCall(cursor, string) {
+  const node = cursor.node;
+  const fullCall = string.slice(node.from, node.to);
+  const name = fullCall.match(callRegEx)[1];
+  const from = node.from+name.length;
+  const to = node.to;
+  const args = string.slice(from, to);
+  const trimmedName = name.trim();
+  const trimmedArgs = args.trim(); 
+  
+  return {
+    name: trimmedName,
+    args: trimmedArgs,
+    from,
+    to
+  }
+}
+
+function getCall0(cursor, getValue) {
   const start = cursor.from;
   cursor.next();
   const name = getValue();

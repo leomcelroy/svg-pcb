@@ -184,7 +184,7 @@ function makeComponent(comp, options = {}) {
     pos: translate,
     padShapes,
     id: id,
-    rotate
+    rotation: rotate
   })
 }
 
