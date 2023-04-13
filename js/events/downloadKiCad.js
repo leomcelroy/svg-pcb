@@ -138,8 +138,6 @@ export class KiCadBoardFileBuilder {
   }
 
   plotComponents(componentData) {
-
-    console.log(componentData);
   
     // Separate vias from components
     const compData = []; 
@@ -161,6 +159,7 @@ export class KiCadBoardFileBuilder {
           x: inchesToMM(val._pos[0]).toFixed(3),
           y: inchesToMM(-val._pos[1]).toFixed(3)
         },
+        rotation: val.rotation,
         layer: Object.values(val.footprint)[0].layers[0],
         pads: Object.entries(val.footprint).map(([key, val]) => {
           const pad = {
@@ -185,10 +184,11 @@ export class KiCadBoardFileBuilder {
       const footprintName = getUUID(); // No linkage to original footprint, thats why a random uuid
       const footprintTstamp = getUUID();
       const footprintPos = component.position;
+      const footprintRotation = component.rotation;
 
       this.#body += `(footprint "${APP_NAME}:${footprintName}" (layer "${component.layer}")\n`;
       this.#body += `(tstamp ${footprintTstamp})\n`;
-      this.#body += `(at ${footprintPos.x} ${footprintPos.y})`; 
+      this.#body += `(at ${footprintPos.x} ${footprintPos.y} ${footprintRotation})`; 
       this.#body += `(attr smd)\n`; // For now all footprints are surface mount
 
       // Add reference designator
@@ -211,7 +211,7 @@ export class KiCadBoardFileBuilder {
         });
           
         primitive += `) (width 0) (fill yes))`;
-        this.#body += `(pad "${pad.number}" smd custom (at ${pad.position.x} ${pad.position.y}) (size ${Math.min(pad.size.w, pad.size.h)} ${Math.min(pad.size.w, pad.size.h)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${primitive}))\n`;
+        this.#body += `(pad "${pad.number}" smd custom (at ${pad.position.x} ${pad.position.y} ${footprintRotation}) (size ${Math.min(pad.size.w, pad.size.h)} ${Math.min(pad.size.w, pad.size.h)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${primitive}))\n`;
       });
 
       this.#body += `)\n`; // Closing footprint definition
