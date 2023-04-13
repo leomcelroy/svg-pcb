@@ -24,17 +24,6 @@ export function inchesToMM(inches){
   return inches * MM_PER_INCH;
 }
 
-// We use these UUIDs for KiCad line segments and other elements
-const uuids = [];
-export function getUUID() {
-  let uuid = '';
-  while (uuids.includes(uuid) || uuid === '') {
-    uuid = Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, '0');
-  }
-  uuids.push(uuid);
-  return uuid;
-}
-
 export class KiCadBoardFileBuilder {
   #body = "";
 
@@ -84,8 +73,8 @@ export class KiCadBoardFileBuilder {
       const re = /(M|L)[^0-9-.]*(-?[0-9.]+),(-?[0-9.]+)/;
       const match = ptString.match(re);
       const point = {
-        x: inchesToMM(match[2]).toFixed(3),
-        y: inchesToMM(match[3]).toFixed(3)
+        x: inchesToMM(match[2]),
+        y: inchesToMM(match[3])
       }
       return point;
     });
@@ -105,7 +94,6 @@ export class KiCadBoardFileBuilder {
     const size = {
       w: Math.abs(max.x - min.x),
       h: Math.abs(max.y - min.y)
-    
     }
     return size;
   }
@@ -130,7 +118,7 @@ export class KiCadBoardFileBuilder {
           const startY = inchesToMM(-polyline[i][1]).toFixed(3);
           const endX = inchesToMM(polyline[i+1][0]).toFixed(3);
           const endY = inchesToMM(-polyline[i+1][1]).toFixed(3);
-          const tstamp = getUUID();
+          const tstamp = crypto.randomUUID();
           this.#body += `(segment (start ${startX} ${startY}) (end ${endX} ${endY}) (width ${width}) (layer "${layer}") (net ${net}) (tstamp ${tstamp}))\n`;
         }
       });
@@ -139,13 +127,15 @@ export class KiCadBoardFileBuilder {
 
   plotComponents(state) {
     const componentData = state.pcb.components;
-  
+
+    console.log(componentData);
+
     // Separate vias from components
     const compData = []; 
     const viaData = [];
     Object.values(componentData).forEach((comp) => {
       const keys = Object.keys(comp.footprint);
-      if (keys.includes('F') && keys.includes('B') && keys.includes('drill')) {
+      if (keys.includes('via')) {
         viaData.push(comp);
       } else {
         compData.push(comp);
@@ -164,6 +154,7 @@ export class KiCadBoardFileBuilder {
         layer: Object.values(val.footprint)[0].layers[0],
         pads: Object.entries(val.footprint).map(([key, val]) => {
           const pad = {
+            id: val.id,
             number: val.index,
             name: key,
             position: {
@@ -182,8 +173,8 @@ export class KiCadBoardFileBuilder {
 
     // Add footprint entries to KiCad board file
     components.forEach((component) => {
-      const footprintName = getUUID(); // No linkage to original footprint, thats why a random uuid
-      const footprintTstamp = getUUID();
+      const footprintTstamp = component.id;
+      const footprintName = 'Undefined'; // TODO: Fill this in with footprint name such as "regulator_SOT23" or "C_1206"
       const footprintPos = component.position;
       const footprintRotation = component.rotation;
 
@@ -193,11 +184,11 @@ export class KiCadBoardFileBuilder {
       this.#body += `(attr smd)\n`; // For now all footprints are surface mount
 
       // Add reference designator
-      const refDesTstamp = getUUID();
+      const refDesTstamp = crypto.randomUUID();
       this.#body += `(fp_text reference "${component.reference}" (at 0 0) (layer "F.SilkS")(effects (font (size 1 1) (thickness 0.15))) (tstamp ${refDesTstamp}))`;
 
       component.pads.forEach((pad) => {
-        const padTstamp = getUUID();
+        const padTstamp = crypto.randomUUID();
         const padLayers = pad.layers.map((layer) => {
           return `"${layer}"`;
         });
@@ -222,12 +213,12 @@ export class KiCadBoardFileBuilder {
     const vias = Object.values(viaData).map((comp) => {
       const via = {
         position: {
-          x: inchesToMM(comp.pos[0]).toFixed(3),
-          y: inchesToMM(-comp.pos[1]).toFixed(3)
+          x: inchesToMM(comp._pos[0]).toFixed(3),
+          y: inchesToMM(-comp._pos[1]).toFixed(3)
         }, 
-        size: this.#getSizeFromPoints(this.#svgToPoints(comp.footprint.F.shape)).w,
-        drill: this.#getSizeFromPoints(this.#svgToPoints(comp.footprint.drill.shape)).w,
-        tstamp: getUUID()
+        size: this.#getSizeFromPoints(this.#svgToPoints(comp.footprint.via.shape)).w.toFixed(3),
+        drill: inchesToMM(comp.footprint.via.drill.diameter).toFixed(3),
+        tstamp: comp.id
       };
       return via;
     });
@@ -258,7 +249,7 @@ export class KiCadBoardFileBuilder {
           x: inchesToMM(ptEnd[0]).toFixed(3),
           y: inchesToMM(-ptEnd[1]).toFixed(3)
         }
-        const lineTstamp = getUUID();
+        const lineTstamp = crypto.randomUUID();
 
         this.#body += `(gr_line (start ${lineStart.x} ${lineStart.y}) (end ${lineEnd.x} ${lineEnd.y})\n`;
         this.#body += `(stroke (width 0.1) (type default)) (layer "Edge.Cuts") (tstamp ${lineTstamp}))\n`;
