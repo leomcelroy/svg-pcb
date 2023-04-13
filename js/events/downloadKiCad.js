@@ -137,7 +137,8 @@ export class KiCadBoardFileBuilder {
     });
   }
 
-  plotComponents(componentData) {
+  plotComponents(state) {
+    const componentData = state.pcb.components;
   
     // Separate vias from components
     const compData = []; 
@@ -154,7 +155,7 @@ export class KiCadBoardFileBuilder {
     // Wrangle components before adding to KiCad file
     const components = Object.values(compData).map((val) => {
       const component = {
-        reference: val.refDes,
+        reference: state.idToName[`${val.id}`],
         position: {
           x: inchesToMM(val._pos[0]).toFixed(3),
           y: inchesToMM(-val._pos[1]).toFixed(3)
@@ -292,8 +293,7 @@ export function downloadKiCad(state) {
     boardFile.plotOutline(layers["interior"]);
   }
 
-  const components = state.pcb.components;
-  boardFile.plotComponents(components);
+  boardFile.plotComponents(state);
 
   zip.file( `${projectName}.kicad_pcb`, boardFile.toString() );
   zip
