@@ -128,8 +128,6 @@ export class KiCadBoardFileBuilder {
   plotComponents(state) {
     const componentData = state.pcb.components;
 
-    console.log(componentData);
-
     // Separate vias from components
     const compData = []; 
     const viaData = [];
@@ -145,7 +143,9 @@ export class KiCadBoardFileBuilder {
     // Wrangle components before adding to KiCad file
     const components = Object.values(compData).map((val) => {
       const component = {
+        id: val.id,
         reference: state.idToName[`${val.id}`],
+        footprint: state.idToFootprint[`${val.id}`],
         position: {
           x: inchesToMM(val._pos[0]).toFixed(3),
           y: inchesToMM(-val._pos[1]).toFixed(3)
@@ -154,7 +154,6 @@ export class KiCadBoardFileBuilder {
         layer: Object.values(val.footprint)[0].layers[0],
         pads: Object.entries(val.footprint).map(([key, val]) => {
           const pad = {
-            id: val.id,
             number: val.index,
             name: key,
             position: {
@@ -174,7 +173,7 @@ export class KiCadBoardFileBuilder {
     // Add footprint entries to KiCad board file
     components.forEach((component) => {
       const footprintTstamp = component.id;
-      const footprintName = 'Undefined'; // TODO: Fill this in with footprint name such as "regulator_SOT23" or "C_1206"
+      const footprintName = component.footprint;
       const footprintPos = component.position;
       const footprintRotation = component.rotation;
 
@@ -199,11 +198,11 @@ export class KiCadBoardFileBuilder {
 
         let primitive = `(gr_poly (pts`; 
         pad.shape.forEach((pt) => {
-          primitive += ` (xy ${pt.x} ${pt.y})`;
+          primitive += ` (xy ${pt.x.toFixed(3)} ${pt.y.toFixed(3)})`;
         });
           
         primitive += `) (width 0) (fill yes))`;
-        this.#body += `(pad "${pad.number}" smd custom (at ${pad.position.x} ${pad.position.y} ${footprintRotation}) (size ${Math.min(pad.size.w, pad.size.h)} ${Math.min(pad.size.w, pad.size.h)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${primitive}))\n`;
+        this.#body += `(pad "${pad.number}" smd custom (at ${pad.position.x} ${pad.position.y} ${footprintRotation}) (size ${Math.min(pad.size.w, pad.size.h).toFixed(3)} ${Math.min(pad.size.w, pad.size.h).toFixed(3)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${primitive}))\n`;
       });
 
       this.#body += `)\n`; // Closing footprint definition
