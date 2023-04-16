@@ -15,7 +15,9 @@ import { APP_NAME, MM_PER_INCH } from "../constants.js";
 */
 
 export const BOARD_THICKNESS = 1.6; // This is in millimeters according to KiCad spec
-export const PAPER_SIZE = 'A4';
+export const PAPER_SIZE = 'User'; // This will take into account the width and height values below
+export const PAPER_SIZE_WIDTH = 297;
+export const PAPER_SIZE_HEIGTH = 210;
 export const KICAD_PCB_VERSION = '20221018';
 export const PAD_TO_MASK_CLEARANCE = 0;
 
@@ -37,7 +39,7 @@ export class KiCadBoardFileBuilder {
     str += `)\n`; // Add comment after closing bracket for ease of testing
 
     // Add page settings, paper size
-    str += `(paper "${PAPER_SIZE}")\n`;
+    str += `(paper "${PAPER_SIZE}" ${PAPER_SIZE_WIDTH} ${PAPER_SIZE_HEIGTH})\n`;
 
     // Add layers
     str += `(layers\n`;
@@ -115,9 +117,9 @@ export class KiCadBoardFileBuilder {
       shape.forEach((polyline) => {
         for (let i = 0; i < polyline.length - 1; i++) {
           const startX = inchesToMM(polyline[i][0]).toFixed(3);
-          const startY = inchesToMM(-polyline[i][1]).toFixed(3);
+          const startY = (inchesToMM(-polyline[i][1]) + PAPER_SIZE_HEIGTH).toFixed(3);
           const endX = inchesToMM(polyline[i+1][0]).toFixed(3);
-          const endY = inchesToMM(-polyline[i+1][1]).toFixed(3);
+          const endY = (inchesToMM(-polyline[i+1][1]) + PAPER_SIZE_HEIGTH).toFixed(3);
           const tstamp = crypto.randomUUID();
           this.#body += `(segment (start ${startX} ${startY}) (end ${endX} ${endY}) (width ${width}) (layer "${layer}") (net ${net}) (tstamp ${tstamp}))\n`;
         }
@@ -148,7 +150,7 @@ export class KiCadBoardFileBuilder {
         footprint: state.idToFootprint[`${val.id}`],
         position: {
           x: inchesToMM(val._pos[0]).toFixed(3),
-          y: inchesToMM(-val._pos[1]).toFixed(3)
+          y: (inchesToMM(-val._pos[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
         },
         rotation: val.rotation,
         layer: Object.values(val.footprint)[0].layers[0],
@@ -213,7 +215,7 @@ export class KiCadBoardFileBuilder {
       const via = {
         position: {
           x: inchesToMM(comp._pos[0]).toFixed(3),
-          y: inchesToMM(-comp._pos[1]).toFixed(3)
+          y: (inchesToMM(-comp._pos[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
         }, 
         size: this.#getSizeFromPoints(this.#svgToPoints(comp.footprint.via.shape)).w.toFixed(3),
         drill: inchesToMM(comp.footprint.via.drill.diameter).toFixed(3),
@@ -242,11 +244,11 @@ export class KiCadBoardFileBuilder {
         const ptEnd = shape[i+1];
         const lineStart = {
           x: inchesToMM(ptStart[0]).toFixed(3),
-          y: inchesToMM(-ptStart[1]).toFixed(3)
+          y: (inchesToMM(-ptStart[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
         }
         const lineEnd = {
           x: inchesToMM(ptEnd[0]).toFixed(3),
-          y: inchesToMM(-ptEnd[1]).toFixed(3)
+          y: (inchesToMM(-ptEnd[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
         }
         const lineTstamp = crypto.randomUUID();
 
