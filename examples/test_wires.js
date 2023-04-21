@@ -89,7 +89,6 @@ renderPCB({
     "interior": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#ff8c00cc",
-    "drill": "#ff3300e5",
     //"padLabels": "#ffff99e5",
     //"componentLabels": "#00e5e5e5",
   },
