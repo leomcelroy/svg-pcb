@@ -140,6 +140,9 @@ const ACTIONS = {
 		  changes: {from: 0, to: end, insert: text}
 		});
 
+		state.selectedPathIndex = -1;
+    state.selectedPath = null; // { from, to, args }
+
 		dispatch("RUN");
 		document.querySelector(".center-button").click()
 

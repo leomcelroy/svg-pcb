@@ -71,6 +71,8 @@ class Component {
   }
 }
 
+const SHAPE_CACHE = {}
+
 function makeComponent(comp, options = {}) {
   let translate = options.translate || [0, 0];
   let rotate = options.rotate || 0;
@@ -100,7 +102,16 @@ function makeComponent(comp, options = {}) {
 
     if (flip) layers = layers.map(layer => layer === "F.Cu" ? "B.Cu" : layer);
 
-    if (typeof shape === "string") shape = pathD([], shape);
+    if (typeof shape === "string") {
+      if (!(shape in SHAPE_CACHE)) {
+        SHAPE_CACHE[shape] = pathD([], shape);
+      }
+
+      shape = SHAPE_CACHE[shape].slice();
+     
+    }
+
+    // shape = pathD([], shape);
 
     let offset = [pos[0], pos[1]];
     if (origin !== undefined) {
