@@ -74,5 +74,9 @@ export const global_state = {
     includeOutline: true, // Include outline in all layers
     excellonMetric: true,
     protelFilenames: false
+  },
+
+  downloadKiCadOptions: {
+    footprintLibraryName: "SvgPcbX"
   }
 }

@@ -35,7 +35,15 @@ export const drawDownloadKiCadModal = state => {
 					</div>
     			</div> <!-- /.col-50 -->
     			<div class="col-50">
-    				<!-- TBD -->
+					<h4><label for="footprintLibraryName">Footprint Library Name</label></h4>
+					<div class="modal-line">
+						<input id="footprintLibraryName" 
+							type="text" 
+							.value=${state.downloadKiCadOptions.footprintLibraryName === "" ? "SvgPcb" : state.downloadKiCadOptions.footprintLibraryName}
+							@input=${(e) => {
+								state.downloadKiCadOptions.footprintLibraryName = e.target.value;
+							}}>
+					</div>
     			</div> <!-- /.col-50 -->
     		</div> <!-- /.modal-body -->
     		<div class="modal-footer">

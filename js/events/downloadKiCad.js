@@ -27,22 +27,40 @@ export function inchesToMM(inches){
   return inches * MM_PER_INCH;
 }
 
-/* TODO
-export class KiCadBoardFileOptions() {
+// Simple enum (kind of)
+const KiCadPadPrimitiveShape = Object.freeze({
+  RECTANGLE: 'RECTANGLE',
+  CIRCLE: 'CIRLCLE',
+});
 
+export class KiCadBoardFileOptions {
+  #libraryName = "SvgPcb"; // Footprint library name to specify to make KiCad update footprints process easier.
+  //#padPrimitive = false; // true: draw pads as primitive shapes. false: draw pads as polygons, but primitive shapes will still be there.
+  //#padPrimitiveShape = KiCadPadPrimitiveShape.RECTANGLE;
+  
+  constructor(options = {}) {
+    if (options.libraryName) {
+      this.#libraryName = options.libraryName;
+    }
+  }
+
+  get libraryName() {
+    return this.#libraryName;
+  }
 }
-*/
 
 export class KiCadBoardFileBuilder {
   #body = "";
+  #options = new KiCadBoardFileOptions();
 
-  constructor() {
+  constructor(options) {
     this.#body = "";
+    this.#options = options;
   }
 
   #getHeader() {
     // The version here is the KiCad version this file should be compatible with
-    let str = `(kicad_pcb (version ${KICAD_PCB_VERSION}) (generator SvgPcb)\n`;
+    let str = `(kicad_pcb (version ${KICAD_PCB_VERSION}) (generator ${APP_NAME})\n`;
 
     // Add general section with board thickness
     str += `(general\n`;
@@ -190,7 +208,7 @@ export class KiCadBoardFileBuilder {
       const footprintPos = component.position;
       const footprintRotation = component.rotation;
 
-      this.#body += `(footprint "${APP_NAME}:${footprintName}" (layer "${component.layer}")\n`;
+      this.#body += `(footprint "${this.#options.libraryName}:${footprintName}" (layer "${component.layer}")\n`;
       this.#body += `(tstamp ${footprintTstamp})\n`;
       this.#body += `(at ${footprintPos.x} ${footprintPos.y} ${footprintRotation})`; 
       this.#body += `(attr smd)\n`; // For now all footprints are surface mount
@@ -298,7 +316,10 @@ export class KiCadBoardFileBuilder {
 export function downloadKiCad(state) {
   const zip = new JSZip();
   const projectName = (state.name === "" ? "Untitled" : state.name);
-  const boardFile = new KiCadBoardFileBuilder();
+  const boardFileOptions = new KiCadBoardFileOptions({
+    libraryName: state.downloadKiCadOptions.footprintLibraryName
+  });
+  const boardFile = new KiCadBoardFileBuilder(boardFileOptions);
 
   boardFile.plot(state);
 
