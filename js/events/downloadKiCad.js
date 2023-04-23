@@ -9,6 +9,7 @@ import { APP_NAME, MM_PER_INCH } from "../constants.js";
 - [x] Create basic .kicad_pcb for download
 - [x] Add wires
 - [x] Add footprints
+- [ ] Optimize class interface (single call with options should do)
 - [ ] Add tests
 - [ ] Add bool option for pads as polygons or primitive shapes
 - [ ] Add bool option for primitive shape pads as circles or rects
@@ -18,7 +19,7 @@ export const BOARD_THICKNESS = 1.6; // This is in millimeters according to KiCad
 export const PAPER_SIZE = 'User'; // This will take into account the width and height values below
 export const PAPER_SIZE_WIDTH = 297;
 export const PAPER_SIZE_HEIGTH = 210;
-export const KICAD_PCB_VERSION = '20221018';
+export const KICAD_PCB_VERSION = '20221018'; // Maybe this could be set to make it KiCad 6 compatible
 export const PAD_TO_MASK_CLEARANCE = 0;
 
 // This should be a global function
@@ -26,8 +27,18 @@ export function inchesToMM(inches){
   return inches * MM_PER_INCH;
 }
 
+/* TODO
+export class KiCadBoardFileOptions() {
+
+}
+*/
+
 export class KiCadBoardFileBuilder {
   #body = "";
+
+  constructor() {
+    this.#body = "";
+  }
 
   #getHeader() {
     // The version here is the KiCad version this file should be compatible with
@@ -258,6 +269,24 @@ export class KiCadBoardFileBuilder {
     });
   }
 
+  plot(state) {
+    const layers = state.pcb.layers;
+
+    if (layers["F.Cu"]) { 
+      this.plotWires(layers["F.Cu"], "F.Cu");
+    }
+
+    if (layers["B.Cu"]) {
+      this.plotWires(layers["B.Cu"], "B.Cu");
+    }
+
+    if (layers["interior"]) {
+      this.plotOutline(layers["interior"]);
+    }
+
+    this.plotComponents(state);
+  }
+
   toString() {
     let str = this.#getHeader();
     str += this.#body;
@@ -268,24 +297,10 @@ export class KiCadBoardFileBuilder {
 
 export function downloadKiCad(state) {
   const zip = new JSZip();
-  const boardFile = new KiCadBoardFileBuilder();
   const projectName = (state.name === "" ? "Untitled" : state.name);
+  const boardFile = new KiCadBoardFileBuilder();
 
-  const layers = state.pcb.layers;
-
-  if (layers["F.Cu"]) { 
-    boardFile.plotWires(layers["F.Cu"], "F.Cu");
-  }
-  
-  if (layers["B.Cu"]) {
-    boardFile.plotWires(layers["B.Cu"], "B.Cu");
-  }
-
-  if (layers["interior"]) {
-    boardFile.plotOutline(layers["interior"]);
-  }
-
-  boardFile.plotComponents(state);
+  boardFile.plot(state);
 
   zip.file( `${projectName}.kicad_pcb`, boardFile.toString() );
   zip
