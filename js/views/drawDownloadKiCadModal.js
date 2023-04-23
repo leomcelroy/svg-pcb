@@ -1,5 +1,5 @@
 import { html } from "lit-html";
-import { downloadKiCad } from "../events/downloadKiCad.js";
+import { KiCadPadShapeType, downloadKiCad } from "../events/downloadKiCad.js";
 import { dispatch } from "../dispatch.js";
 
 export const drawDownloadKiCadModal = state => {
@@ -35,7 +35,9 @@ export const drawDownloadKiCadModal = state => {
 					</div>
     			</div> <!-- /.col-50 -->
     			<div class="col-50">
+
 					<h4><label for="footprintLibraryName">Footprint Library Name</label></h4>
+					
 					<div class="modal-line">
 						<input id="footprintLibraryName" 
 							type="text" 
@@ -44,6 +46,37 @@ export const drawDownloadKiCadModal = state => {
 								state.downloadKiCadOptions.footprintLibraryName = e.target.value;
 							}}>
 					</div>
+
+					<h4>Footprint Pad Type</h4>
+
+					<div class="modal-line">
+						<input id="kicadFootprintPadTypePolygon"
+							type="radio" 
+							name="kicadFootprintPadType"
+							.value=${KiCadPadShapeType.POLYGON}
+							.checked=${state.downloadKiCadOptions.padShapeType === KiCadPadShapeType.POLYGON}
+    						@change=${(e) => {
+								state.downloadKiCadOptions.padShapeType = e.target.checked 
+									? KiCadPadShapeType.POLYGON
+									: KiCadPadShapeType.PRIMITIVE
+    						}}>
+						<label for="kicadFootprintPadTypePolygon">Polygon</label>
+
+						&nbsp;
+
+						<input id="kicadFootprintPadTypePrimitive"
+							type="radio" 
+							name="kicadFootprintPadType"
+							.value=${KiCadPadShapeType.PRIMITIVE}
+							.checked=${state.downloadKiCadOptions.padShapeType === KiCadPadShapeType.PRIMITIVE}
+    						@change=${(e) => {
+								state.downloadKiCadOptions.padShapeType = e.target.checked 
+									? KiCadPadShapeType.PRIMITIVE
+									: KiCadPadShapeType.POLYGON
+    						}}>
+						<label for="kicadFootprintPadTypePrimitive">Primitive</label>
+					</div>
+
     			</div> <!-- /.col-50 -->
     		</div> <!-- /.modal-body -->
     		<div class="modal-footer">

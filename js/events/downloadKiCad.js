@@ -28,24 +28,38 @@ export function inchesToMM(inches){
 }
 
 // Simple enum (kind of)
-const KiCadPadPrimitiveShape = Object.freeze({
+export const KiCadPadPrimitiveShape = Object.freeze({
   RECTANGLE: 'RECTANGLE',
   CIRCLE: 'CIRLCLE',
 });
 
+export const KiCadPadShapeType = Object.freeze({
+  PRIMITIVE: 'PRIMITIVE',
+  POLYGON: 'POLYGON',
+});
+
 export class KiCadBoardFileOptions {
   #libraryName = "SvgPcb"; // Footprint library name to specify to make KiCad update footprints process easier.
-  //#padPrimitive = false; // true: draw pads as primitive shapes. false: draw pads as polygons, but primitive shapes will still be there.
-  //#padPrimitiveShape = KiCadPadPrimitiveShape.RECTANGLE;
+  #padShapeType = KiCadPadShapeType.POLYGON; // true: draw pads as primitive shapes. false: draw pads as polygons, but primitive shapes will still be there.
+  #padPrimitiveShape = KiCadPadPrimitiveShape.RECTANGLE;
   
   constructor(options = {}) {
     if (options.libraryName) {
       this.#libraryName = options.libraryName;
+      this.#padShapeType = options.padShapeType;
     }
   }
 
   get libraryName() {
     return this.#libraryName;
+  }
+
+  get padShapeType() {
+    return this.#padShapeType;
+  }
+
+  get padPrimitiveShape() {
+    return this.#padPrimitiveShape;
   }
 }
 
@@ -227,12 +241,15 @@ export class KiCadBoardFileBuilder {
         padLayers.push(`"F.Mask"`);
         padLayers.push(`"F.Paste"`);
 
-        let primitive = `(gr_poly (pts`; 
-        pad.shape.forEach((pt) => {
-          primitive += ` (xy ${pt.x.toFixed(3)} ${pt.y.toFixed(3)})`;
-        });
-          
-        primitive += `) (width 0) (fill yes))`;
+        let primitive = "";
+        if (this.#options.padShapeType === KiCadPadShapeType.POLYGON) {
+          primitive = `(gr_poly (pts`; 
+          pad.shape.forEach((pt) => {
+            primitive += ` (xy ${pt.x.toFixed(3)} ${pt.y.toFixed(3)})`;
+          });
+          primitive += `) (width 0) (fill yes))`;
+        }
+        
         this.#body += `(pad "${pad.number}" smd custom (at ${pad.position.x} ${pad.position.y} ${footprintRotation}) (size ${Math.min(pad.size.w, pad.size.h).toFixed(3)} ${Math.min(pad.size.w, pad.size.h).toFixed(3)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${primitive}))\n`;
       });
 
@@ -317,7 +334,8 @@ export function downloadKiCad(state) {
   const zip = new JSZip();
   const projectName = (state.name === "" ? "Untitled" : state.name);
   const boardFileOptions = new KiCadBoardFileOptions({
-    libraryName: state.downloadKiCadOptions.footprintLibraryName
+    libraryName: state.downloadKiCadOptions.footprintLibraryName,
+    padShapeType: state.downloadKiCadOptions.padShapeType
   });
   const boardFile = new KiCadBoardFileBuilder(boardFileOptions);
 

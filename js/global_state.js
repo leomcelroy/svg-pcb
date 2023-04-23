@@ -1,4 +1,5 @@
 import { MM_PER_INCH } from "./constants";
+import { KiCadPadPrimitiveShape, KiCadPadShapeType } from "./events/downloadKiCad";
 
 export const global_state = {
   version: "v0.1.0",
@@ -77,6 +78,8 @@ export const global_state = {
   },
 
   downloadKiCadOptions: {
-    footprintLibraryName: "SvgPcbX"
+    footprintLibraryName: "SvgPcb",
+    padShapeType: KiCadPadShapeType.POLYGON,
+    padPrimitiveShape: KiCadPadPrimitiveShape.RECTANGLE
   }
 }
