@@ -1,5 +1,5 @@
 import { html } from "lit-html";
-import { KiCadPadShapeType, downloadKiCad } from "../events/downloadKiCad.js";
+import { KiCadPadPrimitiveShape, KiCadPadShapeType, downloadKiCad } from "../events/downloadKiCad.js";
 import { dispatch } from "../dispatch.js";
 
 export const drawDownloadKiCadModal = state => {
@@ -37,7 +37,7 @@ export const drawDownloadKiCadModal = state => {
     			<div class="col-50">
 
 					<h4><label for="footprintLibraryName">Footprint Library Name</label></h4>
-					
+
 					<div class="modal-line">
 						<input id="footprintLibraryName" 
 							type="text" 
@@ -75,6 +75,36 @@ export const drawDownloadKiCadModal = state => {
 									: KiCadPadShapeType.POLYGON
     						}}>
 						<label for="kicadFootprintPadTypePrimitive">Primitive</label>
+					</div>
+
+					<h4>Footprint Primitive Pad Shape</h4>
+
+					<div class="modal-line">
+						<input id="kicadFootprintPadPrimitiveShapeRectangle"
+							type="radio" 
+							name="kicadFootprintPadPrimitiveShape"
+							.value=${KiCadPadPrimitiveShape.RECTANGLE}
+							.checked=${state.downloadKiCadOptions.padPrimitiveShape === KiCadPadPrimitiveShape.RECTANGLE}
+    						@change=${(e) => {
+								state.downloadKiCadOptions.padPrimitiveShape = e.target.checked 
+									? KiCadPadPrimitiveShape.RECTANGLE
+									: KiCadPadPrimitiveShape.CIRCLE
+    						}}>
+						<label for="kicadFootprintPadPrimitiveShapeRectangle">Rectangle</label>
+
+						&nbsp;
+
+						<input id="kicadFootprintPadPrimitiveShapeCircle"
+							type="radio" 
+							name="kicadFootprintPadPrimitiveShape"
+							.value=${KiCadPadPrimitiveShape.CIRCLE}
+							.checked=${state.downloadKiCadOptions.padPrimitiveShape === KiCadPadPrimitiveShape.CIRCLE}
+    						@change=${(e) => {
+								state.downloadKiCadOptions.padPrimitiveShape = e.target.checked 
+									? KiCadPadPrimitiveShape.CIRCLE
+									: KiCadPadPrimitiveShape.RECTANGLE
+    						}}>
+						<label for="kicadFootprintPadPrimitiveShapeCircle">Circle</label>
 					</div>
 
     			</div> <!-- /.col-50 -->

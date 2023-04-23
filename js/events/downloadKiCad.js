@@ -29,8 +29,8 @@ export function inchesToMM(inches){
 
 // Simple enum (kind of)
 export const KiCadPadPrimitiveShape = Object.freeze({
-  RECTANGLE: 'RECTANGLE',
-  CIRCLE: 'CIRLCLE',
+  RECTANGLE: 'rect', // These should match KiCad sexpr spec
+  CIRCLE: 'circle',
 });
 
 export const KiCadPadShapeType = Object.freeze({
@@ -249,8 +249,13 @@ export class KiCadBoardFileBuilder {
           });
           primitive += `) (width 0) (fill yes))`;
         }
+
+        const anchor = state.downloadKiCadOptions.padPrimitiveShape;
+        const shape = state.downloadKiCadOptions.padShapeType === KiCadPadShapeType.POLYGON 
+          ? "custom"
+          : state.downloadKiCadOptions.padPrimitiveShape;
         
-        this.#body += `(pad "${pad.number}" smd custom (at ${pad.position.x} ${pad.position.y} ${footprintRotation}) (size ${Math.min(pad.size.w, pad.size.h).toFixed(3)} ${Math.min(pad.size.w, pad.size.h).toFixed(3)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor rect) ) (primitives ${primitive}))\n`;
+        this.#body += `(pad "${pad.number}" smd ${shape} (at ${pad.position.x} ${pad.position.y} ${footprintRotation}) (size ${Math.min(pad.size.w, pad.size.h).toFixed(3)} ${Math.min(pad.size.w, pad.size.h).toFixed(3)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor ${anchor}) ) (primitives ${primitive}))\n`;
       });
 
       this.#body += `)\n`; // Closing footprint definition
