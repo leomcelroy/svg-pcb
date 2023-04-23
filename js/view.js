@@ -113,14 +113,14 @@ const menu = state => html`
 							state.downloadGerberModal = true;
 							dispatch("RENDER");
 						}}>
-						gerber (WIP)
+						gerber
 					</div class="menu-item">
 					<div class="menu-item"
 						@click=${(e) => {
 							state.downloadKiCadModal = true;
 							dispatch("RENDER");
 						}}>
-						kicad (WIP)
+						kicad
 					</div>
 					<input 
 						class="input-item"
