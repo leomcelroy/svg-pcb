@@ -94,11 +94,14 @@ function makeComponent(comp, options = {}) {
     // is origin ever used?
 
     if (drill) {
-      drills.push({
-        pos: [ pos[0]+translate[0], pos[1]+translate[1] ],
-        ...drill
-      });
+      let _ = pos;
+      if (flip) _ = scalePt(_, [-1, 1], [0, 0]);
+      _ = translatePt(_, translate, [0, 0]);
+      _ = rotatePt(_, rotate, translate);
+
+      drills.push({ pos: _, ...drill });
     }
+    
 
     if (flip) layers = layers.map(layer => layer === "F.Cu" ? "B.Cu" : layer);
 
@@ -127,7 +130,7 @@ function makeComponent(comp, options = {}) {
     let pad_pos = vector_add(vector_rotate(pos, rad), translate);
     pads[pad] = pad_pos;
 
-    const scalePt = (p, [ xScale, yScale ], [ x, y ]) => {
+    function scalePt(p, [ xScale, yScale ], [ x, y ]) {
 
       const newPoint = [
         ((p[0]-x) * xScale) + x,
@@ -137,7 +140,7 @@ function makeComponent(comp, options = {}) {
       return newPoint;
     };
 
-    const rotatePt = (p, angle, point) => {
+    function rotatePt(p, angle, point) {
 
       let delta = angle / 180 * Math.PI;
 
@@ -152,15 +155,15 @@ function makeComponent(comp, options = {}) {
       return newPoint;
     }
 
-    const translatePt = (p, toPoint, fromPoint) => {
+    function translatePt(p, toPoint, fromPoint) {
       const [ x0, y0 ] = fromPoint;
       const [ x1, y1 ] = toPoint;
       const x = x1 - x0;
       const y = y1 - y0;
 
       const newPoint = [
-        point[0] + x,
-        point[1] + y
+        p[0] + x,
+        p[1] + y
       ];
 
       return newPoint;
