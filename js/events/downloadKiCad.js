@@ -1,6 +1,7 @@
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { APP_NAME, MM_PER_INCH } from "../constants.js";
+import { pathD } from "../../geogram/index.js";
 
 // KiCad Board File Format reference
 // https://dev-docs.kicad.org/en/file-formats/sexpr-pcb/
@@ -111,20 +112,19 @@ export class KiCadBoardFileBuilder {
   }
 
   #svgToPoints(svgString) {
-    const re = /(M|L)[^0-9-.]*(-?[0-9.]+),(-?[0-9.]+)/gm;
-    const points = svgString.match(re);
 
-    const shape = points.map((ptString) => {
-      const re = /(M|L)[^0-9-.]*(-?[0-9.]+),(-?[0-9.]+)/;
-      const match = ptString.match(re);
-      const point = {
-        x: inchesToMM(match[2]),
-        y: inchesToMM(match[3])
-      }
-      return point;
-    });
+    // BUG: may have more than one path
+
+    const points = pathD([], svgString)[0]
+      .map(pt => {
+        const point = {
+          x: inchesToMM(pt[0]),
+          y: inchesToMM(pt[1])
+        }
+        return point;
+      });
     
-    return shape;
+    return points;
   }
 
   #getSizeFromPoints(points) {
@@ -214,6 +214,8 @@ export class KiCadBoardFileBuilder {
       }
       return component;
     });
+
+    console.log(components);
 
     // Add footprint entries to KiCad board file
     components.forEach((component) => {
