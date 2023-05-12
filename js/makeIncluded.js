@@ -7,12 +7,12 @@ import { renderPCB } from "./renderPCB.js";
 import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
 import { global_state } from "./global_state.js";
 
-
 class IncludedPCB extends PCB {
   constructor(...args) {
     super(...args);
 
     global_state.idToName = {};
+    global_state.idToFootprint = {};
   }
 
   add(...args) {
@@ -20,10 +20,15 @@ class IncludedPCB extends PCB {
     if (Array.isArray(args[0])) {
       const [[footprint, ops], staticInfo] = args;
       const comp = super.add(footprint, ops);
-      const { variableName } = staticInfo;
+      const { variableName, footprintName } = staticInfo;
+      
       if (variableName !== "") {
         global_state.idToName[comp.id] = variableName;
       } 
+      
+      if (footprintName) {
+        global_state.idToFootprint[comp.id] = footprintName;
+      }
 
       return comp;
     } else {
@@ -45,7 +50,6 @@ export const makeIncluded = (flatten) => ({
   },
   footprint: ([ json ], staticInfo ) => {
     const cachedFootprint = global_state.footprints;
-    
     const key = staticInfo.variableName;
     const { snippet } = staticInfo
     const cached = key in cachedFootprint;

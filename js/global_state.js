@@ -1,4 +1,5 @@
 import { MM_PER_INCH } from "./constants";
+import { KiCadPadPrimitiveShape, KiCadPadShapeType } from "./events/downloadKiCad";
 
 export const global_state = {
   version: "v0.1.0",
@@ -15,6 +16,7 @@ export const global_state = {
   shapes: [],
 
   idToName: {},
+  idToFootprint: {},
 
   limits: {
     x: [0, 1],
@@ -53,6 +55,7 @@ export const global_state = {
   componentMenu: false,
   componentSearch: "",
   downloadGerberModal: false,
+  downloadKiCadModal: false,
 
   name: "",
   error: "",
@@ -72,5 +75,11 @@ export const global_state = {
     includeOutline: true, // Include outline in all layers
     excellonMetric: true,
     protelFilenames: false
+  },
+
+  downloadKiCadOptions: {
+    footprintLibraryName: "SvgPcb",
+    padShapeType: KiCadPadShapeType.POLYGON,
+    padPrimitiveShape: KiCadPadPrimitiveShape.RECTANGLE
   }
 }
