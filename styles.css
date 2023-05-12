@@ -736,7 +736,8 @@ input {
 .col-33,
 .col-50,
 .col-75 {
-	display: table-cell;
+	display: inline-block;
+	vertical-align: top;
 }
 
 .col-25 {
@@ -748,7 +749,7 @@ input {
 }
 
 .col-50 {
-	width: 50%;
+	width: 49%;
 }
 
 .col-75 {
