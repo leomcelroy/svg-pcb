@@ -1,6 +1,7 @@
 import * as geo from "/geogram/index.js";
 import { PCB } from "./pcb.js";
 import { via } from "./pcb_helpers.js";
+import { createText } from "./createText/createText.js";
 import { renderShapes } from "./renderShapes.js";
 import { renderShape } from "./renderShape.js";
 import { renderPCB } from "./renderPCB.js";
@@ -42,6 +43,7 @@ export const makeIncluded = (flatten) => ({
   geo,
   PCB: IncludedPCB,
   via,
+  createText,
   renderShapes,
   renderShape,
   renderPCB: obj => {
