@@ -68,6 +68,7 @@ export class KiCadBoardFileOptions {
 export class KiCadBoardFileBuilder {
   #body = "";
   #options = new KiCadBoardFileOptions();
+  #properties = {};
 
   constructor(options) {
     this.#body = "";
@@ -101,7 +102,12 @@ export class KiCadBoardFileBuilder {
     str += `(setup\n`;
     str += `(pad_to_mask_clearance ${PAD_TO_MASK_CLEARANCE})\n`;
     str += `)\n`;
-
+    
+    // Add properties section
+    for (const [key, value] of Object.entries(this.#properties)) {
+      str += `(property "${key}" "${value}")\n`;
+    }
+    
     // Add nets section
     str += `(net 0 "")\n`;
 
@@ -221,7 +227,7 @@ export class KiCadBoardFileBuilder {
 
     // Add footprint entries to KiCad board file
     components.forEach((component) => {
-      const footprintTstamp = component.id;
+      const footprintTstamp = component.kicad.tstamp ?? component.id;
       const footprintName = component.footprint;
       const footprintPos = component.position;
       const footprintRotation = component.rotation;
@@ -262,6 +268,10 @@ export class KiCadBoardFileBuilder {
         
         this.#body += `(pad "${pad.number}" smd ${shape} (at ${pad.position.x} ${pad.position.y} ${footprintRotation}) (size ${Math.min(pad.size.w, pad.size.h).toFixed(3)} ${Math.min(pad.size.w, pad.size.h).toFixed(3)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor ${anchor}) ) (primitives ${primitive}))\n`;
       });
+
+      if (component.kicad.path) {
+        this.#body += `(path "${component.kicad.path}")\n`;
+      }
 
       this.#body += `)\n`; // Closing footprint definition
     });
@@ -316,6 +326,8 @@ export class KiCadBoardFileBuilder {
 
   plot(state) {
     const layers = state.pcb.layers;
+    const kicad = state.pcb.kicad ?? {};
+    this.#properties = kicad.properties ?? {};
 
     if (layers["F.Cu"]) { 
       this.plotWires(layers["F.Cu"], "F.Cu");
