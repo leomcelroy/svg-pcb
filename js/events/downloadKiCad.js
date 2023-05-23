@@ -232,6 +232,12 @@ export class KiCadBoardFileBuilder {
       const footprintPos = component.position;
       const footprintRotation = component.rotation;
       const footprint = component.kicad.footprint ?? `${this.#options.libraryName}:${footprintName}`;
+      const properties = component.kicad.properties ?? {};
+      
+      // Override board-wide properties if any
+      for (const [key, value] of Object.entries(properties)) {
+        this.#properties[key] = value;
+      }
 
       this.#body += `(footprint "${footprint}" (layer "${component.layer}")\n`;
       this.#body += `(tstamp ${footprintTstamp})\n`;
