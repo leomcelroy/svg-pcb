@@ -10,6 +10,7 @@ import { pathD } from "../../geogram/index.js";
 - [x] Create basic .kicad_pcb for download
 - [x] Add wires
 - [x] Add footprints
+- [ ] Optional kicad properties based on issue #58
 - [ ] Optimize class interface (single call with options should do)
 - [ ] Add tests
 - [ ] Add bool option for pads as polygons or primitive shapes
@@ -191,6 +192,7 @@ export class KiCadBoardFileBuilder {
         id: val.id,
         reference: state.idToName[val.id] ?? "",
         footprint: val.label ?? "",
+        kicad: val.kicad,
         position: {
           x: inchesToMM(val._pos[0]).toFixed(3),
           y: (inchesToMM(-val._pos[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
@@ -223,8 +225,9 @@ export class KiCadBoardFileBuilder {
       const footprintName = component.footprint;
       const footprintPos = component.position;
       const footprintRotation = component.rotation;
+      const footprint = component.kicad.footprint ?? `${this.#options.libraryName}:${footprintName}`;
 
-      this.#body += `(footprint "${this.#options.libraryName}:${footprintName}" (layer "${component.layer}")\n`;
+      this.#body += `(footprint "${footprint}" (layer "${component.layer}")\n`;
       this.#body += `(tstamp ${footprintTstamp})\n`;
       this.#body += `(at ${footprintPos.x} ${footprintPos.y} ${footprintRotation})`; 
       this.#body += `(attr smd)\n`; // For now all footprints are surface mount
