@@ -16,7 +16,6 @@ export const global_state = {
   shapes: [],
 
   idToName: {},
-  idToFootprint: {},
 
   limits: {
     x: [0, 1],

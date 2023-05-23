@@ -93,7 +93,7 @@ export class PCB {
       ...shapes, 
       ...wires.map( 
         w => offset2(
-          w.shape, 
+          JSON.parse(JSON.stringify(w.shape)), 
           w.thickness/2, 
           {
             endType: "etOpenRound", 
@@ -129,6 +129,8 @@ export class PCB {
     })
     
     this._netList = newNetList;
+
+    return newNetList;
   }
 
   wire(pts, thickness, layer = "F.Cu") {

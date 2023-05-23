@@ -26,7 +26,7 @@ export function createText(txt, options = {}) {
   const size = options.size ?? DEFAULT_SIZE;
   if (size !== lastSize) makeFont(size);
   lastSize = size;
-  const layers = options.layers ?? [ "F.Mask" ]; // what about flipping
+  const layers = options.layers ?? [ "F.Silkscreen" ];
 
   const footprint = {};
 
