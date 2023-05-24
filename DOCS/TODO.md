@@ -1,5 +1,30 @@
 # TODO
 
+- [] mm_per_unit -> mmPerUnit
+	- use it
+- support layer as variable
+- BUG: empty path in interior collection of paths
+- make layers match export function
+```
+const layers = {
+  
+  "interior": "#002d00ff",
+  
+  "B.Cu": "#ff4c007f", 
+  "F.Cu": "#ff8c00cc",
+  
+  "B.Mask": "#00000000",
+  "F.Mask": "#00000000",
+
+  "B.Silk": "#00000000",
+  "F.Silk": "#00000000",
+
+  "drills": "",
+  
+  "padLabels": "#ffff99e5",
+  "componentLabels": "#00e5e5e5",
+}
+```
 - [x] input is broken
 - add visual cue to menu tab
 - footprint processing is slow
