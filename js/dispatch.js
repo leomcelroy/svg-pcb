@@ -74,13 +74,8 @@ const ACTIONS = {
 						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, variableName:\`${x.variableName}\`, snippet:\`${x.snippet}\`}` });
 					},
 					component: () => {
-						const gex = /\(([^,]+),[^{]*{[^}]*}\)/;
-          	const mch = x.snippet.match(gex);
-          	const possibleFootprintName = mch[1];
 						let insertString = `,{from:${x.from}, to:${x.to}, variableName:\`${x.variableName}\`}`;
-          	if (currentFootprints.includes(possibleFootprintName)) {
-							insertString = `,{from:${x.from}, to:${x.to}, variableName:\`${x.variableName}\`, footprintName:\`${possibleFootprintName}\`}`;
-    				}
+
 						changes.push({ from: x.to-1, insert: insertString});
 					},
 					path: () => {

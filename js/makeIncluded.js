@@ -1,9 +1,11 @@
 import * as geo from "/geogram/index.js";
 import { PCB } from "./pcb.js";
 import { via } from "./pcb_helpers.js";
+import { createText } from "./createText/createText.js";
 import { renderShapes } from "./renderShapes.js";
 import { renderShape } from "./renderShape.js";
 import { renderPCB } from "./renderPCB.js";
+import { checkConnectivity } from "./checkConnectivity.js";
 import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
 import { global_state } from "./global_state.js";
 
@@ -12,7 +14,6 @@ class IncludedPCB extends PCB {
     super(...args);
 
     global_state.idToName = {};
-    global_state.idToFootprint = {};
   }
 
   add(...args) {
@@ -20,16 +21,12 @@ class IncludedPCB extends PCB {
     if (Array.isArray(args[0])) {
       const [[footprint, ops], staticInfo] = args;
       const comp = super.add(footprint, ops);
-      const { variableName, footprintName } = staticInfo;
+      const { variableName } = staticInfo;
       
       if (variableName !== "") {
         global_state.idToName[comp.id] = variableName;
       } 
       
-      if (footprintName) {
-        global_state.idToFootprint[comp.id] = footprintName;
-      }
-
       return comp;
     } else {
       return super.add(...args);
@@ -42,8 +39,10 @@ export const makeIncluded = (flatten) => ({
   geo,
   PCB: IncludedPCB,
   via,
+  createText,
   renderShapes,
   renderShape,
+  checkConnectivity,
   renderPCB: obj => {
     // console.log(obj.layerColors);
     return renderPCB(flatten)(obj);

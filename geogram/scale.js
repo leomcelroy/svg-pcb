@@ -1,6 +1,7 @@
 import { getPoint } from "./getPoint.js";
 
 export const scale = (shape, scaleXY, point) => {
+  if (shape.length === 0) return shape;
   if (!point) point = getPoint(shape, "cc");
   const [ x, y ] = point;
 

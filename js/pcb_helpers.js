@@ -103,7 +103,14 @@ function makeComponent(comp, options = {}) {
     }
     
 
-    if (flip) layers = layers.map(layer => layer === "F.Cu" ? "B.Cu" : layer);
+    function swapFB(inputString) {
+      const result = inputString.replace(/F\./g, 'TEMP').replace(/B\./g, 'F.').replace(/TEMP/g, 'B.');
+      return result;
+    }
+
+    if (flip) {
+      layers = layers.map(layer => swapFB(layer));
+    }
 
     if (typeof shape === "string") {
       if (!(shape in SHAPE_CACHE)) {
@@ -173,12 +180,14 @@ function makeComponent(comp, options = {}) {
     textLoc = scalePt(textLoc, [flip ? -1 : 1, 1], translate);
     textLoc = rotatePt(textLoc, flip ? 2*rotate : 0, translate);
 
-    padsLabels.push({
-      type: "text",
-      value: pad,
-      translate: textLoc,
-      size: padLabelSize
-    });
+    if (layers.some(layer => ["F.Cu", "B.Cu"].includes(layer))) {
+      padsLabels.push({
+        type: "text",
+        value: pad,
+        translate: textLoc,
+        size: padLabelSize
+      });
+    }
 
     layers.forEach(l => {
       if (l in results) results[l].push(shape);
