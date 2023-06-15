@@ -8,6 +8,7 @@ export function renderShape(shape) {
   const strokeWidth = shape.strokeWidth ?? 0.03;
   const strokeLinecap = shape.strokeLinecap ?? "round";
   const strokeLinejoin = shape.strokeLinejoin ?? "round";
+  const fillRule = shape.fillRule ?? "evenodd";
 
-  global_state.paths.push({ d, stroke, fill, strokeWidth, strokeLinecap, strokeLinejoin });
+  global_state.paths.push({ d, stroke, fill, fillRule, strokeWidth, strokeLinecap, strokeLinejoin });
 }

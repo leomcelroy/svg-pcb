@@ -9,6 +9,12 @@ import { checkConnectivity } from "./checkConnectivity.js";
 import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
 import { global_state } from "./global_state.js";
 
+import * as Nos from "../drawing/noise-rav.js";
+
+import { noise } from "../drawing/noise.js";
+import { Turtle } from "../drawing/Turtle.js";
+import { TraceSkeleton }  from "../drawing/TraceSkeleton.js";
+
 class IncludedPCB extends PCB {
   constructor(...args) {
     super(...args);
@@ -35,10 +41,75 @@ class IncludedPCB extends PCB {
   }
 }
 
+function lerp(start, end, t) {
+    return (1 - t) * start + t * end;
+}
+
+function cubicInterpolation(start, end, t) {
+    let t2 = t * t;
+    let t3 = t2 * t;
+
+    return (2 * t3 - 3 * t2 + 1) * start + (-2 * t3 + 3 * t2) * end;
+}
+
+const rand = seededRandom(4325235);
+
+function randInRange(min, max) {
+    return rand() * (max - min) + min;
+}
+
+function seededRandom(seed) {
+    const a = 1664525;
+    const c = 1013904223;
+    const m = 2**32; // 2 to the power of 32
+    let currentSeed = seed;
+
+    return function() {
+        currentSeed = (a * currentSeed + c) % m;
+        return currentSeed / m;
+    };
+}
+
+function randomIntFromRange(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(rand() * (max - min + 1) + min);
+}
+
+const fold = (fn) => (v0, v1) => {
+  return v0.map((x, i) => fn(x, v1[i]));
+}
+
+const vec = {
+  fold,
+  add: fold((x, y) => x+y),
+  sub: fold((x, y) => x-y),
+  // dot
+  // cross
+  // mag
+  // norm
+}
+
+
 export const makeIncluded = (flatten) => ({
   geo,
   PCB: IncludedPCB,
   via,
+  art: {
+    noise,
+    Turtle,
+    lerp,
+    cubicInterpolation,
+    randInRange,
+    seededRandom,
+    rand,
+    randomIntFromRange,
+    vec,
+    Nos
+  },
+  setWorkarea(limits) {
+    global_state.limits = limits;
+  },
   createText,
   renderShapes,
   renderShape,

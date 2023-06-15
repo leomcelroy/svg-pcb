@@ -27,7 +27,7 @@ function makeSVG(state) {
   const background = svg.querySelector(".background");
 
   svg.innerHTML = "";
-  svg.append(background);
+  // svg.append(background); // get rid of square
   svg.append(shapes);
   svg.append(paths);
 

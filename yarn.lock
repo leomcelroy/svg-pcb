@@ -3987,6 +3987,11 @@ sisteransi@^1.0.5:
   resolved "https://registry.npmjs.org/sisteransi/-/sisteransi-1.0.5.tgz"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
+skeleton-tracing-js@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/skeleton-tracing-js/-/skeleton-tracing-js-1.0.4.tgz#109f3fd13c1c4e1511404385f3cf1834b9d5e9af"
+  integrity sha512-fn2LYYTCiTW8fIRQx1GBT24cUR1wTyRTx9CmFLVgahZndgILnxCo+15NlSWAZW6mLo3xX9a8xeWbgUaajofbFg==
+
 slash@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/slash/-/slash-3.0.0.tgz"

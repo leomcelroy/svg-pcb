@@ -25,7 +25,7 @@ export const global_state = {
   background: "#00000000",
 
   // -- grid --
-  grid: true,
+  grid: false,
   gridSize: 0.05,
   adaptiveGrid: false,
   snapToPad: true,

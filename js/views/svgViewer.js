@@ -16,13 +16,14 @@ const drawPt = ({ pt, start, end, text }, i, scale) => svg`
     data-text=${text}></circle>
 `
 
-const drawP = ({ d, stroke, strokeWidth, fill, strokeLinecap, strokeLinejoin }) => svg`
+const drawP = ({ d, stroke, fillRule, strokeWidth, fill, strokeLinecap, strokeLinejoin }) => svg`
   <path 
     d=${d} 
     stroke=${stroke} 
     stroke-linecap=${strokeLinecap}
     stroke-linejoin=${strokeLinejoin}
     stroke-width=${strokeWidth} 
+    fill-rule=${fillRule} 
     fill=${fill}></path>
 `
 export const svgViewer = (state) => {
