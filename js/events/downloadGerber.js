@@ -407,108 +407,94 @@ export function downloadGerber(state) {
     const pcb = state.pcb;
    
     var zip = new JSZip();
-    state.downloadGerberOptions.layers.forEach((val, key) => {
-      if (!val) return;
-      
-      switch (key) {
-        case "F.Cu":
-          if (layers["F.Cu"] === undefined) {
-            console.log("Layer F.Cu does not exist");
-            break;
-          }
-          let frontCopper = new GerberBuilder();
-          frontCopper.setFileFunction("Copper,L1,Top");
-          frontCopper.setFilePolarity("Positive");
-          frontCopper.plotPads(layers["F.Cu"]);
-          frontCopper.plotWires(layers["F.Cu"]);
-          if (state.downloadGerberOptions.includeOutline) {
-            frontCopper.plotOutline(layers["interior"]);
-          }
-          zip.file( getFilename(state, "F.Cu"), frontCopper.toString() );
-          break;
-        case "B.Cu":
-          if (layers["B.Cu"] === undefined) {
-            console.log("Layer B.Cu does not exist");
-            break;
-          }
-          let backCopper = new GerberBuilder();
-          backCopper.setFileFunction("Copper,L2,Bot");
-          backCopper.setFilePolarity("Positive");
-          backCopper.plotPads(layers["B.Cu"]);
-          backCopper.plotWires(layers["B.Cu"]);
-          if (state.downloadGerberOptions.includeOutline) {
-            backCopper.plotOutline(layers["interior"]);
-          }
-          zip.file( getFilename(state, "B.Cu"), backCopper.toString() );
-          break;
-        case "F.Mask":
-          if (layers["F.Cu"] === undefined) {
-            console.log("Cannot create F.Mask: F.Cu does not exist");
-            break;
-          }
-          let frontMask = new GerberBuilder();
-          frontMask.setFileFunction("Soldermask,Top");
-          frontMask.setFilePolarity("Negative");
-          frontMask.plotPads(layers["F.Cu"], 0.1);
-          if (state.downloadGerberOptions.includeOutline) {
-            frontMask.plotOutline(layers["interior"]);
-          }
-          zip.file( getFilename(state, "F.Mask"), frontMask.toString() );
-          break;
-        case "B.Mask":
-          if (layers["B.Cu"] === undefined) {
-            console.log("Cannot create B.Mask: B.Cu does not exist");
-            break;
-          }
-          let backMask = new GerberBuilder();
-          backMask.setFileFunction("Soldermask,Bot");
-          backMask.setFilePolarity("Negative");
-          backMask.plotPads(layers["B.Cu"], 0.1);
-          if (state.downloadGerberOptions.includeOutline) {
-            backMask.plotOutline(layers["interior"]);
-          }
-          zip.file( getFilename(state, "B.Mask"), backMask.toString() );
-          break;
-        case "F.Silkscreen":
-          if (layers["F.Silkscreen"] === undefined) {
-            console.log("Layer F.Silkscreen does not exist");
-            break;
-          }
-          // Warning: this is still Work In Progress
-          let frontSilkscreen = new GerberBuilder();
-          frontSilkscreen.setFileFunction("Legend,Top");
-          frontSilkscreen.setFilePolarity("Negative");
-          frontSilkscreen.plotSilkscreen(layers["componentLabels"]);
-          if (state.downloadGerberOptions.includeOutline) {
-            frontSilkscreen.plotOutline(layers["interior"]);
-          }
-          zip.file( getFilename(state, "F.Silkscreen"), frontSilkscreen.toString() );
-          break;
-        case "B.Silkscreen":
-          if (layers["B.Silkscreen"] === undefined) {
-            console.log("Layer B.Silkscreen does not exist");
-            break;
-          }
-          // No graphics on the back for now
-          break;
-        case "Outline":
-          if (layers["interior"] === undefined) {
-            console.log("Layer interior does not exist");
-            break;
-          }
-          let outline = new GerberBuilder();
-          outline.setFileFunction("Profile,NP");
-          outline.plotOutline(layers["interior"]);
-          zip.file( getFilename(state, "Outline"), outline.toString() );
-          break;
-        case "Drills":
-          // There is probably no need to include outline in the drill file 
-          // even though it could be a gerber file as well. 
-          let drills = new ExcellonBuilder(state);
-          drills.plotDrills(pcb);
-          zip.file( getFilename(state, "Drills"), drills.toString());
-          break;
+
+    // Find the name of the outline layer.
+    let outlineLayerName = undefined;
+    for (const layerName of state.downloadGerberOptions.layers.keys()) {
+      if (
+        layerName.toLowerCase().includes("interior") || // Neil's style
+        layerName.toLowerCase().includes("edge") || // KiCad
+        layerName.toLowerCase().includes("cuts") || // KiCad
+        layerName.toLowerCase().includes("outline") || // Someone said on the internet
+        layerName.toLowerCase().includes("mechanical") || // Altium style
+        layerName.toLowerCase().includes("dimension") // Eagle style
+      ) {
+        outlineLayerName = layerName;
+        break;
       }
+    }
+
+    console.log(outlineLayerName);
+
+    state.downloadGerberOptions.layers.forEach((val, key) => {
+      if (!val) return; // If user chooses not to export this layer, we do not process it
+
+      // Do some guesses based on layer name.
+      // We need to figure out which of the layers 
+
+      if (key == "F.Cu") {
+        let frontCopper = new GerberBuilder();
+        frontCopper.setFileFunction("Copper,L1,Top");
+        frontCopper.setFilePolarity("Positive");
+        frontCopper.plotPads(layers["F.Cu"]);
+        frontCopper.plotWires(layers["F.Cu"]);
+        if (state.downloadGerberOptions.includeOutline) {
+          frontCopper.plotOutline(layers[outlineLayerName]);
+        }
+        zip.file( getFilename(state, "F.Cu"), frontCopper.toString() );
+
+        let frontMask = new GerberBuilder();
+        frontMask.setFileFunction("Soldermask,Top");
+        frontMask.setFilePolarity("Negative");
+        frontMask.plotPads(layers["F.Cu"], 0.1);
+        if (state.downloadGerberOptions.includeOutline) {
+          frontMask.plotOutline(layers[outlineLayerName]);
+        }
+        zip.file( getFilename(state, "F.Mask"), frontMask.toString() );
+      } else if (key == "B.Cu") {
+        let backCopper = new GerberBuilder();
+        backCopper.setFileFunction("Copper,L2,Bot");
+        backCopper.setFilePolarity("Positive");
+        backCopper.plotPads(layers["B.Cu"]);
+        backCopper.plotWires(layers["B.Cu"]);
+        if (state.downloadGerberOptions.includeOutline) {
+          backCopper.plotOutline(layers[outlineLayerName]);
+        }
+        zip.file( getFilename(state, "B.Cu"), backCopper.toString() );
+
+        let backMask = new GerberBuilder();
+        backMask.setFileFunction("Soldermask,Bot");
+        backMask.setFilePolarity("Negative");
+        backMask.plotPads(layers["B.Cu"], 0.1);
+        if (state.downloadGerberOptions.includeOutline) {
+          backMask.plotOutline(layers[outlineLayerName]);
+        }
+        zip.file( getFilename(state, "B.Mask"), backMask.toString() );
+      } else if (key == "F.Silkscreen") {
+        // Warning: this is still Work In Progress
+        let frontSilkscreen = new GerberBuilder();
+        frontSilkscreen.setFileFunction("Legend,Top");
+        frontSilkscreen.setFilePolarity("Negative");
+        frontSilkscreen.plotSilkscreen(layers["componentLabels"]);
+        if (state.downloadGerberOptions.includeOutline) {
+          frontSilkscreen.plotOutline(layers["interior"]);
+        }
+        zip.file( getFilename(state, "F.Silkscreen"), frontSilkscreen.toString() );
+      } else if (key == "B.Silkscreen") {
+        // No graphics on the back for now
+      } else if (key === outlineLayerName) {
+        let outline = new GerberBuilder();
+        outline.setFileFunction("Profile,NP");
+        outline.plotOutline(layers[key]);
+        zip.file( getFilename(state, "Outline"), outline.toString() );
+      }
+
+      // And we export drills just like that as they are not part of any layer
+      // There is probably no need to include outline in the drill file 
+      // even though it could be a gerber file as well. 
+      let drills = new ExcellonBuilder(state);
+      drills.plotDrills(pcb);
+      zip.file( getFilename(state, "Drills"), drills.toString());
     });
     
     zip
