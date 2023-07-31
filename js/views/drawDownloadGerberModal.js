@@ -2,9 +2,17 @@ import { html } from "lit-html";
 import { downloadGerber } from "../events/downloadGerber.js";
 import { dispatch } from "../dispatch.js";
 
-function getLayerList(layerMap){
+function getLayerList(state){
+	// Populate map of layers based on current layers in the design.
+	const layers = state.pcb.layers; 
+	state.downloadGerberOptions.layers.clear();
+	for (const [key, value] of Object.entries(layers)) {
+		state.downloadGerberOptions.layers.set(key, value);
+	}
+
+	// Return a list of keys (layer names).
 	const list = [];
-	layerMap.forEach((val, key) => {
+	state.downloadGerberOptions.layers.forEach((val, key) => {
 		list.push(key);
 	});
 	return list;
@@ -47,7 +55,7 @@ export const drawDownloadGerberModal = state => {
     			<div class="col-50">
     				<h4>Include Layers</h4>
     				${
-    					getLayerList(state.downloadGerberOptions.layers).map((l) => {
+    					getLayerList(state).map((l) => {
     					return html`
     					<div class="modal-line">
     						<input 

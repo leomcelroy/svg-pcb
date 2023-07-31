@@ -62,14 +62,14 @@ export const global_state = {
 
   downloadGerberOptions: {
     layers: new Map([
-      ["F.Cu", true],
-      ["B.Cu", true],
-      ["F.Mask", true],
-      ["B.Mask", true],
+      // ["F.Cu", true],
+      // ["B.Cu", true],
+      // ["F.Mask", true],
+      // ["B.Mask", true],
       //["F.Silkscreen", false],
       //["B.Silkscreen", false],
-      ["Outline", true],
-      ["Drills", true]
+      // ["Outline", true],
+      // ["Drills", true]
     ]),
     includeOutline: true, // Include outline in all layers
     excellonMetric: true,
