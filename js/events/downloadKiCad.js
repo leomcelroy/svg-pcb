@@ -10,6 +10,7 @@ import { pathD } from "../../geogram/index.js";
 - [x] Create basic .kicad_pcb for download
 - [x] Add wires
 - [x] Add footprints
+- [ ] Optional kicad properties based on issue #58
 - [ ] Optimize class interface (single call with options should do)
 - [ ] Add tests
 - [ ] Add bool option for pads as polygons or primitive shapes
@@ -67,6 +68,7 @@ export class KiCadBoardFileOptions {
 export class KiCadBoardFileBuilder {
   #body = "";
   #options = new KiCadBoardFileOptions();
+  #properties = {};
 
   constructor(options) {
     this.#body = "";
@@ -100,7 +102,12 @@ export class KiCadBoardFileBuilder {
     str += `(setup\n`;
     str += `(pad_to_mask_clearance ${PAD_TO_MASK_CLEARANCE})\n`;
     str += `)\n`;
-
+    
+    // Add properties section
+    for (const [key, value] of Object.entries(this.#properties)) {
+      str += `(property "${key}" "${value}")\n`;
+    }
+    
     // Add nets section
     str += `(net 0 "")\n`;
 
@@ -191,6 +198,7 @@ export class KiCadBoardFileBuilder {
         id: val.id,
         reference: state.idToName[val.id] ?? "",
         footprint: val.label ?? "",
+        kicad: val.__meta__.kicad,
         position: {
           x: inchesToMM(val._pos[0]).toFixed(3),
           y: (inchesToMM(-val._pos[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
@@ -215,16 +223,24 @@ export class KiCadBoardFileBuilder {
       return component;
     });
 
-    console.log(components);
-
     // Add footprint entries to KiCad board file
     components.forEach((component) => {
-      const footprintTstamp = component.id;
       const footprintName = component.footprint;
       const footprintPos = component.position;
       const footprintRotation = component.rotation;
+      
+      // Handle properties coming in via __meta__
+      const kicad = component.kicad ?? {};
+      const footprintTstamp = kicad.tstamp ?? component.id;
+      const footprint = kicad.footprint ?? `${this.#options.libraryName}:${footprintName}`;
+      const properties = kicad.properties ?? {};
+      
+      // Override board-wide properties if any
+      for (const [key, value] of Object.entries(properties)) {
+        this.#properties[key] = value;
+      }
 
-      this.#body += `(footprint "${this.#options.libraryName}:${footprintName}" (layer "${component.layer}")\n`;
+      this.#body += `(footprint "${footprint}" (layer "${component.layer}")\n`;
       this.#body += `(tstamp ${footprintTstamp})\n`;
       this.#body += `(at ${footprintPos.x} ${footprintPos.y} ${footprintRotation})`; 
       this.#body += `(attr smd)\n`; // For now all footprints are surface mount
@@ -259,6 +275,10 @@ export class KiCadBoardFileBuilder {
         
         this.#body += `(pad "${pad.number}" smd ${shape} (at ${pad.position.x} ${pad.position.y} ${footprintRotation}) (size ${Math.min(pad.size.w, pad.size.h).toFixed(3)} ${Math.min(pad.size.w, pad.size.h).toFixed(3)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor ${anchor}) ) (primitives ${primitive}))\n`;
       });
+
+      if (kicad.path) {
+        this.#body += `(path "${kicad.path}")\n`;
+      }
 
       this.#body += `)\n`; // Closing footprint definition
     });
@@ -313,6 +333,7 @@ export class KiCadBoardFileBuilder {
 
   plot(state) {
     const layers = state.pcb.layers;
+    this.#properties = state.pcb.__meta__.kicad ?? {};
 
     if (layers["F.Cu"]) { 
       this.plotWires(layers["F.Cu"], "F.Cu");
