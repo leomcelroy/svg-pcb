@@ -35,7 +35,7 @@ const vector_rotate = ([x, y], angle) => [
 
 
 class Component {
-  constructor({ pads, layers, drills, footprint, pos, padShapes, id, rotation, kicad }) {
+  constructor({ pads, layers, drills, footprint, pos, padShapes, id, rotation, __meta__ }) {
     this.pads = pads;
     this.layers = layers;
     this.footprint = footprint;
@@ -44,7 +44,7 @@ class Component {
     this.rotation = rotation;
     this.padShapes = padShapes;
     this.id = id;
-    this.kicad = kicad;
+    this.__meta__ = __meta__;
   }
 
   pad(name) {
@@ -83,7 +83,7 @@ function makeComponent(comp, options = {}) {
 
   const [xOff, yOff] = translate;
   const rad = (rotate * Math.PI) / 180;
-  const kicad = options.kicad || {};
+  const __meta__ = options.__meta__ || {};
 
   const pads = {};
   const padShapes = {};
@@ -210,7 +210,7 @@ function makeComponent(comp, options = {}) {
     padShapes,
     id: id,
     rotation: rotate,
-    kicad: kicad
+    __meta__: __meta__
   })
 }
 

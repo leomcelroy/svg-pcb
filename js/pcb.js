@@ -21,7 +21,7 @@ export class PCB {
       componentLabelSize: ops.componentLabelSize || 0.025,
       flip: ops.flip || false,
       id: ops.id || crypto.randomUUID(), // check id is unique if provided
-      kicad: ops.kicad || {}
+      __meta__: ops.__meta__ || {}
     };
 
     const newComp = makeComponent(footprint, options);

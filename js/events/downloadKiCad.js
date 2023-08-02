@@ -198,7 +198,7 @@ export class KiCadBoardFileBuilder {
         id: val.id,
         reference: state.idToName[val.id] ?? "",
         footprint: val.label ?? "",
-        kicad: val.kicad,
+        kicad: val.__meta__.kicad,
         position: {
           x: inchesToMM(val._pos[0]).toFixed(3),
           y: (inchesToMM(-val._pos[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
@@ -223,16 +223,17 @@ export class KiCadBoardFileBuilder {
       return component;
     });
 
-    console.log(components);
-
     // Add footprint entries to KiCad board file
     components.forEach((component) => {
-      const footprintTstamp = component.kicad.tstamp ?? component.id;
       const footprintName = component.footprint;
       const footprintPos = component.position;
       const footprintRotation = component.rotation;
-      const footprint = component.kicad.footprint ?? `${this.#options.libraryName}:${footprintName}`;
-      const properties = component.kicad.properties ?? {};
+      
+      // Handle properties coming in via __meta__
+      const kicad = component.kicad ?? {};
+      const footprintTstamp = kicad.tstamp ?? component.id;
+      const footprint = kicad.footprint ?? `${this.#options.libraryName}:${footprintName}`;
+      const properties = kicad.properties ?? {};
       
       // Override board-wide properties if any
       for (const [key, value] of Object.entries(properties)) {
@@ -275,8 +276,8 @@ export class KiCadBoardFileBuilder {
         this.#body += `(pad "${pad.number}" smd ${shape} (at ${pad.position.x} ${pad.position.y} ${footprintRotation}) (size ${Math.min(pad.size.w, pad.size.h).toFixed(3)} ${Math.min(pad.size.w, pad.size.h).toFixed(3)}) (layers ${padLayers.join(' ')}) (pinfunction "${pad.name}") (tstamp ${padTstamp}) (options (clearance 0) (anchor ${anchor}) ) (primitives ${primitive}))\n`;
       });
 
-      if (component.kicad.path) {
-        this.#body += `(path "${component.kicad.path}")\n`;
+      if (kicad.path) {
+        this.#body += `(path "${kicad.path}")\n`;
       }
 
       this.#body += `)\n`; // Closing footprint definition
@@ -332,8 +333,7 @@ export class KiCadBoardFileBuilder {
 
   plot(state) {
     const layers = state.pcb.layers;
-    const kicad = state.pcb.kicad ?? {};
-    this.#properties = kicad.properties ?? {};
+    this.#properties = state.pcb.__meta__.kicad ?? {};
 
     if (layers["F.Cu"]) { 
       this.plotWires(layers["F.Cu"], "F.Cu");
