@@ -183,9 +183,22 @@ const ACTIONS = {
 		dispatch("RUN", { dragging: true });
 	},
 	RENDER() {
+		const r = () => render(view(global_state), document.getElementById("root"));
+		const now = Date.now();
+		if (
+			// true
+			now - debounce > 1000/30
+	  ) {
+			requestAnimationFrame(r);
+			debounce = now;
+		}
+	},
+	HARD_RENDER() {
 		render(view(global_state), document.getElementById("root"));
 	}
 }
+
+let debounce = Date.now();
 
 export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];

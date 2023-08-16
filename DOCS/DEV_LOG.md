@@ -1,6 +1,54 @@
 # DEV LOG
 
-### Aril 10, 2023
+### July 17, 2023
+
+- fix kicad module parsing
+  - shapes
+  - silkscreen
+- add `metadata` to component objects
+- document component format
+- improve ui
+- pass information through `.property` not through html data attribute
+- sort out what's going on with mask margin
+- drcs connectivity check
+
+- document
+
+footprint
+```
+{
+  padName: {
+    pos: [0, 0],
+    shape: "M 0,0 ...",
+    layers: ["F.Cu", "B.Cu", "F.Mask", "B.Mask", "*.Cu", ...],
+    drill: {
+      diameter: 0.02, // or radius
+      start: "F.Cu",
+      end: "B.Cu",
+      plated: false
+    },
+    index: 1,
+    // solder_mask_margin
+    // solderMaskMargin
+    // maskMargin: 0
+    // maskOffset: .03 // if not present then cover or if mask is in layer
+  }
+}
+```
+
+add
+```
+board.add(footprint, {
+  translate: ops.translate || [0, 0],
+  rotate: ops.rotate || 0,
+  padLabelSize: ops.padLabelSize || 0.02,
+  componentLabelSize: ops.componentLabelSize || 0.025,
+  flip: ops.flip || false,
+  id: ops.id || crypto.randomUUID(), // check id is unique if provided
+})
+```
+
+### April 10, 2023
 
 - change to drill api
 - mask and mask margin

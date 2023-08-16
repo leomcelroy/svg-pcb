@@ -4,6 +4,8 @@ export function makeFootprintGeometry(footprintObj) {
    const t =  [];
 
   for (const padName in footprintObj) {
+    // if (padName === "metadata") continue; // TODO
+
     const pad = footprintObj[padName];
 
     if (!pad.layers.includes("F.Cu")) continue;
