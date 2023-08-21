@@ -81,7 +81,9 @@ export function astAnalysis(string, ast) {
 }
 
 function getLayers(string, ast) {
-  
+
+  return [];
+
   const cursor = ast.cursor();
   const getValue = () => string.slice(cursor.from, cursor.to);
 
@@ -91,15 +93,21 @@ function getLayers(string, ast) {
 
   do {
     const value = getValue();
+
+
     // BUG: This causes infinite loop when layerColors not present
     if (cursor.name === "CallExpression" && value.slice(0, 9) === "renderPCB" && value.includes("layerColors")) {
-     
-      while (getValue() !== "layerColors" && cursor.next()) cursor.next();
+
+      while (getValue() !== "layerColors" && cursor.next()) {
+        cursor.next();
+      }
 
       const tree = makeTree(cursor, getValue);
 
+
       layers = tree[1].slice(1);
     }
+
   } while (cursor.next());
 
   return layers;

@@ -1,5 +1,13 @@
 # DEV LOG
 
+### Aug 21, 2023
+
+layerColors -> layers
+interior -> outline -> Edge.Cuts
+
+
+is F.Mask being used?
+
 ### July 17, 2023
 
 - fix kicad module parsing

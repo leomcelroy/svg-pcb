@@ -105,7 +105,7 @@ export const drawDownloadGerberModal = state => {
     						@change=${(e) => {
     							state.downloadGerberOptions.includeOutline = e.target.checked;
     						}}> 
-    					<label for="input-outlineAllLayers">Inclue outline in all layers</label>
+    					<label for="input-outlineAllLayers">Include outline in all layers</label>
     				</div>
     				<div class="modal-line">
     					<input 
