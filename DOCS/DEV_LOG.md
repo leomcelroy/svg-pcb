@@ -2,6 +2,10 @@
 
 ### Aug 21, 2023
 
+layer menu gives options from all layers in board
+writes layers colors to match board
+checks whichever layers match render object
+
 layerColors -> layers
 interior -> outline -> Edge.Cuts
 

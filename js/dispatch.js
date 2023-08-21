@@ -184,14 +184,17 @@ const ACTIONS = {
 	},
 	RENDER() {
 		const r = () => render(view(global_state), document.getElementById("root"));
-		const now = Date.now();
-		if (
-			// true
-			now - debounce > 1000/30
-	  ) {
-			requestAnimationFrame(r);
-			debounce = now;
-		}
+		requestAnimationFrame(r);
+
+
+		// const now = Date.now();
+		// if (
+		// 	// true
+		// 	now - debounce > 1000/30
+	  // ) {
+		// 	requestAnimationFrame(r);
+		// 	debounce = now;
+		// }
 	},
 	HARD_RENDER() {
 		render(view(global_state), document.getElementById("root"));
