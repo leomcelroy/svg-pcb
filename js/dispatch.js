@@ -26,16 +26,16 @@ const ACTIONS = {
 		state.pts = [];
 		state.error = "";
 
-		const doc = state.codemirror.view.state.doc;
+	  const doc = state.codemirror.view.state.doc;
 	  let string = doc.toString();
 
 	  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
 		try {
 
-			const { inserts, inputs, layers } = astAnalysis(string, ast);
+			const { inserts, inputs } = astAnalysis(string, ast);
 
-			state.layers = layers;
+			state.layers = [];
 
 			const currentFootprints = [];
 			const changes = [];
@@ -81,6 +81,9 @@ const ACTIONS = {
 					path: () => {
 						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
 
+					},
+					renderPCB: () => {
+						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
 					}
 				}
 

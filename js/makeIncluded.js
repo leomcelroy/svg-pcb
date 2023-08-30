@@ -43,9 +43,8 @@ export const makeIncluded = (flatten) => ({
   renderShapes,
   renderShape,
   checkConnectivity,
-  renderPCB: obj => {
-    // console.log(obj.layerColors);
-    return renderPCB(flatten)(obj);
+  renderPCB: (...args) => {
+    return renderPCB(flatten)(...args);
   },
   footprint: ([ json ], staticInfo ) => {
     const cachedFootprint = global_state.footprints;

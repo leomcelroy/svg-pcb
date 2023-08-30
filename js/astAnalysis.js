@@ -5,6 +5,7 @@ const FUNCTIONS_STATIC_INFO = [
   "path", 
   "input", 
   "footprint",
+  "renderPCB"
 ];
 
 const variableNameRegEx = /(const|let|var)([^=]+)/
@@ -12,8 +13,6 @@ const callRegEx = /([^\(]+)/
 
 export function astAnalysis(string, ast) {
   const inserts = [];
-
-  const layers = getLayers(string, ast);
 
   const cursor = ast.cursor();
   const getValue = () => string.slice(cursor.from, cursor.to);
@@ -75,42 +74,8 @@ export function astAnalysis(string, ast) {
   } while (cursor.next());
 
   return { 
-    inserts,
-    layers, 
+    inserts
   };
-}
-
-function getLayers(string, ast) {
-
-  return [];
-
-  const cursor = ast.cursor();
-  const getValue = () => string.slice(cursor.from, cursor.to);
-
-  cursor.moveTo(0);
-
-  let layers = [];
-
-  do {
-    const value = getValue();
-
-
-    // BUG: This causes infinite loop when layerColors not present
-    if (cursor.name === "CallExpression" && value.slice(0, 9) === "renderPCB" && value.includes("layerColors")) {
-
-      while (getValue() !== "layerColors" && cursor.next()) {
-        cursor.next();
-      }
-
-      const tree = makeTree(cursor, getValue);
-
-
-      layers = tree[1].slice(1);
-    }
-
-  } while (cursor.next());
-
-  return layers;
 }
 
 function getCall(cursor, string) {
@@ -129,20 +94,6 @@ function getCall(cursor, string) {
     from,
     to
   }
-}
-
-function getCall0(cursor, getValue) {
-  const start = cursor.from;
-  cursor.next();
-  const name = getValue();
-  cursor.next();
-  const args = getValue();
-  const from = cursor.from;
-  const to = cursor.to;
-
-  cursor.moveTo(start, 1);
-
-  return [name, args, from, to];
 }
 
 

@@ -31,9 +31,12 @@ export const svgViewer = (state) => {
 
   const drills = [];
 
-  const visibleLayers = state.layers
-    ? state.layers.reduce((acc, cur) => cur.length === 3 ? [...acc, cur[1][0].value] : acc, [])
-    : [];
+  const visibleLayers = [];
+
+  for (const layer of state.layers) {
+    const { visible, color, name } = layer;
+    if (visible) visibleLayers.push(name);
+  }
 
   let interiorVisible = visibleLayers.some(layer => layer.includes("interior"));
 

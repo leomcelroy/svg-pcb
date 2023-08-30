@@ -48,7 +48,7 @@ export const global_state = {
   // these are added through path(...)
   selectablePaths: [],
   pts: [],
-  layers: [],
+  layers: [], // TODO check type
   inputs: [],
 
   componentMenu: false,
