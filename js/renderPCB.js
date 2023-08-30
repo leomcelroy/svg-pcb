@@ -4,9 +4,7 @@ import * as esprima from 'esprima';
 
 const default_renderPCB_params = {
   pcb: null,
-  layers: [ 
-    { name: "F.Cu", color: "#ff8c00cc" }
-  ],
+  layerColors: { "F.Cu": "#ff8c00cc" },
   limits: {
       x: [0, 1],
       y: [0, 1]
@@ -17,40 +15,37 @@ const default_renderPCB_params = {
 
 export const renderPCB = flatten => (...args) => {
   let [
-    [ { pcb, layers, limits, mm_per_unit, background } ], 
+    [ { pcb, layerColors, limits, mm_per_unit, background } ], 
     staticInfo 
   ] = args;
 
   if (pcb === undefined) console.log("renderPCB must include pcb param");
 
-  if (layers === undefined) layers = default_renderPCB_params.layers;
+  if (layerColors === undefined) layerColors = default_renderPCB_params.layerColors;
   if (limits === undefined) limits = default_renderPCB_params.limits;
   if (mm_per_unit === undefined) mm_per_unit = default_renderPCB_params.mm_per_unit;
   if (background === undefined) background = default_renderPCB_params.background;
 
 
   const shapes = [];
-  for (const layer of layers) {
-    const { color, name } = layer;
+  for (const layer in layerColors) {
+    const color = layerColors[layer];
     shapes.push({
-      data: pcb.getLayer(name, flatten), // could be pathData or text
+      data: pcb.getLayer(layer, flatten), // could be pathData or text
       color,
-      groupId: name
+      groupId: layer
     });
   }
 
   const referenceStr = getLayersString(staticInfo);
 
-  const colorMap = {};
-  layers.forEach(({ name, color }) => colorMap[name] = color );
-
   // sort layers based on presence in 
   const tempLayers = [];
   for (const layer in pcb.layers) {
-    let defaultColor = getColorByName(referenceStr, layer);
+    let defaultColor = getValueForSubstring(referenceStr, layer);
     defaultColor = defaultColor ?? "#000000ff"; 
-    const color = colorMap[layer] ?? defaultColor
-    const visible = layer in colorMap;
+    const color = layerColors[layer] ?? defaultColor
+    const visible = layer in layerColors;
 
     const result = { color, visible, name: layer };
     tempLayers.push(result);
@@ -83,7 +78,7 @@ const getLayersString = (staticInfo) => {
   const snippet = code.slice(staticInfo.from, staticInfo.to);
 
   const tree = esprima.parse(snippet, { range: true });
-  const range = findNode(tree, { type: "Identifier", name: "layers" } )
+  const range = findNode(tree, { type: "Identifier", name: "layerColors" } )
     .getParent()
     .value
     .range;
@@ -123,36 +118,22 @@ function findNode(ast, obj, parent = null) {
   return null;
 }
 
-function getColorByName(inputStr, targetName) {
-    const matches = inputStr
-      .replaceAll(/\s/g, "")
-      .match(/{[^}]+}/g);
-
-    if (!matches) return null;
-
-    for (let str of matches) {
-        let obj;
-        try {
-            obj = strToObject(str);
-        } catch {
-            continue;
-        }
-
-        if (obj.name === targetName) {
-            return obj.color;
-        }
-    }
-
-    return null;
-}
-
-function strToObject(str) {
-    try {
-        // Add double quotes around keys to make it valid JSON
-        const jsonFriendlyStr = str.replace(/(\w+):/g, '"$1":');
-        return JSON.parse(jsonFriendlyStr);
-    } catch (e) {
-        console.error("Invalid string format");
+function getValueForSubstring(inputStr, targetSubstring) {
+    const posOfSubstring = inputStr.indexOf(targetSubstring);
+    
+    if (posOfSubstring === -1) {
         return null;
     }
+
+    const posOfColon = inputStr.indexOf(':', posOfSubstring);
+    const posOfComma = inputStr.indexOf(',', posOfColon);
+
+    // Extract the value between colon and comma, then trim it.
+    const value = inputStr.substring(posOfColon + 1, posOfComma).trim();
+
+    // Removing surrounding quotes if they exist.
+    if (value.startsWith('"') && value.endsWith('"')) {
+        return value.slice(1, -1);
+    }
+    return value;
 }

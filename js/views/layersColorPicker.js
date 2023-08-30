@@ -15,7 +15,7 @@ export const layersColorPicker = (state) => html`
 
         const updateCode = () => {
           const tree = esprima.parse(snippet, { range: true });
-          const range = findNode(tree, { type: "Identifier", name: "layers" } )
+          const range = findNode(tree, { type: "Identifier", name: "layerColors" } )
             .getParent()
             .value
             .range;
@@ -88,13 +88,13 @@ function layerObjToStr(obj) {
       const { visible, name, color } = layer;
  
         const value = visible
-          ? `{ name: "${name}", color: "${color}" },`
-          : `/* { name: "${name}", color: "${color}" }, */`;
+          ? ` "${name}": "${color}",`
+          : `/* "${name}": "${color}", */`;
         result.push(value);
         
     });
 
-    return '[\n' + result.join(`\n`) + '\n]';
+    return '{\n' + result.join(`\n`) + '\n}';
 }
 
 function findNode(ast, obj, parent = null) {
