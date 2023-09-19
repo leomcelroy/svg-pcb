@@ -38,7 +38,8 @@ export const svgViewer = (state) => {
     if (visible) visibleLayers.push(name);
   }
 
-  let interiorVisible = visibleLayers.some(layer => layer.includes("interior"));
+  // let interiorVisible = visibleLayers.some(layer => layer.includes("Edge.Cuts"));
+  // TODO: make holes visible if interiorVisible
 
   if (state.pcb) state.pcb.components.forEach(component => {
     component.drills.forEach(x => {
@@ -52,7 +53,6 @@ export const svgViewer = (state) => {
     })
   })
 
-  // TODO: make holes visible if interiorVisible
 
   const drillLayer = svg`
     <g class="drills">${true ? drills : ""}</g>
