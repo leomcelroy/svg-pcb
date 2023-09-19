@@ -17,36 +17,42 @@ export function inchesToMM(inches){
 function getFilename(state, layerName){
   const projectName = state.name === "" ? "Untitled" : state.name;
   const useProtel = state.downloadGerberOptions.protelFilenames;
-  
+
   let fileName = projectName; // This is just the basename
 
-  // Here we finish the name based on user settings
-  switch (layerName) {
+  if (useProtel) 
+  {
+    switch (layerName) {
     case "F.Cu":
-      fileName += "-F_Cu" + (useProtel ? ".GTL" : ".gbr");
+      fileName += "-F_Cu.GTL";
       break;
     case "B.Cu":
-      fileName += "-B_Cu" + (useProtel ? ".GBL" : ".gbr");
+      fileName += "-B_Cu.GBL";
       break;
     case "F.Mask":
-      fileName += "-F_Mask" + (useProtel ? ".GTS" : ".gbr");
+      fileName += "-F_Mask.GTS";
       break;
     case "B.Mask":
-      fileName += "-B_Mask" + (useProtel ? ".GBS" : ".gbr");
+      fileName += "-B_Mask.GBS";
       break;
     case "F.Silkscreen":
-      fileName += "-F_Silkscreen" + (useProtel ? ".GTO" : ".gbr");
+      fileName += "-F_Silkscreen.GTO";
       break;
     case "B.Silkscreen":
-      fileName += "-B_Silkscreen" + (useProtel ? ".GBO" : ".gbr");
+      fileName += "-B_Silkscreen.GBO";
       break;
-    case "Outline":
-      fileName += "-Edge_Cuts" + (useProtel ? ".GM1" : ".gbr");
+    case "Edge.Cuts":
+      fileName += "-Edge_Cuts.GM1";
       break;
     case "Drills":
-      fileName += "-Drill" + (useProtel ? ".XLN" : ".xln");
+      fileName += "-Drill.XLN";
       break;
+    }
   }
+  else
+  {
+    fileName += "-" + layerName.replace(".", "_") + ".gbr";
+  }  
 
   return fileName;
 }
@@ -432,61 +438,94 @@ export function downloadGerber(state) {
       // Do some guesses based on layer name.
       // We need to figure out which of the layers 
 
-      if (key == "F.Cu") {
-        let frontCopper = new GerberBuilder();
+      // For copper layers we need to figure out how many there are.
+      // If we have only top and bottom, the Gerber FileFunction values can be as follows.
+      // - Copper,L1,Top
+      // - Copper,L2,Bot
+      // For a 4 layer board, things get a bit more complicated.
+      // - Copper,L1,Top
+      // - Copper,L2,Inr
+      // - Copper,L3,Inr
+      // - Copper,L4,Bot
+      // In order to give the right layer numbers to F.Cu and B.Cu, we need to know total number of layers.
+      // For now we support only 2 layers and time will show...
+
+      const layerName = key;
+
+      if (layerName == "F.Cu") 
+      {
+        const frontCopper = new GerberBuilder();
         frontCopper.setFileFunction("Copper,L1,Top");
         frontCopper.setFilePolarity("Positive");
-        frontCopper.plotPads(layers["F.Cu"]);
-        frontCopper.plotWires(layers["F.Cu"]);
+        frontCopper.plotPads(layers[layerName]);
+        frontCopper.plotWires(layers[layerName]);
         if (state.downloadGerberOptions.includeOutline) {
           frontCopper.plotOutline(layers[outlineLayerName]);
         }
-        zip.file( getFilename(state, "F.Cu"), frontCopper.toString() );
-
-        let frontMask = new GerberBuilder();
+        zip.file( getFilename(state, layerName), frontCopper.toString() );  
+      } 
+      else if (layerName == "B.Cu") 
+      {
+        const bottomCopper = new GerberBuilder();
+        bottomCopper.setFileFunction("Copper,L2,Bot");
+        bottomCopper.setFilePolarity("Positive");
+        bottomCopper.plotPads(layers[key]);
+        bottomCopper.plotWires(layers[key]);
+        if (state.downloadGerberOptions.includeOutline) {
+          bottomCopper.plotOutline(layers[outlineLayerName]);
+        }
+        zip.file( getFilename(state, layerName), bottomCopper.toString() );
+      }
+      else if (layerName == "F.Mask") 
+      {
+        const frontMask = new GerberBuilder();
         frontMask.setFileFunction("Soldermask,Top");
         frontMask.setFilePolarity("Negative");
-        frontMask.plotPads(layers["F.Cu"], 0.1);
+        frontMask.plotPads(layers[layerName], 0.1);
         if (state.downloadGerberOptions.includeOutline) {
           frontMask.plotOutline(layers[outlineLayerName]);
         }
-        zip.file( getFilename(state, "F.Mask"), frontMask.toString() );
-      } else if (key == "B.Cu") {
-        let backCopper = new GerberBuilder();
-        backCopper.setFileFunction("Copper,L2,Bot");
-        backCopper.setFilePolarity("Positive");
-        backCopper.plotPads(layers["B.Cu"]);
-        backCopper.plotWires(layers["B.Cu"]);
+        zip.file( getFilename(state, layerName), frontMask.toString() );
+      }
+      else if (layerName == "B.Mask")
+      {
+        const bottomMask = new GerberBuilder();
+        bottomMask.setFileFunction("Soldermask,Bot");
+        bottomMask.setFilePolarity("Negative");
+        bottomMask.plotPads(layers[layerName], 0.1);
         if (state.downloadGerberOptions.includeOutline) {
-          backCopper.plotOutline(layers[outlineLayerName]);
+          bottomMask.plotOutline(layers[outlineLayerName]);
         }
-        zip.file( getFilename(state, "B.Cu"), backCopper.toString() );
-
-        let backMask = new GerberBuilder();
-        backMask.setFileFunction("Soldermask,Bot");
-        backMask.setFilePolarity("Negative");
-        backMask.plotPads(layers["B.Cu"], 0.1);
-        if (state.downloadGerberOptions.includeOutline) {
-          backMask.plotOutline(layers[outlineLayerName]);
-        }
-        zip.file( getFilename(state, "B.Mask"), backMask.toString() );
-      } else if (key == "F.Silkscreen") {
-        // Warning: this is still Work In Progress
-        let frontSilkscreen = new GerberBuilder();
+        zip.file( getFilename(state, layerName), bottomMask.toString() );
+      }
+      else if (layerName == "F.Silkscreen") 
+      {
+        const frontSilkscreen = new GerberBuilder();
         frontSilkscreen.setFileFunction("Legend,Top");
-        frontSilkscreen.setFilePolarity("Negative");
-        frontSilkscreen.plotSilkscreen(layers["componentLabels"]);
+        frontSilkscreen.setFilePolarity("Positive");
+        frontSilkscreen.plotSilkscreen(layers[layerName]);
         if (state.downloadGerberOptions.includeOutline) {
-          frontSilkscreen.plotOutline(layers["interior"]);
+          frontSilkscreen.plotOutline(layers[outlineLayerName]);
         }
-        zip.file( getFilename(state, "F.Silkscreen"), frontSilkscreen.toString() );
-      } else if (key == "B.Silkscreen") {
-        // No graphics on the back for now
-      } else if (key === outlineLayerName) {
-        let outline = new GerberBuilder();
-        outline.setFileFunction("Profile,NP");
-        outline.plotOutline(layers[key]);
-        zip.file( getFilename(state, "Outline"), outline.toString() );
+        zip.file( getFilename(state, layerName), frontSilkscreen.toString() );
+      } 
+      else if (layerName == "B.Silkscreen") 
+      {
+        const bottomSilkscreen = new GerberBuilder();
+        bottomSilkscreen.setFileFunction("Legend,Top");
+        bottomSilkscreen.setFilePolarity("Positive");
+        bottomSilkscreen.plotSilkscreen(layers[layerName]);
+        if (state.downloadGerberOptions.includeOutline) {
+          bottomSilkscreen.plotOutline(layers[outlineLayerName]);
+        }
+        zip.file( getFilename(state, layerName), bottomSilkscreen.toString() );
+      } 
+      else if (layerName == outlineLayerName) 
+      {
+        const outline = new GerberBuilder();
+        outline.setFileFunction("Profile,NP"); // P|NP indicates board edge-plated or not. Could be an option in the future.
+        outline.plotOutline(layers[layerName]);
+        zip.file( getFilename(state, layerName), outline.toString() );
       }
 
       // And we export drills just like that as they are not part of any layer
