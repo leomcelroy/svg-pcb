@@ -15,7 +15,7 @@ import { inputRenderers } from "./views/inputRenderers.js";
 import { initCodeMirror } from "./codemirror/codemirror.js";
 import { drawDownloadGerberModal } from "./views/drawDownloadGerberModal.js";
 import { drawDownloadKiCadModal } from "./views/drawDownloadKiCadModal.js";
-import * as prettier from "prettier";
+import "./components/netlist-editor.js";
 
 export function view(state) {
 	return html`
@@ -66,6 +66,23 @@ export function view(state) {
 					<div class="component-list">
 						${Object.values(state.footprints).map(renderFootprint)}
 					</div>
+
+					<div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>
+					
+					<div 
+						class="import-button" 
+						style="margin: auto;"
+						@click=${e => {
+							document.querySelector("netlist-editor").show = true;
+						}}>
+						edit netlist (TODO)
+						</div>
+					
+					<div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>
+					<div class="import-button" style="margin: auto;">add wire (TODO)</div>
+					<div>wire list [trace thickness] [delete] (TODO)</div>
+          <div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>
+
 					${layersColorPicker(state)}
 					<div class="nub" @click=${() => {
 						document.querySelector(".footprint-toolbox").classList.toggle("footprint-toolbox-closed");
@@ -81,6 +98,7 @@ export function view(state) {
 		</div>
 		${drawDownloadGerberModal(state)}
 		${drawDownloadKiCadModal(state)}
+		<netlist-editor .pcb=${state.pcb} .idToName=${state.idToName}></netlist-editor>
 	`
 }
 
@@ -142,11 +160,21 @@ const menu = state => html`
 				class="menu-item center-button"
 				@click=${async () => {
 					const code = state.codemirror.view.state.doc.toString();
-					console.log(code);
-					const formatted = await prettier.format(code, { semi: false, parser: "babel" });
-					console.log(formatted);
+					// console.log(code);
+					// const formatted = await prettier.format(code, { semi: false, parser: "babel" });
+					// console.log(formatted);
 				}}>
-				pretty-code
+				pretty-code (TODO)
+			</div>
+			<div
+				class="menu-item center-button"
+				@click=${async () => {
+					const code = state.codemirror.view.state.doc.toString();
+					// console.log(code);
+					// const formatted = await prettier.format(code, { semi: false, parser: "babel" });
+					// console.log(formatted);
+				}}>
+				check (TODO)
 			</div>
 			<div class="menu-item dropdown-container">
 				options

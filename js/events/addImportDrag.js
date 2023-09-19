@@ -1,5 +1,6 @@
 import { dispatch } from "../dispatch.js";
 import { getFileSection } from "../getFileSection.js"
+import { makeRandStr } from "../makeRandStr.js";
 
 export function addImportDrag(state, listener) {
   const svg = document.querySelector("svg");
@@ -61,8 +62,9 @@ export function addImportDrag(state, listener) {
 
       if (start !== null) {
         const name = state.previewFootprint[0].name;
+        const uniqueName = `${name}_${makeRandStr(3)}`;
 
-        const text = `board.add(${name}, { translate: pt(${pos.x}, ${pos.y}), rotate: 0, label: "${name}" })\n`
+        const text = `const ${uniqueName} = board.add(${name}, { translate: pt(${pos.x}, ${pos.y}), rotate: 0, label: "${uniqueName}" })\n`
 
         state.codemirror.view.dispatch({
           changes: {from: start, insert: text}

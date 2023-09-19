@@ -90,7 +90,7 @@ function exportNet() {
     components[x.refDes] = { pads: x.padShapes, pos: x._pos, padPositions: x.pads };
   });
 
-  const obj = { components, netList: pcb._netList };
+  const obj = { components, netList: pcb.netList };
 
   const string = JSON.stringify(obj);
 

@@ -39,9 +39,10 @@ export const layersColorPicker = (state) => html`
         const opacity = getOpacity(hex.slice(-2));
 
         const onOpacityChange = (e) => {
-
           let opacityHex = Math.floor((Number(e.target.value)*255)).toString(16);
-          layer.color = `${color}${opacityHex}`
+          while (opacityHex.length < 2) opacityHex = "0" + opacityHex;
+
+          layer.color = color + opacityHex;
           updateCode();
         }
 

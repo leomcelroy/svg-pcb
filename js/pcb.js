@@ -7,7 +7,7 @@ export class PCB {
     this.components = [];
     this.ids = [];
 
-    this._netList = [];
+    this.netList = [];
   }
 
   add(footprint, ops = {}) {
@@ -119,7 +119,7 @@ export class PCB {
         ]
   }
 
-  netList(...newNetList) {
+  setNetList(...newNetList) {
     newNetList.forEach(group => {
       group.forEach(item => {
         const [ comp, pad ] = item;
@@ -128,7 +128,7 @@ export class PCB {
       })
     })
     
-    this._netList = newNetList;
+    this.netList = newNetList;
 
     return newNetList;
   }
