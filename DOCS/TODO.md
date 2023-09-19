@@ -1,5 +1,8 @@
 # TODO
 
+- layerColors -> layers ?
+- get layers from board and modify layer colors with gui
+- get rid of label property and just use id, force to be unique
 - [] mm_per_unit -> mmPerUnit
 	- use it
 - support layer as variable

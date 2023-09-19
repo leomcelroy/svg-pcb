@@ -15,6 +15,7 @@ import { inputRenderers } from "./views/inputRenderers.js";
 import { initCodeMirror } from "./codemirror/codemirror.js";
 import { drawDownloadGerberModal } from "./views/drawDownloadGerberModal.js";
 import { drawDownloadKiCadModal } from "./views/drawDownloadKiCadModal.js";
+import * as prettier from "prettier";
 
 export function view(state) {
 	return html`
@@ -136,6 +137,16 @@ const menu = state => html`
 						state.panZoomParams.setScaleXY(state.limits);
 				}}>
 				center-view
+			</div>
+			<div
+				class="menu-item center-button"
+				@click=${async () => {
+					const code = state.codemirror.view.state.doc.toString();
+					console.log(code);
+					const formatted = await prettier.format(code, { semi: false, parser: "babel" });
+					console.log(formatted);
+				}}>
+				pretty-code
 			</div>
 			<div class="menu-item dropdown-container">
 				options

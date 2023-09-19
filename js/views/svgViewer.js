@@ -31,11 +31,14 @@ export const svgViewer = (state) => {
 
   const drills = [];
 
-  const visibleLayers = state.layers
-    ? state.layers.reduce((acc, cur) => cur.length === 3 ? [...acc, cur[1][0].value] : acc, [])
-    : [];
+  const visibleLayers = [];
 
-  const interiorVisible = visibleLayers.some(layer => layer.includes("interior"));
+  for (const layer of state.layers) {
+    const { visible, color, name } = layer;
+    if (visible) visibleLayers.push(name);
+  }
+
+  let interiorVisible = visibleLayers.some(layer => layer.includes("interior"));
 
   if (state.pcb) state.pcb.components.forEach(component => {
     component.drills.forEach(x => {
@@ -49,8 +52,10 @@ export const svgViewer = (state) => {
     })
   })
 
+  // TODO: make holes visible if interiorVisible
+
   const drillLayer = svg`
-    <g class="drills">${interiorVisible ? drills : ""}</g>
+    <g class="drills">${true ? drills : ""}</g>
   `
   
   const labels = state.shapes.filter(x => ["componentLabels", "padLabels"].includes(x.groupId));

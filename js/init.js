@@ -8,7 +8,7 @@ import { logError } from "./logError.js";
 import { downloadText } from "./events/download.js";
 
 export function init() {
-  dispatch("RENDER");
+  dispatch("HARD_RENDER");
   const search = window.location.search;
   const turnOnVim = new URLSearchParams(search).get("neil") === "true";
 

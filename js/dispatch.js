@@ -26,16 +26,16 @@ const ACTIONS = {
 		state.pts = [];
 		state.error = "";
 
-		const doc = state.codemirror.view.state.doc;
+	  const doc = state.codemirror.view.state.doc;
 	  let string = doc.toString();
 
 	  const ast = ensureSyntaxTree(state.codemirror.view.state, doc.length, 10000);
 
 		try {
 
-			const { inserts, inputs, layers } = astAnalysis(string, ast);
+			const { inserts, inputs } = astAnalysis(string, ast);
 
-			state.layers = layers;
+			state.layers = [];
 
 			const currentFootprints = [];
 			const changes = [];
@@ -81,6 +81,9 @@ const ACTIONS = {
 					path: () => {
 						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
 
+					},
+					renderPCB: () => {
+						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
 					}
 				}
 
@@ -183,9 +186,25 @@ const ACTIONS = {
 		dispatch("RUN", { dragging: true });
 	},
 	RENDER() {
+		const r = () => render(view(global_state), document.getElementById("root"));
+		requestAnimationFrame(r);
+
+
+		// const now = Date.now();
+		// if (
+		// 	// true
+		// 	now - debounce > 1000/30
+	  // ) {
+		// 	requestAnimationFrame(r);
+		// 	debounce = now;
+		// }
+	},
+	HARD_RENDER() {
 		render(view(global_state), document.getElementById("root"));
 	}
 }
+
+let debounce = Date.now();
 
 export function dispatch(action, args = {}) {
 	const trigger = ACTIONS[action];
