@@ -109,7 +109,7 @@ createComponent({
 	`,
 	view: el => {
 
-    console.log(el.fromComponent, el.fromPad, el.toComponent, el.toPad);
+    // console.log(el.fromComponent, el.fromPad, el.toComponent, el.toPad);
 
 		return html`
 			<main class=${[el.show ? "" : "hidden"].join(" ")}>
