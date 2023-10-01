@@ -234,12 +234,38 @@ export class GerberBuilder {
   }
 
   plotSilkscreen(layer) {
-    console.log(layer);
+    const apertureDiameter = 0;
+    const apertureID = this.#getApertureID();
 
     this.#body += this.#getComment("Begin silkscreen");
 
     layer.map( el => {
-      // We deal with text only for now
+      if (!el.type) { // Must be polygon shape in this case
+        
+        // Define aperture
+        this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
+
+        // Select the aperture for drawing the outline
+        this.#body += "D" + apertureID.toString() + "*\n";
+
+        // Enable linear interpolation 
+        this.#body += "G01*\n";
+
+        // Draw all shapes as polygons
+        this.#body += "G36*\n";
+      
+        el.flat().forEach((pt, i) => {
+          const x = this.constructor.format( inchesToMM(pt[0]) );
+          const y = this.constructor.format( inchesToMM(pt[1]) );
+          this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
+        });
+
+        this.#body += "G37*\n";
+      }
+
+      // For now it seems that text is converted to polylines, but it could be 
+      // possible to pass the text itself as a variable so that it could be possible
+      // to pass it on to text-specific Gerber markup.
       if (el.type !== "text") return;
 
       const text = el.value;
@@ -251,12 +277,6 @@ export class GerberBuilder {
       // Generate Gerber X2 text object to maintain text information
       // Gerber Spec p. 147
       this.#body += "%TA.FlashText," + text.replace(/\n/g, "\\n") + ",C,R," + textFont + "," + textSize + ",*%\n"
-
-      // TODO: And now the shapes
-      // At the moment it would be possible to do it with SVG.js,
-      // but it would be so much easier if SvgPcb would make use of a SVG font,
-      // that then could be used to create labels along with other graphics
-      // on the silk layer.
     });
   }
 
