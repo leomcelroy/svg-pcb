@@ -13,6 +13,7 @@ function getLayerList(state){
 	// Return a list of keys (layer names).
 	const list = [];
 	state.downloadGerberOptions.layers.forEach((val, key) => {
+		if (key == "padLabels" || key == "componentLabels") return;
 		list.push(key);
 	});
 	return list;
