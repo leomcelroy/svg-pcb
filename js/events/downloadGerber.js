@@ -51,7 +51,11 @@ function getFilename(state, layerName){
   }
   else
   {
-    fileName += "-" + layerName.replace(".", "_") + ".gbr";
+    if (layerName == "Drills") {
+      fileName += "-" + layerName + ".drl";
+    } else {
+      fileName += "-" + layerName.replace(".", "_") + ".gbr";  
+    }
   }  
 
   return fileName;
@@ -348,7 +352,7 @@ class ExcellonBuilder {
 
   plotDrills(pcb) {
     this.#body += "; #@! TA.AperFunction,Plated,PTH,ComponentDrill\n"; // Borrowed from KiCad export
-    
+
     // Extract drill positions and sizes
     const drills = pcb
       .components
@@ -359,8 +363,10 @@ class ExcellonBuilder {
         let diameter = x.diameter;
 
         if (this.#state.downloadGerberOptions.excellonMetric) {
-          center[0] = inchesToMM(center[0]);
-          center[1] = inchesToMM(center[1]);
+          let c = [];
+          c[0] = inchesToMM(center[0]);
+          c[1] = inchesToMM(center[1]);
+          center = c;
           diameter = inchesToMM(x.diameter); // TODO: Is this radius or diameter?
         }
     
@@ -411,7 +417,7 @@ class ExcellonBuilder {
 export function downloadGerber(state) {
     const layers = state.pcb.layers;
     const pcb = state.pcb;
-   
+  
     var zip = new JSZip();
 
     // Find the name of the outline layer.
@@ -429,8 +435,6 @@ export function downloadGerber(state) {
         break;
       }
     }
-
-    console.log(outlineLayerName);
 
     state.downloadGerberOptions.layers.forEach((val, key) => {
       if (!val) return; // If user chooses not to export this layer, we do not process it
@@ -531,7 +535,7 @@ export function downloadGerber(state) {
       // And we export drills just like that as they are not part of any layer
       // There is probably no need to include outline in the drill file 
       // even though it could be a gerber file as well. 
-      let drills = new ExcellonBuilder(state);
+      const drills = new ExcellonBuilder(state);
       drills.plotDrills(pcb);
       zip.file( getFilename(state, "Drills"), drills.toString());
     });
