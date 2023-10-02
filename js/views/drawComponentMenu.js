@@ -14,7 +14,7 @@ export const drawComponentMenu = files => {
       <div class="header">
         <div class="title">
           <div><b>Component Menu</b></div>
-          <div class="sub-header">missing a component, check out <a target="_blank" href="https://www.snapeda.com/">snapeda</a> and drop the .kicad_mod into SVG-PCB</div>
+          <div class="sub-header">missing a component, check out the <a href="https://gitlab.fabcloud.org/pub/libraries/electronics/kicad/-/tree/master/fab.pretty?ref_type=heads" _target="blank">fab inventory</a> or <a target="_blank" href="https://www.snapeda.com/">snapeda</a> and drop the .kicad_mod into SVG-PCB</div>
         </div>
         <span
           class="close" 

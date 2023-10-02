@@ -125,6 +125,8 @@ input {
 	box-sizing: border-box;
 	border-left: solid 1px black;
 	border-bottom: solid 1px black;
+	overflow: hidden;
+  overflow-y: scroll;
 }
 
 .footprint-toolbox-closed {
@@ -387,8 +389,6 @@ input {
 
 .layers-color-picker {
 	padding: 10px 25px 10px 2px;
-/*	overflow: scroll;*/
-/*	overflow-x: hidden;*/
 }
 
 .layers-color-picker .color-input {
@@ -447,7 +447,7 @@ input {
 .component-menu {
 	position: absolute;
 	background: var(--lightgrey-0);
-	width: 600px;
+	width: clamp(600px, 70%, 800px);
 	max-width: 80%;
 	height: 60%;
 	left: 50%;
@@ -500,18 +500,14 @@ input {
 /* -------------- */
 
 .component-list {
-	height: 30%;
-  min-height: 30%;
-	overflow: scroll;
-	overflow-x: hidden;
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
 .import-button-container {
-	width: 100%;
 	display: flex;
 	align-items: center;
   justify-content: center;
-  padding: 8px;
 }
 
 .import-button {

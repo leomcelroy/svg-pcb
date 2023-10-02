@@ -52,14 +52,13 @@ createComponent({
     }
 
     .wire-list {
-      height: 150px;
-      min-height: 150px;
-      overflow: scroll;
-      overflow-x: hidden;
+      padding-top: 5px;
+      padding-bottom: 5px;
     }
   `,
   view: el => {
     return html`
+      <b>Wires:</b>
       <div 
         class="import-button" 
         style="margin: auto; margin-bottom: 5px;"
@@ -77,7 +76,7 @@ createComponent({
           });
 
           dispatch("RUN");
-        }}>add wire (TODO)</div>
+        }}>add wire</div>
       <div class="wire-list">${el.wires.map(drawWire)}</div>
     `
   }

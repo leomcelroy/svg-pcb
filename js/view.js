@@ -57,7 +57,7 @@ export function view(state) {
 					<div class="input-panel">
 						${state.inputs.map(input => inputRenderers[input[0].type](...input, state))}
 					</div>
-					<div class="toolbox-title">Components:</div>
+					<div class="toolbox-title">Footprints:</div>
 					<div class="import-button-container">
 						<div class="import-button" @mousedown=${() => {
 		          state.componentMenu = true;
@@ -85,6 +85,7 @@ export function view(state) {
           <div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>
 
 					${layersColorPicker(state)}
+					<div style="min-height: 100px;"></div>
 					<div class="nub" @click=${() => {
 						document.querySelector(".footprint-toolbox").classList.toggle("footprint-toolbox-closed");
 					}}></div>
@@ -156,26 +157,6 @@ const menu = state => html`
 						state.panZoomParams.setScaleXY(state.limits);
 				}}>
 				center-view
-			</div>
-			<div
-				class="menu-item center-button"
-				@click=${async () => {
-					const code = state.codemirror.view.state.doc.toString();
-					// console.log(code);
-					// const formatted = await prettier.format(code, { semi: false, parser: "babel" });
-					// console.log(formatted);
-				}}>
-				pretty-code (TODO)
-			</div>
-			<div
-				class="menu-item center-button"
-				@click=${async () => {
-					const code = state.codemirror.view.state.doc.toString();
-					// console.log(code);
-					// const formatted = await prettier.format(code, { semi: false, parser: "babel" });
-					// console.log(formatted);
-				}}>
-				check (TODO)
 			</div>
 			<div class="menu-item dropdown-container">
 				options
@@ -280,3 +261,28 @@ const menu = state => html`
 		</a>
 	</div>
 `;
+
+
+/*
+			<div
+				class="menu-item center-button"
+				@click=${async () => {
+					const code = state.codemirror.view.state.doc.toString();
+					// console.log(code);
+					// const formatted = await prettier.format(code, { semi: false, parser: "babel" });
+					// console.log(formatted);
+				}}>
+				pretty-code (TODO)
+			</div>
+			<div
+				class="menu-item center-button"
+				@click=${async () => {
+					const code = state.codemirror.view.state.doc.toString();
+					// console.log(code);
+					// const formatted = await prettier.format(code, { semi: false, parser: "babel" });
+					// console.log(formatted);
+				}}>
+				check (TODO)
+			</div>
+*/
+
