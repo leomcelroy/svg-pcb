@@ -26,6 +26,7 @@ export function astAnalysis(string, ast) {
   boardName = boardName ? boardName[2].trim() : null;
 
   if (boardName) FUNCTIONS_STATIC_INFO.push(`${boardName}.add`);
+  if (boardName) FUNCTIONS_STATIC_INFO.push(`${boardName}.wire`);
 
   do {
     const value = getValue();

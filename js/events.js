@@ -7,6 +7,7 @@ import { addNumberDragging } from "./events/addNumberDragging.js";
 import { addImportDrag } from "./events/addImportDrag.js";
 import { addPathManipulation } from "./events/addPathManipulation.js";
 import { addPathSelection } from "./events/addPathSelection.js";
+import { addLayerReordering } from "./events/addLayerReordering.js";
 import { clearSelectedPath } from "./clearSelectedPath.js";
 import { dispatch } from "./dispatch.js";
 
@@ -48,6 +49,7 @@ export function addEvents(state) {
 	addNumberDragging(state, listenBody);
 	addVerticalBarDrag(state, listenBody);
 	addPathSelection(state, listenBody);
+	addLayerReordering(state, listenBody);
 
 	window.addEventListener("keydown", (e) => {
 		const code = event.code;
@@ -55,7 +57,10 @@ export function addEvents(state) {
 		state.heldKeys.add(code);
 		
 		const isTypingCode = e.target.classList.contains("cm-content");
-		if (isTypingCode) clearSelectedPath();
+		if (isTypingCode && state.selectedPathIndex !== -1) {
+			console.log("clear", state.selectedPath)
+			clearSelectedPath();
+		}
 
 		if (code === "Enter" && event.shiftKey) {
 		  event.preventDefault();

@@ -11,12 +11,17 @@ export const drawComponentMenu = files => {
 
   return html`
     <div class="component-menu">
-      <div class="title">
-        <b>Component Menu</b>
-        <span class="close" @mousedown=${() => {
-          global_state.componentMenu = false;
-          dispatch("RENDER");
-        }}>close</span>
+      <div class="header">
+        <div class="title">
+          <div><b>Component Menu</b></div>
+          <div class="sub-header">missing a component, check out <a target="_blank" href="https://www.snapeda.com/">snapeda</a> and drop the .kicad_mod into SVG-PCB</div>
+        </div>
+        <span
+          class="close" 
+          @mousedown=${() => {
+            global_state.componentMenu = false;
+            dispatch("RENDER");
+          }}>X</span>
       </div>
       <div class="search-container">
         <input .value=${global_state.componentSearch} placeholder="search" @input=${e => {

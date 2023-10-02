@@ -39,6 +39,7 @@ createComponent({
 	css: `
 		main {
 			width: 65%;
+			min-width: 615px;
 			height: 60%;
 			position: absolute;
 			left: 50%;

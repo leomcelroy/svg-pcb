@@ -5,5 +5,6 @@ export function clearSelectedPath() {
   global_state.selectedPathIndex = -1; 
   global_state.selectedPath = null; 
 
-  dispatch("RENDER");
+  // need to run to update wire menu view
+  dispatch("RUN");
 }

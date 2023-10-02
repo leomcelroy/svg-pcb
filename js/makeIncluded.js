@@ -8,6 +8,7 @@ import { renderPCB } from "./renderPCB.js";
 import { checkConnectivity } from "./checkConnectivity.js";
 import { makeFootprintGeometry } from "./makeFootprintGeometry.js";
 import { global_state } from "./global_state.js";
+import * as esprima from 'esprima';
 
 class IncludedPCB extends PCB {
   constructor(...args) {
@@ -32,6 +33,32 @@ class IncludedPCB extends PCB {
       return super.add(...args);
     }
 
+  }
+
+  wire(...args) {
+    // if passing staticInfo, as is case when in VariableDeclaration
+    if (args.length === 2 && Array.isArray(args[0])) {
+
+      const [ogArgs, staticInfo] = args;
+      // super.wire(pts, thickness, layer);
+
+      const [ pts, thickness, layer = "F.Cu" ] = ogArgs;
+
+      super.wire(pts, thickness, layer);
+
+      // get args
+      const rawStaticInfo = global_state.astInfo[staticInfo.id];
+
+      const tree = esprima.parse(rawStaticInfo.snippet, { range: true, comment: true }).body[0];
+
+      const thicknessRange = tree.expression.expressions[1].range;
+      
+      const wireEditor = document.querySelector("wire-editor");
+      const curWires = wireEditor.wires;
+      wireEditor.wires = [...curWires, { rawStaticInfo, staticInfo, thickness, thicknessRange }];
+    } else {
+      return super.add(...args);
+    }
   }
 }
 

@@ -10,6 +10,7 @@ import { defaultText, basicSetup } from "./defaultText.js";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { logError } from "./logError.js";
 import * as esprima from 'esprima';
+import { makeRandStr } from "./makeRandStr.js";
 
 const getProgramString = () => global_state.codemirror.view.state.doc.toString();
 
@@ -25,6 +26,11 @@ const ACTIONS = {
 		state.inputs = [];
 		state.pts = [];
 		state.error = "";
+
+		state.astInfo = {};
+
+		const wireEditor = document.querySelector("wire-editor");
+		wireEditor.wires = [];
 
 	  const doc = state.codemirror.view.state.doc;
 	  let string = doc.toString();
@@ -78,20 +84,21 @@ const ACTIONS = {
 
 						changes.push({ from: x.to-1, insert: insertString});
 					},
-					path: () => {
-						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
-
-					},
-					renderPCB: () => {
-						changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}}` });
-					}
 				}
 
 				if (x.functionName in changeFuncs) changeFuncs[x.functionName]();
-				else console.log("Unknown insertion requested.");
+				else { // path, renderPCB
+					const id = makeRandStr(5);
+
+					state.astInfo[id] = x;
+
+					changes.push({ from: x.to-1, insert: `,{from:${x.from}, to:${x.to}, id:"${id}"}` })
+				};
 			});
 
+
 			string = modifyAST(string, changes);
+
 
 			for (const key in global_state.footprints) {
 				if (!currentFootprints.includes(key)) delete global_state.footprints[key];

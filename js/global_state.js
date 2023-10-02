@@ -12,8 +12,9 @@ export const global_state = {
   selectBox: {},
 
   footprints: {},
-  wires: [],
   shapes: [],
+
+  astInfo: {},
 
   idToName: {},
 

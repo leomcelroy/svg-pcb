@@ -1,12 +1,12 @@
 # TODO
 
 - change cache to unique name
-- add name when dropping component
-- add layer reordering
+- [x] add name when dropping component
+- [x] add layer reordering
 - add wire from gui
 - delete wire from gui
 - auto-indent layer obj when generated
-- drag to re-order layers
+- [x] drag to re-order layers
 
 - layerColors -> layers ?
 - [x] get layers from board and modify layer colors with gui

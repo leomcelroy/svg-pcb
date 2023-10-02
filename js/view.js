@@ -16,6 +16,7 @@ import { initCodeMirror } from "./codemirror/codemirror.js";
 import { drawDownloadGerberModal } from "./views/drawDownloadGerberModal.js";
 import { drawDownloadKiCadModal } from "./views/drawDownloadKiCadModal.js";
 import "./components/netlist-editor.js";
+import "./components/wire-editor.js";
 
 export function view(state) {
 	return html`
@@ -67,8 +68,10 @@ export function view(state) {
 						${Object.values(state.footprints).map(renderFootprint)}
 					</div>
 
+		<!--
 					<div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>
 					
+			
 					<div 
 						class="import-button" 
 						style="margin: auto;"
@@ -77,10 +80,8 @@ export function view(state) {
 						}}>
 						edit netlist (TODO)
 						</div>
-					
-					<div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>
-					<div class="import-button" style="margin: auto;">add wire (TODO)</div>
-					<div>wire list [trace thickness] [delete] (TODO)</div>
+		-->
+					<wire-editor></wire-editor>
           <div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>
 
 					${layersColorPicker(state)}

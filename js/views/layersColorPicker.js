@@ -6,7 +6,7 @@ export const layersColorPicker = (state) => html`
   <div class="layers-color-picker">
     <b>Layers:</b>
     ${state.layers
-      .map(layer => { 
+      .map((layer, i) => { 
         const { name, visible, color: hex } = layer;
 
         const getCode = () => state.codemirror.view.state.doc.toString();
@@ -69,15 +69,18 @@ export const layersColorPicker = (state) => html`
         ` : "";
 
         return html`
-          <div class="layer-item">
-            <span class="layer-name">
-              <input @input=${onCommentInput} type="checkbox" .checked=${visible}/>
-              <span>${name}</span>
-            </span>
-            ${colorInput}
+          <div class="layer-item" .data=${{ index: i, layers: state.layers, updateCode }}>
+            <div style="margin-bottom: 2px;" class="layer-grabber">≡</div>
+            <div style="flex: 1; padding-left: 5px; display: flex; align-items: center; justify-content: space-between;">
+              <span class="layer-name">
+                <input @input=${onCommentInput} type="checkbox" .checked=${visible}/>
+                <span>${name}</span>
+              </span>
+              ${colorInput}
+            </div>
           </div>
         `
-      })}
+      }).reverse()}
   </div>
 
 `
