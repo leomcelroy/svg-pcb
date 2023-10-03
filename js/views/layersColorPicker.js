@@ -3,86 +3,90 @@ import { dispatch } from "../dispatch.js";
 import * as esprima from 'esprima';
 
 export const layersColorPicker = (state) => html`
-  <div class="layers-color-picker">
-    <b>Layers:</b>
-    ${state.layers
-      .map((layer, i) => { 
-        const { name, visible, color: hex } = layer;
+    <div 
+      class="toolbox-title"
+      @click=${e => {
+            document.querySelector(".layer-list-inner").classList.toggle("hidden");
+            e.target.classList.toggle("inner-hidden");
+          }}>Layers:</div>
+    <div class="layer-list-inner">
+      ${state.layers
+        .map((layer, i) => { 
+          const { name, visible, color: hex } = layer;
 
-        const getCode = () => state.codemirror.view.state.doc.toString();
-        const code = getCode();
-        const snippet = code.slice(state.layersStaticInfo.from, state.layersStaticInfo.to);
+          const getCode = () => state.codemirror.view.state.doc.toString();
+          const code = getCode();
+          const snippet = code.slice(state.layersStaticInfo.from, state.layersStaticInfo.to);
 
-        const updateCode = () => {
-          const tree = esprima.parse(snippet, { range: true });
-          const range = findNode(tree, { type: "Identifier", name: "layerColors" } )
-            .getParent()
-            .value
-            .range;
+          const updateCode = () => {
+            const tree = esprima.parse(snippet, { range: true });
+            const range = findNode(tree, { type: "Identifier", name: "layerColors" } )
+              .getParent()
+              .value
+              .range;
 
-          const from = range[0]+state.layersStaticInfo.from;
-          const to = range[1]+state.layersStaticInfo.from;
+            const from = range[0]+state.layersStaticInfo.from;
+            const to = range[1]+state.layersStaticInfo.from;
 
-          state.codemirror.view.dispatch({
-            changes: { from, to, insert: layerObjToStr(state.layers)}
-          })
-          
-          // find every shape on this layer and change it
-          // update the code
+            state.codemirror.view.dispatch({
+              changes: { from, to, insert: layerObjToStr(state.layers)}
+            })
+            
+            // find every shape on this layer and change it
+            // update the code
 
-          dispatch("RUN");
-        }
+            dispatch("RUN");
+          }
 
-        const getOpacity = n => (parseInt(n, 16)/255).toFixed(2);
+          const getOpacity = n => (parseInt(n, 16)/255).toFixed(2);
 
-        const color = hex.slice(0, -2);
-        const opacity = getOpacity(hex.slice(-2));
+          const color = hex.slice(0, -2);
+          const opacity = getOpacity(hex.slice(-2));
 
-        const onOpacityChange = (e) => {
-          let opacityHex = Math.floor((Number(e.target.value)*255)).toString(16);
-          while (opacityHex.length < 2) opacityHex = "0" + opacityHex;
+          const onOpacityChange = (e) => {
+            let opacityHex = Math.floor((Number(e.target.value)*255)).toString(16);
+            while (opacityHex.length < 2) opacityHex = "0" + opacityHex;
 
-          layer.color = color + opacityHex;
-          updateCode();
-        }
+            layer.color = color + opacityHex;
+            updateCode();
+          }
 
-        const onColorChange = (e) => {
-          let opacityHex = hex.slice(-2);
-          layer.color = e.target.value + opacityHex;
+          const onColorChange = (e) => {
+            let opacityHex = hex.slice(-2);
+            layer.color = e.target.value + opacityHex;
 
-          updateCode();
-        }
+            updateCode();
+          }
 
-        const onCommentInput = (e) => {
-          layer.visible = e.target.checked;
-          updateCode();
-        }
+          const onCommentInput = (e) => {
+            layer.visible = e.target.checked;
+            updateCode();
+          }
 
-        const colorInput = visible ? html`
-          <span class="layer-color">
-            <input @input=${onColorChange} class="color-input" type="color" style="opacity: ${opacity};" value=${color}/>
-            <span class="opacity-input">
-              ${opacity}
-              <input @input=${onOpacityChange} type="range" min="0" max="1" step="0.01" value=${opacity}/>
-            </span>
-          </span>
-        ` : "";
-
-        return html`
-          <div class="layer-item" .data=${{ index: i, layers: state.layers, updateCode }}>
-            <div style="margin-bottom: 2px;" class="layer-grabber">≡</div>
-            <div style="flex: 1; padding-left: 5px; display: flex; align-items: center; justify-content: space-between;">
-              <span class="layer-name">
-                <input @input=${onCommentInput} type="checkbox" .checked=${visible}/>
-                <span>${name}</span>
+          const colorInput = visible ? html`
+            <span class="layer-color">
+              <input @input=${onColorChange} class="color-input" type="color" style="opacity: ${opacity};" value=${color}/>
+              <span class="opacity-input">
+                ${opacity}
+                <input @input=${onOpacityChange} type="range" min="0" max="1" step="0.01" value=${opacity}/>
               </span>
-              ${colorInput}
-            </div>
-          </div>
-        `
-      }).reverse()}
-  </div>
+            </span>
+          ` : "";
 
+          return html`
+            <div class="layer-item" .data=${{ index: i, layers: state.layers, updateCode }}>
+              <div style="margin-bottom: 2px;" class="layer-grabber">≡</div>
+              <div style="flex: 1; padding-left: 5px; display: flex; align-items: center; justify-content: space-between;">
+                <span class="layer-name">
+                  <input @input=${onCommentInput} type="checkbox" .checked=${visible}/>
+                  <span>${name}</span>
+                </span>
+                ${colorInput}
+              </div>
+            </div>
+          `
+        }).reverse()}
+      </div>
 `
 
 function layerObjToStr(obj) {

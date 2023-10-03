@@ -125,8 +125,6 @@ input {
 	box-sizing: border-box;
 	border-left: solid 1px black;
 	border-bottom: solid 1px black;
-	overflow: hidden;
-  overflow-y: scroll;
 }
 
 .footprint-toolbox-closed {
@@ -387,11 +385,8 @@ input {
 
 /* ---------------- */
 
-.layers-color-picker {
-	padding: 10px 25px 10px 2px;
-}
 
-.layers-color-picker .color-input {
+.color-input {
   width: 25px;
   height: 25px;
   padding: 0px;
@@ -413,6 +408,7 @@ input {
 
 .layer-color {
 	padding-left: 5px;
+	padding-right: 40px;
 	display: flex;
   width: 65px;
   align-items: center;
@@ -559,6 +555,10 @@ input {
 	font-weight: bold;
 }
 
+.toolbox-title:hover {
+	cursor: pointer;
+}
+
 /* ------------------ */
 
 .drop-modal {
@@ -579,6 +579,18 @@ input {
 .drop-info {
 	font-size: 1.4em;
   text-align: center;
+}
+
+.toolbox-title::after {
+	content: "▼";
+  padding-left: 5px;
+  vertical-align: middle;
+}
+
+.inner-hidden::after {
+	content: "▶";
+  padding-left: 5px;
+  vertical-align: middle;
 }
 
 .hidden {

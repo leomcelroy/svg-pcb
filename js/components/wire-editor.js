@@ -58,26 +58,33 @@ createComponent({
   `,
   view: el => {
     return html`
-      <b>Wires:</b>
       <div 
-        class="import-button" 
-        style="margin: auto; margin-bottom: 5px;"
-        @mousedown=${e => {
-          const state = global_state;
+        class="toolbox-title" 
+        @click=${e => {
+            el.shadowRoot.querySelector(".wire-list-inner").classList.toggle("hidden");
+            e.target.classList.toggle("inner-hidden");
+          }}>Wires:</div>
+      <div class="wire-list-inner">
+        <div 
+          class="import-button" 
+          style="margin: auto; margin-bottom: 5px;"
+          @mousedown=${e => {
+            const state = global_state;
 
-          global_state.selectedPathIndex = -1;
-          global_state.selectedPath = null;
+            global_state.selectedPathIndex = -1;
+            global_state.selectedPath = null;
 
-          const string = state.codemirror.view.state.doc.toString();
-          const startIndex = getFileSection("ADD_WIRES", string) ?? 0;
-          const text = `board.wire(path(), .03);\n`
-          state.codemirror.view.dispatch({
-            changes: {from: startIndex, insert: text}
-          });
+            const string = state.codemirror.view.state.doc.toString();
+            const startIndex = getFileSection("ADD_WIRES", string) ?? 0;
+            const text = `board.wire(path(), .03);\n`
+            state.codemirror.view.dispatch({
+              changes: {from: startIndex, insert: text}
+            });
 
-          dispatch("RUN");
-        }}>add wire</div>
-      <div class="wire-list">${el.wires.map(drawWire)}</div>
+            dispatch("RUN");
+          }}>add wire</div>
+        <div class="wire-list">${el.wires.map(drawWire)}</div>
+      </div>
     `
   }
 })
