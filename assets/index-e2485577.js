@@ -781,7 +781,7 @@ ${t}`);const n=new Blob([t],{type:"text/plain"});var r=document.createElement("a
 
     .thickness-value:hover {
       background: lightgrey;
-      cursor: col-resize;
+      cursor: inherit;
     }
 
     .wire-selected {
