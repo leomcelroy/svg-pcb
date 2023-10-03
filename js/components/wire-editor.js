@@ -44,7 +44,7 @@ createComponent({
 
     .thickness-value:hover {
       background: lightgrey;
-      cursor: col-resize;
+      cursor: inherit;
     }
 
     .wire-selected {
