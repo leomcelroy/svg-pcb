@@ -76,7 +76,7 @@ createComponent({
 
             const string = state.codemirror.view.state.doc.toString();
             const startIndex = getFileSection("ADD_WIRES", string) ?? 0;
-            const text = `board.wire(path(), .03);\n`
+            const text = `board.wire(path(), .015);\n`
             state.codemirror.view.dispatch({
               changes: {from: startIndex, insert: text}
             });
@@ -121,7 +121,9 @@ function drawWire(w) {
 
         global_state.selectablePaths.forEach((p, i) => {
           const pContained = isInRange(from, to, p[0]);
-          if (pContained) global_state.selectedPathIndex = i;
+          if (pContained) {
+            global_state.selectedPathIndex = i;
+          }
         });
 
         dispatch("RUN");

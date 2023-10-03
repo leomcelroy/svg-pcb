@@ -75,6 +75,10 @@ export function addEvents(state) {
 		state.heldKeys.delete(code);
 	})
 
+	window.addEventListener('blur', (event) => {
+	   state.heldKeys.clear();
+	});
+
 	window.addEventListener("unload", () => {
 		const string = state.codemirror.view.state.doc.toString();
 		window.localStorage.setItem("svg-pcb", string);
