@@ -5,7 +5,7 @@ import { global_state } from "../global_state.js";
 createComponent({
 	name: "netlist-editor",
 	props: {
-		show: true,
+		show: false,
 		pcb: null,
 		idToName: {},
 		fromComponent: {},
