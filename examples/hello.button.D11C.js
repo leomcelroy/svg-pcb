@@ -37,10 +37,10 @@ let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A05")-.18, IC1.pad
 let C1 = board.add(C_1206, {translate: pt(IC2.posX+.025, IC2.posY-.22), rotate: 90, label: 'C1\n1uF'});
 let S1 = board.add(button_6mm, {translate: pt(IC1.posX+.32, IC1.posY-.15), rotate: 90, label: 'S1'});
 
-let interior = geo.path(path([1.000, 2.010],
-                             [1.820, 2.010],
-                             [1.820, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));

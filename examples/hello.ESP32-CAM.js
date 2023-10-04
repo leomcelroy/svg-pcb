@@ -31,10 +31,10 @@ let J1 = board.add(header_FTDI, {translate: pt(x+width-.22, y+height/2), rotate:
 let ESP = board.add(ESP32_CAM, {translate: pt(x+.4, y+.74), rotate: -90, label: 'ESP32-CAM'});
 let S1 = board.add(slide_switch, {translate: pt(ESP.padX("IO0"), ESP.padY("IO0")-.19), label: 'prog run'});
 
-let interior = geo.path(path([1.000, 2.320],
-                             [2.100, 2.320],
-                             [2.100, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

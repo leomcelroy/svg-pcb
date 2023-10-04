@@ -45,10 +45,10 @@ let V2 = board.add(via(2*rv, 2*rp), {translate: pt(J3.padX("CTS")-.025, J3.padY(
 let V3 = board.add(via(2*rv, 2*rp), {translate: pt(IC1.padX("A04")+.1, IC1.padY("A04")), label: 'V3'});
 let V4 = board.add(via(2*rv, 2*rp), {translate: pt(J3.padX("Tx")+.025, J3.padY("Tx")-.11), label: 'V4'});
 
-let interior = geo.path(path([1.000, 2.410],
-                             [1.780, 2.410],
-                             [1.780, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));

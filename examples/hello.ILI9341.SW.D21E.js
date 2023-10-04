@@ -40,10 +40,10 @@ let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-.125, C2.posY), rota
 let J3 = board.add(TFT8x1v, {translate: pt(IC1.posX-.39, IC1.posY+.25), rotate: 0, label: 'J3 TFT'});
 let R1 = board.add(R_1206, {translate: pt(J3.padX("SCK")+.025, C2.padY("2")), rotate: 90, label: 'R1\n(0)'});
 
-let interior = geo.path(path([1.000, 2.050],
-                             [2.220, 2.050],
-                             [2.220, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
 geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));

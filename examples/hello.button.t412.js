@@ -35,10 +35,10 @@ let J1 = board.add(header_FTDI, {translate: pt(x+width-.23, IC1.posY-.1), label:
 let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, label: 'J2\nUPDI'});
 let S1 = board.add(button_6mm, {translate: pt(J2.posX-.27, y+.2), rotate: 0, label: 'S1'});
 
-let interior = geo.path(path([1.000, 1.680],
-                             [1.930, 1.680],
-                             [1.930, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

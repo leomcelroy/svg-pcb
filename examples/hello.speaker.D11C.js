@@ -42,10 +42,10 @@ let J3 = board.add(header_4, {translate: pt(J1.posX-.21, J1.posY), rotate: -90, 
 let R1 = board.add(R_1206, {translate: pt(C1.posX-.21, C1.posY), label: 'R1\n0'});
 let T1 = board.add(NMOSFET_SOT23, {translate: pt(J3.posX, J3.posY-.3), rotate: 90, label: 'T1\nN'});
 
-let interior = geo.path(path([1.000, 1.740],
-                             [2.280, 1.740],
-                             [2.280, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 0.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 0.00000001, J2.pos));

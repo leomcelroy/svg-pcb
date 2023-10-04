@@ -35,10 +35,10 @@ let C1 = board.add(C_1206, {translate: pt(IC1.padX("VIO2"), IC1.posY-.28), label
 let C2 = board.add(C_1206, {translate: pt(IC1.posX+.32, IC1.padY("AVDD")), rotate: 90, label: 'C2\n1uF'});
 let C3 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY+.35), label: 'C3 1uF'});
 
-let interior = geo.path(path([1.000, 1.830],
-                             [2.060, 1.830],
-                             [2.060, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

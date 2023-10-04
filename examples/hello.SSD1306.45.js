@@ -38,10 +38,10 @@ let oled = board.add(I2C4x1, {translate: pt(IC1.padX("PB3"), J2.padY("GND")+.05)
 let R2 = board.add(R_1206, {translate: pt(J1.posX+.06, oled.padY("SCL")), rotate: 90, label: 'R2\n10k'});
 let R3 = board.add(R_1206, {translate: pt(J1.posX-.06, oled.padY("SCL")), rotate: 90, label: 'R3\n10k'});
 
-let interior = geo.path(path([1.000, 1.780],
-                             [2.190, 1.780],
-                             [2.190, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

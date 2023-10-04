@@ -38,10 +38,10 @@ let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.2), rotate: 90, la
 let R1 = board.add(R_1206, {translate: pt(J1.padX("VCC")+.07, J1.posY), rotate: 90, label: 'R1\n0'});
 let J3 = board.add(header_SWD, {translate: pt(IC1.posX-.33, IC1.padY("A09")), rotate: 180, label: 'J3\ntarget'});
 
-let interior = geo.path(path([1.000, 2.140],
-                             [1.860, 2.140],
-                             [1.860, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));

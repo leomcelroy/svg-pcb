@@ -43,10 +43,10 @@ let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.24), rotate: 90, l
 let R3 = board.add(R_1206, {translate: pt(IC2.padX("in"), IC2.padY("in")+.1), label: 'R3 0'});
 let R4 = board.add(R_1206, {translate: pt(J3.padX("G")-.11, J3.posY+.11), rotate: 90, label: 'R4\n4.99k'});
 
-let interior = geo.path(path([1.000, 2.160],
-                             [1.840, 2.160],
-                             [1.840, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

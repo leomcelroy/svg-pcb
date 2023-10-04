@@ -35,10 +35,10 @@ let J1 = board.add(header_UPDI_3, {translate: pt(IC1.posX, y+.23), rotate: 90, l
 let R1 = board.add(R_1206, {translate: pt(IC1.posX+.23, IC1.posY-.01), rotate: 90, label: 'R1\n1k'});
 let LED1 = board.add(LED_1206, {translate: pt(R1.posX, R1.posY-.23), rotate: -90, label: 'LED1'});
 
-let interior = geo.path(path([1.000, 1.650],
-                             [1.470, 1.650],
-                             [1.470, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 
