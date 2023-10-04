@@ -59,8 +59,25 @@ export const layersColorPicker = (state) => html`
           }
 
           const onCommentInput = (e) => {
-            layer.visible = e.target.checked;
-            updateCode();
+
+            const shiftHeld = [...state.heldKeys].some(key => key.includes("Shift"));
+
+            if (shiftHeld) {
+              state.layers.forEach(l => {
+                l.visible = false;
+              })
+
+              layer.visible = e.target.checked;
+              
+              updateCode();
+
+            } else {
+
+              layer.visible = e.target.checked;
+              
+              updateCode();
+            }
+            
           }
 
           const colorInput = visible ? html`
