@@ -752,7 +752,7 @@ ${t}`);const n=new Blob([t],{type:"text/plain"});var r=document.createElement("a
 				<button class="add-route" @click=${n=>{const[r,o]=[i.fromComponent,i.toComponent].map(s=>i.idToName[s.id]);console.log(r,o,i.fromPad,i.toPad)}}>add</button>
 			</main>
 		`}});function Ms(i,t){const e=new RegExp(`\\/\\*\\s*--\\s*${i}\\s*--\\s*\\*\\/`,"g"),r=t.matchAll(e).next();return r.value!==void 0?r.value.index+r.value[0].length+1:null}Dv({name:"wire-editor",props:{wires:[]},onConstruct:i=>{},css:`
-    @import url("${window.location.href}/styles.css");
+    @import url("${window.location.origin}${window.location.pathname}styles.css");
 
     .wire-item {
       background: inherit;
