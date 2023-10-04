@@ -39,10 +39,10 @@ let XTAL1 = board.add(XTAL_EFOBM, {translate: pt(IC1.padX("PB3")-.2, IC1.padY("P
 let R1 = board.add(R_1206, {translate: pt(IC1.padX("VCC"), IC1.padY("VCC")+.1), label: 'R1\n10k'});
 let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND"), R1.posY), label: 'C1\n1uF'});
 
-let interior = geo.path(path([1.000, 1.930],
-                             [2.000, 1.930],
-                             [2.000, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

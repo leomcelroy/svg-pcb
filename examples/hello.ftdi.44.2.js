@@ -46,10 +46,10 @@ let VR1 = board.add(via(2*rv, 2*rp), {translate: pt(R1.padX("1")-.08, R1.posY)})
 let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND"), R1.posY), label: 'C1\n1uF'});
 let VC1 = board.add(via(2*rv, 2*rp), {translate: pt(C1.padX("1")-.025, C1.posY-.06)});
 
-let interior = geo.path(path([1.000, 1.870],
-                             [2.020, 1.870],
-                             [2.020, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

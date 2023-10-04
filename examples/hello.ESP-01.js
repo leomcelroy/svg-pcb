@@ -41,10 +41,10 @@ let S1 = board.add(button_6mm, {translate: pt(J2.padX("GND")+.12, J2.padY("GND")
 let S2 = board.add(slide_switch, {translate: pt(S1.posX, J2.padY("VCC")+.21), rotate: 180, label: 'S2\nprog run'});
 let R2 = board.add(R_1206, {translate: pt(J2.padX("IO0")-.11, J2.padY("IO0")), rotate: 90, label: 'R2\n10k'});
 
-let interior = geo.path(path([1.000, 1.890],
-                             [2.320, 1.890],
-                             [2.320, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

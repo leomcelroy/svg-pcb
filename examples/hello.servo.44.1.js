@@ -40,10 +40,10 @@ let IC2 = board.add(regulator_SOT223_1, {translate: pt(J2.posX+.37, J2.posY-.04)
 let C1 = board.add(C_1206, {translate: pt(J2.posX, J2.posY-.14), rotate: 0, label: 'C1\n22uF'});
 let J3 = board.add(header_servo, {translate: pt(J2.posX+.03, J1.posY+.05), label: 'J3\nservo'});
 
-let interior = geo.path(path([1.000, 2.110],
-                             [1.750, 2.110],
-                             [1.750, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

@@ -41,10 +41,10 @@ let J3 = board.add(header_SWD, {translate: pt(IC1.posX-.37, IC1.padY("A09")-.01)
 let R1 = board.add(R_1206, {translate: pt(IC2.posX+.115, IC2.posY), rotate: 90, label: 'R1\n1k'});
 let LED1 = board.add(LED_1206, {translate: pt(R1.posX+.1, R1.posY), rotate: -90, label: 'LED1'});
 
-let interior = geo.path(path([1.000, 2.030],
-                             [1.910, 2.030],
-                             [1.910, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));

@@ -33,10 +33,10 @@ let IC1 = board.add(regulator_SOT23, {translate: pt(J1.posX-.18, J1.padY("CTS"))
 let C1 = board.add(C_1206, {translate: pt(IC1.posX-.14, IC1.posY), rotate: 90, label: 'C1\n1uF'});
 let HM = board.add(HM11, {translate: pt(x+.15, J1.posY), rotate: 90, label: 'HM-11'});
 
-let interior = geo.path(path([1.000, 1.800],
-                             [2.150, 1.800],
-                             [2.150, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

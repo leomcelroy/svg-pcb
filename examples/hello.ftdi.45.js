@@ -35,10 +35,10 @@ let C1 = board.add(C_1206, {translate: pt(R1.posX+.1, R1.posY), rotate: 90, labe
 let R2 = board.add(R_1206, {translate: pt((R1.posX+C1.posX)/2, R1.padY("1")-.1), label: 'R2 1k'});
 let J2 = board.add(header_FTDI, {translate: pt(x+width-.23, C1.posY+.05), label: 'J2 FTDI\n5V'});
 
-let interior = geo.path(path([1.000, 1.650],
-                             [2.200, 1.650],
-                             [2.200, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

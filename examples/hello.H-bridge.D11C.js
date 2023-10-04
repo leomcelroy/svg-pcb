@@ -42,10 +42,10 @@ let C1 = board.add(C_1206, {translate: pt(IC3.posX-.11, IC3.posY), rotate: 90, l
 let C2 = board.add(C_1206, {translate: pt(IC2.posX+.16, IC2.posY+.06), rotate: 90, label: 'C2\n.1'});
 let C3 = board.add(C_1206, {translate: pt(IC2.posX+.26, IC2.posY+.06), rotate: 90, label: 'C3\n10uF'});
 
-let interior = geo.path(path([1.000, 1.950],
-                             [2.450, 1.950],
-                             [2.450, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 0.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 0.00000001, J2.pos));

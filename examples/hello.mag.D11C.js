@@ -40,10 +40,10 @@ let IC3 = board.add(Hall_SOT23, {translate: pt(IC2.posX-.13, IC2.posY), rotate: 
 let R1 = board.add(R_1206, {translate: pt(C1.posX, C1.posY-.1), label: 'R1 4.99k'});
 let R2 = board.add(R_1206, {translate: pt(R1.posX, R1.posY-.1), label: 'R2 10k'});
 
-let interior = geo.path(path([1.000, 2.010],
-                             [1.820, 2.010],
-                             [1.820, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));
