@@ -154,6 +154,98 @@ export class GerberBuilder {
     }
   }
 
+  static isCirc( points ) {
+
+    // Should be more than N points
+    if (points.length < 45) { // Just a random number of points here given that all circles have 180 points
+      return false;
+    }
+
+    // Calculate the minimum and maximum x and y coordinates
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    for (const [x, y] of points) {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+
+    // Calculate the width and height of the bounding box
+    const width = maxX - minX;
+    const height = maxY - minY;
+
+    // Calculate the center of the bounding box
+    const center = {
+      x: maxX - (width / 2),
+      y: maxY - (height / 2)
+    };
+
+    // Compare distances of all points from center, based on first point, using tolerance
+    const distIdealX = center.x - points[0][0];
+    const distIdealY = center.y - points[0][1];
+    const distIdeal = Math.sqrt( Math.pow(distIdealX,2) + Math.pow(distIdealY,2) );
+    const tolerance = 0.01;
+    
+    for (const [x, y] of points) {
+      const distX = center.x - x;
+      const distY = center.y - y;
+      const dist = Math.sqrt( Math.pow(distX,2) + Math.pow(distY^2) );
+
+      if (Math.abs(distIdeal - dist) > tolerance) {
+        
+        // Not circle
+        return false;
+      }
+    }
+
+    // Yes, we got a circle here
+    return true;
+  }
+
+  static getCirc( points ) {
+
+    // Should be more than N points
+    if (points.length < 45) { // Just a random number of points here given that all circles have 180 points
+      return false;
+    }
+
+    // Calculate the minimum and maximum x and y coordinates
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    for (const [x, y] of points) {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+
+    // Calculate the width and height of the bounding box
+    const width = maxX - minX;
+    const height = maxY - minY;
+
+    // Calculate the center of the bounding box
+    const center = {
+      x: (maxX - (width / 2)).toFixed(5),
+      y: (maxY - (height / 2)).toFixed(5)
+    };
+
+    // Calculate radius
+    const radius = (width / 2).toFixed(5);
+
+    // Return circle object
+    return {
+      center: center,
+      radius: radius
+    }; 
+  }
+
   #getHeader() {
     let str = '';
     
@@ -262,7 +354,9 @@ export class GerberBuilder {
     const rectApertures = [];
     const rectPads = [];
 
-    // TODO: Apertures for circular pads
+    // Apertures for circular pads
+    const circApertures = [];
+    const circPads = [];
     
     this.#body += this.#getComment("Begin pads");
 
@@ -303,7 +397,6 @@ export class GerberBuilder {
             width: rect.width,
             height: rect.height
           });
-          //this.#body += "%ADD" + apertureID.toString() +  "R," + aperture.center.x.toFixed(3) + "X" + aperture.center.y.toFixed(3) + "*%\n";
         }
 
         // Add rectangular pad location to list along with aperture ID
@@ -312,17 +405,48 @@ export class GerberBuilder {
           x: rect.center.x,
           y: rect.center.y
         });
-
-        //return { apertureID: padApertureID, type: "rect", x: aperture.center.x, y: aperture.center.y };
       } 
 
-      // Else if the pad is a polygon
+      // Else if the pad is a circle...
+      else if (this.constructor.isCirc(pad)) {
+
+        // Get circular representation of the pad  
+        const circ = this.constructor.getCirc(pad);
+
+        // Try to find existing aperture for it
+        let circApertureID = undefined; 
+        circApertures.forEach((a) => {
+          if ( a.radius === circ.radius ) {
+
+            // Aperture exists and we assign its id to 
+            circApertureID = a.id;
+          }
+        });
+
+        // If no existing aperture ID has been found, acquire a new one
+        if (!circApertureID) {
+          circApertureID = this.#getApertureID();
+          
+          // Add circ aperture to list
+          circApertures.push({
+            id: circApertureID,
+            radius: circ.radius
+          });
+        }
+
+        // Add circular pad location to list along with aperture ID
+        circPads.push({
+          id: circApertureID,
+          x: circ.center.x,
+          y: circ.center.y
+        });
+      }
+
+      // Else if the pad is a polygon...
       else {
         polyPads.push(pad);
       }
     });
-
-    console.log(rectApertures, rectPads, polyPads);
 
     // Define aperture for drawing polygons
     this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
@@ -332,8 +456,23 @@ export class GerberBuilder {
       this.#body += "%ADD" + a.id.toString() +  "R," + inchesToMM(a.width).toFixed(3) + "X" + inchesToMM(a.height).toFixed(3) + "*%\n";
     });
 
+    // Define circ apertures
+    circApertures.forEach((a) => {
+      this.#body += "%ADD" + a.id.toString() +  "C," + inchesToMM(a.radius * 2).toFixed(3) + "*%\n";
+    });
+
     // Draw rect pads using rect apertures
     rectPads.forEach((p) => {
+      
+      // Select the aperture for drawing the pad
+      this.#body += "D" + p.id.toString() + "*\n";
+
+      // Flash current rectangle aperture at location X, Y
+      this.#body += "X" + this.constructor.format(inchesToMM(p.x)) + "Y" + this.constructor.format(inchesToMM(p.y)) + "D03*\n";
+    });
+
+    // Draw circ pads using circ apertures
+    circPads.forEach((p) => {
       
       // Select the aperture for drawing the pad
       this.#body += "D" + p.id.toString() + "*\n";
