@@ -15,7 +15,7 @@ createComponent({
 
   },
   css: `
-    @import url("${window.location.href}/styles.css");
+    @import url("${window.location.origin}${window.location.pathname}styles.css");
 
     .wire-item {
       background: inherit;
