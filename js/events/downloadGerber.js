@@ -90,6 +90,70 @@ export class GerberBuilder {
     return s;
   }
 
+  static isRect( points ) {
+    
+    // Should be at least 4 points
+    if (points.length < 4) {
+      return false;
+    }
+
+    // Calculate the minimum and maximum x and y coordinates
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    for (const [x, y] of points) {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+
+    // Calculate the width and height of the bounding box
+    const width = maxX - minX;
+    const height = maxY - minY;
+
+    // Check if all points are within the bounding box
+    for (const [x, y] of points) {
+      if (x !== minX && x !== maxX && y !== minY && y !== maxY) {
+        return false;
+      }
+    }
+
+    // Check if the width and height are both greater than zero
+    return width > 0 && height > 0;
+  }
+
+  static getRect( points ) {
+
+    // Calculate the minimum and maximum x and y coordinates
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    for (const [x, y] of points) {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+
+    // Calculate the width and height of the bounding box
+    const width = (maxX - minX).toFixed(5);
+    const height = (maxY - minY).toFixed(5);
+
+    return {
+      center: {
+        x: (maxX - (width / 2)).toFixed(5),
+        y: (maxY - (height / 2)).toFixed(5)  
+      },
+      width: width,
+      height: height
+    }
+  }
+
   #getHeader() {
     let str = '';
     
@@ -188,31 +252,116 @@ export class GerberBuilder {
   // This method can be also used to produce solder mask with a certain offset.
   // Offest is defined in mm, 0.1mm for example.
   plotPads(layer, offset = 0) {
-    const apertureDiameter = offset ? offset * 2 : 0;
-    const apertureID = this.#getApertureID();
+    
+    // Aperture parameters for polygon pads
+    const apertureDiameter = offset ? offset * 2 : 0; // Used to draw polygonal pads
+    const apertureID = this.#getApertureID(); // Aperture ID for the polygon pad outline aperture
+    const polyPads = [];
 
+    // Apertures for rectangular pads
+    const rectApertures = [];
+    const rectPads = [];
+
+    // TODO: Apertures for circular pads
+    
     this.#body += this.#getComment("Begin pads");
 
-    // Define aperture
-    this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
+    // Extract pads from current layer
+    const pads = [];
+    layer.forEach((el) => {
+      if (el.type === "wire") return;
+      pads.push(el.flat());
+    });
 
-     // Select the aperture for drawing the outline
+    // Separate different types of pads and assign apertures to them
+    pads.forEach((pad) => {
+      
+      // If the pad is a rectangle...
+      if (this.constructor.isRect(pad)) {
+        
+        // Get rectangular representation of the pad  
+        const rect = this.constructor.getRect(pad);
+
+        // Try to find existing aperture for it
+        let rectApertureID = undefined; 
+        rectApertures.forEach((a) => {
+          if ( a.width    === rect.width 
+            && a.height   === rect.height) {
+
+            // Aperture exists and we assign its id to 
+            rectApertureID = a.id;
+          }
+        });
+
+        // If no existing aperture ID has been found, acquire a new one
+        if (!rectApertureID) {
+          rectApertureID = this.#getApertureID();
+          
+          // Add rect aperture to list
+          rectApertures.push({
+            id: rectApertureID,
+            width: rect.width,
+            height: rect.height
+          });
+          //this.#body += "%ADD" + apertureID.toString() +  "R," + aperture.center.x.toFixed(3) + "X" + aperture.center.y.toFixed(3) + "*%\n";
+        }
+
+        // Add rectangular pad location to list along with aperture ID
+        rectPads.push({
+          id: rectApertureID,
+          x: rect.center.x,
+          y: rect.center.y
+        });
+
+        //return { apertureID: padApertureID, type: "rect", x: aperture.center.x, y: aperture.center.y };
+      } 
+
+      // Else if the pad is a polygon
+      else {
+        polyPads.push(pad);
+      }
+    });
+
+    console.log(rectApertures, rectPads, polyPads);
+
+    // Define aperture for drawing polygons
+    this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
+    
+    // Define rect apertures
+    rectApertures.forEach((a) => {
+      this.#body += "%ADD" + a.id.toString() +  "R," + inchesToMM(a.width).toFixed(3) + "X" + inchesToMM(a.height).toFixed(3) + "*%\n";
+    });
+
+    // Draw rect pads using rect apertures
+    rectPads.forEach((p) => {
+      
+      // Select the aperture for drawing the pad
+      this.#body += "D" + p.id.toString() + "*\n";
+
+      // Flash current rectangle aperture at location X, Y
+      this.#body += "X" + this.constructor.format(inchesToMM(p.x)) + "Y" + this.constructor.format(inchesToMM(p.y)) + "D03*\n";
+    });
+
+    // Select the aperture for drawing polygon pads
     this.#body += "D" + apertureID.toString() + "*\n";
 
-     // Enable linear interpolation 
+    // Enable linear interpolation 
     this.#body += "G01*\n";
 
-    // Draw pads as polygons
-    layer.map( el => {
-      if (el.type === "wire") return;
+    // Draw polygon pads
+    polyPads.forEach((p) => {
+
+      // Start region
       this.#body += "G36*\n";
-      
-      el.flat().forEach((pt, i) => {
+
+      // Loop through points
+      p.forEach((pt, i) => {
         const x = this.constructor.format( inchesToMM(pt[0]) );
         const y = this.constructor.format( inchesToMM(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
       });
 
+      // End region
       this.#body += "G37*\n";
     });
 
