@@ -135,6 +135,7 @@ renderPCB({
     x: [xMin, xMax],
     y: [yMin, yMax]
   },
+  background: "#00000000",
   mm_per_unit: 25.4
 });
 

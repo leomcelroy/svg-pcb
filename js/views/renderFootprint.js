@@ -41,7 +41,7 @@ export const renderFootprint = ({ name, svgView }, i) => {
         transform="scale(1, -1)">
         ${svgView.map(renderComp)}
       </svg>
-      <span style="padding-left: 5px;">${name}</span>
+      <span style="padding-left: 5px; max-width: 200px;">${name}</span>
     </div>
   `
 }

@@ -80,14 +80,29 @@ export const layersColorPicker = (state) => html`
             
           }
 
+          // const colorInput = visible ? html`
+          //   <span class="layer-color">
+          //     <input @input=${onColorChange} class="color-input" type="color" style="opacity: ${opacity};" value=${color}/>
+          //     <span class="opacity-input">
+          //       ${opacity}
+          //       <input @input=${onOpacityChange} type="range" min="0" max="1" step="0.01" value=${opacity}/>
+          //     </span>
+          //   </span>
+          // ` : "";
+
           const colorInput = visible ? html`
-            <span class="layer-color">
-              <input @input=${onColorChange} class="color-input" type="color" style="opacity: ${opacity};" value=${color}/>
-              <span class="opacity-input">
-                ${opacity}
-                <input @input=${onOpacityChange} type="range" min="0" max="1" step="0.01" value=${opacity}/>
-              </span>
-            </span>
+            <div 
+              @input=${onColorChange} 
+              style="
+                background: ${color};
+                opacity: ${opacity};
+                margin-right: 5px;
+                width: 20px;
+                height: 20px;
+                border: 1px solid black;
+                " 
+              >
+              </div>
           ` : "";
 
           return html`

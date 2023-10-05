@@ -76,12 +76,25 @@ createComponent({
 
             const string = state.codemirror.view.state.doc.toString();
             const startIndex = getFileSection("ADD_WIRES", string) ?? 0;
-            const text = `board.wire(path(), .015);\n`
+            const text = `board.wire(\npath(), \n.015\n);\n`
             state.codemirror.view.dispatch({
               changes: {from: startIndex, insert: text}
             });
 
             dispatch("RUN");
+
+            global_state.selectablePaths.forEach((p, i) => {
+              const pContained = isInRange(startIndex, startIndex+24, p[0]);
+              if (pContained) {
+                global_state.selectedPathIndex = i;
+              }
+            });
+
+            dispatch("RUN");
+
+            global_state.codemirror.viewJumpTo({ index: Number(startIndex), length: text.length });
+
+
           }}>add wire</div>
         <div class="wire-list">${el.wires.map(drawWire)}</div>
       </div>
@@ -125,6 +138,9 @@ function drawWire(w) {
             global_state.selectedPathIndex = i;
           }
         });
+
+        global_state.codemirror.viewJumpTo({ index: Number(from), length: Number(to)-Number(from) });
+
 
         dispatch("RUN");
       }}>

@@ -18,6 +18,7 @@ import { drawDownloadKiCadModal } from "./views/drawDownloadKiCadModal.js";
 import "./components/netlist-editor.js";
 import "./components/wire-editor.js";
 
+
 export function view(state) {
 	return html`
 		${menu(state)}
@@ -261,6 +262,10 @@ const menu = state => html`
 
 
 /*
+
+			<div style="justify-content: space-between; padding: 5px; font-weight: bold;">
+				<span>Background:</span>
+			</div>
 
 	
 			<div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>

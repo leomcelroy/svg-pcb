@@ -122,7 +122,7 @@ const ACTIONS = {
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");
 		text = JSON.stringify(kicadToObj(text));
-		text = `const ${"temp_name"} = footprint(${text});\n`
+		text = `const ${name} = footprint(${text});\n`
 
 		const string = state.codemirror.view.state.doc.toString();
 		const startIndex = getFileSection("DECLARE_COMPONENTS", string) ?? 0;
@@ -133,9 +133,9 @@ const ACTIONS = {
 		state.codemirror.foldRange(0, text.length);
 		dispatch("RENDER");
 	},
-	UPLOAD_COMP_OBJ({ obj }, state) {
+	UPLOAD_COMP_OBJ({ obj, name }, state) {
 		let text = JSON.stringify(obj);
-		text = `const temp_name = footprint(${text});\n`
+		text = `const ${name} = footprint(${text});\n`
 
 		const string = state.codemirror.view.state.doc.toString();
 		const startIndex = getFileSection("DECLARE_COMPONENTS", string) ?? 0;

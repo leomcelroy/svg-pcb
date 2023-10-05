@@ -117,5 +117,6 @@ export const files = [
   "./library/ICs/ATmega644_TQFP.json",
   "./library/ICs/op_amp_SOT23_5.json",
   "./library/ICs/SAMD11C.json",
-  "./library/ICs/ATtiny3216.json"
+  "./library/ICs/ATtiny3216.json",
+  "./library/ICs/xiao_rp2040.json",
 ]
