@@ -128,28 +128,23 @@ ${t}`);const n=new Blob([t],{type:"text/plain"});var r=document.createElement("a
       class="toolbox-title"
       @click=${t=>{document.querySelector(".layer-list-inner").classList.toggle("hidden"),t.target.classList.toggle("inner-hidden")}}>Layers:</div>
     <div class="layer-list-inner">
-      ${i.layers.map((t,e)=>{const{name:n,visible:r,color:o}=t,l=(()=>i.codemirror.view.state.doc.toString())().slice(i.layersStaticInfo.from,i.layersStaticInfo.to),u=()=>{const y=Ji.parse(l,{range:!0}),x=xv(y,{type:"Identifier",name:"layerColors"}).getParent().value.range,w=x[0]+i.layersStaticInfo.from,A=x[1]+i.layersStaticInfo.from;i.codemirror.view.dispatch({changes:{from:w,to:A,insert:I2(i.layers)}}),Xt("RUN")},c=y=>(parseInt(y,16)/255).toFixed(2),d=o.slice(0,-2),p=c(o.slice(-2)),v=y=>{let x=o.slice(-2);t.color=y.target.value+x,u()},S=y=>{[...i.heldKeys].some(w=>w.includes("Shift"))?(i.layers.forEach(w=>{w.visible=!1}),t.visible=y.target.checked,u()):(t.visible=y.target.checked,u())},m=r?Qe`
-            <div 
-              @input=${v} 
-              style="
-                background: ${d};
-                opacity: ${p};
-                margin-right: 5px;
-                width: 20px;
-                height: 20px;
-                border: 1px solid black;
-                " 
-              >
-              </div>
+      ${i.layers.map((t,e)=>{const{name:n,visible:r,color:o}=t,l=(()=>i.codemirror.view.state.doc.toString())().slice(i.layersStaticInfo.from,i.layersStaticInfo.to),u=()=>{const x=Ji.parse(l,{range:!0}),w=xv(x,{type:"Identifier",name:"layerColors"}).getParent().value.range,A=w[0]+i.layersStaticInfo.from,E=w[1]+i.layersStaticInfo.from;i.codemirror.view.dispatch({changes:{from:A,to:E,insert:I2(i.layers)}}),Xt("RUN")},c=x=>(parseInt(x,16)/255).toFixed(2),d=o.slice(0,-2),p=c(o.slice(-2)),v=x=>{let w=Math.floor(Number(x.target.value)*255).toString(16);for(;w.length<2;)w="0"+w;t.color=d+w,u()},S=x=>{let w=o.slice(-2);t.color=x.target.value+w,u()},m=x=>{[...i.heldKeys].some(A=>A.includes("Shift"))?(i.layers.forEach(A=>{A.visible=!1}),t.visible=x.target.checked,u()):(t.visible=x.target.checked,u())},y=r?Qe`
+            <span class="layer-color">
+              <input @input=${S} class="color-input" type="color" style="opacity: ${p};" value=${d}/>
+              <span class="opacity-input">
+                ${p}
+                <input @input=${v} type="range" min="0" max="1" step="0.01" value=${p}/>
+              </span>
+            </span>
           `:"";return Qe`
             <div class="layer-item" .data=${{index:e,layers:i.layers,updateCode:u}}>
               <div style="margin-bottom: 2px;" class="layer-grabber">≡</div>
               <div style="flex: 1; padding-left: 5px; display: flex; align-items: center; justify-content: space-between;">
                 <span class="layer-name">
-                  <input @input=${S} type="checkbox" .checked=${r}/>
+                  <input @input=${m} type="checkbox" .checked=${r}/>
                   <span>${n}</span>
                 </span>
-                ${m}
+                ${y}
               </div>
             </div>
           `}).reverse()}
