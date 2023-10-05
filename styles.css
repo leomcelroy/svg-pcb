@@ -118,7 +118,7 @@ input {
 	position: absolute;
 	right: 0px;
 	top: 0px;
-	padding: 5px;
+	padding: 5px 0px 5px 5px;
 	display: flex;
 	flex-direction: column;
 	transition: right 0.5s ease;
@@ -549,9 +549,9 @@ input {
 	display: flex;
 }
 
+
 .toolbox-title {
-	padding-bottom: 5px;
-	padding-top: 5px;
+	padding: 5px 0px 5px 5px;
 	font-weight: bold;
 }
 
@@ -797,6 +797,10 @@ input {
 
 .layer-grabber {
 	cursor: grab;
+}
+
+.code-highlight {
+	background-color: yellow;
 }
 
 
