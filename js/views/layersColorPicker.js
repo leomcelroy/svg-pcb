@@ -38,7 +38,6 @@ export const layersColorPicker = (state) => html`
         const onColorChange = (e) => {
           layer.color = e.detail.value;
 
-
           updateCode();
         }
 
@@ -66,7 +65,7 @@ export const layersColorPicker = (state) => html`
         const colorInput = visible ? html`
           <color-picker 
             @colorChange=${onColorChange} 
-            value=${hex}
+            .value=${hex}
             style="
               margin-right: 5px;
               width: 20px;

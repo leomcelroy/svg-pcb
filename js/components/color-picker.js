@@ -12,12 +12,6 @@ class ColorPicker extends HTMLElement {
         this.brightness = 50;
         this.opacity = 1;
         this.render();
-        this.isInitialized = false;
-        this.justTriggered = false;
-    }
-
-    connectedCallback() {
-        this.isInitialized = true;
 
         this.colorBox = this.shadowRoot.querySelector('.color-box');
         this.colorPopup = this.shadowRoot.querySelector('.color-popup');
@@ -48,11 +42,21 @@ class ColorPicker extends HTMLElement {
 
         this.updateColor();
 
-        if (this.hasAttribute("value")) {
-            this.updateColorFromHex(this.getAttribute("value"));
-        }
-        
+        Object.defineProperty(this, "value", {
+            get: function() {
+              return this["_value"];
+            },
+            set: function(value) {
+              this["_value"] = value;
+              if (this.justTriggered) return;
+              this.updateColorFromHex(value);
+            },
+            enumerable: true,
+            configurable: true
+        });
     }
+
+    connectedCallback() {}
 
     render() {
         const css = `
@@ -258,12 +262,12 @@ class ColorPicker extends HTMLElement {
     }
 
     triggerEvent() {
+
         this.justTriggered = true;
 
-        // so weird, this stops the rerender from setting the color and accumulating error
         setTimeout(() => {
             this.justTriggered = false;
-        }, 0);
+        }, 0)
 
         const hex = this.hexInput.value;
         this.dispatchEvent(new CustomEvent('colorChange', { detail: 
@@ -271,16 +275,6 @@ class ColorPicker extends HTMLElement {
                 value: hex
             }
         }));
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-        // requestAnimationFrame( () => {
-        //     if (name === 'value') {
-        //         this.updateColorFromHex(newValue);
-        //     }
-        // });
-
-        if (!this.isInitialized || this.justTriggered) return;
     }
 }
 

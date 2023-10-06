@@ -22,6 +22,13 @@ export function makePhantom(event, el, onDrop) {
 
         // Clone the element and style it
         clonedElement = el.cloneNode(true);
+
+        const colorPicker = el.querySelector("color-picker");
+        if (colorPicker !== null) {
+            clonedElement.querySelector("color-picker").value = colorPicker.value;
+            clonedElement.style.width = `${el.getBoundingClientRect().width}px`;
+        }
+
         clonedElement.style.position = 'absolute';
         clonedElement.style.pointerEvents = 'none';  // Make it non-interactive
         document.body.appendChild(clonedElement);

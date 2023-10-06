@@ -55,7 +55,7 @@ export function view(state) {
 						`
 					: ""}
 				<div class="footprint-toolbox">
-					<div style="overflow: hidden; overflow-y: scroll">
+					<div style="overflow: hidden; overflow-y: scroll; min-height: 100%;">
 						${state.inputs.length > 0 ? html`<div class="toolbox-title">Inputs:</div>` : ""}
 						<div class="input-panel">
 							${state.inputs.map(input => inputRenderers[input[0].type](...input, state))}
