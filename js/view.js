@@ -17,6 +17,7 @@ import { drawDownloadGerberModal } from "./views/drawDownloadGerberModal.js";
 import { drawDownloadKiCadModal } from "./views/drawDownloadKiCadModal.js";
 import "./components/netlist-editor.js";
 import "./components/wire-editor.js";
+import "./components/color-picker.js";
 
 export function view(state) {
 	return html`
@@ -53,19 +54,33 @@ export function view(state) {
 						`
 					: ""}
 				<div class="footprint-toolbox">
-					${state.inputs.length > 0 ? html`<div class="toolbox-title">Inputs:</div>` : ""}
-					<div class="input-panel">
-						${state.inputs.map(input => inputRenderers[input[0].type](...input, state))}
-					</div>
-					<div class="toolbox-title">Footprints:</div>
-					<div class="import-button-container">
-						<div class="import-button" @mousedown=${() => {
-		          state.componentMenu = true;
-		          dispatch("RENDER");
-		        }}>import</div>
-		      </div>
-					<div class="component-list">
-						${Object.values(state.footprints).map(renderFootprint)}
+					<div style="overflow: hidden; overflow-y: scroll; min-height: 100%">
+						${state.inputs.length > 0 ? html`<div class="toolbox-title">Inputs:</div>` : ""}
+						<div class="input-panel">
+							${state.inputs.map(input => inputRenderers[input[0].type](...input, state))}
+						</div>
+
+						<div class="toolbox-title" @click=${e => {
+							document.querySelector(".footprint-list-inner").classList.toggle("hidden");
+							e.target.classList.toggle("inner-hidden");
+						}}>Footprints:</div>
+						<div class="footprint-list-inner">
+							<div class="import-button-container">
+								<div class="import-button" @mousedown=${() => {
+				          state.componentMenu = true;
+				          dispatch("RENDER");
+				        }}>import</div>
+				      </div>
+							<div class="component-list">
+								${Object.values(state.footprints).map(renderFootprint)}
+							</div>
+						</div>
+
+						<wire-editor></wire-editor>
+
+						${layersColorPicker(state)}
+
+						<div style="min-height: 100px;"></div>
 					</div>
 
 		<!--
