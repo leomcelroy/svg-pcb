@@ -3,6 +3,15 @@ class ColorPicker extends HTMLElement {
         return ['value'];
     }
 
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (!this.initialized) return;
+        if (this.justTriggered) return;
+
+        if (name === "value") {
+            this.updateColorFromHex(newValue);
+        }
+    }
+
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
@@ -13,6 +22,9 @@ class ColorPicker extends HTMLElement {
         this.opacity = 1;
         this.render();
 
+        this.initialized = false;
+        this.justTriggered = false;
+
         this.colorBox = this.shadowRoot.querySelector('.color-box');
         this.colorPopup = this.shadowRoot.querySelector('.color-popup');
         this.colorLine = this.shadowRoot.querySelector('.color-line');
@@ -22,6 +34,11 @@ class ColorPicker extends HTMLElement {
         this.opacityIndicator = this.shadowRoot.querySelector('.opacity-indicator');
         this.colorAreaIndicator = this.shadowRoot.querySelector('.color-area-indicator');
         this.hexInput = this.shadowRoot.querySelector('.hex-input');
+        this.outputColor = this.shadowRoot.querySelector('.output-color');
+        this.rDiv = this.shadowRoot.querySelector('.r');
+        this.bDiv = this.shadowRoot.querySelector('.b');
+        this.gDiv = this.shadowRoot.querySelector('.g');
+        this.aDiv = this.shadowRoot.querySelector('.a');
 
         this.colorBox.addEventListener('click', () => this.togglePopup());
         this.colorLine.addEventListener('mousedown', (event) => { this.dragging = 'color'; this.mouseMove(event); });
@@ -42,21 +59,27 @@ class ColorPicker extends HTMLElement {
 
         this.updateColor();
 
-        Object.defineProperty(this, "value", {
-            get: function() {
-              return this["_value"];
-            },
-            set: function(value) {
-              this["_value"] = value;
-              if (this.justTriggered) return;
-              this.updateColorFromHex(value);
-            },
-            enumerable: true,
-            configurable: true
-        });
+        // Object.defineProperty(this, "value", {
+        //     get: function() {
+        //       return this["_value"];
+        //     },
+        //     set: function(value) {
+        //       this["_value"] = value;
+        //       if (this.justTriggered) return;
+        //       this.updateColorFromHex(value);
+        //     },
+        //     enumerable: true,
+        //     configurable: true
+        // });
     }
 
-    connectedCallback() {}
+    connectedCallback() {
+        this.initialized = true;
+
+        if (this.hasAttribute("value")) {
+            this.updateColorFromHex(this.getAttribute("value"));
+        }
+    }
 
     render() {
         const css = `
@@ -84,12 +107,13 @@ class ColorPicker extends HTMLElement {
             .color-popup {
                 position: absolute;
                 right: calc(100% + 10px);
-                top: 0px;
+                top: 50%;
+                transform: translateY(-50%);
                 border: 1px solid #ccc;
                 background-color: #f0f0f0;
                 padding: 5px;
-                width: 250px;
-                height: 250px;
+                width: 235px;
+                height: 275px;
                 z-index: 1000;
                 border-radius: 10px;
                 display: none;
@@ -112,7 +136,7 @@ class ColorPicker extends HTMLElement {
             }
             .color-area {
                 width: 90%;
-                height: 125px;
+                height: 135px;
                 background: linear-gradient(to top, #fff, transparent),
                             linear-gradient(to left, transparent, #000);
             }
@@ -150,6 +174,26 @@ class ColorPicker extends HTMLElement {
                 font-family: monospace;
                 font-weight: 500;
                 width: 45%;
+                border: 1px solid grey;
+                border-radius: 3px;
+            }
+
+            .bottom-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+            }
+
+            .output-color {
+                width: 40px;
+                height: 40px;
+                background: none;
+                border: 1px solid black;
+            }
+
+            .color-label {
+                display: none;
+                color: black;
             }
         `
 
@@ -166,7 +210,16 @@ class ColorPicker extends HTMLElement {
                 <div class="opacity-line">
                     <div class="opacity-indicator"></div>
                 </div>
-                <input class="hex-input"></input>
+                <div class="bottom-row">
+                    <div class="output-color"></div>
+                    <input class="hex-input"></input>
+                </div>
+                <div style="display: flex; font-family: monospace; color: #6c6c6c; width: 100%; justify-content: space-evenly; font-size: .9rem;">
+                    <div class="r"></div>
+                    <div class="g"></div>
+                    <div class="b"></div>
+                    <div class="a"></div>
+                </div>
             </div>
         `;
     }
@@ -237,6 +290,7 @@ class ColorPicker extends HTMLElement {
         const [ r, g, b ] = hsbToRgb(this.hue, this.saturation, this.brightness);
         const color = `rgba(${r} ${g} ${b} / ${this.opacity})`;
         this.colorBox.style.background = color;
+        this.outputColor.style.background = color;
         this.colorArea.style.backgroundImage = `
                                                 linear-gradient(to bottom, transparent, #000),
                                                 linear-gradient(to right, #fff, transparent),
@@ -250,6 +304,11 @@ class ColorPicker extends HTMLElement {
         
         this.colorAreaIndicator.style.left = `${this.saturation}%`;
         this.colorAreaIndicator.style.top = `${100-this.brightness}%`;
+
+        this.rDiv.innerHTML = `<span class="color-label">r</span>${(r/255).toFixed(2)}`;
+        this.gDiv.innerHTML = `<span class="color-label">g</span>${(b/255).toFixed(2)}`;
+        this.bDiv.innerHTML = `<span class="color-label">b</span>${(g/255).toFixed(2)}`;
+        this.aDiv.innerHTML = `<span class="color-label">a</span>${this.opacity.toFixed(2)}`;
 
         const hex = rgbaToHex(r, g, b, this.opacity);
         this.hexInput.value = hex;

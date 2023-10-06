@@ -3,8 +3,13 @@ import { dispatch } from "../dispatch.js";
 import * as esprima from 'esprima';
 
 export const layersColorPicker = (state) => html`
-  <div class="layers-color-picker">
-    <b>Layers:</b>
+    <div 
+      class="toolbox-title"
+      @click=${e => {
+            document.querySelector(".layer-list-inner").classList.toggle("hidden");
+            e.target.classList.toggle("inner-hidden");
+          }}>Layers:</div>
+    <div class="layer-list-inner">
     ${state.layers
       .map((layer, i) => { 
         const { name, visible, color: hex } = layer;
@@ -65,9 +70,9 @@ export const layersColorPicker = (state) => html`
         const colorInput = visible ? html`
           <color-picker 
             @colorChange=${onColorChange} 
-            .value=${hex}
+            value=${hex}
             style="
-              margin-right: 5px;
+              margin-right: 10px;
               width: 20px;
               height: 20px;
               border: 1px solid black;
