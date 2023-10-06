@@ -49,10 +49,10 @@ let J3 = board.add(header_4H, {translate: pt(x+.23, y+height/2), rotate: 180, la
 let V1 = board.add(via(2*rv, 2*rp), {translate: pt(C4.posX, C4.padY("2")+.09), label: 'V1'});
 let V2 = board.add(via(2*rv, 2*rp), {translate: pt(C2.posX, C4.padY("2")+.18), label: 'V2'});
 
-let interior = geo.path(path([1.000, 2.130],
-                             [2.770, 2.130],
-                             [2.770, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 0.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 0.00000001, J2.pos));

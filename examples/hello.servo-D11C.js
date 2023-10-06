@@ -42,10 +42,10 @@ let R1 = board.add(R_1206, {translate: pt(IC1.padX("A04")-.04, IC2.posY), rotate
 let LED = board.add(LED_1206, {translate: pt(R1.posX+.1, R1.posY), rotate: -90, label: 'LED'});
 let J3 = board.add(header_servo_1H, {translate: pt(x+.23, y+height/2), label: 'J3\nservo'});
 
-let interior = geo.path(path([1.000, 1.740],
-                             [2.400, 1.740],
-                             [2.400, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 0.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 0.00000001, J2.pos));

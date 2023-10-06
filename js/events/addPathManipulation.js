@@ -288,7 +288,10 @@ function addPointAdding(state, svgListener) {
   svgListener("mousedown", "", e => {
     movedPt = false;
 
+
+    // this causes problems
     if (state.heldKeys.size > 0) return;
+    
     if (e.target.classList.contains("selectable-path")) return;
     if (state.selectedPathIndex < 0 || state.selectedPath === null) return;
     isPt = 

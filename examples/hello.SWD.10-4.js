@@ -29,10 +29,10 @@ let board = new PCB();
 let J1 = board.add(header_SWD_4_05, {translate: pt(x+width/2+.005, y+.07), rotate: 180, label: 'J1 SWD'});
 let J3 = board.add(header_SWD, {translate: pt(J1.posX, y+height-.19), rotate: -90, label: 'J3\ntarget'});
 
-let interior = geo.path(path([1.000, 1.550],
-                             [1.410, 1.550],
-                             [1.410, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

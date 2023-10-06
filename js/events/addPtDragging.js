@@ -26,6 +26,9 @@ export function addPtDragging(state, svgListener) {
 
     const [xSnippet, ySnippet] = e.target.dataset.text.split(",");
 
+    const { text, start } = e.target.dataset;
+    state.codemirror.viewJumpTo({ index: Number(start), length: text.length });
+
     initialOffset = [...ogPos];
     const xNode = esprima.parse(xSnippet, { range: true, comment: true }).body[0];
     const yNode = esprima.parse(ySnippet, { range: true, comment: true }).body[0];

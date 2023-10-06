@@ -15,7 +15,7 @@ createComponent({
 
   },
   css: `
-    @import url("../../styles.css");
+    @import url("${window.location.origin}${window.location.pathname}styles.css");
 
     .wire-item {
       background: inherit;
@@ -44,7 +44,7 @@ createComponent({
 
     .thickness-value:hover {
       background: lightgrey;
-      cursor: col-resize;
+      cursor: inherit;
     }
 
     .wire-selected {
@@ -58,26 +58,46 @@ createComponent({
   `,
   view: el => {
     return html`
-      <b>Wires:</b>
       <div 
-        class="import-button" 
-        style="margin: auto; margin-bottom: 5px;"
-        @mousedown=${e => {
-          const state = global_state;
+        class="toolbox-title" 
+        @click=${e => {
+            el.shadowRoot.querySelector(".wire-list-inner").classList.toggle("hidden");
+            e.target.classList.toggle("inner-hidden");
+          }}>Wires:</div>
+      <div class="wire-list-inner">
+        <div 
+          class="import-button" 
+          style="margin: auto; margin-bottom: 5px;"
+          @mousedown=${e => {
+            const state = global_state;
 
-          global_state.selectedPathIndex = -1;
-          global_state.selectedPath = null;
+            global_state.selectedPathIndex = -1;
+            global_state.selectedPath = null;
 
-          const string = state.codemirror.view.state.doc.toString();
-          const startIndex = getFileSection("ADD_WIRES", string) ?? 0;
-          const text = `board.wire(path(), .03);\n`
-          state.codemirror.view.dispatch({
-            changes: {from: startIndex, insert: text}
-          });
+            const string = state.codemirror.view.state.doc.toString();
+            const startIndex = getFileSection("ADD_WIRES", string) ?? 0;
+            const text = `board.wire(\npath(), \n.015\n);\n`
+            state.codemirror.view.dispatch({
+              changes: {from: startIndex, insert: text}
+            });
 
-          dispatch("RUN");
-        }}>add wire</div>
-      <div class="wire-list">${el.wires.map(drawWire)}</div>
+            dispatch("RUN");
+
+            global_state.selectablePaths.forEach((p, i) => {
+              const pContained = isInRange(startIndex, startIndex+24, p[0]);
+              if (pContained) {
+                global_state.selectedPathIndex = i;
+              }
+            });
+
+            dispatch("RUN");
+
+            global_state.codemirror.viewJumpTo({ index: Number(startIndex), length: text.length });
+
+
+          }}>add wire</div>
+        <div class="wire-list">${el.wires.map(drawWire)}</div>
+      </div>
     `
   }
 })
@@ -114,8 +134,13 @@ function drawWire(w) {
 
         global_state.selectablePaths.forEach((p, i) => {
           const pContained = isInRange(from, to, p[0]);
-          if (pContained) global_state.selectedPathIndex = i;
+          if (pContained) {
+            global_state.selectedPathIndex = i;
+          }
         });
+
+        global_state.codemirror.viewJumpTo({ index: Number(from), length: Number(to)-Number(from) });
+
 
         dispatch("RUN");
       }}>

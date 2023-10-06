@@ -37,10 +37,10 @@ let J2 = board.add(USB_mini_CUI, {translate: pt(IC1.posX-.028, y+height-.05), ro
 let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A04")+.18, IC1.padY("A08")-.005), rotate: 90, label: 'IC2\n3.3V'});
 let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.2), rotate: 90, label: 'C1\n1uF'});
 
-let interior = geo.path(path([1.000, 2.010],
-                             [1.650, 2.010],
-                             [1.650, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

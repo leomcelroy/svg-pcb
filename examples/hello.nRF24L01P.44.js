@@ -41,10 +41,10 @@ let J3 = board.add(header_nRF24L01, {translate: pt(x+.22, IC1.posY+.05), label: 
 let C2 = board.add(C_1206, {translate: pt(J3.posX, J3.padY("GND")-.1), label: 'C2 0.1uF'});
 let C3 = board.add(C_1206, {translate: pt(J3.posX, C2.posY-.1), label: 'C3 10uF'});
 
-let interior = geo.path(path([1.000, 2.010],
-                             [2.210, 2.010],
-                             [2.210, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

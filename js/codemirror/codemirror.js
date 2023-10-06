@@ -27,9 +27,27 @@ export function initCodeMirror(el, vimMode = false) {
       parent: el
     })
 
+    // pos :: { column, line, index }
+    const viewJumpTo = (pos) => {
+      const offset = pos.index ?? view.state.doc.line(pos.line).from + pos.column
+      view.dispatch({
+        selection: {
+          anchor: offset,
+          head: pos.length ? offset + pos.length : offset
+        },
+        effects: EditorView.scrollIntoView(offset, {
+          x: 'center',
+          y: 'center'
+        })
+      })
+      // focus the editor
+      view.focus()
+    }
+
     return {
         state, 
         view,
-        foldRange() {}
+        foldRange() {},
+        viewJumpTo
     }
 }

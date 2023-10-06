@@ -36,10 +36,10 @@ let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND2"), IC1.padY("A27")+.15)
 let C2 = board.add(C_1206, {translate: pt(IC1.padX("A07")-.02, IC1.padY("VAN")-.07), rotate: 90, label: 'C2\n1uF'});
 let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-.11, C2.posY), rotate: -90, label: 'IC2\n3.3V'});
 
-let interior = geo.path(path([1.000, 2.050],
-                             [1.970, 2.050],
-                             [1.970, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
 geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));

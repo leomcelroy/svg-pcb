@@ -19,6 +19,7 @@ import "./components/netlist-editor.js";
 import "./components/wire-editor.js";
 import "./components/color-picker.js";
 
+
 export function view(state) {
 	return html`
 		${menu(state)}
@@ -54,7 +55,7 @@ export function view(state) {
 						`
 					: ""}
 				<div class="footprint-toolbox">
-					<div style="overflow: hidden; overflow-y: scroll; min-height: 100%">
+					<div style="overflow: hidden; overflow-y: scroll">
 						${state.inputs.length > 0 ? html`<div class="toolbox-title">Inputs:</div>` : ""}
 						<div class="input-panel">
 							${state.inputs.map(input => inputRenderers[input[0].type](...input, state))}
@@ -83,27 +84,10 @@ export function view(state) {
 						<div style="min-height: 100px;"></div>
 					</div>
 
-		<!--
-					<div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>
-					
-			
-					<div 
-						class="import-button" 
-						style="margin: auto;"
-						@click=${e => {
-							document.querySelector("netlist-editor").show = true;
-						}}>
-						edit netlist (TODO)
-						</div>
-		-->
-					<wire-editor></wire-editor>
-          <div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>
-
-					${layersColorPicker(state)}
-					<div style="min-height: 100px;"></div>
 					<div class="nub" @click=${() => {
 						document.querySelector(".footprint-toolbox").classList.toggle("footprint-toolbox-closed");
 					}}></div>
+					
 				</div>
 				${state.previewFootprint ? renderPreviewFootprint(...state.previewFootprint) : ""}
 			</div>
@@ -279,6 +263,25 @@ const menu = state => html`
 
 
 /*
+
+			<div style="justify-content: space-between; padding: 5px; font-weight: bold;">
+				<span>Background:</span>
+			</div>
+
+	
+			<div class="horz-break" style="width: 70%; height: 1px; background: black; margin: 10px auto;"/></div>
+			
+	
+			<div 
+				class="import-button" 
+				style="margin: auto;"
+				@click=${e => {
+					document.querySelector("netlist-editor").show = true;
+				}}>
+				edit netlist (TODO)
+				</div>
+	
+
 			<div
 				class="menu-item center-button"
 				@click=${async () => {

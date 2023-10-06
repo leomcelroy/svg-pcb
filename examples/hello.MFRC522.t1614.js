@@ -39,10 +39,10 @@ let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, lab
 let J3 = board.add(header_MFRC522, {translate: pt(x+width-.23, IC1.posY-.1), label: 'J3\nMFRC522'});
 let R1 = board.add(R_1206, {translate: pt(J3.posX-.14, J3.padY("CIPO")), rotate: 90, label: 'R1\n0'});
 
-let interior = geo.path(path([1.000, 1.900],
-                             [2.280, 1.900],
-                             [2.280, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

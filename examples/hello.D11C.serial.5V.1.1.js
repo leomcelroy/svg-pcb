@@ -43,10 +43,10 @@ let R1 = board.add(R_1206, {translate: pt(J3.padX("Rx")-.02, J1.posY-.2), label:
 let R2 = board.add(R_1206, {translate: pt(C1.posX-.03, J3.posY+.18), rotate: 90, label: 'R2\n0'});
 let R3 = board.add(R_1206, {translate: pt(R1.posX-.22, R1.posY), label: 'R3\n4.99k'});
 
-let interior = geo.path(path([1.000, 2.500],
-                             [1.810, 2.500],
-                             [1.810, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));

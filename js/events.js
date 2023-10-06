@@ -54,6 +54,7 @@ export function addEvents(state) {
 	window.addEventListener("keydown", (e) => {
 		const code = event.code;
 
+
 		state.heldKeys.add(code);
 		
 		const isTypingCode = e.target.classList.contains("cm-content");
@@ -67,6 +68,8 @@ export function addEvents(state) {
 		  dispatch("RUN");
 		} else if (code === "KeyT" && event.shiftKey) { // test something
       
+    	} else if (code === "Escape") { // test something
+      	  clearSelectedPath();
     	}
 	})
 
@@ -74,6 +77,10 @@ export function addEvents(state) {
 		const code = event.code;
 		state.heldKeys.delete(code);
 	})
+
+	window.addEventListener('blur', (event) => {
+	   state.heldKeys.clear();
+	});
 
 	window.addEventListener("unload", () => {
 		const string = state.codemirror.view.state.doc.toString();

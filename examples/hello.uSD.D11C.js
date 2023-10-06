@@ -40,10 +40,10 @@ let J3 = board.add(microSD, {translate: pt(IC1.posX-.4, IC1.posY-.13), rotate: -
 let R1 = board.add(R_1206, {translate: pt(J3.padX("GND")-.11, J3.padY("GND")+.03), rotate: 90, label: 'R1\n0'});
 let R2 = board.add(R_1206, {translate: pt(IC1.padX("VDD")+.1, IC1.padY("VDD")), rotate: 90, label: 'R2\n0'});
 
-let interior = geo.path(path([1.000, 2.160],
-                             [2.290, 2.160],
-                             [2.290, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));

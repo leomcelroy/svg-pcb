@@ -50,10 +50,10 @@ let D7 = board.add(LED_3014_1100, {translate: pt(D4.posX, D4.posY-.14), rotate: 
 let D8 = board.add(LED_3014_1100, {translate: pt(D7.posX+.075, D7.posY), rotate: 90, label: 'D8'});
 let D9 = board.add(LED_3014_1100, {translate: pt(D7.posX+.15, D7.posY), rotate: 90, label: 'D9'});
 
-let interior = geo.path(path([1.000, 1.680],
-                             [1.840, 1.680],
-                             [1.840, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

@@ -41,10 +41,10 @@ let S2 = board.add(button_6mm, {translate: pt(IC2.posX, IC2.padY("EN")-.2), labe
 let R1 = board.add(R_1206, {translate: pt(S2.padX("L2")+.15, S2.posY), rotate: 90, label: 'R1\n10k'});
 let C3 = board.add(C_1206, {translate: pt(R1.posX+.12, R1.posY), rotate: 90, label: 'C3\n.1uF'});
 
-let interior = geo.path(path([1.000, 2.200],
-                             [2.450, 2.200],
-                             [2.450, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 board.addShape("interior", interior);
 

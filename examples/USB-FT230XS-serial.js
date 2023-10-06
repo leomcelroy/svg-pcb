@@ -39,10 +39,10 @@ let C2 = board.add(C_1206, {translate: pt(J1.padX("5V")+.065, R1.posY), label: '
 let C3 = board.add(C_1206, {translate: pt(J1.padX("GND")-.065, R1.posY), label: 'C3\n10pF'});
 let J2 = board.add(header_serial_reverse, {translate: pt(IC1.posX, y+height-.23), rotate: 90, label: 'J2\nserial'});
 
-let interior = geo.path(path([1.000, 2.180],
-                             [1.650, 2.180],
-                             [1.650, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J1.posX, 5.12+J1.posY]), -90.00000001, J1.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J1.posX, -5.12+J1.posY]), -90.00000001, J1.pos));

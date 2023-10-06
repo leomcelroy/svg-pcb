@@ -37,10 +37,10 @@ let J2 = board.add(USB_A_plug, {translate: pt(x+width/2, y+height-.29), rotate: 
 let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A04")+.15, IC1.padY("A08")-.005), rotate: 90, label: 'IC2\n3.3V'});
 let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.2), rotate: 90, label: 'C1\n1uF'});
 
-let interior = geo.path(path([1.000, 2.090],
-                             [1.750, 2.090],
-                             [1.750, 1.000],
-                             [1.000, 1.000]));
+let interior = geo.path(path([x, y+height],
+                             [x+width, y+height],
+                             [x+width, y],
+                             [x, y]));
 
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
 geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));

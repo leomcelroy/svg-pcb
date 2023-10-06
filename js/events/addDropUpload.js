@@ -1,16 +1,18 @@
 import { dispatch } from "../dispatch.js";
 import { flattenSVG } from 'flatten-svg';
+import { makeRandStr } from "../makeRandStr.js";
 
-let count = 0;
 
 function readFileUploadComp(file) {
   var reader = new FileReader();
   reader.readAsText(file);
 
+  const name = file.name.split(".")[0].replaceAll(/[\s()]/g, "");
+
   reader.onloadend = event => {
+    
     let text = reader.result;
-    dispatch("UPLOAD_COMP", { text, name: `component${count}` });
-    count++;
+    dispatch("UPLOAD_COMP", { text, name: `${name}_${makeRandStr(3)}` });
   };
 }
 
@@ -63,6 +65,8 @@ function readFileSVG(file) {
   var reader = new FileReader();
   reader.readAsText(file);
 
+  const name = file.name.split(".")[0].replaceAll(/[\s()]/g, "");
+
   reader.onloadend = event => {
     let text = reader.result;
 
@@ -90,7 +94,7 @@ function readFileSVG(file) {
         // index ?
       }
     })
-    dispatch("UPLOAD_COMP_OBJ", { obj: newComponent });
+    dispatch("UPLOAD_COMP_OBJ", { obj: newComponent, name: `${name}_${makeRandStr(3)}` });
   };
 
 }

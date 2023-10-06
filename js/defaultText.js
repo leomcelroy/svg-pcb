@@ -110,7 +110,7 @@ const interior = path(
 board.addShape("interior", interior);
 
 /* -- ADD_WIRES -- */
-board.wire(path(), 0.03);
+board.wire(path(), 0.015);
 
 /* -- RENDER_PCB -- */
 const limit0 = pt(-0.55, -0.55);
@@ -135,6 +135,7 @@ renderPCB({
     x: [xMin, xMax],
     y: [yMin, yMax]
   },
+  background: "#00000000",
   mm_per_unit: 25.4
 });
 
