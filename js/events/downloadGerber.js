@@ -670,13 +670,12 @@ class ExcellonBuilder {
         let center = x.pos;
         let diameter = x.diameter;
 
-        if (this.#state.downloadGerberOptions.excellonMetric) {
-          let c = [];
-          c[0] = inchesToMM(center[0]);
-          c[1] = inchesToMM(center[1]);
-          center = c;
-          diameter = inchesToMM(x.diameter); // TODO: Is this radius or diameter?
-        }
+        const metric = this.#state.downloadGerberOptions.excellonMetric;
+        let c = [];
+        c[0] = metric ? inchesToMM(center[0]) : center[0];
+        c[1] = metric ? inchesToMM(center[1]) : center[1];
+        center = c;
+        diameter = metric? inchesToMM(x.diameter) : x.diameter; 
     
         return {
           center, 
