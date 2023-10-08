@@ -13,6 +13,11 @@ export function inchesToMM(inches){
   return inches * MM_PER_INCH;
 }
 
+export const GerberDrillFormat = Object.freeze({
+  EXCELLON: 'EXCELLON',
+  GERBER: 'GERBER'
+});
+
 // This gives full file name according to user selected options
 function getFilename(state, layerName){
   const projectName = state.name === "" ? "Untitled" : state.name;
@@ -52,7 +57,11 @@ function getFilename(state, layerName){
   else
   {
     if (layerName == "Drills") {
-      fileName += "-" + layerName + ".drl";
+      if (state.downloadGerberOptions.drillFormat == GerberDrillFormat.EXCELLON) {
+        fileName += "-" + layerName + ".drl";
+      } else {
+        fileName += "-" + layerName + ".gbr";
+      }
     } else {
       fileName += "-" + layerName.replace(".", "_") + ".gbr";  
     }
@@ -575,7 +584,7 @@ export class GerberBuilder {
     // Define aperture
     this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
 
-     // Select the aperture for drawing the outline
+    // Select the aperture for drawing the outline
     this.#body += "D" + apertureID.toString() + "*\n";
     
     // Enable linear interpolation 
@@ -604,6 +613,58 @@ export class GerberBuilder {
         }
       });
     });
+  }
+
+  plotDrills(pcb) {
+
+    // Extract drill positions and sizes
+    const drills = pcb
+      .components
+      .map(comp => comp.drills)
+      .flat()
+      .map( x => { 
+        let center = x.pos;
+        let diameter = x.diameter;
+
+        let c = [];
+        c[0] = inchesToMM(center[0]);
+        c[1] = inchesToMM(center[1]);
+        center = c;
+        diameter = inchesToMM(x.diameter);
+    
+        return {
+          center, 
+          diameter
+        };
+      });
+
+    // Extract appertures and drill points
+    const apertures = {};
+    drills.forEach( ({ diameter, center }) => {
+      if (diameter in apertures) {
+        apertures[diameter].drillPoints.push(center); 
+      } else {
+        apertures[diameter] = {};
+        apertures[diameter].apertureID = this.#getApertureID();
+        apertures[diameter].drillPoints = [ center ];
+      }
+    });
+
+    // Define apertures
+    for ( const apt in apertures ) {
+      this.#body += "%ADD" + apertures[apt].apertureID.toString() +  "C," + parseFloat(apt).toFixed(3) + "*%\n";
+    }
+
+    // Add comment
+    this.#body += this.#getComment("Begin drills");
+
+    // Loop through tools, select them, and drill
+    for ( const apt in apertures ) {
+      this.#body += "D" + apertures[apt].apertureID.toString() + "*\n";
+      apertures[apt].drillPoints.forEach( dp => {
+        this.#body += "X" + this.constructor.format(dp[0]) + "Y" + this.constructor.format(dp[1]) + "D03*\n";
+      });
+    }
   }
 
   toString() {
@@ -842,9 +903,21 @@ export function downloadGerber(state) {
       // And we export drills just like that as they are not part of any layer
       // There is probably no need to include outline in the drill file 
       // even though it could be a gerber file as well. 
-      const drills = new ExcellonBuilder(state);
-      drills.plotDrills(pcb);
-      zip.file( getFilename(state, "Drills"), drills.toString());
+
+      // Generate drills depending on selected drill format
+      // TODO: separate PTH and NPTH drill files
+      if (state.downloadGerberOptions.drillFormat == GerberDrillFormat.EXCELLON) {
+        const excellonDrills = new ExcellonBuilder(state);
+        excellonDrills.plotDrills(pcb);
+        zip.file( getFilename(state, "Drills"), excellonDrills.toString());
+      } else 
+      if (state.downloadGerberOptions.drillFormat == GerberDrillFormat.GERBER) {
+        const gerberDrills = new GerberBuilder();
+        gerberDrills.setFileFunction("Plated,1,2,PTH,Drill"); // All drills as PTH drills for now
+        gerberDrills.setFilePolarity("Positive");
+        gerberDrills.plotDrills(pcb);
+        zip.file( getFilename(state, "Drills"), gerberDrills.toString());
+      }
     });
     
     zip

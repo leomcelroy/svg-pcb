@@ -1,5 +1,5 @@
 import { html } from "lit-html";
-import { downloadGerber } from "../events/downloadGerber.js";
+import { downloadGerber, GerberDrillFormat } from "../events/downloadGerber.js";
 import { dispatch } from "../dispatch.js";
 
 function getLayerList(state){
@@ -81,6 +81,33 @@ export const drawDownloadGerberModal = state => {
     							state.name = e.target.value;
     						}}>
     				</div>
+
+    				<h4>Drill Format</h4>
+    				<div class="modal-line">
+    					<input 
+    						type="radio"
+    						id="input-drillFormatExcellon"
+    						name="drillFormat"
+    						.checked=${state.downloadGerberOptions.drillFormat == GerberDrillFormat.EXCELLON}
+    						@change=${(e) => {
+    							state.downloadGerberOptions.drillFormat = GerberDrillFormat.EXCELLON;
+    							document.getElementById("input-excellonMM").disabled = false;
+    							document.getElementById("input-excellonIN").disabled = false;
+    						}}>
+    					<label for="input-drillFormatExcellon">Excellon</label>
+    					&nbsp;
+    					<input 
+    						type="radio"
+    						id="input-drillFormatGerber"
+    						name="drillFormat"
+    						.checked=${state.downloadGerberOptions.drillFormat == GerberDrillFormat.GERBER}
+    						@change=${(e) => {
+    							state.downloadGerberOptions.drillFormat = GerberDrillFormat.GERBER;
+    							document.getElementById("input-excellonMM").disabled = true;
+    							document.getElementById("input-excellonIN").disabled = true;
+    						}}>
+    					<label for="input-drillFromatGerber">Gerber</label>
+    				</div> <!-- /.modal-line -->
 
     				<h4>Excellon Drill Units</h4>
     				<div class="modal-line">	

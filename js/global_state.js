@@ -1,5 +1,6 @@
 import { MM_PER_INCH } from "./constants";
 import { KiCadPadPrimitiveShape, KiCadPadShapeType } from "./events/downloadKiCad";
+import { GerberDrillFormat } from "./events/downloadGerber";
 
 export const global_state = {
   version: "v0.1.0",
@@ -74,7 +75,8 @@ export const global_state = {
     ]),
     includeOutline: true, // Include outline in all layers
     excellonMetric: true,
-    protelFilenames: false
+    protelFilenames: false,
+    drillFormat: GerberDrillFormat.EXCELLON
   },
 
   downloadKiCadOptions: {
