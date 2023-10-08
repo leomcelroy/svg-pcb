@@ -25,32 +25,35 @@ function getFilename(state, layerName){
 
   let fileName = projectName; // This is just the basename
 
+
+  // This pattern is from https://jlcpcb.com/help/article/233-Suggested-Naming-Patterns
+  // TODO: Add options to finetube specific manufacturer paterns
   if (useProtel) 
   {
     switch (layerName) {
     case "F.Cu":
-      fileName += "-F_Cu.GTL";
+      fileName += ".GTL";
       break;
     case "B.Cu":
-      fileName += "-B_Cu.GBL";
+      fileName += ".GBL";
       break;
     case "F.Mask":
-      fileName += "-F_Mask.GTS";
+      fileName += ".GTS";
       break;
     case "B.Mask":
-      fileName += "-B_Mask.GBS";
+      fileName += ".GBS";
       break;
     case "F.Silkscreen":
-      fileName += "-F_Silkscreen.GTO";
+      fileName += ".GTO";
       break;
     case "B.Silkscreen":
-      fileName += "-B_Silkscreen.GBO";
+      fileName += ".GBO";
       break;
     case "Edge.Cuts":
-      fileName += "-Edge_Cuts.GM1";
+      fileName += ".GKO";
       break;
     case "Drills":
-      fileName += "-Drill.XLN";
+      fileName += ".XLN";
       break;
     }
   }
