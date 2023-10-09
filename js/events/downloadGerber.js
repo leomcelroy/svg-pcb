@@ -102,7 +102,8 @@ export class GerberBuilder {
     return s;
   }
 
-  static isRect( points ) {
+  // Check if an array of points forms a rectangle
+  #isRect( points ) {
     
     // Should be at least 4 points
     if (points.length < 4) {
@@ -137,7 +138,8 @@ export class GerberBuilder {
     return width > 0 && height > 0;
   }
 
-  static getRect( points ) {
+  // Return a simplified rectangle from an array of points
+  #getRect( points ) {
 
     // Calculate the minimum and maximum x and y coordinates
     let minX = Infinity;
@@ -166,7 +168,8 @@ export class GerberBuilder {
     }
   }
 
-  static isCirc( points ) {
+  // Check if an array of points forms a circle
+  #isCirc( points ) {
 
     // Should be more than N points
     if (points.length < 45) { // Just a random number of points here given that all circles have 180 points
@@ -218,7 +221,8 @@ export class GerberBuilder {
     return true;
   }
 
-  static getCirc( points ) {
+  // Return a simplified circle representation from a set of points
+  #getCirc( points ) {
 
     // Should be more than N points
     if (points.length < 45) { // Just a random number of points here given that all circles have 180 points
@@ -258,6 +262,7 @@ export class GerberBuilder {
     }; 
   }
 
+  // Get string representation of the header part of a Gerber file
   #getHeader() {
     let str = '';
     
@@ -292,10 +297,12 @@ export class GerberBuilder {
     return str;
   }
 
+  // Get string representation of the footer part of the Gerber file
   #getFooter() {
     return "M02*";
   }
 
+  // Get string representation of a Gerber comment line
   #getComment(comment) {
     return "G04 " + comment + "*\n";
   }
@@ -318,6 +325,7 @@ export class GerberBuilder {
     this.#filePolarity = polty;
   }
 
+  // Use this to plot wires on copper layers
   plotWires(layer) {
     let wires = [];
     this.#body += this.#getComment("Begin wires");
@@ -383,10 +391,10 @@ export class GerberBuilder {
     pads.forEach((pad) => {
       
       // If the pad is a rectangle...
-      if (this.constructor.isRect(pad)) {
+      if (this.#isRect(pad)) {
         
         // Get rectangular representation of the pad  
-        const rect = this.constructor.getRect(pad);
+        const rect = this.#getRect(pad);
 
         // Try to find existing aperture for it
         let rectApertureID = undefined; 
@@ -420,10 +428,10 @@ export class GerberBuilder {
       } 
 
       // Else if the pad is a circle...
-      else if (this.constructor.isCirc(pad)) {
+      else if (this.#isCirc(pad)) {
 
         // Get circular representation of the pad  
-        const circ = this.constructor.getCirc(pad);
+        const circ = this.#getCirc(pad);
 
         // Try to find existing aperture for it
         let circApertureID = undefined; 
@@ -533,6 +541,7 @@ export class GerberBuilder {
     });
   }
 
+  // Use this to plot graphics (including text) on a layer
   plotSilkscreen(layer) {
     const apertureDiameter = 0;
     const apertureID = this.#getApertureID();
