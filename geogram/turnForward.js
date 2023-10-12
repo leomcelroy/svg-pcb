@@ -8,8 +8,8 @@ export const turnForward = (shape, theta, distance) => {
   const angle = getAngle(shape)+theta;
   const xCos = Math.cos(degreesToRad(angle));
   const ySin = Math.sin(degreesToRad(angle));
-  const x = lastPoint.x + distance * xCos;
-  const y = lastPoint.y + distance * ySin;
+  const x = lastPoint[0] + distance * xCos;
+  const y = lastPoint[1] + distance * ySin;
 
   shape.at(-1).push([ x, y ]);
 
