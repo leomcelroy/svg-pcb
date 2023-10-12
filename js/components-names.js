@@ -119,4 +119,5 @@ export const files = [
   "./library/ICs/SAMD11C.json",
   "./library/ICs/ATtiny3216.json",
   "./library/ICs/xiao_copper.json",
+  // "./library/ICs/xiao_rp2040.json",
 ]
