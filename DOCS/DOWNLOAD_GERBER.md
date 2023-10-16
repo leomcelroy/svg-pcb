@@ -49,6 +49,7 @@ Then, make sure that the shape that defines the PCB outline is called `Edge.Cuts
 
 ```
 board.addShape("Edge.Cuts", path([0,0], [1,0], [1,1], [0,1]) );
+board.addShape("Edge.Cuts", path([0,0], [1,0], [1,1], [0,1]) ); // Added to the Edge.Cuts layer
 ```
 
 If you want to add graphics on the silkscreen layer, make sure create them first and add them with a layer name `F.Silkscreen` or `B.Silkscreen`, depending on the side of the PCB you want the graphics to be printed on.
@@ -69,6 +70,20 @@ renderPCB({
     "F.Silkscreen": "#ffffffff"
   }
 });
+```
+
+### Adding Graphics
+
+```
+board.addShape("F.Silkscreen", path([1.6, 1.5], [1.7, 1.4], [1.7, 1.5], [1.6, 1.5],) );
+board.addShape("B.Silkscreen", path([1.1, 2.05], [1.1, 1.85], [1.25, 2], [1.1, 2.05],) );
+```
+
+### Adding Text
+
+```
+let txt = createText("IC1", {size: 0.1});
+board.add(txt, { translate: pt(1.05, 1.05) });
 ```
 
 ## Downloading Gerber Files

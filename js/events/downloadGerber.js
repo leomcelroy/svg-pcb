@@ -13,6 +13,11 @@ export function inchesToMM(inches){
   return inches * MM_PER_INCH;
 }
 
+export const GerberDrillFormat = Object.freeze({
+  EXCELLON: 'EXCELLON',
+  GERBER: 'GERBER'
+});
+
 // This gives full file name according to user selected options
 function getFilename(state, layerName){
   const projectName = state.name === "" ? "Untitled" : state.name;
@@ -20,38 +25,49 @@ function getFilename(state, layerName){
 
   let fileName = projectName; // This is just the basename
 
+
+  // This pattern is from https://jlcpcb.com/help/article/233-Suggested-Naming-Patterns
+  // TODO: Add options to finetube specific manufacturer paterns
   if (useProtel) 
   {
     switch (layerName) {
     case "F.Cu":
-      fileName += "-F_Cu.GTL";
+      fileName += ".GTL";
       break;
     case "B.Cu":
-      fileName += "-B_Cu.GBL";
+      fileName += ".GBL";
       break;
     case "F.Mask":
-      fileName += "-F_Mask.GTS";
+      fileName += ".GTS";
       break;
     case "B.Mask":
-      fileName += "-B_Mask.GBS";
+      fileName += ".GBS";
       break;
     case "F.Silkscreen":
-      fileName += "-F_Silkscreen.GTO";
+      fileName += ".GTO";
       break;
     case "B.Silkscreen":
-      fileName += "-B_Silkscreen.GBO";
+      fileName += ".GBO";
       break;
     case "Edge.Cuts":
-      fileName += "-Edge_Cuts.GM1";
+      fileName += ".GKO";
       break;
     case "Drills":
-      fileName += "-Drill.XLN";
+      fileName += ".XLN";
       break;
     }
   }
   else
   {
-    fileName += "-" + layerName.replace(".", "_") + ".gbr";
+    if (layerName == "Drills") {
+      if (state.downloadGerberOptions.drillFormat == GerberDrillFormat.EXCELLON) {
+        fileName += "-" + layerName + ".drl";
+      } else {
+        fileName += "-" + layerName + ".gbr";
+      }
+    } else {
+      fileName += "-" + layerName.replace(".", "_") + ".gbr";  
+    }
   }  
 
   return fileName;
@@ -86,6 +102,167 @@ export class GerberBuilder {
     return s;
   }
 
+  // Check if an array of points forms a rectangle
+  #isRect( points ) {
+    
+    // Should be at least 4 points
+    if (points.length < 4) {
+      return false;
+    }
+
+    // Calculate the minimum and maximum x and y coordinates
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    for (const [x, y] of points) {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+
+    // Calculate the width and height of the bounding box
+    const width = maxX - minX;
+    const height = maxY - minY;
+
+    // Check if all points are within the bounding box
+    for (const [x, y] of points) {
+      if (x !== minX && x !== maxX && y !== minY && y !== maxY) {
+        return false;
+      }
+    }
+
+    // Check if the width and height are both greater than zero
+    return width > 0 && height > 0;
+  }
+
+  // Return a simplified rectangle from an array of points
+  #getRect( points ) {
+
+    // Calculate the minimum and maximum x and y coordinates
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    for (const [x, y] of points) {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+
+    // Calculate the width and height of the bounding box
+    const width = (maxX - minX).toFixed(5);
+    const height = (maxY - minY).toFixed(5);
+
+    return {
+      center: {
+        x: (maxX - (width / 2)).toFixed(5),
+        y: (maxY - (height / 2)).toFixed(5)  
+      },
+      width: width,
+      height: height
+    }
+  }
+
+  // Check if an array of points forms a circle
+  #isCirc( points ) {
+
+    // Should be more than N points
+    if (points.length < 45) { // Just a random number of points here given that all circles have 180 points
+      return false;
+    }
+
+    // Calculate the minimum and maximum x and y coordinates
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    for (const [x, y] of points) {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+
+    // Calculate the width and height of the bounding box
+    const width = maxX - minX;
+    const height = maxY - minY;
+
+    // Calculate the center of the bounding box
+    const center = {
+      x: maxX - (width / 2),
+      y: maxY - (height / 2)
+    };
+
+    // Compare distances of all points from center, based on first point, using tolerance
+    const distIdealX = center.x - points[0][0];
+    const distIdealY = center.y - points[0][1];
+    const distIdeal = Math.sqrt( Math.pow(distIdealX,2) + Math.pow(distIdealY,2) );
+    const tolerance = 0.01;
+    
+    for (const [x, y] of points) {
+      const distX = center.x - x;
+      const distY = center.y - y;
+      const dist = Math.sqrt( Math.pow(distX,2) + Math.pow(distY^2) );
+
+      if (Math.abs(distIdeal - dist) > tolerance) {
+        
+        // Not circle
+        return false;
+      }
+    }
+
+    // Yes, we got a circle here
+    return true;
+  }
+
+  // Return a simplified circle representation from a set of points
+  #getCirc( points ) {
+
+    // Should be more than N points
+    if (points.length < 45) { // Just a random number of points here given that all circles have 180 points
+      return false;
+    }
+
+    // Calculate the minimum and maximum x and y coordinates
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    for (const [x, y] of points) {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+
+    // Calculate the width and height of the bounding box
+    const width = maxX - minX;
+    const height = maxY - minY;
+
+    // Calculate the center of the bounding box
+    const center = {
+      x: (maxX - (width / 2)).toFixed(5),
+      y: (maxY - (height / 2)).toFixed(5)
+    };
+
+    // Calculate radius
+    const radius = (width / 2).toFixed(5);
+
+    // Return circle object
+    return {
+      center: center,
+      radius: radius
+    }; 
+  }
+
+  // Get string representation of the header part of a Gerber file
   #getHeader() {
     let str = '';
     
@@ -120,10 +297,12 @@ export class GerberBuilder {
     return str;
   }
 
+  // Get string representation of the footer part of the Gerber file
   #getFooter() {
     return "M02*";
   }
 
+  // Get string representation of a Gerber comment line
   #getComment(comment) {
     return "G04 " + comment + "*\n";
   }
@@ -146,6 +325,7 @@ export class GerberBuilder {
     this.#filePolarity = polty;
   }
 
+  // Use this to plot wires on copper layers
   plotWires(layer) {
     let wires = [];
     this.#body += this.#getComment("Begin wires");
@@ -184,31 +364,163 @@ export class GerberBuilder {
   // This method can be also used to produce solder mask with a certain offset.
   // Offest is defined in mm, 0.1mm for example.
   plotPads(layer, offset = 0) {
-    const apertureDiameter = offset ? offset * 2 : 0;
-    const apertureID = this.#getApertureID();
+    
+    // Aperture parameters for polygon pads
+    const apertureDiameter = offset ? offset * 2 : 0; // Used to draw polygonal pads
+    const apertureID = this.#getApertureID(); // Aperture ID for the polygon pad outline aperture
+    const polyPads = [];
 
+    // Apertures for rectangular pads
+    const rectApertures = [];
+    const rectPads = [];
+
+    // Apertures for circular pads
+    const circApertures = [];
+    const circPads = [];
+    
     this.#body += this.#getComment("Begin pads");
 
-    // Define aperture
-    this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
+    // Extract pads from current layer
+    const pads = [];
+    layer.forEach((el) => {
+      if (el.type === "wire") return;
+      pads.push(el.flat());
+    });
 
-     // Select the aperture for drawing the outline
+    // Separate different types of pads and assign apertures to them
+    pads.forEach((pad) => {
+      
+      // If the pad is a rectangle...
+      if (this.#isRect(pad)) {
+        
+        // Get rectangular representation of the pad  
+        const rect = this.#getRect(pad);
+
+        // Try to find existing aperture for it
+        let rectApertureID = undefined; 
+        rectApertures.forEach((a) => {
+          if ( a.width    === rect.width 
+            && a.height   === rect.height) {
+
+            // Aperture exists and we assign its id to 
+            rectApertureID = a.id;
+          }
+        });
+
+        // If no existing aperture ID has been found, acquire a new one
+        if (!rectApertureID) {
+          rectApertureID = this.#getApertureID();
+          
+          // Add rect aperture to list
+          rectApertures.push({
+            id: rectApertureID,
+            width: rect.width,
+            height: rect.height
+          });
+        }
+
+        // Add rectangular pad location to list along with aperture ID
+        rectPads.push({
+          id: rectApertureID,
+          x: rect.center.x,
+          y: rect.center.y
+        });
+      } 
+
+      // Else if the pad is a circle...
+      else if (this.#isCirc(pad)) {
+
+        // Get circular representation of the pad  
+        const circ = this.#getCirc(pad);
+
+        // Try to find existing aperture for it
+        let circApertureID = undefined; 
+        circApertures.forEach((a) => {
+          if ( a.radius === circ.radius ) {
+
+            // Aperture exists and we assign its id to 
+            circApertureID = a.id;
+          }
+        });
+
+        // If no existing aperture ID has been found, acquire a new one
+        if (!circApertureID) {
+          circApertureID = this.#getApertureID();
+          
+          // Add circ aperture to list
+          circApertures.push({
+            id: circApertureID,
+            radius: circ.radius
+          });
+        }
+
+        // Add circular pad location to list along with aperture ID
+        circPads.push({
+          id: circApertureID,
+          x: circ.center.x,
+          y: circ.center.y
+        });
+      }
+
+      // Else if the pad is a polygon...
+      else {
+        polyPads.push(pad);
+      }
+    });
+
+    // Define aperture for drawing polygons
+    this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
+    
+    // Define rect apertures
+    rectApertures.forEach((a) => {
+      this.#body += "%ADD" + a.id.toString() +  "R," + inchesToMM(a.width).toFixed(3) + "X" + inchesToMM(a.height).toFixed(3) + "*%\n";
+    });
+
+    // Define circ apertures
+    circApertures.forEach((a) => {
+      this.#body += "%ADD" + a.id.toString() +  "C," + inchesToMM(a.radius * 2).toFixed(3) + "*%\n";
+    });
+
+    // Draw rect pads using rect apertures
+    rectPads.forEach((p) => {
+      
+      // Select the aperture for drawing the pad
+      this.#body += "D" + p.id.toString() + "*\n";
+
+      // Flash current rectangle aperture at location X, Y
+      this.#body += "X" + this.constructor.format(inchesToMM(p.x)) + "Y" + this.constructor.format(inchesToMM(p.y)) + "D03*\n";
+    });
+
+    // Draw circ pads using circ apertures
+    circPads.forEach((p) => {
+      
+      // Select the aperture for drawing the pad
+      this.#body += "D" + p.id.toString() + "*\n";
+
+      // Flash current rectangle aperture at location X, Y
+      this.#body += "X" + this.constructor.format(inchesToMM(p.x)) + "Y" + this.constructor.format(inchesToMM(p.y)) + "D03*\n";
+    });
+
+    // Select the aperture for drawing polygon pads
     this.#body += "D" + apertureID.toString() + "*\n";
 
-     // Enable linear interpolation 
+    // Enable linear interpolation 
     this.#body += "G01*\n";
 
-    // Draw pads as polygons
-    layer.map( el => {
-      if (el.type === "wire") return;
+    // Draw polygon pads
+    polyPads.forEach((p) => {
+
+      // Start region
       this.#body += "G36*\n";
-      
-      el.flat().forEach((pt, i) => {
+
+      // Loop through points
+      p.forEach((pt, i) => {
         const x = this.constructor.format( inchesToMM(pt[0]) );
         const y = this.constructor.format( inchesToMM(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
       });
 
+      // End region
       this.#body += "G37*\n";
     });
 
@@ -229,13 +541,40 @@ export class GerberBuilder {
     });
   }
 
+  // Use this to plot graphics (including text) on a layer
   plotSilkscreen(layer) {
-    console.log(layer);
+    const apertureDiameter = 0;
+    const apertureID = this.#getApertureID();
 
     this.#body += this.#getComment("Begin silkscreen");
 
     layer.map( el => {
-      // We deal with text only for now
+      if (!el.type) { // Must be polygon shape in this case
+        
+        // Define aperture
+        this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
+
+        // Select the aperture for drawing the outline
+        this.#body += "D" + apertureID.toString() + "*\n";
+
+        // Enable linear interpolation 
+        this.#body += "G01*\n";
+
+        // Draw all shapes as polygons
+        this.#body += "G36*\n";
+      
+        el.flat().forEach((pt, i) => {
+          const x = this.constructor.format( inchesToMM(pt[0]) );
+          const y = this.constructor.format( inchesToMM(pt[1]) );
+          this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
+        });
+
+        this.#body += "G37*\n";
+      }
+
+      // For now it seems that text is converted to polylines, but it could be 
+      // possible to pass the text itself as a variable so that it could be possible
+      // to pass it on to text-specific Gerber markup.
       if (el.type !== "text") return;
 
       const text = el.value;
@@ -247,12 +586,6 @@ export class GerberBuilder {
       // Generate Gerber X2 text object to maintain text information
       // Gerber Spec p. 147
       this.#body += "%TA.FlashText," + text.replace(/\n/g, "\\n") + ",C,R," + textFont + "," + textSize + ",*%\n"
-
-      // TODO: And now the shapes
-      // At the moment it would be possible to do it with SVG.js,
-      // but it would be so much easier if SvgPcb would make use of a SVG font,
-      // that then could be used to create labels along with other graphics
-      // on the silk layer.
     });
   }
 
@@ -263,7 +596,7 @@ export class GerberBuilder {
     // Define aperture
     this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
 
-     // Select the aperture for drawing the outline
+    // Select the aperture for drawing the outline
     this.#body += "D" + apertureID.toString() + "*\n";
     
     // Enable linear interpolation 
@@ -292,6 +625,58 @@ export class GerberBuilder {
         }
       });
     });
+  }
+
+  plotDrills(pcb) {
+
+    // Extract drill positions and sizes
+    const drills = pcb
+      .components
+      .map(comp => comp.drills)
+      .flat()
+      .map( x => { 
+        let center = x.pos;
+        let diameter = x.diameter;
+
+        let c = [];
+        c[0] = inchesToMM(center[0]);
+        c[1] = inchesToMM(center[1]);
+        center = c;
+        diameter = inchesToMM(x.diameter);
+    
+        return {
+          center, 
+          diameter
+        };
+      });
+
+    // Extract appertures and drill points
+    const apertures = {};
+    drills.forEach( ({ diameter, center }) => {
+      if (diameter in apertures) {
+        apertures[diameter].drillPoints.push(center); 
+      } else {
+        apertures[diameter] = {};
+        apertures[diameter].apertureID = this.#getApertureID();
+        apertures[diameter].drillPoints = [ center ];
+      }
+    });
+
+    // Define apertures
+    for ( const apt in apertures ) {
+      this.#body += "%ADD" + apertures[apt].apertureID.toString() +  "C," + parseFloat(apt).toFixed(3) + "*%\n";
+    }
+
+    // Add comment
+    this.#body += this.#getComment("Begin drills");
+
+    // Loop through tools, select them, and drill
+    for ( const apt in apertures ) {
+      this.#body += "D" + apertures[apt].apertureID.toString() + "*\n";
+      apertures[apt].drillPoints.forEach( dp => {
+        this.#body += "X" + this.constructor.format(dp[0]) + "Y" + this.constructor.format(dp[1]) + "D03*\n";
+      });
+    }
   }
 
   toString() {
@@ -348,7 +733,7 @@ class ExcellonBuilder {
 
   plotDrills(pcb) {
     this.#body += "; #@! TA.AperFunction,Plated,PTH,ComponentDrill\n"; // Borrowed from KiCad export
-    
+
     // Extract drill positions and sizes
     const drills = pcb
       .components
@@ -358,11 +743,12 @@ class ExcellonBuilder {
         let center = x.pos;
         let diameter = x.diameter;
 
-        if (this.#state.downloadGerberOptions.excellonMetric) {
-          center[0] = inchesToMM(center[0]);
-          center[1] = inchesToMM(center[1]);
-          diameter = inchesToMM(x.diameter); // TODO: Is this radius or diameter?
-        }
+        const metric = this.#state.downloadGerberOptions.excellonMetric;
+        let c = [];
+        c[0] = metric ? inchesToMM(center[0]) : center[0];
+        c[1] = metric ? inchesToMM(center[1]) : center[1];
+        center = c;
+        diameter = metric? inchesToMM(x.diameter) : x.diameter; 
     
         return {
           center, 
@@ -411,7 +797,7 @@ class ExcellonBuilder {
 export function downloadGerber(state) {
     const layers = state.pcb.layers;
     const pcb = state.pcb;
-   
+  
     var zip = new JSZip();
 
     // Find the name of the outline layer.
@@ -429,8 +815,6 @@ export function downloadGerber(state) {
         break;
       }
     }
-
-    console.log(outlineLayerName);
 
     state.downloadGerberOptions.layers.forEach((val, key) => {
       if (!val) return; // If user chooses not to export this layer, we do not process it
@@ -531,9 +915,21 @@ export function downloadGerber(state) {
       // And we export drills just like that as they are not part of any layer
       // There is probably no need to include outline in the drill file 
       // even though it could be a gerber file as well. 
-      let drills = new ExcellonBuilder(state);
-      drills.plotDrills(pcb);
-      zip.file( getFilename(state, "Drills"), drills.toString());
+
+      // Generate drills depending on selected drill format
+      // TODO: separate PTH and NPTH drill files
+      if (state.downloadGerberOptions.drillFormat == GerberDrillFormat.EXCELLON) {
+        const excellonDrills = new ExcellonBuilder(state);
+        excellonDrills.plotDrills(pcb);
+        zip.file( getFilename(state, "Drills"), excellonDrills.toString());
+      } else 
+      if (state.downloadGerberOptions.drillFormat == GerberDrillFormat.GERBER) {
+        const gerberDrills = new GerberBuilder();
+        gerberDrills.setFileFunction("Plated,1,2,PTH,Drill"); // All drills as PTH drills for now
+        gerberDrills.setFilePolarity("Positive");
+        gerberDrills.plotDrills(pcb);
+        zip.file( getFilename(state, "Drills"), gerberDrills.toString());
+      }
     });
     
     zip
