@@ -5,12 +5,13 @@ export { html, render, svg };
 export function createComponent({ 
   name, // tag?
   props,
+  attributes,
   css, 
   view,
   onConstruct,
   onConnect,
   onDisconnect,
-  onAttributeChange
+  onPropertyChange
 }) {
 
     if (!name) {
@@ -22,8 +23,8 @@ export function createComponent({
     onConstruct = onConstruct ? onConstruct : null;
     onConnect = onConnect ? onConnect : null;
     onDisconnect = onDisconnect ? onDisconnect : null;
-    onAttributeChange = onAttributeChange ? onAttributeChange : null;
-
+    onPropertyChange = onPropertyChange ? onPropertyChange : null;
+    attributes = attributes ? attributes : {};
   
     class Temp extends HTMLElement {
 
@@ -39,7 +40,7 @@ export function createComponent({
             },
             set: function(value) {
               props[key] = value;
-              if (onAttributeChange) onAttributeChange(this, key, value);
+              if (onPropertyChange) onPropertyChange(this, key, value);
               this.render();
             },
             enumerable: true,
@@ -71,15 +72,14 @@ export function createComponent({
         render(view(this), this.dom);
       }
 
-      // static get observedAttributes() { 
-      //   return Object.keys(props); 
-      // }
+      static get observedAttributes() { 
+        return Object.keys(attributes); 
+      }
 
-      // attributeChangedCallback(name, oldValue, newValue) {
-      //   console.log(name, oldValue, newValue);
-      //   this[name] = JSON.parse(newValue);
-      //   this.render();
-      // }
+      attributeChangedCallback(name, oldValue, newValue) {
+        console.log(name, oldValue, newValue);
+        this.render();
+      }
   }
 
   customElements.define( name, Temp );
