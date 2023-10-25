@@ -18,6 +18,7 @@ import { drawDownloadKiCadModal } from "./views/drawDownloadKiCadModal.js";
 import "./components/netlist-editor.js";
 import "./components/wire-editor.js";
 import "./components/color-picker.js";
+import "./components/footprint-editor/footprint-editor.js";
 
 
 export function view(state) {
@@ -100,13 +101,14 @@ export function view(state) {
 		${drawDownloadGerberModal(state)}
 		${drawDownloadKiCadModal(state)}
 		<netlist-editor .pcb=${state.pcb} .idToName=${state.idToName}></netlist-editor>
+		<footprint-editor><footprint-editor>
 	`
 }
 
 const menu = state => html`
 	<div class="top-menu">
 		<div class="left">
-			<img src=${logoURL} class="logo" alt="fab-circuit-logo" />
+			<img src=${logoURL} class="w-10 m-1" alt="fab-circuit-logo" />
 			<div
 				class="menu-item"
 				@click=${() => dispatch("RUN")}>
@@ -127,7 +129,7 @@ const menu = state => html`
 					<div class="menu-item"
 						@click=${() => downloadText(`${state.name === "" ? "anon" : state.name}.js`, state.codemirror.view.state.doc.toString())}>
 						js
-					</div class="menu-item">
+					</div>
 					<div class="menu-item"
 						@click=${(e) => {
 							state.downloadGerberModal = true;

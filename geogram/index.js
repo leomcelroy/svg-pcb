@@ -240,5 +240,7 @@ export {
   path,
   path2,
   boolean,
-  convertPtType
+  convertPtType,
+  transform,
+  copy
 }
