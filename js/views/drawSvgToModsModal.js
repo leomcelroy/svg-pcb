@@ -52,14 +52,18 @@ export const drawSvgToModsModal = state => {
                             <input 
                                 type="radio"
                                 id="input-${key}"
-                                name="svgToModsMachine"> 
-                            <label for="input-${key}">${SvgToModsMachines[key]}</label>
+                                name="svgToModsMachine"
+                                @change=${(e) => {
+                                    state.svgToModsOptions.selectedMachine = SvgToModsMachines[key];
+                                }}>
+                            <label for="input-${key}">${ SvgToModsMachines[key].name }</label>
                         </div>
                         `
                     })}
     			</div> <!-- /.col-50 -->
                 <div class="col-50">
-                <img src="images/neil.gif" style="width:100%" alt="Pixel Neil by Miriam Choi">
+                    <img src="images/neil.gif" style="width:100%" title="Pixel Neil by Miriam Choi" alt="Pixel Neil by Miriam Choi">
+                    <p>Neil says: use Mods for milling! Press <b>Push to Mods</b> Pixel Neil by Miriam Choi.</p>
                 </div> <!-- /.col-50 -->
     		</div> <!-- /.modal-body -->
     		<div class="modal-footer">
@@ -74,6 +78,11 @@ export const drawSvgToModsModal = state => {
     				type="button" 
     				class="btn btn-primary"
     				@click=${(e) => {
+                        if (state.svgToModsOptions.selectedMachine === undefined) {
+                            alert("Select a machine");
+                            return;
+                        }
+
     					state.svgToModsModal = false;
                         svgToMods(state);
     					dispatch("RENDER");

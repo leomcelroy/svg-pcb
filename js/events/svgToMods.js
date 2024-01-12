@@ -18,23 +18,25 @@ export const SomeEnum = Object.freeze({
 
 export const SvgToModsProps = Object.freeze({
   MODS_URL: "https://modsproject.org/"
+  //MODS_URL: "https://localhost:8081", // ?program=...
 });
 
 export const SvgToModsMachines = Object.freeze({
-  NOMAD: "Carbide Nomad",
-  GCODE: "ISO GCode",
-  OTHERMILL: "Bantam Tools Othermill",
-  ROLAND_MDX: "Roland MDX",
-  ROLAND_SRM20: "ROland SRM-20",
-  SHOPBOT: "ShopBot"
+  NOMAD: { name: "Carbide Nomad", addr: "programs/machines/Carbide%20Nomad/PCB" },
+  GCODE: { name: "ISO GCode", addr: "programs/machines/G-code/mill%202D%20PCB" },
+  OTHERMILL: { name: "Bantam Tools Othermill", addr: "programs/machines/Othermill-Bantam%20Tools/PCB" },
+  ROLAND_MDX: { name: "Roland MDX", addr:"programs/machines/Roland/MDX%20mill/PCB" },
+  ROLAND_SRM20: { name: "Roland SRM-20", addr: "programs/machines/Roland/SRM-20%20mill/mill%202D%20PCB" },
+  SHOPBOT: { name: "ShopBot", addr: "programs/machines/ShopBot/mill%202D%20PCB" }
 });
 
 export class SvgToModsController {
   constructor(){}
-  spawnMods(){
+  spawnMods(machine){
     
     // Step 1: open another tab with mods in it
-    window.open(SvgToModsProps.MODS_URL, '_blank');
+    const url = SvgToModsProps.MODS_URL + "?program=" + machine.addr;
+    window.open(url, '_blank');
 
     // Step 2: opening a specific mods program
     /*
@@ -53,5 +55,5 @@ export function svgToMods(state) {
   const pcb = state.pcb;
 
   const controller = new SvgToModsController();
-  controller.spawnMods();
+  controller.spawnMods(state.svgToModsOptions.selectedMachine);
 }

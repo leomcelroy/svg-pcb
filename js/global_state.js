@@ -83,5 +83,9 @@ export const global_state = {
     footprintLibraryName: "SvgPcb",
     padShapeType: KiCadPadShapeType.POLYGON,
     padPrimitiveShape: KiCadPadPrimitiveShape.RECTANGLE
+  },
+
+  svgToModsOptions: {
+    selectedMachine: undefined
   }
 }
