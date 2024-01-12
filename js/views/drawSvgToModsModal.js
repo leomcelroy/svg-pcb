@@ -18,7 +18,7 @@ and port + a button that pulls the active board design from SvgPcb.
 */
 
 import { html } from "lit-html";
-//import { downloadGerber, GerberDrillFormat } from "../events/downloadGerber.js";
+import { svgToMods } from "../events/svgToMods.js";
 import { dispatch } from "../dispatch.js";
 
 export const drawSvgToModsModal = state => {
@@ -61,10 +61,7 @@ export const drawSvgToModsModal = state => {
     				class="btn btn-primary"
     				@click=${(e) => {
     					state.svgToModsModal = false;
-
-    					// This will call the actual implementation of the thing
-    					//doSvgToModsThing(state);
-    					
+                        svgToMods(state);
     					dispatch("RENDER");
     				}}>Push to Mods</button>
     		</div>
