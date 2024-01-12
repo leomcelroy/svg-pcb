@@ -15,6 +15,7 @@ import { inputRenderers } from "./views/inputRenderers.js";
 import { initCodeMirror } from "./codemirror/codemirror.js";
 import { drawDownloadGerberModal } from "./views/drawDownloadGerberModal.js";
 import { drawDownloadKiCadModal } from "./views/drawDownloadKiCadModal.js";
+import { drawSvgToModsModal } from "./views/drawSvgToModsModal.js";
 import "./components/netlist-editor.js";
 import "./components/wire-editor.js";
 import "./components/color-picker.js";
@@ -99,6 +100,7 @@ export function view(state) {
 		</div>
 		${drawDownloadGerberModal(state)}
 		${drawDownloadKiCadModal(state)}
+		${drawSvgToModsModal(state)}
 		<netlist-editor .pcb=${state.pcb} .idToName=${state.idToName}></netlist-editor>
 	`
 }
@@ -141,6 +143,13 @@ const menu = state => html`
 							dispatch("RENDER");
 						}}>
 						kicad
+					</div>
+					<div class="menu-item"
+						@click=${(e) => {
+							state.svgToModsModal = true;
+							dispatch("RENDER");
+						}}>
+						mods
 					</div>
 					<input 
 						class="input-item"
