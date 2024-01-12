@@ -18,7 +18,7 @@ and port + a button that pulls the active board design from SvgPcb.
 */
 
 import { html } from "lit-html";
-import { svgToMods } from "../events/svgToMods.js";
+import { svgToMods, SvgToModsMachines } from "../events/svgToMods.js";
 import { dispatch } from "../dispatch.js";
 
 export const drawSvgToModsModal = state => {
@@ -44,9 +44,23 @@ export const drawSvgToModsModal = state => {
     		</div>
     		<div class="modal-body">
     			<div class="col-50">
-    				<h4>Some options maybe</h4>
-    				<p>...</p>
+    				<h4>Pick your machine</h4>
+                    ${
+                        Object.keys(SvgToModsMachines).map(key => {
+                        return html`
+                        <div class="modal-line">
+                            <input 
+                                type="radio"
+                                id="input-${key}"
+                                name="svgToModsMachine"> 
+                            <label for="input-${key}">${SvgToModsMachines[key]}</label>
+                        </div>
+                        `
+                    })}
     			</div> <!-- /.col-50 -->
+                <div class="col-50">
+                <img src="images/neil.gif" style="width:100%" alt="Pixel Neil by Miriam Choi">
+                </div> <!-- /.col-50 -->
     		</div> <!-- /.modal-body -->
     		<div class="modal-footer">
     			<button 

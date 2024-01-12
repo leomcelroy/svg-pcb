@@ -20,11 +20,31 @@ export const SvgToModsProps = Object.freeze({
   MODS_URL: "https://modsproject.org/"
 });
 
+export const SvgToModsMachines = Object.freeze({
+  NOMAD: "Carbide Nomad",
+  GCODE: "ISO GCode",
+  OTHERMILL: "Bantam Tools Othermill",
+  ROLAND_MDX: "Roland MDX",
+  ROLAND_SRM20: "ROland SRM-20",
+  SHOPBOT: "ShopBot"
+});
+
 export class SvgToModsController {
   constructor(){}
   spawnMods(){
+    
     // Step 1: open another tab with mods in it
     window.open(SvgToModsProps.MODS_URL, '_blank');
+
+    // Step 2: opening a specific mods program
+    /*
+    This would be done using sessionStorage.
+    Mods module would register 
+    */
+
+    // Step 3: modify milling program by adding a new svgToMods module
+
+    // Step 4: figure out how to send svg to the new mods module
   }
 }
 
