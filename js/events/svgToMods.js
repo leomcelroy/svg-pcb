@@ -17,8 +17,14 @@ export const SomeEnum = Object.freeze({
 });
 
 export const SvgToModsProps = Object.freeze({
-  //MODS_URL: "https://modsproject.org/"
-  MODS_URL: "https://localhost:8081", // ?program=...
+  MODS_URL: "https://modsproject.org/"
+  //MODS_URL: "https://localhost:8081", // ?program=...
+});
+
+export const SvgFeatures = Object.freeze({
+  SHAPES: "Shapes",
+  PATHS: "Paths",
+  BACKGROUND: "Background"
 });
   
 export const SvgToModsMachines = Object.freeze({
@@ -49,7 +55,7 @@ export class SvgToModsController {
   }
 }
 
-export function svgToMods(state) {
+export function svgToMods(state, exportFeatures = SvgFeatures.PATHS) {
   const layers = state.pcb.layers;
   const pcb = state.pcb;
 
@@ -60,7 +66,7 @@ export function svgToMods(state) {
   
   //state.svgToModsOptions.modsWindowProxy = window.open(url, '_blank');
   state.svgToModsOptions.modsWindowProxy = window.open(url);
-  state.svgToModsOptions.SVGString = getSVGString(state);
+  state.svgToModsOptions.SVGString = getSVGString(state, exportFeatures);
 
   // Show dialog with a message.
   // We want the user to load a custom SVG module in Mods for now.
@@ -72,18 +78,22 @@ export function svgToMods(state) {
   // } 
 }
 
-function getSVGString(state) {
+function getSVGString(state, exportFeatures) {
   const serializer = new XMLSerializer();
   const svg = document.querySelector("svg").cloneNode(true);
 
-  const shapes = svg.querySelector(".shapes");
-  const paths = svg.querySelector(".paths");
-  const background = svg.querySelector(".background");
+  let features = svg.querySelector(".paths");
+
+  if (exportFeatures === SvgFeatures.PATHS) {
+    features = svg.querySelector(".paths");
+  } else if (exportFeatures === SvgFeatures.SHAPES) {
+    features = svg.querySelector(".shapes");
+  } else if (exportFeatures == SvgFeatures.BACKGROUND) {
+    features = svg.querySelector(".background");
+  }
 
   svg.innerHTML = "";
-  svg.append(background);
-  svg.append(shapes);
-  svg.append(paths);
+  svg.append(features);
 
   const width = (state.limits.x[1] - state.limits.x[0]);
   const height = (state.limits.y[1] - state.limits.y[0]);

@@ -18,7 +18,7 @@ and port + a button that pulls the active board design from SvgPcb.
 */
 
 import { html } from "lit-html";
-import { svgToMods, SvgToModsMachines } from "../events/svgToMods.js";
+import { svgToMods, SvgToModsMachines, SvgFeatures } from "../events/svgToMods.js";
 import { dispatch } from "../dispatch.js";
 
 export const drawSvgToModsModal = state => {
@@ -60,6 +60,25 @@ export const drawSvgToModsModal = state => {
                         </div>
                         `
                     })}
+
+
+                    <h4>Select features to export</h4>
+                    ${
+                        Object.keys(SvgFeatures).map(key => {
+                        return html`
+                        <div class="modal-line">
+                            <input 
+                                type="radio"
+                                id="input-${key}"
+                                name="svgToModsFeatures"
+                                @change=${(e) => {
+                                    state.svgToModsOptions.selectedFeatures = SvgFeatures[key];
+                                }}>
+                            <label for="input-${key}">${ SvgFeatures[key] }</label>
+                        </div>
+                        `   
+
+                    })}
     			</div> <!-- /.col-50 -->
                 <div class="col-50">
                     <img src="images/neil.gif" style="width:100%" title="Pixel Neil by Miriam Choi" alt="Pixel Neil by Miriam Choi">
@@ -92,8 +111,13 @@ export const drawSvgToModsModal = state => {
                             return;
                         }
 
+                        if (state.svgToModsOptions.selectedFeatures === undefined) {
+                            alert("Select features to export");
+                            return;
+                        }
+
     					//state.svgToModsModal = false;
-                        svgToMods(state);
+                        svgToMods(state, state.svgToModsOptions.selectedFeatures);
     					//dispatch("RENDER");
 
                         if (state.svgToModsOptions.modsWindowProxy === undefined) return;
