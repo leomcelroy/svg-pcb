@@ -17,10 +17,10 @@ export const SomeEnum = Object.freeze({
 });
 
 export const SvgToModsProps = Object.freeze({
-  MODS_URL: "https://modsproject.org/"
-  //MODS_URL: "https://localhost:8081", // ?program=...
+  //MODS_URL: "https://modsproject.org/"
+  MODS_URL: "https://localhost:8081", // ?program=...
 });
-
+  
 export const SvgToModsMachines = Object.freeze({
   NOMAD: { name: "Carbide Nomad", addr: "programs/machines/Carbide%20Nomad/PCB" },
   GCODE: { name: "ISO GCode", addr: "programs/machines/G-code/mill%202D%20PCB" },
@@ -35,8 +35,7 @@ export class SvgToModsController {
   spawnMods(machine){
     
     // Step 1: open another tab with mods in it
-    const url = SvgToModsProps.MODS_URL + "?program=" + machine.addr;
-    window.open(url, '_blank');
+    
 
     // Step 2: opening a specific mods program
     /*
@@ -54,6 +53,54 @@ export function svgToMods(state) {
   const layers = state.pcb.layers;
   const pcb = state.pcb;
 
-  const controller = new SvgToModsController();
-  controller.spawnMods(state.svgToModsOptions.selectedMachine);
+  //const controller = new SvgToModsController();
+  //controller.spawnMods(state.svgToModsOptions.selectedMachine);
+  const machine = state.svgToModsOptions.selectedMachine;
+  const url = SvgToModsProps.MODS_URL + "?program=" + machine.addr;
+  
+  //state.svgToModsOptions.modsWindowProxy = window.open(url, '_blank');
+  state.svgToModsOptions.modsWindowProxy = window.open(url);
+  state.svgToModsOptions.SVGString = getSVGString(state);
+
+  // Show dialog with a message.
+  // We want the user to load a custom SVG module in Mods for now.
+  // When it is done, user has to click OK and we send data over.
+
+  // if (confirm("Load updated SVG module in Mods and click OK")) {
+  //   let svgData = '<svg xmlns="http://www.w3.org/2000/svg" width="50mm" height="50mm" version="1.1"><rect width="50mm" height="50mm" fill="black"/><rect x="5mm" y="5mm" width="40mm" height="40mm" fill="white"/></svg>';
+  //   winProxy.postMessage("heye", url);
+  // } 
+}
+
+function getSVGString(state) {
+  const serializer = new XMLSerializer();
+  const svg = document.querySelector("svg").cloneNode(true);
+
+  const shapes = svg.querySelector(".shapes");
+  const paths = svg.querySelector(".paths");
+  const background = svg.querySelector(".background");
+
+  svg.innerHTML = "";
+  svg.append(background);
+  svg.append(shapes);
+  svg.append(paths);
+
+  const width = (state.limits.x[1] - state.limits.x[0]);
+  const height = (state.limits.y[1] - state.limits.y[0]);
+
+  svg.setAttribute("transform", `scale(1, -1) translate(0, ${-(state.limits.y[0]+state.limits.y[1])})`);
+  svg.setAttribute("style", "");
+  svg.setAttribute("width", `${width*state.mm_per_unit}mm`);
+  svg.setAttribute("height", `${height*state.mm_per_unit}mm`);
+  svg.setAttribute("viewBox", `${state.limits.x[0]} ${state.limits.y[0]} ${width} ${height}`);
+  svg.setAttributeNS(
+    "http://www.w3.org/2000/xmlns/",
+    "xmlns:xlink",
+    "http://www.w3.org/1999/xlink"
+  );
+
+  const source = serializer.serializeToString(svg);
+  //const svgUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+  
+  return source;
 }

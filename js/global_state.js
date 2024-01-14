@@ -86,6 +86,8 @@ export const global_state = {
   },
 
   svgToModsOptions: {
-    selectedMachine: undefined
+    selectedMachine: undefined,
+    modsWindowProxy: undefined,
+    SVGString: undefined
   }
 }

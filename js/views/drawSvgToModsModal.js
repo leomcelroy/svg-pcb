@@ -74,6 +74,15 @@ export const drawSvgToModsModal = state => {
     					state.svgToModsModal = false;
     					dispatch("RENDER");
     				}}>Cancel</button>
+                <button
+                    type="button"
+                    class="btn"
+                    @click=${(e) => {
+                        if (state.svgToModsOptions.modsWindowProxy === undefined) return;
+                        if (state.svgToModsOptions.SVGString === undefined) return;
+                        let SVGString = state.svgToModsOptions.SVGString;
+                        state.svgToModsOptions.modsWindowProxy.postMessage(SVGString, "*");
+                    }}>Send Message</button>
     			<button 
     				type="button" 
     				class="btn btn-primary"
@@ -83,9 +92,9 @@ export const drawSvgToModsModal = state => {
                             return;
                         }
 
-    					state.svgToModsModal = false;
+    					//state.svgToModsModal = false;
                         svgToMods(state);
-    					dispatch("RENDER");
+    					//dispatch("RENDER");
     				}}>Push to Mods</button>
     		</div>
     	</div>
