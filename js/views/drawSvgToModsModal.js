@@ -95,6 +95,15 @@ export const drawSvgToModsModal = state => {
     					//state.svgToModsModal = false;
                         svgToMods(state);
     					//dispatch("RENDER");
+
+                        if (state.svgToModsOptions.modsWindowProxy === undefined) return;
+                        if (state.svgToModsOptions.SVGString === undefined) return;
+
+                        setTimeout(() => {
+                            let SVGString = state.svgToModsOptions.SVGString;
+                            state.svgToModsOptions.modsWindowProxy.postMessage(SVGString, "*");    
+                        }, 1000);
+                        
     				}}>Push to Mods</button>
     		</div>
     	</div>
