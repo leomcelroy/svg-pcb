@@ -63,6 +63,7 @@ export const drawSvgToModsModal = state => {
                         </div>
                         `
                     })}
+                    <p>Need help? View <a href="https://github.com/leomcelroy/svg-pcb/blob/main/DOCS/DOWNLOAD_MODS.md" target="_blank">DOCS</a></p>
                 </div> <!-- /.col-50 -->
                 <div class="col-50">
                     <img src="images/neil.gif" style="width:100%" title="Pixel Neil by Miriam Choi" alt="Pixel Neil by Miriam Choi">
