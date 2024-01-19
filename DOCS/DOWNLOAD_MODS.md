@@ -1,6 +1,6 @@
 # Download Mods
 
-This page describes the workflow for direct export to [Mods](https://modsproject.org/) for PCB milling with your favorite machine.
+This page describes the workflow for direct export to [Mods](https://modsproject.org/) for PCB milling with your favorite machine. There is also a [short video](https://youtu.be/8KzZo6WPrYQ).
 
 ## What is Mods
 
