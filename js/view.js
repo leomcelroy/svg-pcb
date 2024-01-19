@@ -146,6 +146,7 @@ const menu = state => html`
 					</div>
 					<div class="menu-item"
 						@click=${(e) => {
+							state.svgToModsOptions.selectedMachine = undefined;
 							state.svgToModsModal = true;
 							dispatch("RENDER");
 						}}>

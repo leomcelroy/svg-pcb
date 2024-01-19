@@ -18,7 +18,7 @@ and port + a button that pulls the active board design from SvgPcb.
 */
 
 import { html } from "lit-html";
-import { svgToMods, SvgToModsMachines, SvgFeatures } from "../events/svgToMods.js";
+import { svgToMods, SvgToModsMachines, SvgFeatures, SvgToModsProps } from "../events/svgToMods.js";
 import { dispatch } from "../dispatch.js";
 
 export const drawSvgToModsModal = state => {
@@ -26,25 +26,28 @@ export const drawSvgToModsModal = state => {
 
     return html`
     <div id="modal_svg_to_mods" class="modal">
-    	<div class="modal-content">
-    		<div class="modal-header">
-    			<div class="col-75 align-left">
-    				<i class="icon fa fa-arrow-circle-down"></i>
-    				<h3 class="modal-title">SVG to Mods Options</h3>
-    			</div>
-    			<div class="col-25 align-right">
-    				<span 
-    					class="close"
-    					@click=${(e) => {
-    						const modal = document.getElementById("modal_svg_to_mods");
-    						state.svgToModsModal = false;
-    						dispatch("RENDER");
-    					}}><i class="fa fa-times"></i></span>
-    			</div>
-    		</div>
-    		<div class="modal-body">
-    			<div class="col-50">
-    				<h4>Pick your machine</h4>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-75 align-left">
+                    <i class="icon fa fa-arrow-circle-down"></i>
+                    <h3 class="modal-title">SVG to Mods Options</h3>
+                </div>
+                <div class="col-25 align-right">
+                    <span 
+                        class="close"
+                        @click=${(e) => {
+                            const modal = document.getElementById("modal_svg_to_mods");
+                            state.svgToModsModal = false;
+                            dispatch("RENDER");
+                        }}><i class="fa fa-times"></i></span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="col-50">
+                    <h4>Pick your machine</h4>
+                    <div class="modal-error" id="svgToMods_noMachineError" style="display:none">
+                        You must select a machine!
+                    </div>
                     ${
                         Object.keys(SvgToModsMachines).map(key => {
                         return html`
@@ -60,77 +63,34 @@ export const drawSvgToModsModal = state => {
                         </div>
                         `
                     })}
-
-
-                    <h4>Select features to export</h4>
-                    ${
-                        Object.keys(SvgFeatures).map(key => {
-                        return html`
-                        <div class="modal-line">
-                            <input 
-                                type="radio"
-                                id="input-${key}"
-                                name="svgToModsFeatures"
-                                @change=${(e) => {
-                                    state.svgToModsOptions.selectedFeatures = SvgFeatures[key];
-                                }}>
-                            <label for="input-${key}">${ SvgFeatures[key] }</label>
-                        </div>
-                        `   
-
-                    })}
-    			</div> <!-- /.col-50 -->
+                </div> <!-- /.col-50 -->
                 <div class="col-50">
                     <img src="images/neil.gif" style="width:100%" title="Pixel Neil by Miriam Choi" alt="Pixel Neil by Miriam Choi">
-                    <p>Neil says: use Mods for milling! Press <b>Push to Mods</b> Pixel Neil by Miriam Choi.</p>
                 </div> <!-- /.col-50 -->
-    		</div> <!-- /.modal-body -->
-    		<div class="modal-footer">
-    			<button 
-    				type="button" 
-    				class="btn"
-    				@click=${(e) => {
-    					state.svgToModsModal = false;
-    					dispatch("RENDER");
-    				}}>Cancel</button>
-                <button
-                    type="button"
+            </div> <!-- /.modal-body -->
+            <div class="modal-footer">
+                <button 
+                    type="button" 
                     class="btn"
                     @click=${(e) => {
-                        if (state.svgToModsOptions.modsWindowProxy === undefined) return;
-                        if (state.svgToModsOptions.SVGString === undefined) return;
-                        let SVGString = state.svgToModsOptions.SVGString;
-                        state.svgToModsOptions.modsWindowProxy.postMessage(SVGString, "*");
-                    }}>Send Message</button>
-    			<button 
-    				type="button" 
-    				class="btn btn-primary"
-    				@click=${(e) => {
+                        state.svgToModsModal = false;
+                        dispatch("RENDER");
+                    }}>Cancel</button>
+                <button 
+                    type="button" 
+                    class="btn btn-primary"
+                    @click=${(e) => {
                         if (state.svgToModsOptions.selectedMachine === undefined) {
-                            alert("Select a machine");
+                            document.getElementById("svgToMods_noMachineError").style.display = "inline-block";
                             return;
                         }
 
-                        if (state.svgToModsOptions.selectedFeatures === undefined) {
-                            alert("Select features to export");
-                            return;
-                        }
-
-    					//state.svgToModsModal = false;
-                        svgToMods(state, state.svgToModsOptions.selectedFeatures);
-    					//dispatch("RENDER");
-
-                        if (state.svgToModsOptions.modsWindowProxy === undefined) return;
-                        if (state.svgToModsOptions.SVGString === undefined) return;
-
-                        setTimeout(() => {
-                            let SVGString = state.svgToModsOptions.SVGString;
-                            state.svgToModsOptions.modsWindowProxy.postMessage(SVGString, "*");    
-                        }, 1000);
-                        
-    				}}>Push to Mods</button>
-    		</div>
-    	</div>
+                        state.svgToModsModal = false;
+                        svgToMods(state, state.svgToModsOptions.selectedMachine, window);
+                        dispatch("RENDER");
+                    }}>Push to Mods</button>
+            </div>
+        </div>
     </div>
     `;
 }

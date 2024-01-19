@@ -17,7 +17,7 @@ export const SomeEnum = Object.freeze({
 });
 
 export const SvgToModsProps = Object.freeze({
-  MODS_URL: "https://modsproject.org/"
+  MODS_URL: "https://modsproject.org"
   //MODS_URL: "https://localhost:8081", // ?program=...
 });
 
@@ -55,53 +55,49 @@ export class SvgToModsController {
   }
 }
 
-export function svgToMods(state, exportFeatures = SvgFeatures.PATHS) {
-  const layers = state.pcb.layers;
-  const pcb = state.pcb;
-
-  //const controller = new SvgToModsController();
-  //controller.spawnMods(state.svgToModsOptions.selectedMachine);
-  const machine = state.svgToModsOptions.selectedMachine;
+export function svgToMods(state, machine, win) {
+  //const machine = state.svgToModsOptions.selectedMachine;
   const url = SvgToModsProps.MODS_URL + "?program=" + machine.addr;
-  
-  //state.svgToModsOptions.modsWindowProxy = window.open(url, '_blank');
-  state.svgToModsOptions.modsWindowProxy = window.open(url);
-  state.svgToModsOptions.SVGString = getSVGString(state, exportFeatures);
 
-  // Show dialog with a message.
-  // We want the user to load a custom SVG module in Mods for now.
-  // When it is done, user has to click OK and we send data over.
+  let interval;
 
-  // if (confirm("Load updated SVG module in Mods and click OK")) {
-  //   let svgData = '<svg xmlns="http://www.w3.org/2000/svg" width="50mm" height="50mm" version="1.1"><rect width="50mm" height="50mm" fill="black"/><rect x="5mm" y="5mm" width="40mm" height="40mm" fill="white"/></svg>';
-  //   winProxy.postMessage("heye", url);
-  // } 
+  function handleMessageFromMods(e) {
+    clearInterval(interval);
+    win.removeEventListener('message', handleMessageFromMods);
+  }
+
+  win.addEventListener('message', handleMessageFromMods);
+
+  const prox = win.open(url);
+  const svgString = getSVGString(state);
+
+  interval = setInterval(() => {
+    prox.postMessage(svgString, "*");    
+  }, 1000);
 }
 
-function getSVGString(state, exportFeatures) {
+function getSVGString(state) {
   const serializer = new XMLSerializer();
   const svg = document.querySelector("svg").cloneNode(true);
 
-  let features = svg.querySelector(".paths");
-
-  if (exportFeatures === SvgFeatures.PATHS) {
-    features = svg.querySelector(".paths");
-  } else if (exportFeatures === SvgFeatures.SHAPES) {
-    features = svg.querySelector(".shapes");
-  } else if (exportFeatures == SvgFeatures.BACKGROUND) {
-    features = svg.querySelector(".background");
-  }
+  const p = svg.querySelector(".paths");
+  const s = svg.querySelector(".shapes");
+  const b = svg.querySelector(".background");
 
   svg.innerHTML = "";
-  svg.append(features);
+  svg.append(b);
+  svg.append(s);
+  svg.append(p);
 
   const width = (state.limits.x[1] - state.limits.x[0]);
   const height = (state.limits.y[1] - state.limits.y[0]);
 
+  console.log(width, height);
+
   svg.setAttribute("transform", `scale(1, -1) translate(0, ${-(state.limits.y[0]+state.limits.y[1])})`);
-  svg.setAttribute("style", "");
-  svg.setAttribute("width", `${width*state.mm_per_unit}mm`);
-  svg.setAttribute("height", `${height*state.mm_per_unit}mm`);
+  svg.setAttribute("style", "background: #000000");
+  svg.setAttribute("width", `${width*MM_PER_INCH}mm`);
+  svg.setAttribute("height", `${height*MM_PER_INCH}mm`);
   svg.setAttribute("viewBox", `${state.limits.x[0]} ${state.limits.y[0]} ${width} ${height}`);
   svg.setAttributeNS(
     "http://www.w3.org/2000/xmlns/",
@@ -110,7 +106,6 @@ function getSVGString(state, exportFeatures) {
   );
 
   const source = serializer.serializeToString(svg);
-  //const svgUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
   
   return source;
 }
