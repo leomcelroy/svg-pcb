@@ -1,5 +1,6 @@
 import { makeComponent } from "./pcb_helpers.js";
 import { getPathData, expand, scale, outline, union, xor, path, path2, offset, offset2, boolean } from "/geogram/index.js";
+import { makeRandStr } from "./makeRandStr.js"
 
 export class PCB {
   constructor() {
@@ -20,8 +21,13 @@ export class PCB {
       padLabelSize: ops.padLabelSize || 0.02,
       componentLabelSize: ops.componentLabelSize || 0.025,
       flip: ops.flip || false,
-      id: ops.id || crypto.randomUUID(), // check id is unique if provided
+      id: ops.id || `_${makeRandStr(8)}`,
     };
+
+    if (this.getComponent(options.id) !== undefined) {
+      throw new Error(`id not unique: ${ops.id}`);
+      return;
+    }
 
     const newComp = makeComponent(footprint, options);
 
@@ -47,6 +53,30 @@ export class PCB {
     this.ids.push(options.id);
 
     return newComp;
+  }
+
+  getComponent(id) {
+    return this.components.find(x => x.id === id);
+  }
+
+  query(id, padName = "", xy = "") { // layer
+    const comp = this.getComponent(id);
+
+    if (padName === "") return comp;
+
+    const pad = comp.pad(padName);
+
+    if (xy === "") return pad;
+
+    if (["x", "y"].some(val => val === xy)) {
+      
+    }
+
+    if (xy === "x") return pad[0];
+    if (xy === "y") return pad[1];
+
+    throw new Error(`xy param must be "x" or "y"`);
+    return undefined;
   }
 
   addShape(layer, shapeOrText) {

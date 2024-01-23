@@ -13,6 +13,7 @@ class FootprintEditor extends HTMLElement {
         if (name === "footprint") {
             this.footprint = newValue;
             this.render();
+            this.style.display = "none";
         }
     }
 

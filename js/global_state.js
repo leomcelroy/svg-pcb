@@ -10,6 +10,9 @@ export const global_state = {
   transforming: false,
   transformUpdate: () => {},
 
+  fileHandle: null,
+  needsSaving: false,
+
   selectBox: {},
 
   footprints: {},

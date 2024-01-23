@@ -7,9 +7,12 @@ import { addNumberDragging } from "./events/addNumberDragging.js";
 import { addImportDrag } from "./events/addImportDrag.js";
 import { addPathManipulation } from "./events/addPathManipulation.js";
 import { addPathSelection } from "./events/addPathSelection.js";
+import { addPathAddPoint } from "./events/addPathAddPoint.js";
 import { addLayerReordering } from "./events/addLayerReordering.js";
 import { clearSelectedPath } from "./clearSelectedPath.js";
 import { dispatch } from "./dispatch.js";
+import { saveFile } from "./saveFile.js";
+
 
 function pauseEvent(e) {
     if(e.stopPropagation) e.stopPropagation();
@@ -40,6 +43,7 @@ export function addEvents(state) {
 
 	addSelectBox(state, listenSVG);
   	addPtDragging(state, listenSVG);
+  	addPathAddPoint(state, listenSVG);
   	addPathManipulation(state, listenSVG);
 
 	const body = document.querySelector("body");
@@ -52,6 +56,7 @@ export function addEvents(state) {
 	addLayerReordering(state, listenBody);
 
 	window.addEventListener("keydown", (e) => {
+
 		const code = event.code;
 
 
@@ -66,8 +71,19 @@ export function addEvents(state) {
 		if (code === "Enter" && event.shiftKey) {
 		  event.preventDefault();
 		  dispatch("RUN");
-		} else if (code === "KeyT" && event.shiftKey) { // test something
-      
+		} else if (
+			(event.ctrlKey || event.metaKey) &&
+      		(event.key === 's' || event.key === 'S')
+      	) { 
+	  		const code = state.codemirror.view.state.doc.toString();
+			const { fileHandle, view } = state;
+			if (fileHandle === null) {
+				saveFile(code)
+			} else {
+				saveFile(code, { fileHandle })
+			}
+
+			e.preventDefault();
     	} else if (code === "Escape") { // test something
       	  clearSelectedPath();
     	}

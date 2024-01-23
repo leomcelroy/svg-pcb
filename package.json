@@ -32,6 +32,7 @@
     "file-saver": "^2.0.5",
     "flatten-svg": "^0.3.0",
     "hersheytext": "^2.0.0",
+    "js-beautify": "^1.14.11",
     "jszip": "^3.10.1",
     "lit-html": "^2.0.1",
     "prettier": "^3.0.3",
