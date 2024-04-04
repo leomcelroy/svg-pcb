@@ -114,6 +114,15 @@ input {
   overflow-y: auto;
 }
 
+.modal-error {
+	color: red;
+	padding: 10px;
+	border: 1px solid red;
+	margin-top: 10px;
+	margin-bottom: 5px;
+	display: inline-block;
+}
+
 .footprint-toolbox {
 	width: 300px;
 	height: 100%;
