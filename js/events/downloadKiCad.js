@@ -1,7 +1,8 @@
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { APP_NAME, MM_PER_INCH } from "../constants.js";
+import { APP_NAME } from "../constants.js";
 import { pathD } from "../../geogram/index.js";
+import { global_state } from "../global_state.js";
 
 // KiCad Board File Format reference
 // https://dev-docs.kicad.org/en/file-formats/sexpr-pcb/
@@ -24,8 +25,8 @@ export const KICAD_PCB_VERSION = '20221018'; // Maybe this could be set to make 
 export const PAD_TO_MASK_CLEARANCE = 0;
 
 // This should be a global function
-export function inchesToMM(inches){
-  return inches * MM_PER_INCH;
+export function unitsToMm(inches){
+  return inches * global_state.mm_per_unit;
 }
 
 // Simple enum (kind of)
@@ -118,8 +119,8 @@ export class KiCadBoardFileBuilder {
     const points = pathD([], svgString)[0]
       .map(pt => {
         const point = {
-          x: inchesToMM(pt[0]),
-          y: inchesToMM(pt[1])
+          x: unitsToMm(pt[0]),
+          y: unitsToMm(pt[1])
         }
         return point;
       });
@@ -152,17 +153,17 @@ export class KiCadBoardFileBuilder {
     });
 
     wires.forEach((wire) => {
-      const width = inchesToMM(wire.thickness).toFixed(3);
+      const width = unitsToMm(wire.thickness).toFixed(3);
       const layer = layerName;
       const net = 0;
       const shape = wire.shape;
 
       shape.forEach((polyline) => {
         for (let i = 0; i < polyline.length - 1; i++) {
-          const startX = inchesToMM(polyline[i][0]).toFixed(3);
-          const startY = (inchesToMM(-polyline[i][1]) + PAPER_SIZE_HEIGTH).toFixed(3);
-          const endX = inchesToMM(polyline[i+1][0]).toFixed(3);
-          const endY = (inchesToMM(-polyline[i+1][1]) + PAPER_SIZE_HEIGTH).toFixed(3);
+          const startX = unitsToMm(polyline[i][0]).toFixed(3);
+          const startY = (unitsToMm(-polyline[i][1]) + PAPER_SIZE_HEIGTH).toFixed(3);
+          const endX = unitsToMm(polyline[i+1][0]).toFixed(3);
+          const endY = (unitsToMm(-polyline[i+1][1]) + PAPER_SIZE_HEIGTH).toFixed(3);
           const tstamp = crypto.randomUUID();
           this.#body += `(segment (start ${startX} ${startY}) (end ${endX} ${endY}) (width ${width}) (layer "${layer}") (net ${net}) (tstamp ${tstamp}))\n`;
         }
@@ -192,8 +193,8 @@ export class KiCadBoardFileBuilder {
         reference: val.label ?? "",
         footprint: val.label ?? "",
         position: {
-          x: inchesToMM(val._pos[0]).toFixed(3),
-          y: (inchesToMM(-val._pos[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
+          x: unitsToMm(val._pos[0]).toFixed(3),
+          y: (unitsToMm(-val._pos[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
         },
         rotation: val.rotation,
         layer: Object.values(val.footprint)[0].layers[0],
@@ -202,8 +203,8 @@ export class KiCadBoardFileBuilder {
             number: val.index,
             name: key,
             position: {
-              x: inchesToMM(val.pos[0]).toFixed(3),
-              y: inchesToMM(-val.pos[1]).toFixed(3)
+              x: unitsToMm(val.pos[0]).toFixed(3),
+              y: unitsToMm(-val.pos[1]).toFixed(3)
             },
             shape: this.#svgToPoints(val.shape),
             layers: val.layers,
@@ -267,11 +268,11 @@ export class KiCadBoardFileBuilder {
     const vias = Object.values(viaData).map((comp) => {
       const via = {
         position: {
-          x: inchesToMM(comp._pos[0]).toFixed(3),
-          y: (inchesToMM(-comp._pos[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
+          x: unitsToMm(comp._pos[0]).toFixed(3),
+          y: (unitsToMm(-comp._pos[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
         }, 
         size: this.#getSizeFromPoints(this.#svgToPoints(comp.footprint.via.shape)).w.toFixed(3),
-        drill: inchesToMM(comp.footprint.via.drill.diameter).toFixed(3),
+        drill: unitsToMm(comp.footprint.via.drill.diameter).toFixed(3),
         tstamp: comp.id
       };
       return via;
@@ -296,12 +297,12 @@ export class KiCadBoardFileBuilder {
         const ptStart = shape[i];
         const ptEnd = shape[i+1];
         const lineStart = {
-          x: inchesToMM(ptStart[0]).toFixed(3),
-          y: (inchesToMM(-ptStart[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
+          x: unitsToMm(ptStart[0]).toFixed(3),
+          y: (unitsToMm(-ptStart[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
         }
         const lineEnd = {
-          x: inchesToMM(ptEnd[0]).toFixed(3),
-          y: (inchesToMM(-ptEnd[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
+          x: unitsToMm(ptEnd[0]).toFixed(3),
+          y: (unitsToMm(-ptEnd[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
         }
         const lineTstamp = crypto.randomUUID();
 

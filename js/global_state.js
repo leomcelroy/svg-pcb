@@ -1,4 +1,3 @@
-import { MM_PER_INCH } from "./constants";
 import { KiCadPadPrimitiveShape, KiCadPadShapeType } from "./events/downloadKiCad";
 import { GerberDrillFormat } from "./events/downloadGerber";
 
@@ -26,7 +25,7 @@ export const global_state = {
     x: [0, 1],
     y: [0, 1]
   },
-  mm_per_unit: MM_PER_INCH,
+  mm_per_unit: 25.4,
   background: "#00000000",
 
   // -- grid --

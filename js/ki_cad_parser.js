@@ -1,4 +1,3 @@
-import { MM_PER_INCH } from "./constants.js";
 import { sParse } from "./s-expression-parser.js";
 import { rectangle, circle } from "/geogram/index.js";
 
@@ -22,7 +21,7 @@ const getNamedArray = (line, name) => {
 export function kicadToObj(data) {
   let r = sParse(data);
 
-  let scale = 1/MM_PER_INCH;
+  let scale = 1/25.4;
   const padsToAdd = {};
 
   for (const line of r) {

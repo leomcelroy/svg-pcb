@@ -1,4 +1,3 @@
-import { MM_PER_INCH } from "./constants.js";
 import { global_state } from "./global_state.js";
 
 const default_renderShapes_params = {
@@ -7,7 +6,7 @@ const default_renderShapes_params = {
       x: [0, 1],
       y: [0, 1]
   },
-  mm_per_unit: MM_PER_INCH,
+  mm_per_unit: global_state.mm_per_unit,
 }
 
 export function renderShapes({ shapes, limits, mm_per_unit }) {

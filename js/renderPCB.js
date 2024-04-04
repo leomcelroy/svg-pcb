@@ -1,4 +1,3 @@
-import { MM_PER_INCH } from "./constants.js";
 import { global_state } from "./global_state.js";
 import * as esprima from 'esprima';
 
@@ -9,7 +8,7 @@ const default_renderPCB_params = {
       x: [0, 1],
       y: [0, 1]
   },
-  mm_per_unit: MM_PER_INCH,
+  mm_per_unit: global_state.mm_per_unit,
   background: "#00000000"
 }
 
