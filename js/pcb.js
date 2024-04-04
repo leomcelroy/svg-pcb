@@ -8,21 +8,55 @@ export class PCB {
     this.components = [];
     this.ids = [];
 
-    this.netList = [];
+    this.netlist = [];
+
+    // TODO
+    /*
+    this.components = {};
+    this.netlist = [];
+    this.shapes = [];
+    this.wires = [];
+
+    this._cache = {
+      holes,
+      footprintShapes,
+      componentLabels,
+      padLabels
+    };
+    */
   }
 
+  // add or addComponent(footprint, { id = random, translate = [0, 0], rotate = 0, flip = false })
+  // wire or addWire(points, thickness, layer = "F.Cu")
+  // addShape(pl | pl[], layer = "F.Cu")
+  // setNetlist(netlist)
+  // getPad("compId", "padId", xy = "xy" | "x" | "y")
+  // getPos("compId", xy = "xy" | "x" | "y")
+  // getLayer(layerName, flatten = false)
+  // getPadLabels()
+  // getComponentLabels()
+
   add(footprint, ops = {}) {
+
+    const id = ops.id || `_${makeRandStr(8)}`;
     
-    const label = ops.label || "";
+    const label = ops.id || "";
 
     const options = {
+      id,
       translate: ops.translate || [0, 0],
       rotate: ops.rotate || 0,
+      flip: ops.flip || false,
+
       padLabelSize: ops.padLabelSize || 0.02,
       componentLabelSize: ops.componentLabelSize || 0.025,
-      flip: ops.flip || false,
-      id: ops.id || `_${makeRandStr(8)}`,
     };
+
+    /*
+    if (id in this._components) {
+      throw new Error(`id not unique: ${id}`);
+    }
+    */
 
     if (this.getComponent(options.id) !== undefined) {
       throw new Error(`id not unique: ${ops.id}`);
@@ -58,6 +92,9 @@ export class PCB {
   getComponent(id) {
     return this.components.find(x => x.id === id);
   }
+
+  // getPad(componentId, padName, xy?)
+  // getPos(xy?), getPosX(), getPosY()
 
   query(id, padName = "", xy = "") { // layer
     const comp = this.getComponent(id);
@@ -149,8 +186,8 @@ export class PCB {
         ]
   }
 
-  setNetList(...newNetList) {
-    newNetList.forEach(group => {
+  setNetlist(...newNetlist) {
+    newNetlist.forEach(group => {
       group.forEach(item => {
         const [ comp, pad ] = item;
         const constructor = comp.constructor.name;
@@ -158,9 +195,9 @@ export class PCB {
       })
     })
     
-    this.netList = newNetList;
+    this.netlist = newNetlist;
 
-    return newNetList;
+    return newNetlist;
   }
 
   wire(pts, thickness, layer = "F.Cu") {

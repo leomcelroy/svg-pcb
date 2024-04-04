@@ -190,8 +190,8 @@ export class KiCadBoardFileBuilder {
     const components = Object.values(compData).map((val) => {
       const component = {
         id: val.id,
-        reference: val.label ?? "",
-        footprint: val.label ?? "",
+        reference: val.id,
+        footprint: val.id,
         position: {
           x: unitsToMm(val._pos[0]).toFixed(3),
           y: (unitsToMm(-val._pos[1]) + PAPER_SIZE_HEIGTH).toFixed(3)
