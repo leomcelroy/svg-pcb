@@ -32,15 +32,15 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny412, {translate: pt(x+.6, y+.47), label: 'IC1\nt412'});
-let C1 = board.add(C_1206, {translate: pt(IC1.posX, IC1.padY("VCC")+.08), label: 'C1 1uF'});
-let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY-.1), rotate: 180, label: 'J1 serial\n5V power\n3.3V logic'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.posX-.23, C1.posY-.02), rotate: -90, label: 'IC2\n3.3V'});
-let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, label: 'J2\nUPDI'});
-let IC3 = board.add(VEML6040, {translate: pt(x+width-.05, J2.posY+.03), rotate: 90, label: 'IC3'});
-let R1 = board.add(R_1206, {translate: pt(IC3.posX-.12, IC3.posY-.15), label: 'R1 0'});
-let R2 = board.add(R_1206, {translate: pt(J2.padX("GND")-.115, J2.posY), rotate: 90, label: 'R2\n4.99k'});
-let R3 = board.add(R_1206, {translate: pt(J2.posX+.15, J2.posY+.03), rotate: 90, label: 'R3\n4.99k'});
+let IC1 = board.add(ATtiny412, {translate: pt(x+.6, y+.47), id: 'IC1\nt412'});
+let C1 = board.add(C_1206, {translate: pt(IC1.posX, IC1.padY("VCC")+.08), id: 'C1 1uF'});
+let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY-.1), rotate: 180, id: 'J1 serial\n5V power\n3.3V logic'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.posX-.23, C1.posY-.02), rotate: -90, id: 'IC2\n3.3V'});
+let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, id: 'J2\nUPDI'});
+let IC3 = board.add(VEML6040, {translate: pt(x+width-.05, J2.posY+.03), rotate: 90, id: 'IC3'});
+let R1 = board.add(R_1206, {translate: pt(IC3.posX-.12, IC3.posY-.15), id: 'R1 0'});
+let R2 = board.add(R_1206, {translate: pt(J2.padX("GND")-.115, J2.posY), rotate: 90, id: 'R2\n4.99k'});
+let R3 = board.add(R_1206, {translate: pt(J2.posX+.15, J2.posY+.03), rotate: 90, id: 'R3\n4.99k'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -163,5 +163,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

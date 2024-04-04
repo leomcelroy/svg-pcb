@@ -30,14 +30,14 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(FT230XS, {translate: pt(x+width/2.0, y+.7), label: 'IC1\nFT230XS'});
-let C1 = board.add(C_1206, {translate: pt(IC1.padX("CB3")+.1, IC1.posY), rotate: 90, label: 'C1\n1uF'});
-let J1 = board.add(USB_A_plug, {translate: pt(IC1.posX, y+.29), rotate: -90, label: 'J1 USB\n'});
-let R1 = board.add(R_1206, {translate: pt(IC1.posX+.05, IC1.posY-.22), rotate: 90, label: 'R1\n49'});
-let R2 = board.add(R_1206, {translate: pt(IC1.posX-.05, R1.posY), rotate: 90, label: 'R2\n49'});
-let C2 = board.add(C_1206, {translate: pt(J1.padX("5V")+.065, R1.posY), label: 'C2\n10pF'});
-let C3 = board.add(C_1206, {translate: pt(J1.padX("GND")-.065, R1.posY), label: 'C3\n10pF'});
-let J2 = board.add(header_serial_reverse, {translate: pt(IC1.posX, y+height-.23), rotate: 90, label: 'J2\nserial'});
+let IC1 = board.add(FT230XS, {translate: pt(x+width/2.0, y+.7), id: 'IC1\nFT230XS'});
+let C1 = board.add(C_1206, {translate: pt(IC1.padX("CB3")+.1, IC1.posY), rotate: 90, id: 'C1\n1uF'});
+let J1 = board.add(USB_A_plug, {translate: pt(IC1.posX, y+.29), rotate: -90, id: 'J1 USB\n'});
+let R1 = board.add(R_1206, {translate: pt(IC1.posX+.05, IC1.posY-.22), rotate: 90, id: 'R1\n49'});
+let R2 = board.add(R_1206, {translate: pt(IC1.posX-.05, R1.posY), rotate: 90, id: 'R2\n49'});
+let C2 = board.add(C_1206, {translate: pt(J1.padX("5V")+.065, R1.posY), id: 'C2\n10pF'});
+let C3 = board.add(C_1206, {translate: pt(J1.padX("GND")-.065, R1.posY), id: 'C3\n10pF'});
+let J2 = board.add(header_serial_reverse, {translate: pt(IC1.posX, y+height-.23), rotate: 90, id: 'J2\nserial'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -190,5 +190,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

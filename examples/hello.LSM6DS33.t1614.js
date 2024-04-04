@@ -29,11 +29,11 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny1614, {translate: pt(x+.53, y+.54), label: 'IC1\nt1614'});
-let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY-.07), rotate: 180, label: 'J1\nserial\n5V'});
-let C1 = board.add(C_1206, {translate: pt(J1.posX, J1.padY("GND")-.1), label: 'C1 1uF'});
-let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, label: 'J2\nUPDI'});
-let J3 = board.add(header_LSM6DS33_2736, {translate: pt(x+width-.23, IC1.posY-.25), label: "J3\nLSM6DS33\n2736"});
+let IC1 = board.add(ATtiny1614, {translate: pt(x+.53, y+.54), id: 'IC1\nt1614'});
+let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY-.07), rotate: 180, id: 'J1\nserial\n5V'});
+let C1 = board.add(C_1206, {translate: pt(J1.posX, J1.padY("GND")-.1), id: 'C1 1uF'});
+let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, id: 'J2\nUPDI'});
+let J3 = board.add(header_LSM6DS33_2736, {translate: pt(x+width-.23, IC1.posY-.25), id: "J3\nLSM6DS33\n2736"});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -123,5 +123,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

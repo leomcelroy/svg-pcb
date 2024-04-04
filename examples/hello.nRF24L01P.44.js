@@ -31,15 +31,15 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny44_SOICN, {translate: pt(x+.68, y+.63), label: 'IC1\nt44'});
-let J1 = board.add(header_ISP, {translate: pt(IC1.posX+.05, IC1.padY("PA6")-.22), rotate: 90, label: 'J1\nISP'});
-let J2 = board.add(header_FTDI, {translate: pt(x+width-.22, IC1.posY-.0), rotate: 0, label: 'J2 FTDI\n3.3V'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(J2.posX, J1.posY-.015), rotate: 180, label: 'IC2\n3.3V'});
-let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.12), label: 'C1 1uF'});
-let R1 = board.add(R_1206, {translate: pt(IC1.padX("VCC"), IC1.padY("VCC")+.1), label: 'R1\n10k'});
-let J3 = board.add(header_nRF24L01, {translate: pt(x+.22, IC1.posY+.05), label: 'J3\nnRF24L01'});
-let C2 = board.add(C_1206, {translate: pt(J3.posX, J3.padY("GND")-.1), label: 'C2 0.1uF'});
-let C3 = board.add(C_1206, {translate: pt(J3.posX, C2.posY-.1), label: 'C3 10uF'});
+let IC1 = board.add(ATtiny44_SOICN, {translate: pt(x+.68, y+.63), id: 'IC1\nt44'});
+let J1 = board.add(header_ISP, {translate: pt(IC1.posX+.05, IC1.padY("PA6")-.22), rotate: 90, id: 'J1\nISP'});
+let J2 = board.add(header_FTDI, {translate: pt(x+width-.22, IC1.posY-.0), rotate: 0, id: 'J2 FTDI\n3.3V'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(J2.posX, J1.posY-.015), rotate: 180, id: 'IC2\n3.3V'});
+let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.12), id: 'C1 1uF'});
+let R1 = board.add(R_1206, {translate: pt(IC1.padX("VCC"), IC1.padY("VCC")+.1), id: 'R1\n10k'});
+let J3 = board.add(header_nRF24L01, {translate: pt(x+.22, IC1.posY+.05), id: 'J3\nnRF24L01'});
+let C2 = board.add(C_1206, {translate: pt(J3.posX, J3.padY("GND")-.1), id: 'C2 0.1uF'});
+let C3 = board.add(C_1206, {translate: pt(J3.posX, C2.posY-.1), id: 'C3 10uF'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -208,5 +208,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

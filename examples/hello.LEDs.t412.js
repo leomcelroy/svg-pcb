@@ -33,22 +33,22 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny412, {translate: pt(x+.44, y+.44), label: 'IC1\nt412'});
-let J1 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, label: 'J1\nUPDI'});
-let J2 = board.add(header_power, {translate: pt(J1.posX+.28, J1.posY-.04), rotate: 90, label: 'J2\n9V'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(J2.posX, J2.posY+.25), label: 'IC2\n5V'});
-let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY+.12), label: 'C1 1uF'});
-let T1 = board.add(NMOSFET_SOT23, {translate: pt(IC1.posX-.35, IC1.padY("VCC")+.01), rotate: 90, label: 'T1 N'});
-let R1 = board.add(R_1206, {translate: pt(T1.posX+.12, T1.posY+.03), rotate: 90, label: 'R1\n10k'});
-let D1 = board.add(LED_3014_1100, {translate: pt(T1.posX-.035, T1.posY-.15), rotate: 90, label: 'D1'});
-let D2 = board.add(LED_3014_1100, {translate: pt(D1.posX+.075, D1.posY), rotate: 90, label: 'D2'});
-let D3 = board.add(LED_3014_1100, {translate: pt(D1.posX+.15, D1.posY), rotate: 90, label: 'D3'});
-let D4 = board.add(LED_3014_1100, {translate: pt(D1.posX, D1.posY-.14), rotate: 90, label: 'D4'});
-let D5 = board.add(LED_3014_1100, {translate: pt(D4.posX+.075, D4.posY), rotate: 90, label: 'D5'});
-let D6 = board.add(LED_3014_1100, {translate: pt(D4.posX+.15, D4.posY), rotate: 90, label: 'D6'});
-let D7 = board.add(LED_3014_1100, {translate: pt(D4.posX, D4.posY-.14), rotate: 90, label: 'D7'});
-let D8 = board.add(LED_3014_1100, {translate: pt(D7.posX+.075, D7.posY), rotate: 90, label: 'D8'});
-let D9 = board.add(LED_3014_1100, {translate: pt(D7.posX+.15, D7.posY), rotate: 90, label: 'D9'});
+let IC1 = board.add(ATtiny412, {translate: pt(x+.44, y+.44), id: 'IC1\nt412'});
+let J1 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, id: 'J1\nUPDI'});
+let J2 = board.add(header_power, {translate: pt(J1.posX+.28, J1.posY-.04), rotate: 90, id: 'J2\n9V'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(J2.posX, J2.posY+.25), id: 'IC2\n5V'});
+let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY+.12), id: 'C1 1uF'});
+let T1 = board.add(NMOSFET_SOT23, {translate: pt(IC1.posX-.35, IC1.padY("VCC")+.01), rotate: 90, id: 'T1 N'});
+let R1 = board.add(R_1206, {translate: pt(T1.posX+.12, T1.posY+.03), rotate: 90, id: 'R1\n10k'});
+let D1 = board.add(LED_3014_1100, {translate: pt(T1.posX-.035, T1.posY-.15), rotate: 90, id: 'D1'});
+let D2 = board.add(LED_3014_1100, {translate: pt(D1.posX+.075, D1.posY), rotate: 90, id: 'D2'});
+let D3 = board.add(LED_3014_1100, {translate: pt(D1.posX+.15, D1.posY), rotate: 90, id: 'D3'});
+let D4 = board.add(LED_3014_1100, {translate: pt(D1.posX, D1.posY-.14), rotate: 90, id: 'D4'});
+let D5 = board.add(LED_3014_1100, {translate: pt(D4.posX+.075, D4.posY), rotate: 90, id: 'D5'});
+let D6 = board.add(LED_3014_1100, {translate: pt(D4.posX+.15, D4.posY), rotate: 90, id: 'D6'});
+let D7 = board.add(LED_3014_1100, {translate: pt(D4.posX, D4.posY-.14), rotate: 90, id: 'D7'});
+let D8 = board.add(LED_3014_1100, {translate: pt(D7.posX+.075, D7.posY), rotate: 90, id: 'D8'});
+let D9 = board.add(LED_3014_1100, {translate: pt(D7.posX+.15, D7.posY), rotate: 90, id: 'D9'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -169,5 +169,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

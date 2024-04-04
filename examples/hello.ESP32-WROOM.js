@@ -31,15 +31,15 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let J1 = board.add(header_FTDI, {translate: pt(x+width-.22, y+.5), rotate: 0, label: 'J1 FTDI\n3.3V'});
-let IC1 = board.add(regulator_SOT223, {translate: pt(J1.posX-.25, J1.posY), label: 'IC1\n3.3V'});
-let C1 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY-.25), label: 'C1 10uF'});
-let C2 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY+.25), label: 'C2 1uF'});
-let IC2 = board.add(ESP32_WROOM, {translate: pt(x+.35, y+.69), rotate: 90, label: 'IC2\nESP32-WROOM'});
-let S1 = board.add(slide_switch, {translate: pt(IC1.posX, IC1.padY("out")+.4), rotate: 180, label: 'prog run'});
-let S2 = board.add(button_6mm, {translate: pt(IC2.posX, IC2.padY("EN")-.2), label: 'reset'});
-let R1 = board.add(R_1206, {translate: pt(S2.padX("L2")+.15, S2.posY), rotate: 90, label: 'R1\n10k'});
-let C3 = board.add(C_1206, {translate: pt(R1.posX+.12, R1.posY), rotate: 90, label: 'C3\n.1uF'});
+let J1 = board.add(header_FTDI, {translate: pt(x+width-.22, y+.5), rotate: 0, id: 'J1 FTDI\n3.3V'});
+let IC1 = board.add(regulator_SOT223, {translate: pt(J1.posX-.25, J1.posY), id: 'IC1\n3.3V'});
+let C1 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY-.25), id: 'C1 10uF'});
+let C2 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY+.25), id: 'C2 1uF'});
+let IC2 = board.add(ESP32_WROOM, {translate: pt(x+.35, y+.69), rotate: 90, id: 'IC2\nESP32-WROOM'});
+let S1 = board.add(slide_switch, {translate: pt(IC1.posX, IC1.padY("out")+.4), rotate: 180, id: 'prog run'});
+let S2 = board.add(button_6mm, {translate: pt(IC2.posX, IC2.padY("EN")-.2), id: 'reset'});
+let R1 = board.add(R_1206, {translate: pt(S2.padX("L2")+.15, S2.posY), rotate: 90, id: 'R1\n10k'});
+let C3 = board.add(C_1206, {translate: pt(R1.posX+.12, R1.posY), rotate: 90, id: 'C3\n.1uF'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -160,5 +160,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

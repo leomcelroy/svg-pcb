@@ -31,15 +31,15 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny1614, {translate: pt(x+.57, y+.55), label: 'IC1\nt1614'});
-let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY), rotate: 180, label: 'J1\nFTDI'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(J1.posX, J1.padY("GND")-.13), rotate: -90, label: 'IC2\n3.3V'});
-let C1 = board.add(C_1206, {translate: pt(IC2.posX+.15, IC2.posY), rotate: 90, label: 'C1\n1uF'});
-let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, label: 'J2\nUPDI'});
-let IC3 = board.add(CMM4030D261I2STR, {translate: pt(IC1.posX+.26, IC1.posY-.014), label: 'I2S'});
-let C2 = board.add(C_1206, {translate: pt(IC3.posX+.04, IC3.posY-.15), label: 'C2 .1u'});
-let C3 = board.add(C_1206, {translate: pt(C2.posX, C2.posY-.1), label: 'C3 10u'});
-let R1 = board.add(R_1206, {translate: pt(J2.posX+.145, J2.posY+.02), rotate: 90, label: 'R1\n100k'});
+let IC1 = board.add(ATtiny1614, {translate: pt(x+.57, y+.55), id: 'IC1\nt1614'});
+let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY), rotate: 180, id: 'J1\nFTDI'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(J1.posX, J1.padY("GND")-.13), rotate: -90, id: 'IC2\n3.3V'});
+let C1 = board.add(C_1206, {translate: pt(IC2.posX+.15, IC2.posY), rotate: 90, id: 'C1\n1uF'});
+let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, id: 'J2\nUPDI'});
+let IC3 = board.add(CMM4030D261I2STR, {translate: pt(IC1.posX+.26, IC1.posY-.014), id: 'I2S'});
+let C2 = board.add(C_1206, {translate: pt(IC3.posX+.04, IC3.posY-.15), id: 'C2 .1u'});
+let C3 = board.add(C_1206, {translate: pt(C2.posX, C2.posY-.1), id: 'C3 10u'});
+let R1 = board.add(R_1206, {translate: pt(J2.posX+.145, J2.posY+.02), rotate: 90, id: 'R1\n100k'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -175,5 +175,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

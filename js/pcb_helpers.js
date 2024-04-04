@@ -45,6 +45,11 @@ class Component {
     this.padShapes = padShapes;
     this.id = id;
     this.flip = flip;
+
+    /*
+      this.id
+      this._transformedFootprint
+    */
   }
 
   pad(name) {

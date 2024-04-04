@@ -29,12 +29,12 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(SAMD21E, {translate: pt(x+.37, y+.36), label: 'IC1\nD21E'});
-let J1 = board.add(header_SWD, {translate: pt(IC1.posX, IC1.padY("DIO")+.34), rotate: -90, label: 'J1 SWD'});
-let J2 = board.add(USB_A_plug, {translate: pt(x+width-.29, IC1.padY("25+")+.04), label: 'J2 USB'});
-let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND2"), IC1.padY("A27")+.15), label: 'C1 1uF'});
-let C2 = board.add(C_1206, {translate: pt(IC1.padX("A07")-.02, IC1.padY("VAN")-.07), rotate: 90, label: 'C2\n1uF'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-.11, C2.posY), rotate: -90, label: 'IC2\n3.3V'});
+let IC1 = board.add(SAMD21E, {translate: pt(x+.37, y+.36), id: 'IC1\nD21E'});
+let J1 = board.add(header_SWD, {translate: pt(IC1.posX, IC1.padY("DIO")+.34), rotate: -90, id: 'J1 SWD'});
+let J2 = board.add(USB_A_plug, {translate: pt(x+width-.29, IC1.padY("25+")+.04), id: 'J2 USB'});
+let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND2"), IC1.padY("A27")+.15), id: 'C1 1uF'});
+let C2 = board.add(C_1206, {translate: pt(IC1.padX("A07")-.02, IC1.padY("VAN")-.07), rotate: 90, id: 'C2\n1uF'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-.11, C2.posY), rotate: -90, id: 'IC2\n3.3V'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -154,5 +154,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

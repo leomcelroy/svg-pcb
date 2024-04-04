@@ -29,11 +29,11 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny412, {translate: pt(x+.18, y+.43), label: 'IC1\nt412'});
-let C1 = board.add(C_1206, {translate: pt(IC1.posX, IC1.padY("VCC")+.08), label: 'C1 1uF'});
-let J1 = board.add(header_UPDI_3, {translate: pt(IC1.posX, y+.23), rotate: 90, label: 'J1\nUPDI'});
-let R1 = board.add(R_1206, {translate: pt(IC1.posX+.23, IC1.posY-.01), rotate: 90, label: 'R1\n1k'});
-let LED1 = board.add(LED_1206, {translate: pt(R1.posX, R1.posY-.23), rotate: -90, label: 'LED1'});
+let IC1 = board.add(ATtiny412, {translate: pt(x+.18, y+.43), id: 'IC1\nt412'});
+let C1 = board.add(C_1206, {translate: pt(IC1.posX, IC1.padY("VCC")+.08), id: 'C1 1uF'});
+let J1 = board.add(header_UPDI_3, {translate: pt(IC1.posX, y+.23), rotate: 90, id: 'J1\nUPDI'});
+let R1 = board.add(R_1206, {translate: pt(IC1.posX+.23, IC1.posY-.01), rotate: 90, id: 'R1\n1k'});
+let LED1 = board.add(LED_1206, {translate: pt(R1.posX, R1.posY-.23), rotate: -90, id: 'LED1'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -96,5 +96,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

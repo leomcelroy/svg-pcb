@@ -29,14 +29,14 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny45_SOIC, {translate: pt(x+.53, y+.26), rotate: -90, label: 'IC1\nt45'});
-let J1 = board.add(header_ISP, {translate: pt(IC1.posX-.31, IC1.posY-.02), rotate: 0, label: 'J1\nISP'});
-let R1 = board.add(R_1206, {translate: pt(IC1.padX("RST")+.09, IC1.posY), rotate: 90, label: 'R1\n10k'});
-let C1 = board.add(C_1206, {translate: pt(R1.posX+.12, R1.posY), rotate: 90, label: 'C1\n1uF'});
-let J2 = board.add(header_FTDI, {translate: pt(x+width-.23, C1.posY+.05), label: 'J2 FTDI\n5V'});
-let oled = board.add(I2C4x1, {translate: pt(IC1.padX("PB3"), J2.padY("GND")+.05), rotate: 90, label: 'SSD1306'});
-let R2 = board.add(R_1206, {translate: pt(J1.posX+.06, oled.padY("SCL")), rotate: 90, label: 'R2\n10k'});
-let R3 = board.add(R_1206, {translate: pt(J1.posX-.06, oled.padY("SCL")), rotate: 90, label: 'R3\n10k'});
+let IC1 = board.add(ATtiny45_SOIC, {translate: pt(x+.53, y+.26), rotate: -90, id: 'IC1\nt45'});
+let J1 = board.add(header_ISP, {translate: pt(IC1.posX-.31, IC1.posY-.02), rotate: 0, id: 'J1\nISP'});
+let R1 = board.add(R_1206, {translate: pt(IC1.padX("RST")+.09, IC1.posY), rotate: 90, id: 'R1\n10k'});
+let C1 = board.add(C_1206, {translate: pt(R1.posX+.12, R1.posY), rotate: 90, id: 'C1\n1uF'});
+let J2 = board.add(header_FTDI, {translate: pt(x+width-.23, C1.posY+.05), id: 'J2 FTDI\n5V'});
+let oled = board.add(I2C4x1, {translate: pt(IC1.padX("PB3"), J2.padY("GND")+.05), rotate: 90, id: 'SSD1306'});
+let R2 = board.add(R_1206, {translate: pt(J1.posX+.06, oled.padY("SCL")), rotate: 90, id: 'R2\n10k'});
+let R3 = board.add(R_1206, {translate: pt(J1.posX-.06, oled.padY("SCL")), rotate: 90, id: 'R3\n10k'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -159,5 +159,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

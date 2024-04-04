@@ -29,11 +29,11 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny1614, {translate: pt(x+.53, y+.54), label: 'IC1\nt1614'});
-let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY-.07), rotate: 180, label: 'J1\nserial\n5V'});
-let C1 = board.add(C_1206, {translate: pt(J1.posX+.15, J1.padY("GND")), rotate: -90, label: 'C1\n1uF'});
-let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, label: 'J2\nUPDI'});
-let J3 = board.add(header_GPS, {translate: pt(x+width-.15, y+height/2), label: 'J3\nGPS'});
+let IC1 = board.add(ATtiny1614, {translate: pt(x+.53, y+.54), id: 'IC1\nt1614'});
+let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY-.07), rotate: 180, id: 'J1\nserial\n5V'});
+let C1 = board.add(C_1206, {translate: pt(J1.posX+.15, J1.padY("GND")), rotate: -90, id: 'C1\n1uF'});
+let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, id: 'J2\nUPDI'});
+let J3 = board.add(header_GPS, {translate: pt(x+width-.15, y+height/2), id: 'J3\nGPS'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -124,5 +124,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

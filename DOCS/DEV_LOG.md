@@ -1,5 +1,9 @@
 # DEV LOG
 
+### April 4, 2023
+
+updated examples to use id instead of label
+
 ### Aug 21, 2023
 
 layer menu gives options from all layers in board

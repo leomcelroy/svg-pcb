@@ -76,7 +76,7 @@ renderPCB({
     x: [xMin, xMax],
     y: [yMin, yMax]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 });
 `
 
@@ -97,7 +97,7 @@ const width = 1;
 const height = 1;
 
 /* -- ADD_COMPONENTS -- */
-const ic = board.add(SAMD11C, { translate: pt(-0.2, 0.050), rotate: 0, label: "SAMD11C" })
+const ic = board.add(SAMD11C, { translate: pt(-0.2, 0.050), rotate: 0, id: "SAMD11C" })
 
 /* -- BOARD_SIZE_SHAPE -- */
 const interior = path(
@@ -136,7 +136,7 @@ renderPCB({
     y: [yMin, yMax]
   },
   background: "#00000000",
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 });
 
 `

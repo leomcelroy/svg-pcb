@@ -39,22 +39,22 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(DRV8428_HTSSOP, {translate: pt(x+.6, y+.62), label: 'IC1\nDRV8428'});
-let J2 = board.add(header_4H, {translate: pt(x+.23, IC1.posY-.24), rotate: 180, label: 'J2\nstepper'});
-let R1 = board.add(ST4EB, {translate: pt(IC1.posX+.12, IC1.posY-.35), label: 'R1\n10k'});
-let C1 = board.add(C_1206, {translate: pt(R1.posX-.32, J2.padY("1")-.07), rotate: 90, label: 'C1\n1uF'});
-let R2 = board.add(R_1206, {translate: pt(R1.posX-.2, R1.posY+.05), rotate: 90, label: 'R2\n10k'});
-let C2 = board.add(C_FND, {translate: pt(IC1.posX+.04, IC1.posY+.27), rotate: 90, label: 'C2\n100uF'});
-let J4 = board.add(header_2H, {translate: pt(x+.23, IC1.padY("VM")+.05), rotate: 180, label: 'J4\npower'});
-let C3 = board.add(C_1206, {translate: pt(C2.posX+.31, C2.posY), label: 'C3\n.01uF'});
-let IC2 = board.add(SAMD11C, {translate: pt(x+width-.68, y+.45), rotate: -90, label: 'IC2\nD11C'});
-let J1 = board.add(header_SWD_4_1, {translate: pt(IC2.padX("CLK")-.14, IC2.posY), rotate: -90, label: 'J1 SWD'});
-let J3 = board.add(USB_A_plug, {translate: pt(x+width-.29, IC2.posY+.025), rotate: 0, label: 'J3\nUSB'});
-let IC3 = board.add(regulator_SOT23, {translate: pt(IC2.padX("A15"), IC2.padY("24-")-.18), rotate: 0, label: 'IC3\n3.3V'});
-let C4 = board.add(C_1206, {translate: pt(IC3.posX-.22, IC3.posY), label: 'C4\n1uF'});
-let R3 = board.add(R_1206, {translate: pt(C3.posX+.22, C3.posY), label: 'R3\n0'});
-let R4 = board.add(R_1206, {translate: pt(IC2.padX("A04")-.04, IC3.posY), rotate: 90, label: 'R4\n1k'});
-let LED = board.add(LED_1206, {translate: pt(R4.posX+.1, R4.posY), rotate: -90, label: 'LED'});
+let IC1 = board.add(DRV8428_HTSSOP, {translate: pt(x+.6, y+.62), id: 'IC1\nDRV8428'});
+let J2 = board.add(header_4H, {translate: pt(x+.23, IC1.posY-.24), rotate: 180, id: 'J2\nstepper'});
+let R1 = board.add(ST4EB, {translate: pt(IC1.posX+.12, IC1.posY-.35), id: 'R1\n10k'});
+let C1 = board.add(C_1206, {translate: pt(R1.posX-.32, J2.padY("1")-.07), rotate: 90, id: 'C1\n1uF'});
+let R2 = board.add(R_1206, {translate: pt(R1.posX-.2, R1.posY+.05), rotate: 90, id: 'R2\n10k'});
+let C2 = board.add(C_FND, {translate: pt(IC1.posX+.04, IC1.posY+.27), rotate: 90, id: 'C2\n100uF'});
+let J4 = board.add(header_2H, {translate: pt(x+.23, IC1.padY("VM")+.05), rotate: 180, id: 'J4\npower'});
+let C3 = board.add(C_1206, {translate: pt(C2.posX+.31, C2.posY), id: 'C3\n.01uF'});
+let IC2 = board.add(SAMD11C, {translate: pt(x+width-.68, y+.45), rotate: -90, id: 'IC2\nD11C'});
+let J1 = board.add(header_SWD_4_1, {translate: pt(IC2.padX("CLK")-.14, IC2.posY), rotate: -90, id: 'J1 SWD'});
+let J3 = board.add(USB_A_plug, {translate: pt(x+width-.29, IC2.posY+.025), rotate: 0, id: 'J3\nUSB'});
+let IC3 = board.add(regulator_SOT23, {translate: pt(IC2.padX("A15"), IC2.padY("24-")-.18), rotate: 0, id: 'IC3\n3.3V'});
+let C4 = board.add(C_1206, {translate: pt(IC3.posX-.22, IC3.posY), id: 'C4\n1uF'});
+let R3 = board.add(R_1206, {translate: pt(C3.posX+.22, C3.posY), id: 'R3\n0'});
+let R4 = board.add(R_1206, {translate: pt(IC2.padX("A04")-.04, IC3.posY), rotate: 90, id: 'R4\n1k'});
+let LED = board.add(LED_1206, {translate: pt(R4.posX+.1, R4.posY), rotate: -90, id: 'LED'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -302,5 +302,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

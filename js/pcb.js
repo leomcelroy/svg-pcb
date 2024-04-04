@@ -18,10 +18,12 @@ export class PCB {
     this.wires = [];
 
     this._cache = {
-      holes,
-      footprintShapes,
-      componentLabels,
-      padLabels
+      holes: [],
+      processedFootprints: {}, // geometry is transformed, path string is polylines, flipped stuff is flipped 
+      footprintShapes: {}, 
+      componentLabels: [], 
+      padLabels: [],
+      componentBoundingBoxes: {},
     };
     */
   }

@@ -27,9 +27,9 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let J1 = board.add(header_FTDI, {translate: pt(x+width-.23, y+height/2), label: 'J1\nserial'});
-let J2 = board.add(header_UPDI_3_reverse, {translate: pt(x+.23, J1.padY("Rx")), label: 'J2\nUPDI'});
-let R1 = board.add(R_1206, {translate: pt(J2.posX, J1.padY("CTS")-.03), rotate: 90, label: 'R1\n4.99k'});
+let J1 = board.add(header_FTDI, {translate: pt(x+width-.23, y+height/2), id: 'J1\nserial'});
+let J2 = board.add(header_UPDI_3_reverse, {translate: pt(x+.23, J1.padY("Rx")), id: 'J2\nUPDI'});
+let R1 = board.add(R_1206, {translate: pt(J2.posX, J1.padY("CTS")-.03), rotate: 90, id: 'R1\n4.99k'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -84,5 +84,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

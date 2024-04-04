@@ -164,5 +164,5 @@ renderPCB({
     x: [x-border - 0.43, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

@@ -32,15 +32,15 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny412, {translate: pt(x+.49, y+.41), label: 'IC1\nt412'});
-let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY-.075), rotate: 180, label: 'J1\nserial'});
-let C1 = board.add(C_1206, {translate: pt(IC1.posX+.07, IC1.padY("VCC")+.14), rotate: 90, label: 'C1\n1uF'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.posX-.07, C1.posY), rotate: -90, label: 'IC2\n3.3V'});
-let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, label: 'J2\nUPDI'});
-let IC3 = board.add(TLE493D, {translate: pt(IC1.posX+.26, IC1.posY-.02), label: 'IC3\nTLE493D'});
-let R1 = board.add(R_1206, {translate: pt(IC3.posX, IC3.posY-.18), label: 'R1 1k'});
-let R2 = board.add(R_1206, {translate: pt(R1.posX, R1.posY-.1), label: 'R2 1k'});
-let C2 = board.add(C_1206, {translate: pt(IC3.padX("GND1"), C1.padY("1")), label: 'C2\n0.1uF'});
+let IC1 = board.add(ATtiny412, {translate: pt(x+.49, y+.41), id: 'IC1\nt412'});
+let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY-.075), rotate: 180, id: 'J1\nserial'});
+let C1 = board.add(C_1206, {translate: pt(IC1.posX+.07, IC1.padY("VCC")+.14), rotate: 90, id: 'C1\n1uF'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.posX-.07, C1.posY), rotate: -90, id: 'IC2\n3.3V'});
+let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, id: 'J2\nUPDI'});
+let IC3 = board.add(TLE493D, {translate: pt(IC1.posX+.26, IC1.posY-.02), id: 'IC3\nTLE493D'});
+let R1 = board.add(R_1206, {translate: pt(IC3.posX, IC3.posY-.18), id: 'R1 1k'});
+let R2 = board.add(R_1206, {translate: pt(R1.posX, R1.posY-.1), id: 'R2 1k'});
+let C2 = board.add(C_1206, {translate: pt(IC3.padX("GND1"), C1.padY("1")), id: 'C2\n0.1uF'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -181,5 +181,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

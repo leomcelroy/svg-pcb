@@ -124,25 +124,25 @@ geo.difference(copper, middle_band);
 board.addShape("F.Cu", copper);
 
 /* -- ADD_COMPONENTS -- */
-let R10 = board.add(R_1206, { translate: pt(-0.023, 0.521), rotate: -90, name: "R10" })
-let LED4 = board.add(LED_1206, { translate: pt(-0.337, 0.218), rotate: 0, name: "LED4" })
-let LED5 = board.add(LED_1206, { translate: pt(0.279, 0.224), rotate: 0, name: "LED5" })
-let R7 = board.add(R_1206, { translate: pt(0.068, 0.523), rotate: -90, name: "R7" })
-let R9 = board.add(R_1206, { translate: pt(0.154, 0.524), rotate: -90, name: "R9" })
+let R10 = board.add(R_1206, { translate: pt(-0.023, 0.521), rotate: -90, id: "R10" })
+let LED4 = board.add(LED_1206, { translate: pt(-0.337, 0.218), rotate: 0, id: "LED4" })
+let LED5 = board.add(LED_1206, { translate: pt(0.279, 0.224), rotate: 0, id: "LED5" })
+let R7 = board.add(R_1206, { translate: pt(0.068, 0.523), rotate: -90, id: "R7" })
+let R9 = board.add(R_1206, { translate: pt(0.154, 0.524), rotate: -90, id: "R9" })
 
-let R8 = board.add(R_1206, { translate: pt(0.333, 0.723), rotate: 0, name: "R8" })
-let PT = board.add(phototransistor_1206, { translate: pt(-0.396, 0.892), rotate: 180, name: "photo" })
-let J2 = board.add(USB_A_plug, { translate: pt(0, 2.45), rotate: 90, name: "USB" })
-let IC1 = board.add(SAMD21E, { translate: pt(-0.01, 0.879), rotate: 0, name: "D21E", padLabelSize: 0.0109 })
-let J1 = board.add(header_SWD, {translate: pt(IC1.posX, IC1.padY("DIO")+.34), rotate: -90, name: 'J1 SWD'});
-let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND2"), IC1.padY("A27")+0.15), name: 'C1 1uF'});
-let C2 = board.add(C_1206, {translate: pt(IC1.padX("A07")-0.015, IC1.padY("VAN")-0.116), rotate: 90, name: 'C2\n1uF'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-0.157, C2.posY), rotate: -90, name: 'IC2\n3.3V'});
-let LED1 = board.add(LED_1206, { translate: pt(-3.252, 0.452), rotate: -90, name: "LED1" })
-let LED2 = board.add(LED_1206, { translate: pt(0.257, 1.947), rotate: 90, name: "LED2" })
-let R2 = board.add(R_1206, { translate: pt(0.337, 0.894), rotate: 0, name: "R2" })
-let LED3 = board.add(LED_1206, { translate: pt(3.27, 0.44), rotate: 270, name: "LED3" })
-let R5 = board.add(R_1206, { translate: pt(-0.339, 1.04), rotate: 270, name: "R5" })
+let R8 = board.add(R_1206, { translate: pt(0.333, 0.723), rotate: 0, id: "R8" })
+let PT = board.add(phototransistor_1206, { translate: pt(-0.396, 0.892), rotate: 180, id: "photo" })
+let J2 = board.add(USB_A_plug, { translate: pt(0, 2.45), rotate: 90, id: "USB" })
+let IC1 = board.add(SAMD21E, { translate: pt(-0.01, 0.879), rotate: 0, id: "D21E", padLabelSize: 0.0109 })
+let J1 = board.add(header_SWD, {translate: pt(IC1.posX, IC1.padY("DIO")+.34), rotate: -90, id: 'J1 SWD'});
+let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND2"), IC1.padY("A27")+0.15), id: 'C1 1uF'});
+let C2 = board.add(C_1206, {translate: pt(IC1.padX("A07")-0.015, IC1.padY("VAN")-0.116), rotate: 90, id: 'C2\n1uF'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-0.157, C2.posY), rotate: -90, id: 'IC2\n3.3V'});
+let LED1 = board.add(LED_1206, { translate: pt(-3.252, 0.452), rotate: -90, id: "LED1" })
+let LED2 = board.add(LED_1206, { translate: pt(0.257, 1.947), rotate: 90, id: "LED2" })
+let R2 = board.add(R_1206, { translate: pt(0.337, 0.894), rotate: 0, id: "R2" })
+let LED3 = board.add(LED_1206, { translate: pt(3.27, 0.44), rotate: 270, id: "LED3" })
+let R5 = board.add(R_1206, { translate: pt(-0.339, 1.04), rotate: 270, id: "R5" })
 
 
 
@@ -465,5 +465,5 @@ renderPCB({
     x: [-width/2, width/2],
     y: [-lip, height]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 });

@@ -51,5 +51,5 @@ renderPCB({
     x: [0, 1],
     y: [0, 1]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

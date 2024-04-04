@@ -33,14 +33,14 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(SAMD11C, {translate: pt(x+width-.68, y+.45), rotate: -90, label: 'IC1\nD11C'});
-let J1 = board.add(header_SWD_4_1, {translate: pt(IC1.padX("CLK")-.14, IC1.posY), rotate: -90, label: 'J1\nSWD'});
-let J2 = board.add(USB_A_plug, {translate: pt(x+width-.29, y+height/2), rotate: 0, label: 'J2\nUSB'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A05"), IC1.padY("24-")-.18), rotate: 0, label: 'IC2\n3.3V'});
-let C1 = board.add(C_1206, {translate: pt(IC2.posX-.22, IC2.posY), label: 'C1\n1uF'});
-let J3 = board.add(header_4, {translate: pt(J1.posX-.21, J1.posY), rotate: -90, label: 'J3\nspeaker'});
-let R1 = board.add(R_1206, {translate: pt(C1.posX-.21, C1.posY), label: 'R1\n0'});
-let T1 = board.add(NMOSFET_SOT23, {translate: pt(J3.posX, J3.posY-.3), rotate: 90, label: 'T1\nN'});
+let IC1 = board.add(SAMD11C, {translate: pt(x+width-.68, y+.45), rotate: -90, id: 'IC1\nD11C'});
+let J1 = board.add(header_SWD_4_1, {translate: pt(IC1.padX("CLK")-.14, IC1.posY), rotate: -90, id: 'J1\nSWD'});
+let J2 = board.add(USB_A_plug, {translate: pt(x+width-.29, y+height/2), rotate: 0, id: 'J2\nUSB'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A05"), IC1.padY("24-")-.18), rotate: 0, id: 'IC2\n3.3V'});
+let C1 = board.add(C_1206, {translate: pt(IC2.posX-.22, IC2.posY), id: 'C1\n1uF'});
+let J3 = board.add(header_4, {translate: pt(J1.posX-.21, J1.posY), rotate: -90, id: 'J3\nspeaker'});
+let R1 = board.add(R_1206, {translate: pt(C1.posX-.21, C1.posY), id: 'R1\n0'});
+let T1 = board.add(NMOSFET_SOT23, {translate: pt(J3.posX, J3.posY-.3), rotate: 90, id: 'T1\nN'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -169,5 +169,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

@@ -26,8 +26,8 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let J1 = board.add(header_SWD_4_05, {translate: pt(x+width/2+.005, y+.07), rotate: 180, label: 'J1 SWD'});
-let J3 = board.add(header_SWD, {translate: pt(J1.posX, y+height-.19), rotate: -90, label: 'J3\ntarget'});
+let J1 = board.add(header_SWD_4_05, {translate: pt(x+width/2+.005, y+.07), rotate: 180, id: 'J1 SWD'});
+let J3 = board.add(header_SWD, {translate: pt(J1.posX, y+height-.19), rotate: -90, id: 'J3\ntarget'});
 
 let interior = geo.path(path([x, y+height],
                              [x+width, y+height],
@@ -87,5 +87,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

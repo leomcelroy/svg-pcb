@@ -32,18 +32,18 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny44_SOICN, {translate: pt(x+.49, y+.56), label: 'IC1\nt44'});
+let IC1 = board.add(ATtiny44_SOICN, {translate: pt(x+.49, y+.56), id: 'IC1\nt44'});
 let VIC1 = board.add(via(2*rv, 2*rp), {translate: pt(IC1.padX("GND")+.08, IC1.padY("GND")+.02)});
-let J1 = board.add(header_ISP, {translate: pt(IC1.posX+.05, IC1.padY("PA6")-.22), rotate: 90, label: 'J1\nISP'});
+let J1 = board.add(header_ISP, {translate: pt(IC1.posX+.05, IC1.padY("PA6")-.22), rotate: 90, id: 'J1\nISP'});
 let VJ12 = board.add(via(2*rv, 2*rp), {translate: pt(J1.padX("V")+.075, J1.padY("V"))});
 let VJ16 = board.add(via(2*rv, 2*rp), {translate: pt(J1.padX("GND")-.075, J1.padY("GND"))});
-let J2 = board.add(header_FTDI, {translate: pt(x+width-.22, IC1.posY-.0), rotate: 0, label: 'J2 FTDI'});
+let J2 = board.add(header_FTDI, {translate: pt(x+width-.22, IC1.posY-.0), rotate: 0, id: 'J2 FTDI'});
 let VJ2 = board.add(via(2*rv, 2*rp), {translate: pt(J2.padX("VCC")+.1, J2.padY("VCC"))});
-let XTAL1 = board.add(XTAL_EFOBM, {translate: pt(IC1.padX("PB3")-.2, IC1.padY("PA0")+.003), rotate: -90, label: 'XTAL1\n20 MHz'});
+let XTAL1 = board.add(XTAL_EFOBM, {translate: pt(IC1.padX("PB3")-.2, IC1.padY("PA0")+.003), rotate: -90, id: 'XTAL1\n20 MHz'});
 let VXTAL = board.add(via(2*rv, 2*rp), {translate: pt(XTAL1.posX-.12, XTAL1.posY)});
-let R1 = board.add(R_1206, {translate: pt(IC1.padX("VCC"), IC1.padY("VCC")+.1), label: 'R1\n10k'});
+let R1 = board.add(R_1206, {translate: pt(IC1.padX("VCC"), IC1.padY("VCC")+.1), id: 'R1\n10k'});
 let VR1 = board.add(via(2*rv, 2*rp), {translate: pt(R1.padX("1")-.08, R1.posY)});
-let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND"), R1.posY), label: 'C1\n1uF'});
+let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND"), R1.posY), id: 'C1\n1uF'});
 let VC1 = board.add(via(2*rv, 2*rp), {translate: pt(C1.padX("1")-.025, C1.posY-.06)});
 
 let interior = geo.path(path([x, y+height],
@@ -160,5 +160,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })
