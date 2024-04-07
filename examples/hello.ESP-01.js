@@ -41,12 +41,12 @@ let S1 = board.add(button_6mm, {translate: pt(J2.padX("GND")+.12, J2.padY("GND")
 let S2 = board.add(slide_switch, {translate: pt(S1.posX, J2.padY("VCC")+.21), rotate: 180, id: 'S2\nprog run'});
 let R2 = board.add(R_1206, {translate: pt(J2.padX("IO0")-.11, J2.padY("IO0")), rotate: 90, id: 'R2\n10k'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -152,7 +152,7 @@ board.wire(path(S1.pad("R1"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

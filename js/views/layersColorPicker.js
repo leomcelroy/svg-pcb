@@ -25,11 +25,12 @@ export const layersColorPicker = (state) => html`
             .value
             .range;
 
+
           const from = range[0]+state.layersStaticInfo.from;
           const to = range[1]+state.layersStaticInfo.from;
 
           state.codemirror.view.dispatch({
-            changes: { from, to, insert: layerObjToStr(state.layers)}
+            changes: { from, to, insert: layerObjToStr(state.layers, 3)}
           })
           
           // find every shape on this layer and change it
@@ -101,20 +102,20 @@ export const layersColorPicker = (state) => html`
 
 `
 
-function layerObjToStr(obj) {
+function layerObjToStr(obj, indent = 0) {
     let result = [];
 
     obj.forEach( layer => {
       const { visible, name, color } = layer;
  
         const value = visible
-          ? ` "${name}": "${color}",`
-          : `/* "${name}": "${color}", */`;
+          ? `${" ".repeat(indent)} "${name}": "${color}",`
+          : `${" ".repeat(indent)}/* "${name}": "${color}", */`;
         result.push(value);
         
     });
 
-    const final = '{\n' + result.join(`\n`) + '\n}';
+    const final = `{\n${result.join(`\n`)}\n${" ".repeat(Math.max(0, indent-1))}}`;
 
     return final;
 }

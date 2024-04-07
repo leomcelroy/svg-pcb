@@ -40,15 +40,15 @@ let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-.125, C2.posY), rota
 let J3 = board.add(TFT8x1v, {translate: pt(IC1.posX-.39, IC1.posY+.25), rotate: 0, id: 'J3 TFT'});
 let R1 = board.add(R_1206, {translate: pt(J3.padX("SCK")+.025, C2.padY("2")), rotate: 90, id: 'R1\n(0)'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
-geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));
+geo.difference(outline, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
+geo.difference(outline, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -196,7 +196,7 @@ board.wire(path(R1.pad("2"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

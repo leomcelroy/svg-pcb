@@ -40,7 +40,7 @@ test_comp1 = board.add(test_footprint, {translate: pt(0.35, 0.65), name: "COMP1"
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#ff8c00cc",
     "drill": "#ff3300e5",

@@ -50,12 +50,12 @@ let D7 = board.add(LED_3014_1100, {translate: pt(D4.posX, D4.posY-.14), rotate: 
 let D8 = board.add(LED_3014_1100, {translate: pt(D7.posX+.075, D7.posY), rotate: 90, id: 'D8'});
 let D9 = board.add(LED_3014_1100, {translate: pt(D7.posX+.15, D7.posY), rotate: 90, id: 'D9'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -157,7 +157,7 @@ board.wire(path(D9.pad("C"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

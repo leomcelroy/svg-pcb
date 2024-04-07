@@ -39,12 +39,12 @@ let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, id:
 let J3 = board.add(header_MFRC522, {translate: pt(x+width-.23, IC1.posY-.1), id: 'J3\nMFRC522'});
 let R1 = board.add(R_1206, {translate: pt(J3.posX-.14, J3.padY("CIPO")), rotate: 90, id: 'R1\n0'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -148,7 +148,7 @@ board.wire(path(IC1.pad("PA2"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

@@ -42,12 +42,12 @@ let R1 = board.add(R_1206, {translate: pt(IC3.posX-.12, IC3.posY-.15), id: 'R1 0
 let R2 = board.add(R_1206, {translate: pt(J2.padX("GND")-.115, J2.posY), rotate: 90, id: 'R2\n4.99k'});
 let R3 = board.add(R_1206, {translate: pt(J2.posX+.15, J2.posY+.03), rotate: 90, id: 'R3\n4.99k'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -151,7 +151,7 @@ board.wire(path([R1.posX, R3.padY("1")],
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

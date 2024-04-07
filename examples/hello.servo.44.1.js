@@ -40,12 +40,12 @@ let IC2 = board.add(regulator_SOT223_1, {translate: pt(J2.posX+.37, J2.posY-.04)
 let C1 = board.add(C_1206, {translate: pt(J2.posX, J2.posY-.14), rotate: 0, id: 'C1\n22uF'});
 let J3 = board.add(header_servo, {translate: pt(J2.posX+.03, J1.posY+.05), id: 'J3\nservo'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -157,7 +157,7 @@ board.wire(path(IC1.pad("PA6"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

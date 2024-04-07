@@ -39,12 +39,12 @@ let IC2 = board.add(regulator_SOT23, {translate: pt(J2.posX-.16, J2.padY("CTS"))
 let C1 = board.add(C_1206, {translate: pt(IC2.posX-.12, IC2.posY), rotate: 90, id: 'C1\n1uF'});
 let J3 = board.add(microSD, {translate: pt(IC1.posX-.42, IC1.posY-.1), rotate: -90, id: 'J3\nmicroSD'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -174,7 +174,7 @@ board.wire(path(J3.pad("MISO"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

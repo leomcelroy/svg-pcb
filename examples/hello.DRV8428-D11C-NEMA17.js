@@ -56,15 +56,15 @@ let R3 = board.add(R_1206, {translate: pt(C3.posX+.22, C3.posY), id: 'R3\n0'});
 let R4 = board.add(R_1206, {translate: pt(IC2.padX("GND")+.01, IC3.posY+.03), rotate: 0, id: 'R4\n1k'});
 let LED = board.add(LED_1206, {translate: pt(R4.posX, R4.posY-.09), rotate: 180, id: 'LED'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J3.posX, 5.12+J3.posY]), 0.00000001, J3.pos));
-geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J3.posX, -5.12+J3.posY]), 0.00000001, J3.pos));
+geo.difference(outline, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J3.posX, 5.12+J3.posY]), 0.00000001, J3.pos));
+geo.difference(outline, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J3.posX, -5.12+J3.posY]), 0.00000001, J3.pos));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -299,7 +299,7 @@ board.wire(path(LED.pad("C"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

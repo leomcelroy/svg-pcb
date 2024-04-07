@@ -10,7 +10,9 @@ import { defaultText, basicSetup } from "./defaultText.js";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { logError } from "./logError.js";
 import * as esprima from 'esprima';
+
 import { makeRandStr } from "./makeRandStr.js";
+
 
 const getProgramString = () => global_state.codemirror.view.state.doc.toString();
 

@@ -76,10 +76,10 @@ let J2 = board.add(USB_A_plug, {translate: pt(-0.05916114, 0.01358479), rotate: 
 let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A04")+.15, IC1.padY("A08")-.005), rotate: 90, name: 'IC2\n3.3V'});
 let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-0.2), rotate: 90, name: 'C1\n1uF'});
 
-let interior = geo.translate(geo.rectangle(0.48, 0.58), [J2.posX, J2.posY]);
+let outline = geo.translate(geo.rectangle(0.48, 0.58), [J2.posX, J2.posY]);
 
 
-let interior2 = path([-0.2, -0.04],
+let outline2 = path([-0.2, -0.04],
                      ["bezier", [-3.7, -0.10],
                                 [0.42, 0.17],
                                 [-4.89,  -4.05],
@@ -89,8 +89,8 @@ let interior2 = path([-0.2, -0.04],
                                 [0.0, -0.04]],
                     [0.2, -0.04]);
 
-board.addShape("interior", interior);
-board.addShape("interior", interior2);
+board.addShape("outline", outline);
+board.addShape("outline", outline2);
 
 /* -- ADD_WIRES -- */
 board.wire(path(J1.pad("CLK"),
@@ -192,7 +192,7 @@ board.wire(path(J2.pad("5V"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#ff8c00cc",
     "drill": "#ff3300e5",

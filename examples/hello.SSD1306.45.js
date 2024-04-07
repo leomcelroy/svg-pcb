@@ -38,12 +38,12 @@ let oled = board.add(I2C4x1, {translate: pt(IC1.padX("PB3"), J2.padY("GND")+.05)
 let R2 = board.add(R_1206, {translate: pt(J1.posX+.06, oled.padY("SCL")), rotate: 90, id: 'R2\n10k'});
 let R3 = board.add(R_1206, {translate: pt(J1.posX-.06, oled.padY("SCL")), rotate: 90, id: 'R3\n10k'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -147,7 +147,7 @@ board.wire(path(oled.pad("GND"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

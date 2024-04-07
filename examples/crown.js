@@ -102,7 +102,7 @@ if (do_holes) {
   }
 }
 
-board.addShape("interior", crown);
+board.addShape("outline", crown);
 
 let copper = structuredClone(crown);
 
@@ -155,7 +155,7 @@ let USB_rect = geo.path([[-w_USB/2, -0.2],
 
 geo.translate(USB_rect, J2.pos);
 
-board.addShape("interior", USB_rect);
+board.addShape("outline", USB_rect);
 
 /* -- ADD_WIRES -- */
 board.wire(path(
@@ -454,7 +454,7 @@ renderPCB({
 
     //"F.Cu": "#ffffffff",
 
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#ff8c00cc",
     "drill": "#ffffffff",

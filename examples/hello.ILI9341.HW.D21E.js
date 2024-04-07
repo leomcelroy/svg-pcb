@@ -46,15 +46,15 @@ let V2 = board.add(via(2*rv, 2*rp), {translate: pt(J3.padX("SCK")+.02, J3.padY("
 let V3 = board.add(via(2*rv, 2*rp), {translate: pt(IC1.padX("A16"), IC1.padY("A15")), id: 'V3'});
 let V4 = board.add(via(2*rv, 2*rp), {translate: pt(V3.posX, V3.posY-.09), id: 'V4'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
-geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));
+geo.difference(outline, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
+geo.difference(outline, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -217,7 +217,7 @@ board.wire(path(V4.pad("via"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

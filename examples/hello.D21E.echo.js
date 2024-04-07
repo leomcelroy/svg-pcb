@@ -36,15 +36,15 @@ let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND2"), IC1.padY("A27")+.15)
 let C2 = board.add(C_1206, {translate: pt(IC1.padX("A07")-.02, IC1.padY("VAN")-.07), rotate: 90, id: 'C2\n1uF'});
 let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-.11, C2.posY), rotate: -90, id: 'IC2\n3.3V'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
-geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));
+geo.difference(outline, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
+geo.difference(outline, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -142,7 +142,7 @@ board.wire(path(IC2.pad("gnd"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",

@@ -21,14 +21,14 @@ const height = 1;
 
 let board = new PCB();
 
-let interior = path(
+let outline = path(
   pt(-0.5, 0.5),
   pt(0.5, 0.5),
   pt(0.5, -0.5),
   pt(-0.5, -0.5),
 );
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 /* -- ADD_COMPONENTS -- */
 
@@ -64,7 +64,7 @@ const yMax = Math.max(limit0[1], limit1[1]);
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#ff8c00cc",
     "B.Mask": "#00000000",
@@ -100,14 +100,14 @@ const height = 1;
 const ic = board.add(SAMD11C, { translate: pt(-0.2, 0.050), rotate: 0, id: "SAMD11C" })
 
 /* -- BOARD_SIZE_SHAPE -- */
-const interior = path(
+const outline = path(
   [-0.5, 0.5],
   [0.5, 0.5],
   [0.5, -0.5],
   [-0.5, -0.5],
 );
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 /* -- ADD_WIRES -- */
 board.wire(path(), 0.015);
@@ -123,7 +123,7 @@ const yMax = Math.max(limit0[1], limit1[1]);
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#ff8c00cc",
     "B.Mask": "#00000000",
@@ -139,4 +139,4 @@ renderPCB({
   mmPerUnit: 25.4
 });
 
-`
+`.replaceAll("\t", " ")

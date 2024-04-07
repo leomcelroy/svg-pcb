@@ -35,12 +35,12 @@ let C1 = board.add(C_1206, {translate: pt(R1.posX+.1, R1.posY), rotate: 90, id: 
 let R2 = board.add(R_1206, {translate: pt((R1.posX+C1.posX)/2, R1.padY("1")-.1), id: 'R2 1k'});
 let J2 = board.add(header_FTDI, {translate: pt(x+width-.23, C1.posY+.05), id: 'J2 FTDI\n5V'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -119,7 +119,7 @@ board.wire(path(J2.pad("Rx"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
