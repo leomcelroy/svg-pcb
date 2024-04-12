@@ -27,16 +27,16 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let J1 = board.add(header_FTDI, {translate: pt(x+width-.22, y+height/2), rotate: 0, label: 'J1 FTDI\n3.3V'});
-let ESP = board.add(ESP32_CAM, {translate: pt(x+.4, y+.74), rotate: -90, label: 'ESP32-CAM'});
-let S1 = board.add(slide_switch, {translate: pt(ESP.padX("IO0"), ESP.padY("IO0")-.19), label: 'prog run'});
+let J1 = board.add(header_FTDI, {translate: pt(x+width-.22, y+height/2), rotate: 0, id: 'J1 FTDI\n3.3V'});
+let ESP = board.add(ESP32_CAM, {translate: pt(x+.4, y+.74), rotate: -90, id: 'ESP32-CAM'});
+let S1 = board.add(slide_switch, {translate: pt(ESP.padX("IO0"), ESP.padY("IO0")-.19), id: 'prog run'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -79,7 +79,7 @@ board.wire(path(S1.pad("2"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -91,5 +91,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

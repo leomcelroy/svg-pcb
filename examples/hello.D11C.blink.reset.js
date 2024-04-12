@@ -31,25 +31,25 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(SAMD11C, {translate: pt(x+.58, y+.39), label: 'IC1\nD11C'});
-let J1 = board.add(header_SWD_4_05, {translate: pt(IC1.posX, IC1.padY("CLK")-.11), label: 'J1 SWD'});
-let J2 = board.add(USB_A_plug, {translate: pt(IC1.posX, y+height-.29), rotate: 90, label: 'J2\nUSB'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A05")-.38, IC1.padY("A14")), rotate: -90, label: 'IC2\n3.3V'});
-let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.2), rotate: 90, label: 'C1\n1uF'});
-let C2 = board.add(C_1206, {translate: pt(C1.posX+.12, C1.posY), rotate: 90, label: 'C2\n.1uF'});
-let R1 = board.add(R_1206, {translate: pt(C2.posX+.12, C2.posY), rotate: 90, label: 'R1\n10k'});
-let R2 = board.add(R_1206, {translate: pt(R1.posX-.01, IC1.padY("A08")-.025), rotate: 90, label: 'R2\n1k'});
-let LED1 = board.add(LED_1206, {translate: pt(C2.posX+.01, R2.posY), rotate: 90, label: 'LED1'});
+let IC1 = board.add(SAMD11C, {translate: pt(x+.58, y+.39), id: 'IC1\nD11C'});
+let J1 = board.add(header_SWD_4_05, {translate: pt(IC1.posX, IC1.padY("CLK")-.11), id: 'J1 SWD'});
+let J2 = board.add(USB_A_plug, {translate: pt(IC1.posX, y+height-.29), rotate: 90, id: 'J2\nUSB'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A05")-.38, IC1.padY("A14")), rotate: -90, id: 'IC2\n3.3V'});
+let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.2), rotate: 90, id: 'C1\n1uF'});
+let C2 = board.add(C_1206, {translate: pt(C1.posX+.12, C1.posY), rotate: 90, id: 'C2\n.1uF'});
+let R1 = board.add(R_1206, {translate: pt(C2.posX+.12, C2.posY), rotate: 90, id: 'R1\n10k'});
+let R2 = board.add(R_1206, {translate: pt(R1.posX-.01, IC1.padY("A08")-.025), rotate: 90, id: 'R2\n1k'});
+let LED1 = board.add(LED_1206, {translate: pt(C2.posX+.01, R2.posY), rotate: 90, id: 'LED1'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
-geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));
+geo.difference(outline, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
+geo.difference(outline, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -149,7 +149,7 @@ board.wire(path(LED1.pad("C"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -161,5 +161,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

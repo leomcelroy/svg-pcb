@@ -86,7 +86,7 @@ board.wire(path(
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#ff8c00cc",
     //"padLabels": "#ffff99e5",
@@ -96,5 +96,5 @@ renderPCB({
     x: [0, 1],
     y: [0, 1]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

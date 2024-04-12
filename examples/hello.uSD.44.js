@@ -31,20 +31,20 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny44_SOICN, {translate: pt(x+.86, y+.59), label: 'IC1\nt44'});
-let J1 = board.add(header_ISP, {translate: pt(IC1.posX+.05, IC1.padY("PA6")-.22), rotate: 90, label: 'J1\nISP'});
-let J2 = board.add(header_FTDI, {translate: pt(x+width-.22, IC1.posY-.0), rotate: 0, label: 'J2 FTDI'});
-let R1 = board.add(R_1206, {translate: pt(IC1.posX, IC1.padY("VCC")+.1), label: 'R1\n10k'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(J2.posX-.16, J2.padY("CTS")), rotate: 90, label: 'IC2\n3.3V'});
-let C1 = board.add(C_1206, {translate: pt(IC2.posX-.12, IC2.posY), rotate: 90, label: 'C1\n1uF'});
-let J3 = board.add(microSD, {translate: pt(IC1.posX-.42, IC1.posY-.1), rotate: -90, label: 'J3\nmicroSD'});
+let IC1 = board.add(ATtiny44_SOICN, {translate: pt(x+.86, y+.59), id: 'IC1\nt44'});
+let J1 = board.add(header_ISP, {translate: pt(IC1.posX+.05, IC1.padY("PA6")-.22), rotate: 90, id: 'J1\nISP'});
+let J2 = board.add(header_FTDI, {translate: pt(x+width-.22, IC1.posY-.0), rotate: 0, id: 'J2 FTDI'});
+let R1 = board.add(R_1206, {translate: pt(IC1.posX, IC1.padY("VCC")+.1), id: 'R1\n10k'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(J2.posX-.16, J2.padY("CTS")), rotate: 90, id: 'IC2\n3.3V'});
+let C1 = board.add(C_1206, {translate: pt(IC2.posX-.12, IC2.posY), rotate: 90, id: 'C1\n1uF'});
+let J3 = board.add(microSD, {translate: pt(IC1.posX-.42, IC1.posY-.1), rotate: -90, id: 'J3\nmicroSD'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -174,7 +174,7 @@ board.wire(path(J3.pad("MISO"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -186,5 +186,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

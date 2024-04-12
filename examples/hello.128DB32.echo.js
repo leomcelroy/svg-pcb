@@ -28,19 +28,19 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(AVRDB32, {translate: pt(x+.56, y+.38), label: 'IC1\n128DB32'});
-let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY-.03), rotate: 180, label: 'J1\nserial\n5V'});
-let J2 = board.add(header_UPDI, {translate: pt(x+width-.23, IC1.posY+.23), rotate: 180, label: 'J2\nUPDI'});
-let C1 = board.add(C_1206, {translate: pt(IC1.padX("VIO2"), IC1.posY-.28), label: 'C1 1uF'});
-let C2 = board.add(C_1206, {translate: pt(IC1.posX+.32, IC1.padY("AVDD")), rotate: 90, label: 'C2\n1uF'});
-let C3 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY+.35), label: 'C3 1uF'});
+let IC1 = board.add(AVRDB32, {translate: pt(x+.56, y+.38), id: 'IC1\n128DB32'});
+let J1 = board.add(header_FTDI, {translate: pt(x+.23, IC1.posY-.03), rotate: 180, id: 'J1\nserial\n5V'});
+let J2 = board.add(header_UPDI, {translate: pt(x+width-.23, IC1.posY+.23), rotate: 180, id: 'J2\nUPDI'});
+let C1 = board.add(C_1206, {translate: pt(IC1.padX("VIO2"), IC1.posY-.28), id: 'C1 1uF'});
+let C2 = board.add(C_1206, {translate: pt(IC1.posX+.32, IC1.padY("AVDD")), rotate: 90, id: 'C2\n1uF'});
+let C3 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY+.35), id: 'C3 1uF'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -122,7 +122,7 @@ board.wire(path(C3.pad("2"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -134,5 +134,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

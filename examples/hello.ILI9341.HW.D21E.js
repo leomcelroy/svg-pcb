@@ -33,28 +33,28 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(SAMD21E, {translate: pt(x+.65, y+.36), label: 'IC1\nD21E'});
-let J1 = board.add(header_SWD, {translate: pt(IC1.posX, IC1.padY("DIO")+.34), rotate: -90, label: 'J1 SWD'});
-let J2 = board.add(USB_A_plug, {translate: pt(x+width-.29, IC1.padY("25+")+.04), label: 'J2 USB'});
-let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND2"), IC1.padY("A27")+.15), label: 'C1 1uF'});
-let C2 = board.add(C_1206, {translate: pt(IC1.padX("A07")-.275, IC1.padY("VAN")-.08), rotate: 90, label: 'C2\n1uF'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-.135, C2.posY), rotate: -90, label: 'IC2\n3.3V'});
-let J3 = board.add(TFT8x1v, {translate: pt(IC1.posX-.41, IC1.posY+.28), rotate: 0, label: 'J3 TFT'});
-let R1 = board.add(R_1206, {translate: pt(J3.padX("SCK")+.025, C2.padY("2")), rotate: 90, label: 'R1\n(0)'});
-let V1 = board.add(via(2*rv, 2*rp), {translate: pt(J3.padX("MOSI")-.02, J3.padY("SCK")), label: 'V1'});
-let V2 = board.add(via(2*rv, 2*rp), {translate: pt(J3.padX("SCK")+.02, J3.padY("SCK")-.075), label: 'V2'});
-let V3 = board.add(via(2*rv, 2*rp), {translate: pt(IC1.padX("A16"), IC1.padY("A15")), label: 'V3'});
-let V4 = board.add(via(2*rv, 2*rp), {translate: pt(V3.posX, V3.posY-.09), label: 'V4'});
+let IC1 = board.add(SAMD21E, {translate: pt(x+.65, y+.36), id: 'IC1\nD21E'});
+let J1 = board.add(header_SWD, {translate: pt(IC1.posX, IC1.padY("DIO")+.34), rotate: -90, id: 'J1 SWD'});
+let J2 = board.add(USB_A_plug, {translate: pt(x+width-.29, IC1.padY("25+")+.04), id: 'J2 USB'});
+let C1 = board.add(C_1206, {translate: pt(IC1.padX("GND2"), IC1.padY("A27")+.15), id: 'C1 1uF'});
+let C2 = board.add(C_1206, {translate: pt(IC1.padX("A07")-.275, IC1.padY("VAN")-.08), rotate: 90, id: 'C2\n1uF'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-.135, C2.posY), rotate: -90, id: 'IC2\n3.3V'});
+let J3 = board.add(TFT8x1v, {translate: pt(IC1.posX-.41, IC1.posY+.28), rotate: 0, id: 'J3 TFT'});
+let R1 = board.add(R_1206, {translate: pt(J3.padX("SCK")+.025, C2.padY("2")), rotate: 90, id: 'R1\n(0)'});
+let V1 = board.add(via(2*rv, 2*rp), {translate: pt(J3.padX("MOSI")-.02, J3.padY("SCK")), id: 'V1'});
+let V2 = board.add(via(2*rv, 2*rp), {translate: pt(J3.padX("SCK")+.02, J3.padY("SCK")-.075), id: 'V2'});
+let V3 = board.add(via(2*rv, 2*rp), {translate: pt(IC1.padX("A16"), IC1.padY("A15")), id: 'V3'});
+let V4 = board.add(via(2*rv, 2*rp), {translate: pt(V3.posX, V3.posY-.09), id: 'V4'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
-geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));
+geo.difference(outline, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
+geo.difference(outline, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -217,7 +217,7 @@ board.wire(path(V4.pad("via"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -229,5 +229,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })
