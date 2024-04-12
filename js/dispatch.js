@@ -72,6 +72,9 @@ const ACTIONS = {
 							return entry.key.name === "value"
 						});
 
+						// console.log(value, x.snippet);
+
+
 						const valueRangeFrom = value.value.range[0] + x.from;
 						const valueRangeTo = value.value.range[1] + x.from;
 

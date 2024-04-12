@@ -16,7 +16,9 @@
     "jest": "^29.5.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.3",
+    "typescript": "^5.4.4",
     "vite": "^4.0.1",
+    "vite-plugin-checker": "^0.6.4",
     "yarn": "^1.22.19"
   },
   "dependencies": {

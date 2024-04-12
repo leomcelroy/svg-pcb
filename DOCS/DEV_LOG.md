@@ -1,6 +1,28 @@
 # DEV LOG
 
-### April 4, 2023
+### April 10, 2024
+
+Changes to make
+
+- change net list structure
+- draw rats nest
+- change layer object to layer list
+- make components and wire directly manipulable
+  - maybe should verify structure of data in specific spot (new PCB({...}))
+- no ids when not passed
+- remove wire list
+- make layer order match code and ui
+
+- update examples
+- update footprint structure
+  - { pads: {...} }
+  - maybe should be list of pads so they don't need names/ids
+
+- convert board into a footprint
+  - how to determine what is a pad and what is just a shape
+
+
+### April 4, 2024
 
 updated examples to use id instead of label
 

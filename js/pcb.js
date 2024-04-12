@@ -188,9 +188,9 @@ export class PCB {
         ]
   }
 
-  setNetlist(...newNetlist) {
+  setNetlist(newNetlist) {
     newNetlist.forEach(group => {
-      group.forEach(item => {
+      group.pads.forEach(item => {
         const [ comp, pad ] = item;
         const constructor = comp.constructor.name;
         if (constructor === "Component") item[0] = comp.id;

@@ -7,6 +7,8 @@ import { defaultText, basicSetup } from "./defaultText.js";
 import { logError } from "./logError.js";
 import { downloadText } from "./events/download.js";
 
+// add window event listener
+
 export function init() {
   dispatch("HARD_RENDER");
   const search = window.location.search;
