@@ -6,7 +6,7 @@ const header_FTDI = footprint({"GND":{"shape":"M 0.05,0.025L -0.05,0.025L -0.050
 const I2C4x1 = footprint({"VCC":{"shape":"M -0.0395,0.0195L 0.0395,0.0195L 0.0395,-0.0195L -0.0395,-0.0195L -0.0395,0.0195","pos":[-0.065,-0.15],"layers":["F.Cu","F.Mask"],"index":1},"GND":{"shape":"M -0.0395,0.0195L 0.0395,0.0195L 0.0395,-0.0195L -0.0395,-0.0195L -0.0395,0.0195","pos":[0.065,-0.05],"layers":["F.Cu","F.Mask"],"index":2},"SCL":{"shape":"M -0.0395,0.0195L 0.0395,0.0195L 0.0395,-0.0195L -0.0395,-0.0195L -0.0395,0.0195","pos":[-0.065,0.05],"layers":["F.Cu","F.Mask"],"index":3},"SDA":{"shape":"M -0.0395,0.0195L 0.0395,0.0195L 0.0395,-0.0195L -0.0395,-0.0195L -0.0395,0.0195","pos":[0.065,0.15],"layers":["F.Cu","F.Mask"],"index":4}});
 
 
-// @version: v0.1.0
+// @version: v0.2.0
 // commands:
 //  - SHIFT+ENTER: render
 //  - drap & drop file: kicad import

@@ -7,7 +7,7 @@ const button_6mm = footprint({"L1":{"shape":"M -0.04,0.03L 0.04,0.03L 0.04,-0.03
 const slide_switch = footprint({"1":{"shape":"M -0.0195,0.0235L 0.0195,0.0235L 0.0195,-0.0235L -0.0195,-0.0235L -0.0195,0.0235","pos":[-0.098,0.1],"layers":["F.Cu","F.Mask"],"index":1},"2":{"shape":"M -0.0195,0.0235L 0.0195,0.0235L 0.0195,-0.0235L -0.0195,-0.0235L -0.0195,0.0235","pos":[0,0.1],"layers":["F.Cu","F.Mask"],"index":2},"3":{"shape":"M -0.0195,0.0235L 0.0195,0.0235L 0.0195,-0.0235L -0.0195,-0.0235L -0.0195,0.0235","pos":[0.098,0.1],"layers":["F.Cu","F.Mask"],"index":3}});
 
 
-// @version: v0.1.0
+// @version: v0.2.0
 // commands:
 //  - SHIFT+ENTER: render
 //  - drap & drop file: kicad import
