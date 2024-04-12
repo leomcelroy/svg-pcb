@@ -7,6 +7,8 @@ import { defaultText, basicSetup } from "./defaultText.js";
 import { logError } from "./logError.js";
 import { downloadText } from "./events/download.js";
 
+// add window event listener
+
 export function init() {
   dispatch("HARD_RENDER");
   const search = window.location.search;
@@ -86,17 +88,16 @@ function exportNet() {
       console.log("Assign board.add(...) to variable or pass id in object parameters.")
     }
 
-
-    components[x.refDes] = { pads: x.padShapes, pos: x._pos, padPositions: x.pads };
+    components[x.id] = { pads: x.padShapes, pos: x._pos, padPositions: x.pads };
   });
 
-  const obj = { components, netList: pcb.netList };
+  const obj = { components, netlist: pcb.netlist };
 
   const string = JSON.stringify(obj);
 
   console.log(obj);
 
-  downloadText("netList.json", string, false);
+  downloadText("netlist.json", string, false);
 }
 
 

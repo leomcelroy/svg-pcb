@@ -31,22 +31,22 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let J1 = board.add(header_FTDI, {translate: pt(x+width-.22, y+.48), rotate: 0, label: 'J1 serial\n5V power\n3.3V logic'});
-let IC1 = board.add(regulator_SOT223, {translate: pt(J1.posX-.25, J1.posY), label: 'IC1\n3.3V'});
-let C1 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY-.25), label: 'C1 10uF'});
-let C2 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY+.25), label: 'C2 1uF'});
-let J2 = board.add(ESP_01, {translate: pt(IC1.posX-.49, IC1.posY), rotate: 180, label: 'J2\nESP-01'});
-let R1 = board.add(R_1206, {translate: pt(J2.padX("EN")+.11, J2.padY("IO0")), rotate: 90, label: 'R1\n10k'});
-let S1 = board.add(button_6mm, {translate: pt(J2.padX("GND")+.12, J2.padY("GND")-.2), label: 'S1\nreset'});
-let S2 = board.add(slide_switch, {translate: pt(S1.posX, J2.padY("VCC")+.21), rotate: 180, label: 'S2\nprog run'});
-let R2 = board.add(R_1206, {translate: pt(J2.padX("IO0")-.11, J2.padY("IO0")), rotate: 90, label: 'R2\n10k'});
+let J1 = board.add(header_FTDI, {translate: pt(x+width-.22, y+.48), rotate: 0, id: 'J1 serial\n5V power\n3.3V logic'});
+let IC1 = board.add(regulator_SOT223, {translate: pt(J1.posX-.25, J1.posY), id: 'IC1\n3.3V'});
+let C1 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY-.25), id: 'C1 10uF'});
+let C2 = board.add(C_1206, {translate: pt(IC1.posX, IC1.posY+.25), id: 'C2 1uF'});
+let J2 = board.add(ESP_01, {translate: pt(IC1.posX-.49, IC1.posY), rotate: 180, id: 'J2\nESP-01'});
+let R1 = board.add(R_1206, {translate: pt(J2.padX("EN")+.11, J2.padY("IO0")), rotate: 90, id: 'R1\n10k'});
+let S1 = board.add(button_6mm, {translate: pt(J2.padX("GND")+.12, J2.padY("GND")-.2), id: 'S1\nreset'});
+let S2 = board.add(slide_switch, {translate: pt(S1.posX, J2.padY("VCC")+.21), rotate: 180, id: 'S2\nprog run'});
+let R2 = board.add(R_1206, {translate: pt(J2.padX("IO0")-.11, J2.padY("IO0")), rotate: 90, id: 'R2\n10k'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -152,7 +152,7 @@ board.wire(path(S1.pad("R1"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -164,5 +164,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

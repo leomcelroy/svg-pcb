@@ -1,6 +1,6 @@
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { MM_PER_INCH } from "../constants.js";
+import { global_state } from "../global_state.js";
 
 // Some things TODO here:
 // - Simplify file naming
@@ -9,8 +9,8 @@ import { MM_PER_INCH } from "../constants.js";
 // - Revisit drills
 
 // This should be a global function
-export function inchesToMM(inches){
-  return inches * MM_PER_INCH;
+export function unitsToMm(inches){
+  return inches * global_state.mm_per_unit;
 }
 
 export const GerberDrillFormat = Object.freeze({
@@ -333,7 +333,7 @@ export class GerberBuilder {
     layer.map( el => {
       if (el.type !== "wire") return;
 
-      const wireThickness = inchesToMM(el.thickness).toFixed(3);
+      const wireThickness = unitsToMm(el.thickness).toFixed(3);
         
       // Add aperture only if it does not exist yet
       if (!this.#wireThicknesses.includes(wireThickness)) {
@@ -353,8 +353,8 @@ export class GerberBuilder {
       this.#body += "D" + el.gerberAperture.toString() + "*\n";
       
       el.shape.flat().forEach((pt, i) => {
-        const x = this.constructor.format( inchesToMM(pt[0]) );
-        const y = this.constructor.format( inchesToMM(pt[1]) );
+        const x = this.constructor.format( unitsToMm(pt[0]) );
+        const y = this.constructor.format( unitsToMm(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
       });
     });
@@ -473,12 +473,12 @@ export class GerberBuilder {
     
     // Define rect apertures
     rectApertures.forEach((a) => {
-      this.#body += "%ADD" + a.id.toString() +  "R," + inchesToMM(a.width).toFixed(3) + "X" + inchesToMM(a.height).toFixed(3) + "*%\n";
+      this.#body += "%ADD" + a.id.toString() +  "R," + unitsToMm(a.width).toFixed(3) + "X" + unitsToMm(a.height).toFixed(3) + "*%\n";
     });
 
     // Define circ apertures
     circApertures.forEach((a) => {
-      this.#body += "%ADD" + a.id.toString() +  "C," + inchesToMM(a.radius * 2).toFixed(3) + "*%\n";
+      this.#body += "%ADD" + a.id.toString() +  "C," + unitsToMm(a.radius * 2).toFixed(3) + "*%\n";
     });
 
     // Draw rect pads using rect apertures
@@ -488,7 +488,7 @@ export class GerberBuilder {
       this.#body += "D" + p.id.toString() + "*\n";
 
       // Flash current rectangle aperture at location X, Y
-      this.#body += "X" + this.constructor.format(inchesToMM(p.x)) + "Y" + this.constructor.format(inchesToMM(p.y)) + "D03*\n";
+      this.#body += "X" + this.constructor.format(unitsToMm(p.x)) + "Y" + this.constructor.format(unitsToMm(p.y)) + "D03*\n";
     });
 
     // Draw circ pads using circ apertures
@@ -498,7 +498,7 @@ export class GerberBuilder {
       this.#body += "D" + p.id.toString() + "*\n";
 
       // Flash current rectangle aperture at location X, Y
-      this.#body += "X" + this.constructor.format(inchesToMM(p.x)) + "Y" + this.constructor.format(inchesToMM(p.y)) + "D03*\n";
+      this.#body += "X" + this.constructor.format(unitsToMm(p.x)) + "Y" + this.constructor.format(unitsToMm(p.y)) + "D03*\n";
     });
 
     // Select the aperture for drawing polygon pads
@@ -515,8 +515,8 @@ export class GerberBuilder {
 
       // Loop through points
       p.forEach((pt, i) => {
-        const x = this.constructor.format( inchesToMM(pt[0]) );
-        const y = this.constructor.format( inchesToMM(pt[1]) );
+        const x = this.constructor.format( unitsToMm(pt[0]) );
+        const y = this.constructor.format( unitsToMm(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
       });
 
@@ -534,8 +534,8 @@ export class GerberBuilder {
       if (el.type === "wire") return;
 
       el.flat().forEach((pt, i) => {
-        const x = this.constructor.format( inchesToMM(pt[0]) );
-        const y = this.constructor.format( inchesToMM(pt[1]) );
+        const x = this.constructor.format( unitsToMm(pt[0]) );
+        const y = this.constructor.format( unitsToMm(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
       });
     });
@@ -564,8 +564,8 @@ export class GerberBuilder {
         this.#body += "G36*\n";
       
         el.flat().forEach((pt, i) => {
-          const x = this.constructor.format( inchesToMM(pt[0]) );
-          const y = this.constructor.format( inchesToMM(pt[1]) );
+          const x = this.constructor.format( unitsToMm(pt[0]) );
+          const y = this.constructor.format( unitsToMm(pt[1]) );
           this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
         });
 
@@ -578,7 +578,7 @@ export class GerberBuilder {
       if (el.type !== "text") return;
 
       const text = el.value;
-      const textSize = inchesToMM(el.size);
+      const textSize = unitsToMm(el.size);
       const textPosition = el.translate;
       const textRotation = el.rotation;
       const textFont = "Courier"; // Let's see what we use in SvgPcb currently
@@ -612,15 +612,15 @@ export class GerberBuilder {
     layer.map( el => {
       el.forEach((path, i) => {
         path.forEach((pt, i) => {
-          const x = this.constructor.format( inchesToMM(pt[0]) );
-          const y = this.constructor.format( inchesToMM(pt[1]) );
+          const x = this.constructor.format( unitsToMm(pt[0]) );
+          const y = this.constructor.format( unitsToMm(pt[1]) );
           this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
         });
 
         // Add a copy of first point to close the shape if needed.
         if (path[0][0] !== path[path.length-1][0] || path[0][1] !== path[path.length-1][1]) {
-          const x = this.constructor.format( inchesToMM(path[0][0]) );
-          const y = this.constructor.format( inchesToMM(path[0][1]) );
+          const x = this.constructor.format( unitsToMm(path[0][0]) );
+          const y = this.constructor.format( unitsToMm(path[0][1]) );
           this.#body += "X" + x + "Y" + y + "D01*\n";
         }
       });
@@ -639,10 +639,10 @@ export class GerberBuilder {
         let diameter = x.diameter;
 
         let c = [];
-        c[0] = inchesToMM(center[0]);
-        c[1] = inchesToMM(center[1]);
+        c[0] = unitsToMm(center[0]);
+        c[1] = unitsToMm(center[1]);
         center = c;
-        diameter = inchesToMM(x.diameter);
+        diameter = unitsToMm(x.diameter);
     
         return {
           center, 
@@ -745,10 +745,10 @@ class ExcellonBuilder {
 
         const metric = this.#state.downloadGerberOptions.excellonMetric;
         let c = [];
-        c[0] = metric ? inchesToMM(center[0]) : center[0];
-        c[1] = metric ? inchesToMM(center[1]) : center[1];
+        c[0] = metric ? unitsToMm(center[0]) : center[0];
+        c[1] = metric ? unitsToMm(center[1]) : center[1];
         center = c;
-        diameter = metric? inchesToMM(x.diameter) : x.diameter; 
+        diameter = metric? unitsToMm(x.diameter) : x.diameter; 
     
         return {
           center, 

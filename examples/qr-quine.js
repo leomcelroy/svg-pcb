@@ -39,7 +39,7 @@ const border = 0.05 // rendering border
 /* -- DECLARE_PCB -- */
 let board = new PCB();
 
-let interior = geo.translate(geo.rectangle(width, height), [x+width/2, y+height/2]);
+let outline = geo.translate(geo.rectangle(width, height), [x+width/2, y+height/2]);
 
 
 /* -- ADD_COMPONENTS -- */
@@ -51,11 +51,11 @@ let C2 = board.add(C_1206, {translate: pt(IC1.padX("A07")-.02, IC1.padY("VAN")-.
 let IC2 = board.add(regulator_SOT23, {translate: pt(C2.posX-.11, C2.posY), rotate: -90, name: 'IC2\n3.3V'});
 board.add(qr_code, { translate: pt(0.8, 1.5), rotate: 0, name: "qr_code" })
 
-geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
-geo.difference(interior, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));
-geo.union(interior, geo.translate(geo.rectangle(0.5, 1.05), pt(0.833, 1.525)));
+geo.difference(outline, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]));
+geo.difference(outline, geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]));
+geo.union(outline, geo.translate(geo.rectangle(0.5, 1.05), pt(0.833, 1.525)));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -153,7 +153,7 @@ board.wire(path(IC2.pad("gnd"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#ff8c00cc",
     "drill": "#ff3300e5",
@@ -164,5 +164,5 @@ renderPCB({
     x: [x-border - 0.43, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

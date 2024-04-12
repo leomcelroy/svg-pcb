@@ -28,17 +28,17 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny1614, {translate: pt(x+.21, y+.5), label: 'IC1\nt1614'});
-let C1 = board.add(C_1206, {translate: pt(IC1.posX, IC1.padY("VCC")+.08), label: 'C1 1uF'});
-let J1 = board.add(header_FTDI, {translate: pt(x+width-.23, IC1.posY-.05), label: 'J1\nFTDI'});
-let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, label: 'J2 UPDI'});
+let IC1 = board.add(ATtiny1614, {translate: pt(x+.21, y+.5), id: 'IC1\nt1614'});
+let C1 = board.add(C_1206, {translate: pt(IC1.posX, IC1.padY("VCC")+.08), id: 'C1 1uF'});
+let J1 = board.add(header_FTDI, {translate: pt(x+width-.23, IC1.posY-.05), id: 'J1\nFTDI'});
+let J2 = board.add(header_UPDI, {translate: pt(IC1.posX, y+.23), rotate: 90, id: 'J2 UPDI'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -89,7 +89,7 @@ board.wire(path(IC1.pad("RB3"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -101,5 +101,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

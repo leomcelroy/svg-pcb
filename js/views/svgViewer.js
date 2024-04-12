@@ -193,7 +193,7 @@ function renderSelectedPath(state, scale) {
   const path = state.selectedPath;
   if (state.selectedPathIndex < 0 || !path || !path.args) return "";
   return [
-    renderPath(pathToCubics(path.args).cubics),
+    renderPath(pathToCubics(path.args).cubics, { class: ["trigger-selected-path"] }),
     drawPreview(state),
     renderPts(path.args, scale),
   ]

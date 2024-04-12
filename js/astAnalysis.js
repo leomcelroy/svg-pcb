@@ -1,5 +1,3 @@
-// import * as esprima from 'esprima';
-
 const FUNCTIONS_STATIC_INFO = [
   "pt", 
   "path", 

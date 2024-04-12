@@ -10,7 +10,9 @@ import { defaultText, basicSetup } from "./defaultText.js";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { logError } from "./logError.js";
 import * as esprima from 'esprima';
+
 import { makeRandStr } from "./makeRandStr.js";
+
 
 const getProgramString = () => global_state.codemirror.view.state.doc.toString();
 
@@ -69,6 +71,9 @@ const ACTIONS = {
 						const value = entries.find(entry => {
 							return entry.key.name === "value"
 						});
+
+						// console.log(value, x.snippet);
+
 
 						const valueRangeFrom = value.value.range[0] + x.from;
 						const valueRangeTo = value.value.range[1] + x.from;

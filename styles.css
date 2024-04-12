@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --vertical-bar: 60%;
   --background-color: #8686868c;
@@ -394,16 +398,6 @@ input {
 
 /* ---------------- */
 
-
-.color-input {
-  width: 25px;
-  height: 25px;
-  padding: 0px;
-  border: none;
-  background: none;
-}
-
-
 .layer-item {
 	display: flex;
 	align-items: center;
@@ -413,38 +407,6 @@ input {
 
 .layer-name {
 	width: 175px;
-}
-
-.layer-color {
-	padding-left: 5px;
-	padding-right: 40px;
-	display: flex;
-  width: 65px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.opacity-input {
-	width: 35px;
-	position: relative;
-}
-
-.opacity-input input {
-	position: absolute;
-	bottom: 0px;
-	left: 33px;
-	width: 30px;
-	visibility: hidden;
-	transition: visibility 0.2s linear;
-	-webkit-appearance: slider-vertical;
-}
-
-.opacity-input:hover input {
-	visibility: visible;
-}
-
-.opacity-input input:hover {
-	visibility: visible;
 }
 
 /* ---------------------------- */

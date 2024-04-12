@@ -13,6 +13,8 @@ import { extrema } from "./extrema.js";
 import { turnForward } from "./turnForward.js";
 import { path } from "./path.js";
 import { path as path2 } from "./path2.js";
+import { fillet } from "./fillet.js";
+
 
 const overlap = (p0, p1) => 0.00000001 > Math.abs(p0[0] - p1[0]) + Math.abs(p0[1] - p1[1]);
 const isClosed = shape => {
@@ -217,8 +219,8 @@ export {
   reverse,
   thicken,
   copyPaste,
-  offset,
-  offset2,
+  offset, // TODO: how do these differ? one has issues flattening
+  offset2, // TODO: how do these differ? one has issues flattening
   outline,
   expand,
   intersect,
@@ -240,5 +242,8 @@ export {
   path,
   path2,
   boolean,
-  convertPtType
+  convertPtType,
+  transform,
+  copy,
+  fillet
 }

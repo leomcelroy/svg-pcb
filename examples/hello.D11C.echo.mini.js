@@ -31,18 +31,18 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(SAMD11C, {translate: pt(x+.26, y+height-0.58), label: 'IC1\nD11C'});
-let J1 = board.add(header_SWD_4_1, {translate: pt(IC1.posX+.015, IC1.padY("CLK")-.14), label: 'J1 SWD'});
-let J2 = board.add(USB_mini_CUI, {translate: pt(IC1.posX-.028, y+height-.05), rotate: 180, label: 'J2 USB'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A04")+.18, IC1.padY("A08")-.005), rotate: 90, label: 'IC2\n3.3V'});
-let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.2), rotate: 90, label: 'C1\n1uF'});
+let IC1 = board.add(SAMD11C, {translate: pt(x+.26, y+height-0.58), id: 'IC1\nD11C'});
+let J1 = board.add(header_SWD_4_1, {translate: pt(IC1.posX+.015, IC1.padY("CLK")-.14), id: 'J1 SWD'});
+let J2 = board.add(USB_mini_CUI, {translate: pt(IC1.posX-.028, y+height-.05), rotate: 180, id: 'J2 USB'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A04")+.18, IC1.padY("A08")-.005), rotate: 90, id: 'IC2\n3.3V'});
+let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.2), rotate: 90, id: 'C1\n1uF'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -119,7 +119,7 @@ board.wire(path(IC1.pad("25+"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -131,5 +131,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

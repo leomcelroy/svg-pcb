@@ -3,12 +3,16 @@ import { pathD, translate, scale, outline, width, height, getPoint } from "../ge
 export function makeFootprintGeometry(footprintObj) {
    const t =  [];
 
+   console.log(footprintObj)
+
   for (const padName in footprintObj) {
     // if (padName === "metadata") continue; // TODO
 
     const pad = footprintObj[padName];
 
-    if (!pad.layers.includes("F.Cu")) continue;
+
+    // TODO: this could cause bugs when missing
+    if (!["F.Cu", "B.Cu"].some(layer => pad.layers.includes(layer))) continue;
 
     let offset = [pad.pos[0], pad.pos[1]];
 
@@ -20,7 +24,11 @@ export function makeFootprintGeometry(footprintObj) {
     // const [ dx, dy ] = pad.pos;
 
     t.push(...translate(pathD([], pad.shape), offset));
+
   }
+
+  if (t.length === 0) return [];
+
 
 
   const w = width(t);

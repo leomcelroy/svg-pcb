@@ -15,10 +15,13 @@ import { inputRenderers } from "./views/inputRenderers.js";
 import { initCodeMirror } from "./codemirror/codemirror.js";
 import { drawDownloadGerberModal } from "./views/drawDownloadGerberModal.js";
 import { drawDownloadKiCadModal } from "./views/drawDownloadKiCadModal.js";
+import { formatCode } from "./formatCode.js";
+import { saveFile } from "./saveFile.js";
 import { drawSvgToModsModal } from "./views/drawSvgToModsModal.js";
 import "./components/netlist-editor.js";
 import "./components/wire-editor.js";
 import "./components/color-picker.js";
+import "./components/footprint-editor/footprint-editor.js";
 
 
 export function view(state) {
@@ -102,19 +105,29 @@ export function view(state) {
 		${drawDownloadKiCadModal(state)}
 		${drawSvgToModsModal(state)}
 		<netlist-editor .pcb=${state.pcb} .idToName=${state.idToName}></netlist-editor>
+		<footprint-editor><footprint-editor>
 	`
 }
 
 const menu = state => html`
 	<div class="top-menu">
 		<div class="left">
-			<img src=${logoURL} class="logo" alt="fab-circuit-logo" />
+			<img src=${logoURL} class="w-10 m-1" alt="fab-circuit-logo" />
 			<div
 				class="menu-item"
 				@click=${() => dispatch("RUN")}>
 				run (shift + enter)
 			</div>
 			<div class="menu-item" @click=${() => dispatch("NEW_FILE")}>new</div>
+			<div
+				class="menu-item"
+				@click=${() => {
+					const code = state.codemirror.view.state.doc.toString();
+
+					saveFile(code);
+				}}>
+				save${state.needsSaving ? "*" : ""}
+			</div>
 			 <div class="menu-item dropdown-container">
 				download
 				<div class="dropdown-content">
@@ -129,7 +142,7 @@ const menu = state => html`
 					<div class="menu-item"
 						@click=${() => downloadText(`${state.name === "" ? "anon" : state.name}.js`, state.codemirror.view.state.doc.toString())}>
 						js
-					</div class="menu-item">
+					</div>
 					<div class="menu-item"
 						@click=${(e) => {
 							state.downloadGerberModal = true;
@@ -166,6 +179,21 @@ const menu = state => html`
 						state.panZoomParams.setScaleXY(state.limits);
 				}}>
 				center-view
+			</div>
+			<div
+				class="menu-item"
+				@click=${() => {
+          const ogCode = state.codemirror.view.state.doc.toString()
+          const formatted = formatCode(ogCode)
+          state.codemirror.view.dispatch({
+            changes: {
+              from: 0,
+              to: ogCode.length,
+              insert: formatted
+            }
+          })
+        }}>
+				tidy code
 			</div>
 			<div class="menu-item dropdown-container">
 				options

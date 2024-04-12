@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true, 
+    "strict": true, 
+    "target": "ES6",
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+  },
+  "include": ["js/**/*"],
+  "exclude": ["node_modules"]
+}

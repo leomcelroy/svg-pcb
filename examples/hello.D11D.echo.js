@@ -29,21 +29,21 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(SAMD11D, {translate: pt(x+.43, y+.73), label: 'IC1\nD11D'});
-let J1 = board.add(header_SWD, {translate: pt(IC1.posX, IC1.padY("A23")-.24), rotate: 90, label: 'J1 SWD'});
-let J2 = board.add(USB_A_plug, {translate: pt(IC1.posX, y+height-.29), rotate: 90, label: 'J2\nUSB'});
-let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A05")-.14, IC1.padY("A06")), rotate: -90, label: 'IC2\n3.3V'});
-let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.2), rotate: 90, label: 'C1\n1uF'});
+let IC1 = board.add(SAMD11D, {translate: pt(x+.43, y+.73), id: 'IC1\nD11D'});
+let J1 = board.add(header_SWD, {translate: pt(IC1.posX, IC1.padY("A23")-.24), rotate: 90, id: 'J1 SWD'});
+let J2 = board.add(USB_A_plug, {translate: pt(IC1.posX, y+height-.29), rotate: 90, id: 'J2\nUSB'});
+let IC2 = board.add(regulator_SOT23, {translate: pt(IC1.padX("A05")-.14, IC1.padY("A06")), rotate: -90, id: 'IC2\n3.3V'});
+let C1 = board.add(C_1206, {translate: pt(IC2.posX, IC2.posY-.2), rotate: 90, id: 'C1\n1uF'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
-geo.difference(interior, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));
+geo.difference(outline, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, 5.12+J2.posY]), 90.00000001, J2.pos));
+geo.difference(outline, geo.rotate(geo.translate(geo.rectangle(1.05, 9.76), [0.475+J2.posX, -5.12+J2.posY]), 90.00000001, J2.pos));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -136,7 +136,7 @@ board.wire(path(C1.pad("2"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -148,5 +148,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

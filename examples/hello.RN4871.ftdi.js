@@ -29,18 +29,18 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let J1 = board.add(header_FTDI, {translate: pt(x+width-.22, y+height/2+.01), rotate: 0, label: 'J1 FTDI\n3.3V'});
-let IC1 = board.add(regulator_SOT23, {translate: pt(J1.posX-.18, J1.padY("CTS")), rotate: 90, label: 'IC1\n3.3V'});
-let C1 = board.add(C_1206, {translate: pt(IC1.posX-.14, IC1.posY), rotate: 90, label: 'C1\n1uF'});
-let RN = board.add(RN4871, {translate: pt(x, J1.posY), rotate: 90, label: '        RN4871'});
-let R1 = board.add(R_1206, {translate: pt(C1.posX-.15, C1.padY("1")), label: 'R1\n10k'});
+let J1 = board.add(header_FTDI, {translate: pt(x+width-.22, y+height/2+.01), rotate: 0, id: 'J1 FTDI\n3.3V'});
+let IC1 = board.add(regulator_SOT23, {translate: pt(J1.posX-.18, J1.padY("CTS")), rotate: 90, id: 'IC1\n3.3V'});
+let C1 = board.add(C_1206, {translate: pt(IC1.posX-.14, IC1.posY), rotate: 90, id: 'C1\n1uF'});
+let RN = board.add(RN4871, {translate: pt(x, J1.posY), rotate: 90, id: '        RN4871'});
+let R1 = board.add(R_1206, {translate: pt(C1.posX-.15, C1.padY("1")), id: 'R1\n10k'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -103,7 +103,7 @@ board.wire(path(R1.pad("2"),
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -115,5 +115,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

@@ -2,7 +2,6 @@ import { changeDpiDataUrl } from "./changeDPI.js";
 import { offset2 } from "../../geogram/index.js";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { MM_PER_INCH } from "../constants.js";
 import { global_state as STATE } from "../global_state.js";
 
 export function downloadSVG(state) {
@@ -76,12 +75,13 @@ export function downloadText(filename, text, version = true) {
 export function downloadPNG(state, dpi = 1000) {
   const src = makeSVG(state);
 
-  var units = MM_PER_INCH;
 
   const w = (state.limits.x[1] - state.limits.x[0])*state.mm_per_unit;
   const h = (state.limits.y[1] - state.limits.y[0])*state.mm_per_unit;
-  var width = dpi*w/units;
-  var height = dpi*h/units;
+  
+  const MM_PER_INCH = 25.4;
+  var width = dpi*w/MM_PER_INCH;
+  var height = dpi*h/MM_PER_INCH;
 
   var img = new Image()
   img.width = width;

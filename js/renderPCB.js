@@ -1,4 +1,3 @@
-import { MM_PER_INCH } from "./constants.js";
 import { global_state } from "./global_state.js";
 import * as esprima from 'esprima';
 
@@ -9,13 +8,13 @@ const default_renderPCB_params = {
       x: [0, 1],
       y: [0, 1]
   },
-  mm_per_unit: MM_PER_INCH,
+  mm_per_unit: global_state.mm_per_unit,
   background: "#00000000"
 }
 
 export const renderPCB = flatten => (...args) => {
   let [
-    [ { pcb, layerColors, limits, mm_per_unit, background } ], 
+    [ { pcb, layerColors, limits, mmPerUnit, background } ], 
     staticInfo 
   ] = args;
 
@@ -23,7 +22,7 @@ export const renderPCB = flatten => (...args) => {
 
   if (layerColors === undefined) layerColors = default_renderPCB_params.layerColors;
   if (limits === undefined) limits = default_renderPCB_params.limits;
-  if (mm_per_unit === undefined) mm_per_unit = default_renderPCB_params.mm_per_unit;
+  if (mmPerUnit === undefined) mmPerUnit = default_renderPCB_params.mm_per_unit;
   if (background === undefined) background = default_renderPCB_params.background;
 
 
@@ -65,7 +64,7 @@ export const renderPCB = flatten => (...args) => {
 
   global_state.shapes = shapes; // TODO ??? what should the shape format be { d: path data string, color: hex or valid svg color, classes: []}
   global_state.limits = limits;
-  global_state.mm_per_unit = mm_per_unit;
+  global_state.mm_per_unit = mmPerUnit;
   global_state.background = background;
 
   // renders the outline not the interior

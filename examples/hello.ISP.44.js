@@ -31,29 +31,29 @@ let board = new PCB();
 
 
 /* -- ADD_COMPONENTS -- */
-let IC1 = board.add(ATtiny44_SOICN, {translate: pt(x+.51, y+.67), label: 'IC1\nt44'});
-let J1 = board.add(header_ISP, {translate: pt(IC1.posX+.05, IC1.padY("PA6")-.24), rotate: 90, label: 'J1\nISP'});
-let SJ1 = board.add(SJ, {translate: pt(IC1.padX("PA6")-.07, J1.padY("RST")), rotate: 90, label: 'SJ1'});
-let J2 = board.add(USB_mini_B, {translate: pt(IC1.posX-.02, y+height+.08), rotate: 180, label: "\n\nJ2 USB"});
-let R1 = board.add(R_1206, {translate: pt(J2.padX("V")+.09, J2.padY("V")-.1), label: 'R1 1k'});
-let R2 = board.add(R_1206, {translate: pt(R1.padX("2"), R1.posY-.143), rotate: 90, label: 'R2\n499'});
-let SJ2 = board.add(R_1206, {translate: pt(R2.posX-.015, R2.posY-.2), rotate: 90, label: 'SJ2'});
-let D1 = board.add(D_SOD_123, {translate: pt(J2.padX("+"), R2.padY("2")), label: 'D1\n3.3V'});
-let D2 = board.add(D_SOD_123, {translate: pt(D1.padX("A"), D1.posY-.07), label: '\nD2 3.3V'});
-let R3 = board.add(R_1206, {translate: pt(D2.posX+.04, D2.posY-.15), rotate: 90, label: 'R3\n100'});
-let R4 = board.add(R_1206, {translate: pt(D1.padX("C")-.01, R3.posY), rotate: 90, label: 'R4\n100'});
-let R5 = board.add(R_1206, {translate: pt(SJ1.posX-.07, J1.padY("GND")), rotate: 90, label: 'R5\n10k'});
-let XTAL1 = board.add(XTAL_NX5032GA, {translate: pt(IC1.posX-.27, IC1.padY("PB0")-.025), rotate: 90, label: '20\nMHz'});
-let C1 = board.add(C_1206, {translate: pt(R5.posX-.1, R5.posY), rotate: 90, label: 'C1\n1uF'});
-let C2 = board.add(C_1206, {translate: pt(XTAL1.posX-.12, XTAL1.posY+.12), rotate: 90, label: 'C2\n10pF'});
-let C3 = board.add(C_1206, {translate: pt(C2.posX, XTAL1.posY-.12), rotate: 90, label: 'C3\n10pF'});
+let IC1 = board.add(ATtiny44_SOICN, {translate: pt(x+.51, y+.67), id: 'IC1\nt44'});
+let J1 = board.add(header_ISP, {translate: pt(IC1.posX+.05, IC1.padY("PA6")-.24), rotate: 90, id: 'J1\nISP'});
+let SJ1 = board.add(SJ, {translate: pt(IC1.padX("PA6")-.07, J1.padY("RST")), rotate: 90, id: 'SJ1'});
+let J2 = board.add(USB_mini_B, {translate: pt(IC1.posX-.02, y+height+.08), rotate: 180, id: "\n\nJ2 USB"});
+let R1 = board.add(R_1206, {translate: pt(J2.padX("V")+.09, J2.padY("V")-.1), id: 'R1 1k'});
+let R2 = board.add(R_1206, {translate: pt(R1.padX("2"), R1.posY-.143), rotate: 90, id: 'R2\n499'});
+let SJ2 = board.add(R_1206, {translate: pt(R2.posX-.015, R2.posY-.2), rotate: 90, id: 'SJ2'});
+let D1 = board.add(D_SOD_123, {translate: pt(J2.padX("+"), R2.padY("2")), id: 'D1\n3.3V'});
+let D2 = board.add(D_SOD_123, {translate: pt(D1.padX("A"), D1.posY-.07), id: '\nD2 3.3V'});
+let R3 = board.add(R_1206, {translate: pt(D2.posX+.04, D2.posY-.15), rotate: 90, id: 'R3\n100'});
+let R4 = board.add(R_1206, {translate: pt(D1.padX("C")-.01, R3.posY), rotate: 90, id: 'R4\n100'});
+let R5 = board.add(R_1206, {translate: pt(SJ1.posX-.07, J1.padY("GND")), rotate: 90, id: 'R5\n10k'});
+let XTAL1 = board.add(XTAL_NX5032GA, {translate: pt(IC1.posX-.27, IC1.padY("PB0")-.025), rotate: 90, id: '20\nMHz'});
+let C1 = board.add(C_1206, {translate: pt(R5.posX-.1, R5.posY), rotate: 90, id: 'C1\n1uF'});
+let C2 = board.add(C_1206, {translate: pt(XTAL1.posX-.12, XTAL1.posY+.12), rotate: 90, id: 'C2\n10pF'});
+let C3 = board.add(C_1206, {translate: pt(C2.posX, XTAL1.posY-.12), rotate: 90, id: 'C3\n10pF'});
 
-let interior = geo.path(path([x, y+height],
+let outline = geo.path(path([x, y+height],
                              [x+width, y+height],
                              [x+width, y],
                              [x, y]));
 
-board.addShape("interior", interior);
+board.addShape("outline", outline);
 
 
 /* -- ADD_WIRES -- */
@@ -212,7 +212,7 @@ board.wire(path([C1.posX, C1.padY("1")-.085],
 renderPCB({
   pcb: board,
   layerColors: {
-    "interior": "#002d00ff",
+    "outline": "#002d00ff",
     "B.Cu": "#ff4c007f",
     "F.Cu": "#be7a27cc",
     "B.Mask": "#ff814bff",
@@ -224,5 +224,5 @@ renderPCB({
     x: [x-border, x+width+border],
     y: [y-border, y+height+border]
   },
-  mm_per_unit: 25.4
+  mmPerUnit: 25.4
 })

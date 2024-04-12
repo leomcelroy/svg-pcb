@@ -1,7 +1,35 @@
-import { MM_PER_INCH } from "./constants.js";
 import { sParse } from "./s-expression-parser.js";
-import { rectangle, circle } from "/geogram/index.js";
 
+const rectangle = (w, h) => {
+  const p0 = [ -w/2, h/2 ];
+  const p1 = [ w/2, h/2 ];
+  const p2 = [ w/2, -h/2 ];
+  const p3 = [ -w/2, -h/2 ];
+
+  return [
+    [ p0, p1, p2, p3, p0 ]
+  ]
+}
+
+const circle = r => {
+  const n = 360/2;
+  const pts = [];
+
+  const getX = (theta, r) => r*Math.cos(theta);
+  const getY = (theta, r) => r*Math.sin(theta);
+
+  for ( let i = 0; i < n; i++) {
+    const theta = Math.PI*2/n*i;
+    const x = getX(theta, r);
+    const y = getY(theta, r);
+    pts.push( [ x, y ] );
+  }
+
+  const [ x, y ] = pts[0];
+  pts.push([ x, y ]);
+
+  return [ pts ];
+}
 
 // parser should take units
 
@@ -22,7 +50,7 @@ const getNamedArray = (line, name) => {
 export function kicadToObj(data) {
   let r = sParse(data);
 
-  let scale = 1/MM_PER_INCH;
+  let scale = 1/25.4;
   const padsToAdd = {};
 
   for (const line of r) {

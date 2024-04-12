@@ -291,8 +291,8 @@ function addPointAdding(state, svgListener) {
 
     // this causes problems
     if (state.heldKeys.size > 0) return;
-    
-    if (e.target.classList.contains("selectable-path")) return;
+
+    if (e.target.matches(".selectable-path, .trigger-selected-path")) return;
     if (state.selectedPathIndex < 0 || state.selectedPath === null) return;
     isPt = 
       e.composedPath().some(el => el.classList?.contains("draggable-pt"))

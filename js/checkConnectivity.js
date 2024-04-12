@@ -32,7 +32,7 @@ export function checkConnectivity(pcb) {
     }
   })
 
-  // compare islands to board.netList
+  // compare islands to board.netlist
   console.log(islands);
 }
 

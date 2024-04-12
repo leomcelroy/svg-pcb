@@ -1,4 +1,4 @@
 
-export function roundCorners(shape) {
+export function roundCorners(shape, cornerIndexs, radius) {
   
-}
+} 
