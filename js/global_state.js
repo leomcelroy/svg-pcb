@@ -3,7 +3,7 @@ import { GerberDrillFormat } from "./events/downloadGerber";
 
 
 export const global_state = {
-  version: "v0.1.0", // need to do tagged release
+  version: "v0.2.0", // need to do tagged release
   codemirror: undefined,
   pcb: undefined,
   heldKeys: new Set(),
