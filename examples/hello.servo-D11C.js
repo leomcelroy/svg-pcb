@@ -8,7 +8,7 @@ const LED_1206 = footprint({"A":{"shape":"M -0.037,0.034L 0.027,0.034L 0.027,-0.
 const header_servo_1H = footprint({"S-wh/or":{"shape":"M -0.05,0.025L 0.05,0.025L 0.05,-0.025L -0.05,-0.025L -0.05,0.025","pos":[0,0.1],"layers":["F.Cu","F.Mask"],"index":1},"V-rd":{"shape":"M -0.05,0.025L 0.05,0.025L 0.05,-0.025L -0.05,-0.025L -0.05,0.025","pos":[0,0],"layers":["F.Cu","F.Mask"],"index":2},"G-bl/br":{"shape":"M -0.05,0.025L 0.05,0.025L 0.05,-0.025L -0.05,-0.025L -0.05,0.025","pos":[0,-0.1],"layers":["F.Cu","F.Mask"],"index":3}});
 
 
-// @version: v0.1.0
+// @version: v0.2.0
 // commands:
 //  - SHIFT+ENTER: render
 //  - drap & drop file: kicad import

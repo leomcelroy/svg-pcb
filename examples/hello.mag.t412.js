@@ -5,7 +5,7 @@ const header_UPDI = footprint({"UPDI":{"shape":"M -0.05,-0.025L 0.0517,-0.025L 0
 const Hall_SOT23 = footprint({"Vcc":{"shape":"M -0.02,0.012L 0.02,0.012L 0.02,-0.012L -0.02,-0.012L -0.02,0.012","pos":[-0.045,0.0375],"layers":["F.Cu","F.Mask"],"index":1},"out":{"shape":"M -0.02,0.012L 0.02,0.012L 0.02,-0.012L -0.02,-0.012L -0.02,0.012","pos":[-0.045,-0.0375],"layers":["F.Cu","F.Mask"],"index":2},"gnd":{"shape":"M -0.02,0.012L 0.02,0.012L 0.02,-0.012L -0.02,-0.012L -0.02,0.012","pos":[0.045,0],"layers":["F.Cu","F.Mask"],"index":3}});
 
 
-// @version: v0.1.0
+// @version: v0.2.0
 // commands:
 //  - SHIFT+ENTER: render
 //  - drap & drop file: kicad import

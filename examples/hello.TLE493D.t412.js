@@ -7,7 +7,7 @@ const TLE493D = footprint({"SCL":{"shape":"M 0.0014,-0.0245L 0.0021,-0.0244L 0.0
 const R_1206 = footprint({"1":{"shape":"M -0.032,0.034L 0.032,0.034L 0.032,-0.034L -0.032,-0.034L -0.032,0.034","pos":[-0.06,0],"layers":["F.Cu","F.Mask"],"index":1},"2":{"shape":"M -0.032,0.034L 0.032,0.034L 0.032,-0.034L -0.032,-0.034L -0.032,0.034","pos":[0.06,0],"layers":["F.Cu","F.Mask"],"index":2}});
 
 
-// @version: v0.1.0
+// @version: v0.2.0
 // commands:
 //  - SHIFT+ENTER: render
 //  - drap & drop file: kicad import

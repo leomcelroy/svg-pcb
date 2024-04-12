@@ -7,7 +7,7 @@ const regulator_SOT23 = footprint({"out":{"shape":"M -0.02,0.012L 0.02,0.012L 0.
 const C_1206 = footprint({"1":{"shape":"M -0.032,0.034L 0.032,0.034L 0.032,-0.034L -0.032,-0.034L -0.032,0.034","pos":[-0.06,0],"layers":["F.Cu","F.Mask"],"index":1},"2":{"shape":"M -0.032,0.034L 0.032,0.034L 0.032,-0.034L -0.032,-0.034L -0.032,0.034","pos":[0.06,0],"layers":["F.Cu","F.Mask"],"index":2}});
 
 
-// @version: v0.1.0
+// @version: v0.2.0
 // commands:
 //  - SHIFT+ENTER: render
 //  - drap & drop file: kicad import

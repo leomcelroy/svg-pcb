@@ -7,7 +7,7 @@ const C_1206 = footprint({"1":{"shape":"M -0.032,0.034L 0.032,0.034L 0.032,-0.03
 const ESC = footprint({"PWM":{"shape":"M -0.1,0.025L 0.1,0.025L 0.1,-0.025L -0.1,-0.025L -0.1,0.025","pos":[-0.075,-0.1],"layers":["F.Cu","F.Mask"],"index":1},"5V":{"shape":"M -0.1,0.025L 0.1,0.025L 0.1,-0.025L -0.1,-0.025L -0.1,0.025","pos":[0.075,0],"layers":["F.Cu","F.Mask"],"index":2},"GND":{"shape":"M -0.1,0.025L 0.1,0.025L 0.1,-0.025L -0.1,-0.025L -0.1,0.025","pos":[-0.075,0.1],"layers":["F.Cu","F.Mask"],"index":3}});
 
 
-// @version: v0.1.0
+// @version: v0.2.0
 // commands:
 //  - SHIFT+ENTER: render
 //  - drap & drop file: kicad import
