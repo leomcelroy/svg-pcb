@@ -1,4 +1,5 @@
 
+// TODO: needs to take into account plated holes between layers
 
 export function checkConnectivity(pcb) {
   // fails if one pad is not overlapped
@@ -33,7 +34,7 @@ export function checkConnectivity(pcb) {
   })
 
   // compare islands to board.netlist
-  console.log(islands);
+  return islands
 }
 
 // function pointInPolygon(point, polygon) {
