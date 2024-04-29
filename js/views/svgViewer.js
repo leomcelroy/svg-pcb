@@ -73,24 +73,28 @@ export const svgViewer = (state) => {
   
 
   const nets = [];
-  if (state.pcb) {
+  // add this check to when pcb is evalled
+  
+  if (state.pcb && false) {
+    const CONNECTOR_STRING = "___"
     const islands = checkConnectivity(state.pcb);
 
-    const currentNets = Object.values(islands).map(padGroup => padGroup.map(pad => pad.join(",")));
-    const targetNets = state.pcb.netlist.map(net => net.pads.map(pad => pad.join(",")));
+    const currentNets = Object.values(islands).map(padGroup => padGroup.map(pad => pad.join(CONNECTOR_STRING)));
+    const targetNets = state.pcb.netlist.map(net => net.pads.map(pad => pad.join(CONNECTOR_STRING)));
     
-    const missingElements = findMissingElements(targetNets, currentNets).map(group => group.map(x => x.split(",")));
+    const missingElements = findMissingElements(targetNets, currentNets).map(group => group.map(x => x.split(CONNECTOR_STRING)));
 
     state.pcb.netlist.forEach((net, i) => {
 
       if (missingElements[i].length === 0) return;
 
       missingElements[i].forEach(pad => {
+        console.log(pad);
         const pt0 = state.pcb.query(...pad);
-        const missing = missingElements[i].map(pad => pad.join(","));
-        const options = net.pads.filter(pad => !missing.includes(pad.join(",")))
+        const missing = missingElements[i].map(pad => pad.join(CONNECTOR_STRING));
+        const options = net.pads.filter(pad => !missing.includes(pad.join(CONNECTOR_STRING)))
         const pt1 = state.pcb.query(...options[0]);
-        nets.push(svg`<polyline points=${[pt0, pt1].map(pt => pt.join(",")).join(" ")} fill="none" stroke="#00a2ff" stroke-width="1" vector-effect="non-scaling-stroke">`)
+        nets.push(svg`<polyline points=${[pt0, pt1].map(pt => pt.join(CONNECTOR_STRING)).join(" ")} fill="none" stroke="#00a2ff" stroke-width="1" vector-effect="non-scaling-stroke">`)
       })
       
     })
