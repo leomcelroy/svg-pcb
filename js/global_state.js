@@ -36,6 +36,8 @@ export const global_state = {
   snapToPad: true,
   snapToPadRadius: 0.025,
 
+  showNetlist: true,
+
   viewHandles: true,
   panZoomParams: undefined,
   previewFootprint: null,

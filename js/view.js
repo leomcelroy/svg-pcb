@@ -248,6 +248,18 @@ const menu = state => html`
 						</input>
 					</div>
 					<div class="check-item">
+						<span>show netlist</span>
+						<input
+							type="checkbox"
+							.checked=${state.showNetlist}
+							@change=${(e) => {
+								state.showNetlist = e.target.checked;
+								dispatch("RENDER");
+							}}
+							>
+						</input>
+					</div>
+					<div class="check-item">
 						<span>snapToPad</span>
 						<input
 							type="checkbox"

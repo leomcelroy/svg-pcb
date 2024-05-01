@@ -1,11 +1,11 @@
 
 ```js
 {
-  name: "footprintName",
+  id: "footprintName", // or name
   pads: [
     {
       id: "GND", // is this unique? if not is it name? what if internally connected
-      // net: "GND",
+      // net: "GND", // name? this is the kicad convention, https://klc.kicad.org/footprint/f4/f4.3/
       pos: [0, 0],
       shape: "M 0,0 ...", // or polylines[]
       layers: ["F.Cu", "B.Cu", "F.Mask", "B.Mask", "*.Cu", ...],
@@ -13,7 +13,8 @@
         diameter: 0.02, // or radius
         start: "F.Cu",
         end: "B.Cu",
-        plated: false // can something other than a hole be plated
+        plated: false, // can something other than a hole be plated
+        offset: [0, 0],
       },
       maskOffset: .03 // solderMaskMargin, maskMargin
     }
@@ -22,8 +23,10 @@
 ```
 
 ```js
-const board = createPCB({
-  // footprints: { id: footprint }, ?
+const JSON_PCB = {
+  footprints: [
+
+  ],
   components: [
     {
       id: "R1206_50ohm_0", // unique and displayed as label
@@ -35,7 +38,7 @@ const board = createPCB({
   ],
   nets: [
     {
-      name: "GND",
+      name: "GND", // names get merged
       pads: [
         [ "componentId", "padId" ]
       ]
@@ -54,10 +57,13 @@ const board = createPCB({
       layer: "F.Cu",
     }
   ]
-});
+};
+
+const board = createPCB(JSON_PCB);
 ```
 
 ```js
+board.addFootprint({ ... })
 board.addComponent({ ... }) // (footprint, { ... })
 board.addNet({ ... }) // ({ ... })
 board.addWire({ ... }) // (points, thickness, layer)
@@ -124,6 +130,12 @@ path(
   ["cubic", [ .2, .3 ], [ .5, .4 ], [5, 3 ] ],
   ["chamfer", .3, [ 3, 4 ]]
 )
+
+inputs({
+  name,
+  value,
+  type // range(min: num, max: num, step: num), number, text, option(options: str[])
+})
 ```
 
 ```js
@@ -135,7 +147,9 @@ comp0.padY("padId");
 comp0.pos();
 comp0.posX();
 comp0.posY();
+comp0.boundingBox(); // { width, height, left, top, bottom, right }
 ```
+
 
 need a function which can verify structure of text
 
@@ -149,4 +163,10 @@ OBJECTIVES
 - be able to use sub-boards
   - allow users to adjut parameterized components/footprints
 - be direct manipulation first
+
+- don't eval the whole code on drag
+- eval code in web worker
+- on interaction end or run do eval
+- during interaction modify the board tree directly
+- createPCB expects valid json
 

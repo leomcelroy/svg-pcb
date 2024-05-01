@@ -76,7 +76,7 @@ export const svgViewer = (state) => {
   // add this check to when pcb is evalled
   
   if (state.pcb && false) {
-    const CONNECTOR_STRING = "___"
+    const CONNECTOR_STRING = "<>"
     const islands = checkConnectivity(state.pcb);
 
     const currentNets = Object.values(islands).map(padGroup => padGroup.map(pad => pad.join(CONNECTOR_STRING)));
@@ -89,18 +89,53 @@ export const svgViewer = (state) => {
       if (missingElements[i].length === 0) return;
 
       missingElements[i].forEach(pad => {
-        console.log(pad);
         const pt0 = state.pcb.query(...pad);
         const missing = missingElements[i].map(pad => pad.join(CONNECTOR_STRING));
         const options = net.pads.filter(pad => !missing.includes(pad.join(CONNECTOR_STRING)))
         const pt1 = state.pcb.query(...options[0]);
-        nets.push(svg`<polyline points=${[pt0, pt1].map(pt => pt.join(CONNECTOR_STRING)).join(" ")} fill="none" stroke="#00a2ff" stroke-width="1" vector-effect="non-scaling-stroke">`)
+        nets.push(svg`<polyline points=${[pt0, pt1].map(pt => pt.join(",")).join(" ")} fill="none" stroke="#00a2ff" stroke-width="1" vector-effect="non-scaling-stroke">`)
       })
       
     })
+
   }
 
-  
+  // draw all nets
+  // using wire control points
+  // best is the full copper layer
+  // could use distance to wire polyline
+  if (state.pcb && state.showNetlist) {
+    const distance = ([x0, y0], [x1, y1]) => {
+      return (x1-x0)**2+(y1-y0)**2;
+    }
+
+    // const wirePoints = state.pcb.getLayer("F.Cu").filter(x => x.type && x.type === "wire").map(wire => wire.shape);
+    state.pcb.netlist.forEach((net, i) => {
+      if (net.pads.length === 0) return;
+      
+
+      net.pads.forEach((pad1, i) => {
+        const pt0 = state.pcb.query(...pad1);
+        let minDistPt = null;
+        let minDist = Infinity;
+        net.pads.slice(i+1).forEach((pad2) => {
+
+          const pt1 = state.pcb.query(...pad2);
+
+          const d = distance(pt0, pt1)
+          if (d < minDist) {
+            minDistPt = pt1;
+            minDist = d;
+          }
+
+        });
+
+        if (minDistPt !== null) nets.push(svg`<polyline points=${[pt0, minDistPt].map(pt => pt.join(",")).join(" ")} fill="none" stroke="#00a2ff" stroke-width="1" vector-effect="non-scaling-stroke">`)
+
+      })
+    })
+  }
+
   const selectablePaths = [];
 
   state.selectablePaths.forEach( ([key, path], i) => {
