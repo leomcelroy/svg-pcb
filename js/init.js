@@ -19,6 +19,7 @@ export function init() {
   global_state.codemirror = initCodeMirror(cmEl, turnOnVim);
 
   addEvents(global_state);
+  // addPageMsgListener();
 
   const url = new URL(window.location.href);
 
@@ -98,6 +99,23 @@ function exportNet() {
   console.log(obj);
 
   downloadText("netlist.json", string, false);
+}
+
+function addPageMsgListener() {
+  window.addEventListener('message', (event) => {
+
+      const { message, code } = event.data;
+
+      console.log(event.data);
+
+      if (message === "loadCode") {
+        setTimeout(() => {
+          dispatch("UPLOAD_JS", { text: code });
+          console.log("load from message");
+        }, 2000)
+      }
+      
+  });
 }
 
 

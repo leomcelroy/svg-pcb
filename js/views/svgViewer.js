@@ -3,6 +3,7 @@ import { pathToCubics } from "../path.js";
 import { drawGrid } from "./drawGrid.js";
 import { drawPath } from "./drawPath.js";
 import { drawHandles } from "./drawHandles.js";
+import { checkConnectivity } from "../checkConnectivity.js";
 
 const drawPt = ({ pt, start, end, text }, i, scale) => svg`
   <circle
@@ -69,6 +70,71 @@ export const svgViewer = (state) => {
 
   const paths = state.paths.map(drawP);
   const pts = state.pts.map((pt, i) => drawPt(pt, i, scale));
+  
+
+  const nets = [];
+  // add this check to when pcb is evalled
+  
+  if (state.pcb && false) {
+    const CONNECTOR_STRING = "<>"
+    const islands = checkConnectivity(state.pcb);
+
+    const currentNets = Object.values(islands).map(padGroup => padGroup.map(pad => pad.join(CONNECTOR_STRING)));
+    const targetNets = state.pcb.netlist.map(net => net.pads.map(pad => pad.join(CONNECTOR_STRING)));
+    
+    const missingElements = findMissingElements(targetNets, currentNets).map(group => group.map(x => x.split(CONNECTOR_STRING)));
+
+    state.pcb.netlist.forEach((net, i) => {
+
+      if (missingElements[i].length === 0) return;
+
+      missingElements[i].forEach(pad => {
+        const pt0 = state.pcb.query(...pad);
+        const missing = missingElements[i].map(pad => pad.join(CONNECTOR_STRING));
+        const options = net.pads.filter(pad => !missing.includes(pad.join(CONNECTOR_STRING)))
+        const pt1 = state.pcb.query(...options[0]);
+        nets.push(svg`<polyline points=${[pt0, pt1].map(pt => pt.join(",")).join(" ")} fill="none" stroke="#00a2ff" stroke-width="1" vector-effect="non-scaling-stroke">`)
+      })
+      
+    })
+
+  }
+
+  // draw all nets
+  // using wire control points
+  // best is the full copper layer
+  // could use distance to wire polyline
+  if (state.pcb && state.showNetlist) {
+    const distance = ([x0, y0], [x1, y1]) => {
+      return (x1-x0)**2+(y1-y0)**2;
+    }
+
+    // const wirePoints = state.pcb.getLayer("F.Cu").filter(x => x.type && x.type === "wire").map(wire => wire.shape);
+    state.pcb.netlist.forEach((net, i) => {
+      if (net.pads.length === 0) return;
+      
+
+      net.pads.forEach((pad1, i) => {
+        const pt0 = state.pcb.query(...pad1);
+        let minDistPt = null;
+        let minDist = Infinity;
+        net.pads.slice(i+1).forEach((pad2) => {
+
+          const pt1 = state.pcb.query(...pad2);
+
+          const d = distance(pt0, pt1)
+          if (d < minDist) {
+            minDistPt = pt1;
+            minDist = d;
+          }
+
+        });
+
+        if (minDistPt !== null) nets.push(svg`<polyline points=${[pt0, minDistPt].map(pt => pt.join(",")).join(" ")} fill="none" stroke="#00a2ff" stroke-width="1" vector-effect="non-scaling-stroke">`)
+
+      })
+    })
+  }
 
   const selectablePaths = [];
 
@@ -130,6 +196,7 @@ export const svgViewer = (state) => {
 
           <g class="shapes">${shapes}</g>
           <g class="paths">${paths}</g>
+          <g class="nets">${nets}</g>
           <g class="selectable-paths">${selectablePaths}</g>
           ${renderSelectedPath(state, scale)}
 
@@ -399,3 +466,49 @@ function drawPreview(state) {
 
   return renderPreviewLine(lastPoint, state.preview);
 };
+
+function getCombinations(arr, k) {
+    const results = [];
+
+    function combine(subset, index) {
+        if (subset.length === k) {
+            results.push([...subset]);
+            return;
+        }
+        for (let i = index; i < arr.length; i++) {
+            subset.push(arr[i]);
+            combine(subset, i + 1);
+            subset.pop();
+        }
+    }
+
+    combine([], 0);
+    return results;
+}
+
+function findMissingElements(firstList, secondList) {
+    // Helper function to find the group in secondList with the largest subset of elements from a group in firstList
+    const findMaxSubsetGroup = (group1, secondList) => {
+        let maxSubset = [];
+        let maxCount = 0;
+        secondList.forEach(group2 => {
+            const commonItems = group1.filter(item => group2.includes(item));
+            if (commonItems.length > maxCount) {
+                maxCount = commonItems.length;
+                maxSubset = group2;
+            }
+        });
+        return maxSubset;
+    };
+
+    // Function to find elements in group1 that are not in the corresponding max subset group from secondList
+    const findDifferences = (group1, maxSubsetGroup) => {
+        return group1.filter(item => !maxSubsetGroup.includes(item));
+    };
+
+    // Analyze each group in firstList
+    return firstList.map(group1 => {
+        const maxSubsetGroup = findMaxSubsetGroup(group1, secondList);
+        return findDifferences(group1, maxSubsetGroup);
+    });
+}

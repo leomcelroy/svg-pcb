@@ -12,7 +12,7 @@ export class PCB {
 
     // TODO
     /*
-    this.components = {};
+    this.components = [];
     this.netlist = [];
     this.shapes = [];
     this.wires = [];
@@ -189,6 +189,20 @@ export class PCB {
   }
 
   setNetlist(newNetlist) {
+    /*
+      netList
+
+      [
+        {
+          name: string,
+          pads: [
+            [ componentId = string, padName = string ]
+            ...
+          ]
+        }
+        ...
+      ]
+    */
     newNetlist.forEach(group => {
       group.pads.forEach(item => {
         const [ comp, pad ] = item;
