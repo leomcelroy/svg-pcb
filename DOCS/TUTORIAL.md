@@ -158,7 +158,7 @@ const LED_1206 = {"A":{"shape":"M -0.037,0.034L 0.027,0.034L 0.027,-0.034L -0037
 **Note:** After dropping a component onto the board area…code for the dropped component will appear in the **ADD COMPONENT** section of the code
 
 - **ROTATE** the component by changing the ‘**rotate:**’ value of the component’s code  
-- Adjust the component’s displayed **name** and **value** by editing the ‘**name:**’ property  
+- Adjust the component’s displayed **name** and **value** by editing the ‘**id:**’ property  
 
     - ex: “R_1206” > “R1 100k”  
     - ex: “C_1206” > “C1 100uF”  
