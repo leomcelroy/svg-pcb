@@ -166,13 +166,13 @@ const LED_1206 = {"A":{"shape":"M -0.037,0.034L 0.027,0.034L 0.027,-0.034L -0037
 > **KEY Tip:** make each component into a ‘**const**’ variable with a short and simple name, such as “xiao”, “C1”, etc.  Doing this will make **WIRING** in the next step much more efficient.
 <br>
 
-    ```
-    const SAMD =  board.add(SAMD11C, { translate: pt(-0.03, 0.01, rotate: 0, name: "SAMD11C" })  
-    ```
+```
+const SAMD =  board.add(SAMD11C, { translate: pt(-0.03, 0.01, rotate: 0, id: "SAMD11C" })  
+```
 
 > **Tip:** List the added components from top to bottom…with components whose position will be dependent on another component below the component it references.  
 
-![constVariable](https://user-images.githubusercontent.com/27078897/222631331-3b7316cf-887a-4db7-a948-e6d55069ad2d.jpg)
+<img width="400" alt="Screenshot 2024-10-04 at 1 53 56 PM" src="https://github.com/user-attachments/assets/bdd99a59-79f0-41a2-bd4f-488ea0b23ccb">
 
 ![2023-02-11_18_56_44-SVG_PCB](https://user-images.githubusercontent.com/27078897/222630978-051d310c-0da0-40ba-81d7-6fc897f71e27.jpg)
 
