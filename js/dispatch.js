@@ -1,6 +1,6 @@
 import { view } from "./view.js";
 import { render } from "lit-html";
-import { kicadToObj } from "./ki_cad_parser.js"
+import { kicadParser } from "./ki_cad_parser.js"
 import { astAnalysis } from "./astAnalysis.js";
 import { modifyAST } from "./modifyAST.js";
 import { getFileSection } from "./getFileSection.js"
@@ -126,7 +126,7 @@ const ACTIONS = {
 	},
 	UPLOAD_COMP({ text, name }, state) {
 		text = text.replaceAll("$", "");
-		text = JSON.stringify(kicadToObj(text));
+		text = JSON.stringify(kicadParser(text));
 		text = `const ${name} = footprint(${text});\n`
 
 		const string = state.codemirror.view.state.doc.toString();

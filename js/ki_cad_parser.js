@@ -1,4 +1,3 @@
-import { sParse } from "./s-expression-parser.js";
 
 const rectangle = (w, h) => {
   const p0 = [ -w/2, h/2 ];
@@ -47,7 +46,7 @@ const getNamedArray = (line, name) => {
   return value ? value.slice(1) : [];
 }
 
-export function kicadToObj(data) {
+export function kicadParser(data) {
   let r = sParse(data);
 
   let scale = 1/25.4;
@@ -64,6 +63,7 @@ export function kicadToObj(data) {
 
       let at = getNamedArray(line, "at").map(x => Number(x)*scale);
       at[1] = -at[1]; // negative Y axis
+      let rotate = at.length === 3 ? Number(getNamedArray(line, "at")[2]) : 0;
 
       let layers = getNamedArray(line, "layers");
       layers = convertLayers(layers);
@@ -71,8 +71,8 @@ export function kicadToObj(data) {
       let size = getNamedArray(line, "size").map(x => Number(x)*scale);
 
       const shapeCases = {
-        "rect": () => rectangle(...size),
-        "roundrect": () => {
+        "rect": (size) => rectangle(...size),
+        "roundrect": (size) => {
           // let _ = rectangle(...size);
           // roundCorners(_);
 
@@ -81,8 +81,11 @@ export function kicadToObj(data) {
 
           return [ pts ];
         },
-        "circle": () => circle(...size.map(x => x/2)),
-        "oval": () => circle(...size.map(x => x/2)),
+        "circle": (size) => circle(...size.map(x => x/2)), 
+        "oval": (size) => {
+            const pts = generateRoundRect(0, 0, ...size, 1); 
+            return [ pts ];
+        },
         "custom": () => {
           const primitives = getNamedArray(line, "primitives");
 
@@ -99,8 +102,14 @@ export function kicadToObj(data) {
 
       let shapeGeometry = 
         (shape in shapeCases) 
-        ? shapeCases[shape]()
+        ? shapeCases[shape](size)
         : [];
+
+      rotateShape(shapeGeometry, rotate);
+
+      if (!(shape in shapeCases)) {
+        console.log("missing shape case", shape);
+      }
 
       const footprint = { 
         pos: at, 
@@ -110,14 +119,31 @@ export function kicadToObj(data) {
 
       const drillIndex = line.findIndex(entry => Array.isArray(entry) && entry[0] === "drill");
 
-      if (drillIndex !== -1) {
+      if (drillIndex !== -1 && typeof line[drillIndex][1] === "number") {
         let drillDia = Number(line[drillIndex][1])*scale;
+
         footprint.drill = {
           diameter: drillDia,
           start: "F.Cu", // this should come from layers
           end: "B.Cu",
           plated: true // hmm how does kicad module do this
         }
+      }
+
+      if (drillIndex !== -1 && line[drillIndex][1] === "oval") { 
+        const drillIndexLine = line[drillIndex];
+
+        const shapeGeo = shapeCases["oval"]([ drillIndexLine[2], drillIndexLine[3] ].map(x => Number(x)*scale));
+        rotateShape(shapeGeo, rotate);
+
+        const footprint = { 
+          pos: at, 
+          shape: shapeGeo, 
+          layers: ["outline", "Thru.Hole"]
+        }
+
+        if (padsToAdd[name+"_plated_cut"] === undefined) padsToAdd[name+"_plated_cut"] = [footprint];
+        else padsToAdd[name+"_plated_cut"].push(footprint);
       }
      
       if (padsToAdd[name] === undefined) padsToAdd[name] = [footprint];
@@ -133,7 +159,8 @@ export function kicadToObj(data) {
       acc[key] = value[0];
     } else {
       value.forEach((v, i) => {
-        acc[`${key}_${i + 1}`] = v;
+        const newKey = i === 0 ? key : `${key}_${i}`
+        acc[newKey] = v;
       })
     }
 
@@ -205,5 +232,273 @@ function generateRoundRect(centerX, centerY, width, height, rratio, numPointsPer
     return points;
 }
 
+const rotateShape = (shape, angle, point = [0, 0]) => {
+  const fn = p => {
+
+    let delta = angle / 180 * Math.PI;
+
+    let hereX = p[0] - point[0];
+    let hereY = p[1] - point[1];
+
+    let newPoint = [
+      hereX * Math.cos(delta) - hereY * Math.sin(delta) + point[0],
+      hereY * Math.cos(delta) + hereX * Math.sin(delta) + point[1]
+    ];
+
+    return newPoint;
+  }
 
 
+  return applyFn(shape, fn);
+
+  function applyFn(shape, fn) {
+      shape.forEach((pl, i) => {
+        shape[i] = pl.map(fn);
+      })
+
+      return shape;
+    }
+
+}
+
+
+// https://github.com/fwg/s-expression
+
+function SParser(stream) {
+    this._line = this._col = this._pos = 0;
+    this._stream = stream;
+}
+
+SParser.not_whitespace_or_end = /^(\S|$)/;
+SParser.space_quote_paren_escaped_or_end = /^(\s|\\|"|'|`|,|\(|\)|$)/;
+SParser.string_or_escaped_or_end = /^(\\|"|$)/;
+SParser.string_delimiters = /["]/;
+SParser.quotes = /['`,]/;
+SParser.quotes_map = {
+    '\'': 'quote',
+    '`':  'quasiquote',
+    ',':  'unquote'
+};
+
+SParser.prototype = {
+    peek: peek,
+    consume: consume,
+    until: until,
+    error: error,
+    string: string,
+    atom: atom,
+    quoted: quoted,
+    expr: expr,
+    list: list
+};
+
+export function sParse(stream) {
+    var parser = new SParser(stream);
+    var expression = parser.expr();
+
+    if (expression instanceof Error) {
+        return expression;
+    }
+
+    // if anything is left to parse, it's a syntax error
+    if (parser.peek() != '') {
+        return parser.error('Superfluous characters after expression: `' + parser.peek() + '`');
+    }
+
+    return expression;
+};
+
+function error(msg) {
+    var e = new Error('Syntax error: ' + msg);
+    e.line = this._line + 1;
+    e.col  = this._col + 1;
+    return e;
+}
+
+function peek() {
+    if (this._stream.length == this._pos) return '';
+    return this._stream[this._pos];
+}
+
+function consume() {
+    if (this._stream.length == this._pos) return '';
+
+    var c = this._stream[this._pos];
+    this._pos += 1;
+
+    if (c == '\r') {
+        if (this.peek() == '\n') {
+            this._pos += 1;
+            c += '\n';
+        }
+        this._line++;
+        this._col = 0;
+    } else if (c == '\n') {
+        this._line++;
+        this._col = 0;
+    } else {
+        this._col++;
+    }
+
+    return c;
+}
+
+function until(regex) {
+    var s = '';
+
+    while (!regex.test(this.peek())) {
+        s += this.consume();
+    }
+
+    return s;
+}
+
+function string() {
+    // consume "
+    var delimiter = this.consume();
+
+    var str = '';
+
+    while (true) {
+        str += this.until(SParser.string_or_escaped_or_end);
+        var next = this.peek();
+
+        if (next == '') {
+            return this.error('Unterminated string literal');
+        }
+
+        if (next == delimiter) {
+            this.consume();
+            break;
+        }
+
+        if (next == '\\') {
+            this.consume();
+            next = this.peek();
+
+            if (next == 'r') {
+                this.consume();
+                str += '\r';
+            } else if (next == 't') {
+                this.consume();
+                str += '\t';
+            } else if (next == 'n') {
+                this.consume();
+                str += '\n';
+            } else if (next == 'f') {
+                this.consume();
+                str += '\f';
+            } else if (next == 'b') {
+                this.consume();
+                str += '\b';
+            } else {
+                str += this.consume();
+            }
+
+            continue;
+        }
+
+        str += this.consume();
+    }
+
+    // wrap in object to make strings distinct from symbols
+    return new String(str);
+}
+
+function atom() {
+    if (SParser.string_delimiters.test(this.peek())) {
+        return this.string();
+    }
+
+    var atom = '';
+
+    while (true) {
+        atom += this.until(SParser.space_quote_paren_escaped_or_end);
+        var next = this.peek();
+
+        if (next == '\\') {
+            this.consume();
+            atom += this.consume();
+            continue;
+        }
+
+        break;
+    }
+
+    return atom;
+}
+
+function quoted() {
+    var q = this.consume();
+    var quote = SParser.quotes_map[q];
+
+    if (quote == "unquote" && this.peek() == "@") {
+        this.consume();
+        quote = "unquote-splicing";
+        q = ',@';
+    }
+
+    // ignore whitespace
+    this.until(SParser.not_whitespace_or_end);
+    var quotedExpr = this.expr();
+
+    if (quotedExpr instanceof Error) {
+        return quotedExpr;
+    }
+
+    // nothing came after '
+    if (quotedExpr === '') {
+        return this.error('Unexpected `' + this.peek() + '` after `' + q + '`');
+    }
+
+    return [quote, quotedExpr];
+}
+
+function expr() {
+    // ignore whitespace
+    this.until(SParser.not_whitespace_or_end);
+
+    if (SParser.quotes.test(this.peek())) {
+        return this.quoted();
+    }
+
+    var expr = this.peek() == '(' ? this.list() : this.atom();
+
+    // ignore whitespace
+    this.until(SParser.not_whitespace_or_end);
+
+    return expr;
+}
+
+function list() {
+    if (this.peek() != '(') {
+        return this.error('Expected `(` - saw `' + this.peek() + '` instead.');
+    }
+
+    this.consume();
+
+    var ls = [];
+    var v = this.expr();
+
+    if (v instanceof Error) {
+        return v;
+    }
+
+    if (v !== '') {
+        ls.push(v);
+
+        while ((v = this.expr()) !== '') {
+            if (v instanceof Error) return v;
+            ls.push(v);
+        }
+    }
+
+    if (this.peek() != ')') {
+        return this.error('Expected `)` - saw: `' + this.peek() + '`');
+    }
+
+    // consume that closing paren
+    this.consume();
+
+    return ls;
+}
