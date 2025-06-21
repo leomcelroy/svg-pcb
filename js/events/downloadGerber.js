@@ -384,122 +384,122 @@ export class GerberBuilder {
     const pads = [];
     layer.forEach((el) => {
       if (el.type === "wire") return;
-      pads.push(el.flat());
+      polyPads.push(el);
     });
 
     // Separate different types of pads and assign apertures to them
-    pads.forEach((pad) => {
+    // pads.forEach((pad) => {
       
       // If the pad is a rectangle...
-      if (this.#isRect(pad)) {
+      // if (this.#isRect(pad)) {
         
-        // Get rectangular representation of the pad  
-        const rect = this.#getRect(pad);
+      //   // Get rectangular representation of the pad  
+      //   const rect = this.#getRect(pad);
 
-        // Try to find existing aperture for it
-        let rectApertureID = undefined; 
-        rectApertures.forEach((a) => {
-          if ( a.width    === rect.width 
-            && a.height   === rect.height) {
+      //   // Try to find existing aperture for it
+      //   let rectApertureID = undefined; 
+      //   rectApertures.forEach((a) => {
+      //     if ( a.width    === rect.width 
+      //       && a.height   === rect.height) {
 
-            // Aperture exists and we assign its id to 
-            rectApertureID = a.id;
-          }
-        });
+      //       // Aperture exists and we assign its id to 
+      //       rectApertureID = a.id;
+      //     }
+      //   });
 
-        // If no existing aperture ID has been found, acquire a new one
-        if (!rectApertureID) {
-          rectApertureID = this.#getApertureID();
+      //   // If no existing aperture ID has been found, acquire a new one
+      //   if (!rectApertureID) {
+      //     rectApertureID = this.#getApertureID();
           
-          // Add rect aperture to list
-          rectApertures.push({
-            id: rectApertureID,
-            width: rect.width,
-            height: rect.height
-          });
-        }
+      //     // Add rect aperture to list
+      //     rectApertures.push({
+      //       id: rectApertureID,
+      //       width: rect.width,
+      //       height: rect.height
+      //     });
+      //   }
 
-        // Add rectangular pad location to list along with aperture ID
-        rectPads.push({
-          id: rectApertureID,
-          x: rect.center.x,
-          y: rect.center.y
-        });
-      } 
+      //   // Add rectangular pad location to list along with aperture ID
+      //   rectPads.push({
+      //     id: rectApertureID,
+      //     x: rect.center.x,
+      //     y: rect.center.y
+      //   });
+      // } 
 
-      // Else if the pad is a circle...
-      else if (this.#isCirc(pad)) {
+      // // Else if the pad is a circle...
+      // else if (this.#isCirc(pad)) {
 
-        // Get circular representation of the pad  
-        const circ = this.#getCirc(pad);
+      //   // Get circular representation of the pad  
+      //   const circ = this.#getCirc(pad);
 
-        // Try to find existing aperture for it
-        let circApertureID = undefined; 
-        circApertures.forEach((a) => {
-          if ( a.radius === circ.radius ) {
+      //   // Try to find existing aperture for it
+      //   let circApertureID = undefined; 
+      //   circApertures.forEach((a) => {
+      //     if ( a.radius === circ.radius ) {
 
-            // Aperture exists and we assign its id to 
-            circApertureID = a.id;
-          }
-        });
+      //       // Aperture exists and we assign its id to 
+      //       circApertureID = a.id;
+      //     }
+      //   });
 
-        // If no existing aperture ID has been found, acquire a new one
-        if (!circApertureID) {
-          circApertureID = this.#getApertureID();
+      //   // If no existing aperture ID has been found, acquire a new one
+      //   if (!circApertureID) {
+      //     circApertureID = this.#getApertureID();
           
-          // Add circ aperture to list
-          circApertures.push({
-            id: circApertureID,
-            radius: circ.radius
-          });
-        }
+      //     // Add circ aperture to list
+      //     circApertures.push({
+      //       id: circApertureID,
+      //       radius: circ.radius
+      //     });
+      //   }
 
-        // Add circular pad location to list along with aperture ID
-        circPads.push({
-          id: circApertureID,
-          x: circ.center.x,
-          y: circ.center.y
-        });
-      }
+      //   // Add circular pad location to list along with aperture ID
+      //   circPads.push({
+      //     id: circApertureID,
+      //     x: circ.center.x,
+      //     y: circ.center.y
+      //   });
+      // }
 
-      // Else if the pad is a polygon...
-      else {
-        polyPads.push(pad);
-      }
-    });
+      // // Else if the pad is a polygon...
+      // else {
+      //   polyPads.push(pad);
+      // }
+    // });
 
     // Define aperture for drawing polygons
     this.#body += "%ADD" + apertureID.toString() +  "C," + apertureDiameter.toFixed(3) + "*%\n";
     
-    // Define rect apertures
-    rectApertures.forEach((a) => {
-      this.#body += "%ADD" + a.id.toString() +  "R," + unitsToMm(a.width).toFixed(3) + "X" + unitsToMm(a.height).toFixed(3) + "*%\n";
-    });
+    // // Define rect apertures
+    // rectApertures.forEach((a) => {
+    //   this.#body += "%ADD" + a.id.toString() +  "R," + unitsToMm(a.width).toFixed(3) + "X" + unitsToMm(a.height).toFixed(3) + "*%\n";
+    // });
 
-    // Define circ apertures
-    circApertures.forEach((a) => {
-      this.#body += "%ADD" + a.id.toString() +  "C," + unitsToMm(a.radius * 2).toFixed(3) + "*%\n";
-    });
+    // // Define circ apertures
+    // circApertures.forEach((a) => {
+    //   this.#body += "%ADD" + a.id.toString() +  "C," + unitsToMm(a.radius * 2).toFixed(3) + "*%\n";
+    // });
 
-    // Draw rect pads using rect apertures
-    rectPads.forEach((p) => {
+    // // Draw rect pads using rect apertures
+    // rectPads.forEach((p) => {
       
-      // Select the aperture for drawing the pad
-      this.#body += "D" + p.id.toString() + "*\n";
+    //   // Select the aperture for drawing the pad
+    //   this.#body += "D" + p.id.toString() + "*\n";
 
-      // Flash current rectangle aperture at location X, Y
-      this.#body += "X" + this.constructor.format(unitsToMm(p.x)) + "Y" + this.constructor.format(unitsToMm(p.y)) + "D03*\n";
-    });
+    //   // Flash current rectangle aperture at location X, Y
+    //   this.#body += "X" + this.constructor.format(unitsToMm(p.x)) + "Y" + this.constructor.format(unitsToMm(p.y)) + "D03*\n";
+    // });
 
-    // Draw circ pads using circ apertures
-    circPads.forEach((p) => {
+    // // Draw circ pads using circ apertures
+    // circPads.forEach((p) => {
       
-      // Select the aperture for drawing the pad
-      this.#body += "D" + p.id.toString() + "*\n";
+    //   // Select the aperture for drawing the pad
+    //   this.#body += "D" + p.id.toString() + "*\n";
 
-      // Flash current rectangle aperture at location X, Y
-      this.#body += "X" + this.constructor.format(unitsToMm(p.x)) + "Y" + this.constructor.format(unitsToMm(p.y)) + "D03*\n";
-    });
+    //   // Flash current rectangle aperture at location X, Y
+    //   this.#body += "X" + this.constructor.format(unitsToMm(p.x)) + "Y" + this.constructor.format(unitsToMm(p.y)) + "D03*\n";
+    // });
 
     // Select the aperture for drawing polygon pads
     this.#body += "D" + apertureID.toString() + "*\n";
@@ -508,17 +508,19 @@ export class GerberBuilder {
     this.#body += "G01*\n";
 
     // Draw polygon pads
-    polyPads.forEach((p) => {
+    polyPads.forEach((polyPad) => {
 
       // Start region
       this.#body += "G36*\n";
 
       // Loop through points
-      p.forEach((pt, i) => {
+      // parity coloring for interior/exterior fills is not observed for gerbers
+      // self interesecting shapes are colored properly, but are dissallowed
+      polyPads.forEach(pad => pad.forEach(line => line.forEach((pt, i) => {
         const x = this.constructor.format( unitsToMm(pt[0]) );
         const y = this.constructor.format( unitsToMm(pt[1]) );
         this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
-      });
+      })));
 
       // End region
       this.#body += "G37*\n";
@@ -617,7 +619,7 @@ export class GerberBuilder {
           this.#body += "X" + x + "Y" + y + "D0" + (i === 0 ? 2 : 1) + "*\n";
         });
 
-        // Add a copy of first point to close the shape if needed.
+        // TODO: is this neccessary? Add a copy of first point to close the shape if needed.
         if (path[0][0] !== path[path.length-1][0] || path[0][1] !== path[path.length-1][1]) {
           const x = this.constructor.format( unitsToMm(path[0][0]) );
           const y = this.constructor.format( unitsToMm(path[0][1]) );

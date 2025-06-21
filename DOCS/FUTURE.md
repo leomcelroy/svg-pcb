@@ -9,8 +9,9 @@
       pos: [0, 0],
       shape: "M 0,0 ...", // or polylines[]
       layers: ["F.Cu", "B.Cu", "F.Mask", "B.Mask", "*.Cu", ...],
-      drill: {
-        diameter: 0.02, // or radius
+      drill: { // add oval support
+        diameter: 0.02, // or radius, what if oval
+        // ?oval | slot: { x, y }, // [x, y]
         start: "F.Cu",
         end: "B.Cu",
         plated: false, // can something other than a hole be plated
@@ -55,6 +56,13 @@ const JSON_PCB = {
     {
       shape: [ [ [x, y]... ]... ] // polylines? "M ..."
       layer: "F.Cu",
+    }
+  ],
+  zones: [
+    {
+      points: [ [x, y]... ], // implied closed
+      type: "pour" | "keepout" // | "polygon cutout" | "board cutout"
+      layer: "F.Cu"
     }
   ]
 };
