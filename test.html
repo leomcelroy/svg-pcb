@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SVG-PCB Messaging Test</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 2rem;
+      }
+      button {
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+      }
+      img {
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SVG-PCB Messaging Test Page</h1>
+
+    <div>
+      <button id="open">Open Editor</button>
+      <button id="load" disabled>Load Sample Code</button>
+      <button id="render" disabled>Render to PNG</button>
+    </div>
+
+    <h2>PNG Result</h2>
+    <img id="preview" alt="PNG will appear here" />
+
+    <script>
+      const EDITOR_URL = "./index.html"; // path to the main app
+      let editorWin = null;
+      let isReady = false;
+
+      const openBtn = document.getElementById("open");
+      const loadBtn = document.getElementById("load");
+      const renderBtn = document.getElementById("render");
+      const previewImg = document.getElementById("preview");
+
+      const SAMPLE_CODE = `// Minimal sample board\nlet board = new PCB();\n\n// Add a 1x1 square of copper on F.Cu layer\nboard.addShape(\"F.Cu\", [\n  [\n    [0, 0],\n    [1, 0],\n    [1, 1],\n    [0, 1]\n  ]\n]);\n\nrenderPCB({\n  pcb: board,\n  layerColors: { \"F.Cu\": \"#ff8c00ff\" },\n  limits: { x: [-0.1, 1.1], y: [-0.1, 1.1] }\n});`;
+
+      openBtn.addEventListener("click", () => {
+        editorWin = window.open(EDITOR_URL, "svgPcbEditor");
+      });
+
+      loadBtn.addEventListener("click", () => {
+        if (!isReady || !editorWin) return;
+        editorWin.postMessage({ type: "LOAD_CODE", code: SAMPLE_CODE }, "*");
+      });
+
+      renderBtn.addEventListener("click", () => {
+        if (!isReady || !editorWin) return;
+        const id = crypto.randomUUID();
+        editorWin.postMessage({ type: "RENDER_PNG", id }, "*");
+
+        // Wait for response with same id
+        function handler(e) {
+          const { type, id: resId, pngData } = e.data || {};
+          if (e.source === editorWin && type === "PNG_RESULT" && resId === id) {
+            window.removeEventListener("message", handler);
+            previewImg.src = pngData;
+          }
+        }
+        window.addEventListener("message", handler);
+      });
+
+      // Global listener for ready + ack
+      window.addEventListener("message", (e) => {
+        if (e.source !== editorWin) return;
+        const { type } = e.data || {};
+        if (type === "EDITOR_READY") {
+          isReady = true;
+          loadBtn.disabled = false;
+          renderBtn.disabled = false;
+          console.log("Editor reported ready");
+        } else if (type === "LOAD_CODE_ACK") {
+          console.log("Code loaded in editor");
+        }
+      });
+    </script>
+  </body>
+</html>
