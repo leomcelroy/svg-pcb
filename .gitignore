@@ -3,3 +3,4 @@ package-lock.json
 .DS_Store
 js/.DS_Store
 LOCAL_DOCS/
+yarn-error.log
